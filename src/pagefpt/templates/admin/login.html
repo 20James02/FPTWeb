@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cổng Đăng Nhập Quản Trị — FPT Telecom</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%2232%22%20height=%2232%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230B192C%22/><text x=%2216%22 y=%2222%22 font-size=%2216%22 font-family=%22sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22%23F26F21%22>P</text></svg>">
+
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+  <link rel="stylesheet" href="/static/css/admin.css">
+
+  <style>
+    /* Nền không gian công nghệ với Gradient và Ambient Light Orbs */
+    body.login-body {
+      background: radial-gradient(circle at 15% 20%, rgba(242, 111, 33, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at 85% 80%, rgba(0, 104, 255, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at 50% 50%, #0F172A 0%, #070D18 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      color: #FFFFFF;
+      position: relative;
+      overflow-x: hidden;
+      font-family: var(--font-family-base);
+    }
+
+    /* Đốm sáng bồng bềnh nền */
+    .ambient-glow-1 {
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(242, 111, 33, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatGlow 8s ease-in-out infinite alternate;
+    }
+
+    .ambient-glow-2 {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatGlow 10s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    /* Thẻ Đăng Nhập Kính Mờ Cao Cấp */
+    .login-container {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 36px 32px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6),
+                  0 0 40px rgba(242, 111, 33, 0.1);
+      position: relative;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    /* Animation Chữ Cái Logo FPT */
+    .login-brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .fpt-letters-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fpt-letter-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .fpt-badge-f {
+      background: linear-gradient(135deg, #0284C7, #0369A1);
+      animation: letterPulse 3s ease-in-out infinite 0s;
+    }
+
+    .fpt-badge-p {
+      background: linear-gradient(135deg, #F26F21, #FF8A3D);
+      animation: letterPulse 3s ease-in-out infinite 0.3s;
+    }
+
+    .fpt-badge-t {
+      background: linear-gradient(135deg, #10B981, #059669);
+      animation: letterPulse 3s ease-in-out infinite 0.6s;
+    }
+
+    .fpt-letter-badge:hover {
+      transform: translateY(-4px) scale(1.12);
+    }
+
+    @keyframes letterPulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .brand-subtext {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #94A3B8;
+      text-transform: uppercase;
+    }
+
+    /* Tab Chuyển Đổi Phương Thức Đăng Nhập / Quên Mật Khẩu */
+    .login-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 22px;
+      gap: 4px;
+    }
+
+    .login-tab-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #94A3B8;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: center;
+    }
+
+    .login-tab-btn.active {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Form Fields */
+    .login-field {
+      margin-bottom: 16px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #CBD5E1;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .login-input-wrap {
+      position: relative;
+    }
+
+    .login-input-wrap input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .login-input-wrap input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(242, 111, 33, 0.25);
+    }
+
+    /* Nút Xem / Ẩn Mật Khẩu */
+    .btn-toggle-eye {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+
+    /* Các Ô Nhập Mã OTP (6 ô số riêng biệt chuyên nghiệp) */
+    .otp-inputs-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .otp-digit-input {
+      width: 48px;
+      height: 52px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-align: center;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .otp-digit-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(242, 111, 33, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Nút Submit Chính */
+    .btn-login-cta {
+      width: 100%;
+      background: linear-gradient(135deg, var(--color-primary), #FF7A29);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(242, 111, 33, 0.35);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .btn-login-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(242, 111, 33, 0.5);
+    }
+
+    .btn-login-cta:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-footer-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #94A3B8;
+      margin-top: 14px;
+    }
+
+    .login-footer-links a {
+      color: #FF8A3D;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .login-footer-links a:hover {
+      color: #FFB074;
+      text-decoration: underline;
+    }
+
+    /* Đồng Hồ Đếm Ngược OTP */
+    .countdown-timer-box {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .btn-resend-otp {
+      background: none;
+      border: none;
+      color: #38BDF8;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-size: 0.78rem;
+    }
+
+    .btn-resend-otp:disabled {
+      color: #64748B;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    /* Toast Thông Báo Phản Hồi */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px 18px;
+      color: #FFFFFF;
+      font-size: 0.86rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeInSlideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.success {
+      border-left: 4px solid #10B981;
+    }
+
+    .toast.error {
+      border-left: 4px solid #EF4444;
+    }
+
+    .toast.info {
+      border-left: 4px solid #38BDF8;
+    }
+
+    @keyframes fadeInSlideRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+  </style>
+</head>
+<body class="login-body">
+  <!-- Glowing Background Orbs -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <div class="login-container">
+    <!-- Header Logo FPT Cách Điệu 3 Màu -->
+    <div class="login-brand-header">
+      <div class="fpt-letters-group" aria-label="Logo FPT Telecom">
+        <div class="fpt-letter-badge fpt-badge-f">F</div>
+        <div class="fpt-letter-badge fpt-badge-p">P</div>
+        <div class="fpt-letter-badge fpt-badge-t">T</div>
+      </div>
+      <div>
+        <h1 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 2px;">Cổng Quản Trị Kinh Doanh</h1>
+        <div class="brand-subtext">FPT Telecom • Hệ Thống Tiếp Nhận Khách Hàng</div>
+      </div>
+    </div>
+
+    <!-- Tabs Chuyển Đổi Phương Thức -->
+    <div class="login-tabs" role="tablist">
+      <button type="button" class="login-tab-btn active" id="tab-login-btn" onclick="switchLoginMode('login')">
+        Đăng Nhập
+      </button>
+      <button type="button" class="login-tab-btn" id="tab-otp-btn" onclick="switchLoginMode('otp')">
+        Xác Minh OTP
+      </button>
+      <button type="button" class="login-tab-btn" id="tab-forgot-btn" onclick="switchLoginMode('forgot')">
+        Quên Mật Khẩu
+      </button>
+    </div>
+
+    <!-- ==============================================
+         FORM 1: ĐĂNG NHẬP MẬT KHẨU
+         ============================================== -->
+    <form id="form-password-login" onsubmit="handlePasswordLogin(event)">
+      <div class="login-field">
+        <label for="login-email">Email công việc</label>
+        <div class="login-input-wrap">
+          <input type="email" id="login-email" placeholder="admin@fpt.vn" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="login-field">
+        <label for="login-password">Mật khẩu</label>
+        <div class="login-input-wrap">
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('login-password')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer-links">
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+          <input type="checkbox" id="remember-me" checked>
+          <span>Ghi nhớ đăng nhập</span>
+        </label>
+        <a onclick="switchLoginMode('forgot')">Quên mật khẩu?</a>
+      </div>
+
+      <button type="submit" class="btn-login-cta" id="btn-submit-login">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span id="btn-login-text">Đăng Nhập Quản Trị</span>
+      </button>
+    </form>
+
+    <!-- ==============================================
+         FORM 2: XÁC MINH MÃ OTP (MFA)
+         ============================================== -->
+    <form id="form-otp-verify" style="display: none;" onsubmit="handleOtpVerification(event)">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <div style="font-size: 0.88rem; font-weight: 700; color: #E2E8F0;">Nhập mã xác minh gồm 6 chữ số</div>
+        <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 2px;">Mở ứng dụng xác thực để lấy mã MFA hiện tại</div>
+      </div>
+
+      <!-- 6 Ô Nhập OTP Riêng Biệt -->
+      <div class="otp-inputs-grid">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-1" inputmode="numeric" autofocus>
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-2" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-3" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-4" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-5" inputmode="numeric">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp-6" inputmode="numeric">
+      </div>
+
+      <div class="countdown-timer-box">
+        <span id="otp-countdown-text">Gửi lại mã sau: <strong id="countdown-seconds">60</strong>s</span>
+        <button type="button" class="btn-resend-otp" id="btn-resend-code" style="display: none;" onclick="resendOtpCode()">Gửi lại mã ngay</button>
+      </div>
+
+      <button type="submit" class="btn-login-cta" id="btn-verify-otp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Xác Nhận & Đăng Nhập</span>
+      </button>
+
+      <div style="text-align: center; margin-top: 14px;">
+        <a onclick="switchLoginMode('login')" style="color: #94A3B8; font-size: 0.78rem; cursor: pointer;">← Quay lại đăng nhập bằng mật khẩu</a>
+      </div>
+    </form>
+
+    <!-- ==============================================
+         FORM 3: QUÊN MẬT KHẨU & KHÔI PHỤC TÀI KHOẢN (LUỒNG 3 BƯỚC CHUYỂN ĐỔI TUẦN TỰ)
+         ============================================== -->
+    <div id="form-forgot-password" style="display: none;">
+      
+      <!-- BƯỚC 1: Nhập Email hoặc Số điện thoại -->
+      <form id="forgot-step-1" onsubmit="handleForgotStep1(event)">
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Khôi Phục Mật Khẩu</h2>
+          <div style="font-size: 0.8rem; color: #94A3B8; line-height: 1.45;">
+            Bước 1/3: Vui lòng nhập Email quản trị đã đăng ký:
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="forgot-account">Email quản trị</label>
+          <div class="login-input-wrap">
+            <input type="email" id="forgot-account" placeholder="admin@example.com" required autocomplete="username">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login-cta" id="btn-forgot-step1-submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span>Tiếp Tục (Nhấn Enter ↵)</span>
+        </button>
+
+        <div style="text-align: center; margin-top: 16px;">
+          <a onclick="switchLoginMode('login')" style="color: #94A3B8; font-size: 0.8rem; cursor: pointer;">← Quay lại đăng nhập</a>
+        </div>
+      </form>
+
+      <!-- BƯỚC 2: Nhập Mã OTP Xác Minh -->
+      <form id="forgot-step-2" style="display: none;" onsubmit="handleForgotStep2(event)">
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Xác Minh Mã OTP</h2>
+          <div style="font-size: 0.8rem; color: #94A3B8; line-height: 1.45;">
+            Bước 2/3: Nhập mã trong email khôi phục của <strong id="forgot-target-account" style="color: #38BDF8;">...</strong>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="forgot-otp-code">Mã email (6–8 chữ số)</label>
+          <div class="login-input-wrap">
+            <input type="text" id="forgot-otp-code" placeholder="123456" maxlength="8" inputmode="numeric" style="letter-spacing: 6px; font-size: 1.25rem; font-weight: 800; text-align: center;" required autocomplete="one-time-code">
+          </div>
+        </div>
+
+        <div class="countdown-timer-box" style="margin-bottom: 14px;">
+          <span id="forgot-otp-countdown-text">Gửi lại mã sau: <strong id="forgot-countdown-seconds">60</strong>s</span>
+          <button type="button" class="btn-resend-otp" id="btn-forgot-resend" style="display: none;" onclick="resendForgotOtp()">Gửi lại mã ngay</button>
+        </div>
+
+        <button type="submit" class="btn-login-cta" id="btn-forgot-step2-submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Tiếp Tục Nhập Mật Khẩu</span>
+        </button>
+
+        <div style="text-align: center; margin-top: 16px; display: flex; justify-content: space-between;">
+          <a onclick="goToForgotStep(1)" style="color: #94A3B8; font-size: 0.78rem; cursor: pointer;">← Đổi Email</a>
+          <a onclick="switchLoginMode('login')" style="color: #94A3B8; font-size: 0.78rem; cursor: pointer;">Hủy &amp; Đăng nhập</a>
+        </div>
+      </form>
+
+      <!-- BƯỚC 3: Đặt Lại Mật Khẩu Mới -->
+      <form id="forgot-step-3" style="display: none;" onsubmit="handleForgotStep3(event)">
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Đặt Lại Mật Khẩu Mới</h2>
+          <div style="font-size: 0.8rem; color: #94A3B8; line-height: 1.45;">
+            Bước 3/3: Mã email và MFA được xác minh khi lưu mật khẩu mới.
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="new-password">Mật khẩu mới</label>
+          <div class="login-input-wrap">
+            <input type="password" id="new-password" placeholder="Tối thiểu 8 ký tự" required autocomplete="new-password">
+            <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('new-password')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="confirm-new-password">Xác nhận mật khẩu mới</label>
+          <div class="login-input-wrap">
+            <input type="password" id="confirm-new-password" placeholder="Nhập lại mật khẩu mới" required autocomplete="new-password">
+            <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('confirm-new-password')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="recovery-totp">Mã ứng dụng xác thực (nếu đã bật MFA)</label>
+          <div class="login-input-wrap"><input id="recovery-totp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="Mã MFA gồm 6 chữ số"></div>
+        </div>
+        <button type="submit" class="btn-login-cta" id="btn-forgot-step3-submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Xác Nhận Đổi Mật Khẩu (Nhấn Enter ↵)</span>
+        </button>
+
+        <div style="text-align: center; margin-top: 16px;">
+          <a onclick="switchLoginMode('login')" style="color: #94A3B8; font-size: 0.8rem; cursor: pointer;">← Quay lại đăng nhập</a>
+        </div>
+      </form>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 24px; font-size: 0.72rem; color: #64748B;">
+      Bảo mật theo tiêu chuẩn an toàn thông tin FPT Telecom. Hỗ trợ kỹ thuật: 1900 6600
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/js/client/api.js"></script>
+  <script src="/static/js/admin/auth.js"></script>
+
+  <script>
+  let countdownInterval = null;
+  let forgotCountdownInterval = null;
+  let currentForgotAccount = '';
+
+  function switchLoginMode(mode) {
+    const tabLogin = document.getElementById('tab-login-btn');
+    const tabOtp = document.getElementById('tab-otp-btn');
+    const tabForgot = document.getElementById('tab-forgot-btn');
+
+    const formPassword = document.getElementById('form-password-login');
+    const formOtp = document.getElementById('form-otp-verify');
+    const formForgot = document.getElementById('form-forgot-password');
+
+    tabLogin.classList.remove('active');
+    tabOtp.classList.remove('active');
+    tabForgot.classList.remove('active');
+
+    formPassword.style.display = 'none';
+    formOtp.style.display = 'none';
+    formForgot.style.display = 'none';
+
+    if (mode === 'otp') {
+      tabOtp.classList.add('active');
+      formOtp.style.display = 'block';
+      startOtpCountdown();
+      document.getElementById('otp-1')?.focus();
+    } else if (mode === 'forgot') {
+      tabForgot.classList.add('active');
+      formForgot.style.display = 'block';
+      goToForgotStep(1);
+    } else {
+      tabLogin.classList.add('active');
+      tabForgot.textContent = 'Quên Mật Khẩu';
+      formPassword.style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('login-password')?.focus();
+      }, 50);
+    }
+  }
+
+  function goToForgotStep(step) {
+    const s1 = document.getElementById('forgot-step-1');
+    const s2 = document.getElementById('forgot-step-2');
+    const s3 = document.getElementById('forgot-step-3');
+    const tabForgot = document.getElementById('tab-forgot-btn');
+
+    if (s1) s1.style.display = 'none';
+    if (s2) s2.style.display = 'none';
+    if (s3) s3.style.display = 'none';
+
+    if (step === 1) {
+      if (s1) s1.style.display = 'block';
+      if (tabForgot) tabForgot.textContent = '1. Nhập Email/SĐT';
+      setTimeout(() => document.getElementById('forgot-account')?.focus(), 50);
+    } else if (step === 2) {
+      if (s2) s2.style.display = 'block';
+      if (tabForgot) tabForgot.textContent = '2. Nhập Mã OTP';
+      const targetEl = document.getElementById('forgot-target-account');
+      if (targetEl) targetEl.textContent = currentForgotAccount || 'tài khoản của bạn';
+      startForgotOtpCountdown();
+      setTimeout(() => document.getElementById('forgot-otp-code')?.focus(), 50);
+    } else if (step === 3) {
+      if (s3) s3.style.display = 'block';
+      if (tabForgot) tabForgot.textContent = '3. Đặt Lại Mật Khẩu';
+      setTimeout(() => document.getElementById('new-password')?.focus(), 50);
+    }
+  }
+
+  function startForgotOtpCountdown() {
+    clearInterval(forgotCountdownInterval);
+    let seconds = 60;
+    const countEl = document.getElementById('forgot-countdown-seconds');
+    const textEl = document.getElementById('forgot-otp-countdown-text');
+    const resendBtn = document.getElementById('btn-forgot-resend');
+
+    if (textEl) textEl.style.display = 'inline';
+    if (resendBtn) resendBtn.style.display = 'none';
+
+    forgotCountdownInterval = setInterval(() => {
+      seconds--;
+      if (countEl) countEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(forgotCountdownInterval);
+        if (textEl) textEl.style.display = 'none';
+        if (resendBtn) resendBtn.style.display = 'inline';
+      }
+    }, 1000);
+  }
+
+  function togglePasswordVisibility(fieldId) {
+    const input=document.getElementById(fieldId);
+    if (input) input.type=input.type==='password'?'text':'password';
+  }
+
+  // Tự động chuyển ô khi nhập 6 số OTP ở form MFA
+  const otpInputs = document.querySelectorAll('.otp-digit-input');
+  otpInputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = val ? val[0] : '';
+      if (val && index < otpInputs.length - 1) {
+        otpInputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && index > 0) {
+        otpInputs[index - 1].focus();
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleOtpVerification(e);
+      }
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteData = e.clipboardData.getData('text').trim().replace(/[^0-9]/g, '');
+      if (pasteData.length > 0) {
+        otpInputs.forEach((digitInput, idx) => {
+          digitInput.value = pasteData[idx] || '';
+        });
+        const lastFilled = Math.min(pasteData.length, otpInputs.length) - 1;
+        if (lastFilled >= 0) otpInputs[lastFilled].focus();
+      }
+    });
+  });
+
+  // Hỗ trợ phím Enter cho các ô input luồng Quên mật khẩu
+  document.getElementById('forgot-account')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleForgotStep1(e);
+    }
+  });
+
+  document.getElementById('forgot-otp-code')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleForgotStep2(e);
+    }
+  });
+
+  document.getElementById('new-password')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('confirm-new-password')?.focus();
+    }
+  });
+
+  document.getElementById('confirm-new-password')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleForgotStep3(e);
+    }
+  });
+
+  function startOtpCountdown() {
+    const box=document.getElementById('otp-countdown-text')?.parentElement;
+    if (box) box.style.display='none';
+  }
+  function resendOtpCode() {
+    showToast('Mở ứng dụng xác thực và nhập mã MFA hiện tại.', 'info');
+  }
+
+
+
+  // Luồng Đăng nhập Mật Khẩu
+  async function handlePasswordLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    const btn = document.getElementById('btn-submit-login');
+    const btnText = document.getElementById('btn-login-text');
+    btn.disabled = true;
+    btnText.textContent = 'Đang kiểm tra...';
+
+    const res = await loginWithCredentials(email, password);
+
+    if (res.success) {
+      showToast('Đăng nhập thành công! Đang vào hệ thống...', 'success');
+      setTimeout(() => {
+        window.location.href = '/admin';
+      }, 500);
+    } else if (res.requiresMFA) {
+      showToast('Tài khoản yêu cầu mã xác minh OTP 2 lớp.', 'info');
+      switchLoginMode('otp');
+    } else {
+      showToast(res.message || 'Email hoặc mật khẩu không chính xác', 'error');
+      btn.disabled = false;
+      btnText.textContent = 'Đăng Nhập Quản Trị';
+    }
+  }
+
+  // Luồng Xác minh OTP (MFA Đăng Nhập)
+  async function handleOtpVerification(e) {
+    if (e) e.preventDefault();
+    let otpCode = '';
+    otpInputs.forEach(i => otpCode += i.value);
+
+    if (otpCode.length < 6) {
+      showToast('Vui lòng nhập đủ 6 chữ số mã OTP.', 'error');
+      return;
+    }
+
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    const btn = document.getElementById('btn-verify-otp');
+    btn.disabled = true;
+
+    const res = await loginWithCredentials(email, password, otpCode);
+
+    if (res.success) {
+      showToast('Xác thực OTP thành công!', 'success');
+      setTimeout(() => {
+        window.location.href = '/admin';
+      }, 500);
+    } else {
+      showToast('Mã OTP không hợp lệ hoặc đã hết hạn.', 'error');
+      btn.disabled = false;
+    }
+  }
+  </script>
+<script src="/static/js/admin/recovery.js"></script>
+</body>
+</html>

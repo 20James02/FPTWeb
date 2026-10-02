@@ -1,0 +1,507 @@
+{
+  "environment": "Local Chrome + disposable PostgreSQL; Supabase Auth HTTP simulated; no cloud calls",
+  "checks": [
+    {
+      "name": "guest private API denied",
+      "status": "passed"
+    },
+    {
+      "name": "wrong password rejected without session",
+      "status": "passed"
+    },
+    {
+      "name": "login UI requires MFA and keeps session absent",
+      "status": "passed"
+    },
+    {
+      "name": "MFA UI login creates HttpOnly cookie and dashboard hydration",
+      "status": "passed"
+    },
+    {
+      "name": "cookie mutation without CSRF is denied",
+      "status": "passed"
+    },
+    {
+      "name": "CRM first page and masked PII hydrate",
+      "status": "passed"
+    },
+    {
+      "name": "CRM pagination loads remaining leads",
+      "status": "passed"
+    },
+    {
+      "name": "CRM filter returns real empty state",
+      "status": "passed"
+    },
+    {
+      "name": "detail hydration uses selected lead and safe DTO",
+      "status": "passed"
+    },
+    {
+      "name": "explicit PII reveal succeeds with AAL2",
+      "status": "passed"
+    },
+    {
+      "name": "appointment UI commits accepted kind to SQL",
+      "status": "passed"
+    },
+    {
+      "name": "CRM note is stored and timeline refetches",
+      "status": "passed"
+    },
+    {
+      "name": "assignment and status transition commit real lead versions",
+      "status": "passed"
+    },
+    {
+      "name": "stale version fails with 409 and leaves state intact",
+      "status": "passed"
+    },
+    {
+      "name": "recompute returns queued rather than fake completion",
+      "status": "passed"
+    },
+    {
+      "name": "plan selector hydrates from admin payload wrapper",
+      "status": "passed"
+    },
+    {
+      "name": "price create UI commits draft",
+      "status": "passed"
+    },
+    {
+      "name": "price publish UI commits published snapshot",
+      "status": "passed"
+    },
+    {
+      "name": "public quote matches backend published plan, region and price",
+      "status": "passed"
+    },
+    {
+      "name": "CSV preview and apply create drafts only",
+      "status": "passed"
+    },
+    {
+      "name": "report funnel is hydrated from real API",
+      "status": "passed"
+    },
+    {
+      "name": "daily rebuild produces daily metrics and renders rows",
+      "status": "passed"
+    },
+    {
+      "name": "display settings persist with CSRF and expected version",
+      "status": "passed"
+    },
+    {
+      "name": "unconfigured R2 export reports error without fake success",
+      "status": "passed"
+    },
+    {
+      "name": "published card sends plan UUID and stores the confirmed quote on lead",
+      "status": "passed"
+    },
+    {
+      "name": "mobile published packages navigate and filters exclude only other services",
+      "status": "passed"
+    },
+    {
+      "name": "campaign direct form submits published plan, region and stored quote",
+      "status": "passed"
+    },
+    {
+      "name": "manual retry after lost responses replays the original committed receipt",
+      "status": "passed"
+    },
+    {
+      "name": "all client/admin HTML pages load without uncaught JS exceptions",
+      "status": "passed"
+    },
+    {
+      "name": "responsive pages avoid document horizontal overflow",
+      "status": "passed"
+    },
+    {
+      "name": "logout clears cookie and private API rejects session",
+      "status": "passed"
+    }
+  ],
+  "page_errors": [],
+  "api_errors": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/system/display-settings",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/b7d452f9-e027-4947-8b73-ea29d90b01a1/transitions",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/exports",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/leads",
+      "status": 401
+    }
+  ],
+  "viewports": [
+    {
+      "width": 360,
+      "path": "/",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/khuyen-mai",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/admin/dashboard",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/admin/leads",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/admin/pricing",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/admin/reports",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "/admin/settings",
+      "scroll": 360,
+      "viewport": 360,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/khuyen-mai",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/admin/dashboard",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/admin/leads",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/admin/pricing",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/admin/reports",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 375,
+      "path": "/admin/settings",
+      "scroll": 375,
+      "viewport": 375,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/khuyen-mai",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/admin/dashboard",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/admin/leads",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/admin/pricing",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/admin/reports",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "/admin/settings",
+      "scroll": 390,
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/khuyen-mai",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/admin/dashboard",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/admin/leads",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/admin/pricing",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/admin/reports",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 430,
+      "path": "/admin/settings",
+      "scroll": 430,
+      "viewport": 430,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/khuyen-mai",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/admin/dashboard",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/admin/leads",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/admin/pricing",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/admin/reports",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "/admin/settings",
+      "scroll": 768,
+      "viewport": 768,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/khuyen-mai",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/san-pham/internet-gia-dinh",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/admin/dashboard",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/admin/leads",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/admin/pricing",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/admin/reports",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "/admin/settings",
+      "scroll": 1440,
+      "viewport": 1440,
+      "pass": true
+    }
+  ],
+  "passed": 31,
+  "failed": 0
+}

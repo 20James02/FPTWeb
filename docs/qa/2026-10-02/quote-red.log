@@ -1,0 +1,21 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Late response must not replace the current quote
++ actual - expected
+
++ 'token-A'
+- 'token-B'
+         ^
+
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/quote_selection.mjs:22:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'token-A',
+  expected: 'token-B',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,259 @@
+........................................................................ [ 39%]
+.......................................................FFFFF........F... [ 78%]
+FF..FFF................................                                  [100%]
+=================================== FAILURES ===================================
+_________________________ test_admin_dashboard_renders _________________________
+
+client = <httpx.AsyncClient object at 0x765336708320>
+
+    @pytest.mark.asyncio
+    async def test_admin_dashboard_renders(client):
+        response = await client.get("/admin/dashboard")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:65: AssertionError
+___________________________ test_admin_leads_renders ___________________________
+
+client = <httpx.AsyncClient object at 0x76533691b080>
+
+    @pytest.mark.asyncio
+    async def test_admin_leads_renders(client):
+        response = await client.get("/admin/leads")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:73: AssertionError
+________________________ test_admin_lead_detail_renders ________________________
+
+client = <httpx.AsyncClient object at 0x765336d42e10>
+
+    @pytest.mark.asyncio
+    async def test_admin_lead_detail_renders(client):
+        response = await client.get("/admin/leads/detail?id=lead-001")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:81: AssertionError
+__________________________ test_admin_pricing_renders __________________________
+
+client = <httpx.AsyncClient object at 0x76533678f5c0>
+
+    @pytest.mark.asyncio
+    async def test_admin_pricing_renders(client):
+        response = await client.get("/admin/pricing")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:91: AssertionError
+__________________________ test_admin_reports_renders __________________________
+
+client = <httpx.AsyncClient object at 0x76533606eed0>
+
+    @pytest.mark.asyncio
+    async def test_admin_reports_renders(client):
+        response = await client.get("/admin/reports")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:99: AssertionError
+________________ test_admin_settings_renders_and_upgraded_ui_ux ________________
+
+client = <httpx.AsyncClient object at 0x765336ff7a40>
+
+    @pytest.mark.asyncio
+    async def test_admin_settings_renders_and_upgraded_ui_ux(client):
+        # 1. Check settings page
+        response = await client.get("/admin/settings")
+>       assert response.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:340: AssertionError
+____________ test_admin_display_settings_governance_and_persistence ____________
+
+admin = <httpx.AsyncClient object at 0x76533665c6b0>
+
+    @pytest.mark.asyncio
+    async def test_admin_display_settings_governance_and_persistence(admin):
+        client = admin
+        # 1. Admin Settings Page renders display controls
+        admin_res = await client.get("/admin/settings")
+        assert admin_res.status_code == 200
+        admin_text = admin_res.text
+>       assert "Cấu Hình Hiển Thị &amp; Hiệu Ứng Giao Diện Website" in admin_text
+E       assert 'Cấu Hình Hiển Thị &amp; Hiệu Ứng Giao Diện Website' in '<!DOCTYPE html>\n<html lang="vi" data-theme="light">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" conte...n<script>let adminDisplayVersion=0;</script>\n<script src="/static/js/admin/settings.js"></script>\n\n</body>\n</html>'
+
+tests/integration/test_web_ui.py:503: AssertionError
+___________________ test_banner_and_poster_zones_arrangement ___________________
+
+client = <httpx.AsyncClient object at 0x76533654e7e0>
+
+    @pytest.mark.asyncio
+    async def test_banner_and_poster_zones_arrangement(client):
+        home_res = await client.get("/")
+        assert home_res.status_code == 200
+        home_text = home_res.text
+    
+        # 1. Zone 1: Hero Carousel Banner
+        assert "hero-carousel-section" in home_text
+        assert "SIÊU PHẨM VIỄN THÔNG 2026" in home_text
+    
+        # 2. Zone 2: Dual Showcase Posters (Wi-Fi 6 & FPT Play Sports C1)
+        assert "showcase-banners-section" in home_text
+        assert "showcase-poster-card poster-sports" in home_text
+        assert "Đại Tiệc Thể Thao Đỉnh Cao" in home_text
+        assert "Cúp C1 UEFA" in home_text
+        assert "Ngoại Hạng Anh" in home_text
+        assert "showcase-poster-card poster-wifi" in home_text
+        assert "Modem Wi-Fi 6 Chuẩn AX" in home_text
+        assert "Bứt Phá Mọi Giới Hạn Tốc Độ" in home_text
+    
+        # 3. Zone 3: Mid-page Ribbon Flash Deal Banner
+        assert "ribbon-banner-section" in home_text
+        assert "ribbon-banner-card" in home_text
+        assert "FLASH SALE HÔM NAY" in home_text
+        assert 'id="ribbon-countdown"' in home_text
+        assert 'id="flash-hours"' in home_text
+        assert 'id="flash-minutes"' in home_text
+        assert 'id="flash-seconds"' in home_text
+        assert "btn-ribbon-cta" in home_text
+        assert "ribbon-hotline-btn" in home_text
+    
+        # 4. Zone 4: Featured Promo Cards Grid (4 Benefits & Commitment Policies)
+        assert "promotions-section" in home_text
+        assert "promo-item-gift" in home_text
+        assert "promo-item-wifi" in home_text
+        assert "promo-item-speed" in home_text
+        assert "promo-item-play" in home_text
+        assert "CHÍNH SÁCH CAM KẾT DỊCH VỤ TỪ FPT TELECOM" in home_text
+    
+        # 5. Zone 5: Hi FPT App Banner & National Transaction Offices
+        assert "app-banner-section" in home_text
+        assert "app-banner-card" in home_text
+        assert "Hi FPT" in home_text
+        assert "Đổi Mật Khẩu Wi-Fi 1 Chạm" in home_text
+        assert "phone-mockup-frame" in home_text
+        assert "btn-store-badge" in home_text
+    
+        # 6. Zone 6: Floating Corner Promo Widget
+        assert "floating-promo-widget" in home_text
+        assert "btn-floating-toggle" in home_text
+        assert "floating-promo-card" in home_text
+        assert "btn-floating-cta" in home_text
+    
+        # 7. Check Admin Settings Banner Map Table
+        settings_res = await client.get("/admin/settings")
+>       assert settings_res.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:626: AssertionError
+_______________________ test_dev_admin_login_credentials _______________________
+
+client = <httpx.AsyncClient object at 0x76533654cd40>
+
+    @pytest.mark.asyncio
+    async def test_dev_admin_login_credentials(client):
+        """
+        Verify temporary local dev admin credentials (admin@fpt.vn / Admin@123456):
+        1. Login page renders dev credentials helper pill and pre-fills email/password.
+        2. Correct credentials return 200 with session cookie and user identity.
+        3. Invalid credentials return 401.
+        4. Session cookie allows /api/v1/admin/me identity verification.
+        5. Logout deletes session cookie.
+        """
+        # 1. Check login page UI
+        page_res = await client.get("/admin/login")
+        assert page_res.status_code == 200
+        assert "admin@fpt.vn" in page_res.text
+>       assert "Admin@123456" in page_res.text
+E       assert 'Admin@123456' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...btn.disabled = false;\n    }\n  }\n  </script>\n<script src="/static/js/admin/recovery.js"></script>\n</body>\n</html>'
+E        +  where '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...btn.disabled = false;\n    }\n  }\n  </script>\n<script src="/static/js/admin/recovery.js"></script>\n</body>\n</html>' = <Response [200 OK]>.text
+
+tests/integration/test_web_ui.py:784: AssertionError
+__________________ test_admin_crm_and_dynamic_pages_structure __________________
+
+client = <httpx.AsyncClient object at 0x7653368594c0>
+
+    @pytest.mark.asyncio
+    async def test_admin_crm_and_dynamic_pages_structure(client):
+        """
+        Verify complete frontend-backend dynamic hydration scaffolding across admin interfaces:
+        - CRM Leads table & cursor pagination containers
+        - CRM Lead Detail dynamic containers (status badge, phone reveal, appointments, timeline)
+        - Pricing management modal, table, CSV import
+        - Reports funnel and daily metrics table
+        - Dashboard live KPI & recent leads containers
+        """
+        # 1. CRM Leads List
+        leads_res = await client.get("/admin/leads")
+>       assert leads_res.status_code == 200
+E       assert 303 == 200
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:829: AssertionError
+_____________________ test_no_fake_fixtures_in_rendered_ui _____________________
+
+client = <httpx.AsyncClient object at 0x765335eb1e20>
+
+    @pytest.mark.asyncio
+    async def test_no_fake_fixtures_in_rendered_ui(client):
+        """
+        Ensure all hardcoded mock fixtures, dummy customer names, dummy phones,
+        and fake receipt numbers are completely eliminated from all rendered web pages.
+        """
+        pages_to_verify = [
+            "/",
+            "/khuyen-mai",
+            "/san-pham/internet-gia-dinh",
+            "/admin/login",
+            "/admin/dashboard",
+            "/admin/leads",
+            "/admin/leads/detail",
+            "/admin/pricing",
+            "/admin/reports",
+            "/admin/settings",
+        ]
+    
+        forbidden_fake_fixtures = [
+            "Nguyễn Hoàng",
+            "Trần Thị Mai",
+            "0987.654.321",
+            "0987654321",
+            "FPT-998812",
+            "lead-001",
+        ]
+    
+        for path in pages_to_verify:
+            res = await client.get(path)
+>           assert res.status_code == 200, f"Page {path} failed to render with {res.status_code}"
+E           AssertionError: Page /admin/dashboard failed to render with 303
+E           assert 303 == 200
+E            +  where 303 = <Response [303 See Other]>.status_code
+
+tests/integration/test_web_ui.py:909: AssertionError
+=============================== warnings summary ===============================
+tests/integration/test_admin_quality.py::test_forged_preview_cookie_never_authenticates
+  /mnt/DATA/Workspace/PageFPT/.venv/lib/python3.12/site-packages/httpx/_client.py:1768: DeprecationWarning: Setting per-request cookies=<...> is being deprecated, because the expected behaviour on cookie persistence is ambiguous. Set cookies directly on the client instance instead.
+    return await self.request(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_web_ui.py::test_admin_dashboard_renders - asser...
+FAILED tests/integration/test_web_ui.py::test_admin_leads_renders - assert 30...
+FAILED tests/integration/test_web_ui.py::test_admin_lead_detail_renders - ass...
+FAILED tests/integration/test_web_ui.py::test_admin_pricing_renders - assert ...
+FAILED tests/integration/test_web_ui.py::test_admin_reports_renders - assert ...
+FAILED tests/integration/test_web_ui.py::test_admin_settings_renders_and_upgraded_ui_ux
+FAILED tests/integration/test_web_ui.py::test_admin_display_settings_governance_and_persistence
+FAILED tests/integration/test_web_ui.py::test_banner_and_poster_zones_arrangement
+FAILED tests/integration/test_web_ui.py::test_dev_admin_login_credentials - a...
+FAILED tests/integration/test_web_ui.py::test_admin_crm_and_dynamic_pages_structure
+FAILED tests/integration/test_web_ui.py::test_no_fake_fixtures_in_rendered_ui
+11 failed, 172 passed, 1 warning in 38.98s

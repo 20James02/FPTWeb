@@ -1,0 +1,334 @@
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+__ test_admin_entry_opens_permitted_workspace[permissions0-/admin/dashboard] ___
+
+admin = <httpx.AsyncClient object at 0x72109f023ce0>
+gateway = <conftest.LocalGateway object at 0x7210a3518c80>, permissions = ['*']
+landing = '/admin/dashboard'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+____ test_admin_entry_opens_permitted_workspace[permissions1-/admin/leads] _____
+
+admin = <httpx.AsyncClient object at 0x72109f0ea900>
+gateway = <conftest.LocalGateway object at 0x7210a03dede0>
+permissions = ['lead.read', 'lead.write'], landing = '/admin/leads'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+__ test_admin_entry_opens_permitted_workspace[permissions2-/admin/marketing] ___
+
+admin = <httpx.AsyncClient object at 0x72109ef821b0>
+gateway = <conftest.LocalGateway object at 0x72109f0e8a40>
+permissions = ['marketing.write'], landing = '/admin/marketing'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+___ test_admin_entry_opens_permitted_workspace[permissions3-/admin/content] ____
+
+admin = <httpx.AsyncClient object at 0x72109ef3dcd0>
+gateway = <conftest.LocalGateway object at 0x72109ef7e9c0>
+permissions = ['content.write'], landing = '/admin/content'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+___ test_admin_entry_opens_permitted_workspace[permissions4-/admin/pricing] ____
+
+admin = <httpx.AsyncClient object at 0x72109edd0350>
+gateway = <conftest.LocalGateway object at 0x72109ef3dfd0>
+permissions = ['pricing.write'], landing = '/admin/pricing'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+__ test_admin_entry_opens_permitted_workspace[permissions5-/admin/operations] __
+
+admin = <httpx.AsyncClient object at 0x72109ee8f050>
+gateway = <conftest.LocalGateway object at 0x72109edd0740>
+permissions = ['workflow.manage'], landing = '/admin/operations'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+__ test_admin_entry_opens_permitted_workspace[permissions6-/admin/operations] __
+
+admin = <httpx.AsyncClient object at 0x72109ef80680>
+gateway = <conftest.LocalGateway object at 0x72109ef87680>
+permissions = ['identity.manage'], landing = '/admin/operations'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+__ test_admin_entry_opens_permitted_workspace[permissions7-/admin/operations] __
+
+admin = <httpx.AsyncClient object at 0x72109f0c6e40>
+gateway = <conftest.LocalGateway object at 0x72109ee8ce30>
+permissions = ['governance.audit'], landing = '/admin/operations'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+__ test_admin_entry_opens_permitted_workspace[permissions8-/admin/operations] __
+
+admin = <httpx.AsyncClient object at 0x72109f06f620>
+gateway = <conftest.LocalGateway object at 0x72109f07cd40>
+permissions = ['governance.export'], landing = '/admin/operations'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+___ test_admin_entry_opens_permitted_workspace[permissions9-/admin/settings] ___
+
+admin = <httpx.AsyncClient object at 0x7210a1a667b0>
+gateway = <conftest.LocalGateway object at 0x72109edad9d0>
+permissions = ['content.publish'], landing = '/admin/settings'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("permissions,landing", [
+        (["*"], "/admin/dashboard"),
+        (["lead.read", "lead.write"], "/admin/leads"),
+        (["marketing.write"], "/admin/marketing"),
+        (["content.write"], "/admin/content"),
+        (["pricing.write"], "/admin/pricing"),
+        (["workflow.manage"], "/admin/operations"),
+        (["identity.manage"], "/admin/operations"),
+        (["governance.audit"], "/admin/operations"),
+        (["governance.export"], "/admin/operations"),
+        (["content.publish"], "/admin/settings"),
+    ])
+    async def test_admin_entry_opens_permitted_workspace(admin, gateway, permissions, landing):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=%s WHERE user_id=%s", [permissions, actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:355: AssertionError
+______ test_admin_entry_without_workspace_permission_has_no_redirect_loop ______
+
+admin = <httpx.AsyncClient object at 0x72109eef09b0>
+gateway = <conftest.LocalGateway object at 0x72109f06fd70>
+
+    @pytest.mark.asyncio
+    async def test_admin_entry_without_workspace_permission_has_no_redirect_loop(admin, gateway):
+        actor_id = (await admin.get("/api/v1/admin/me")).json()["id"]
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute("UPDATE private.memberships SET permissions=ARRAY['lead.reveal'] WHERE user_id=%s", [actor_id])
+        response = await admin.get("/admin", follow_redirects=False)
+>       assert response.status_code == 403
+E       assert 307 == 403
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:366: AssertionError
+_____ test_admin_entry_guest_and_login_redirect_use_authenticated_resolver _____
+
+client = <httpx.AsyncClient object at 0x72109e947d10>
+
+    @pytest.mark.asyncio
+    async def test_admin_entry_guest_and_login_redirect_use_authenticated_resolver(client):
+        response = await client.get("/admin", follow_redirects=False)
+>       assert response.status_code == 303
+E       assert 307 == 303
+E        +  where 307 = <Response [307 Temporary Redirect]>.status_code
+
+tests/integration/test_admin_quality.py:372: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions0-/admin/dashboard]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions1-/admin/leads]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions2-/admin/marketing]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions3-/admin/content]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions4-/admin/pricing]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions5-/admin/operations]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions6-/admin/operations]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions7-/admin/operations]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions8-/admin/operations]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_opens_permitted_workspace[permissions9-/admin/settings]
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_without_workspace_permission_has_no_redirect_loop
+FAILED tests/integration/test_admin_quality.py::test_admin_entry_guest_and_login_redirect_use_authenticated_resolver
+12 failed, 12 deselected in 3.84s

@@ -1,0 +1,214 @@
+{
+  "installed_on": "2026-09-30",
+  "count": 26,
+  "skills": [
+    {
+      "name": "using-superpowers",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/using-superpowers",
+      "installed_path": "/home/thannv3/.codex/skills/using-superpowers",
+      "skill_md_sha256": "82c5c8866ad7f5dd4440ce66bd7806ba48a2f13771beae5cf112e53f08fe36ba"
+    },
+    {
+      "name": "brainstorming",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/brainstorming",
+      "installed_path": "/home/thannv3/.codex/skills/brainstorming",
+      "skill_md_sha256": "a32d2255354775aa124855aa7100cf276bea096fff4ebb3a0edf57be216e6c72"
+    },
+    {
+      "name": "writing-plans",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/writing-plans",
+      "installed_path": "/home/thannv3/.codex/skills/writing-plans",
+      "skill_md_sha256": "a6c67c1900064347c2a329990dd3c555657c51c3ec53b259a08aa01a2c26139a"
+    },
+    {
+      "name": "executing-plans",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/executing-plans",
+      "installed_path": "/home/thannv3/.codex/skills/executing-plans",
+      "skill_md_sha256": "f38e8f2ddcf079f65493adc713c1fed78421dfaf5f4dbf6b3a6b2b1d95466e71"
+    },
+    {
+      "name": "test-driven-development",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/test-driven-development",
+      "installed_path": "/home/thannv3/.codex/skills/test-driven-development",
+      "skill_md_sha256": "64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d"
+    },
+    {
+      "name": "systematic-debugging",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/systematic-debugging",
+      "installed_path": "/home/thannv3/.codex/skills/systematic-debugging",
+      "skill_md_sha256": "808fc5717aa88ad65efff312b11c186294d3e6ee301afb584e2f86599b137787"
+    },
+    {
+      "name": "requesting-code-review",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/requesting-code-review",
+      "installed_path": "/home/thannv3/.codex/skills/requesting-code-review",
+      "skill_md_sha256": "cfcee1b06774e7c0517f1e09be1a11f2d5680257072723e709ddbcf7e08b795a"
+    },
+    {
+      "name": "receiving-code-review",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/receiving-code-review",
+      "installed_path": "/home/thannv3/.codex/skills/receiving-code-review",
+      "skill_md_sha256": "091df1629510af1b92fc4abd6f96732ebedb4cb2c0f3457e8f2740b0504a2438"
+    },
+    {
+      "name": "verification-before-completion",
+      "repository": "https://github.com/obra/superpowers",
+      "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+      "upstream_path": "skills/verification-before-completion",
+      "installed_path": "/home/thannv3/.codex/skills/verification-before-completion",
+      "skill_md_sha256": "2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3"
+    },
+    {
+      "name": "python-patterns",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/python-patterns",
+      "installed_path": "/home/thannv3/.codex/skills/python-patterns",
+      "skill_md_sha256": "feba490b666581bf07b7b673e5de4cd3260827b78aae35a6ae80cc0c0334ce06"
+    },
+    {
+      "name": "fastapi-pro",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/fastapi-pro",
+      "installed_path": "/home/thannv3/.codex/skills/fastapi-pro",
+      "skill_md_sha256": "5beef01a81f4571fa7ff6fc8ac5c83902c2b16ce5588de737734fd650e11ccfe"
+    },
+    {
+      "name": "async-python-patterns",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/async-python-patterns",
+      "installed_path": "/home/thannv3/.codex/skills/async-python-patterns",
+      "skill_md_sha256": "ec109a485750ee96486cda7d7617db2b852b5705d85281cbe786793234cf089f"
+    },
+    {
+      "name": "python-testing-patterns",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/python-testing-patterns",
+      "installed_path": "/home/thannv3/.codex/skills/python-testing-patterns",
+      "skill_md_sha256": "467fdbc399027e09da7df551c2088dad0e2fa7cba590be3059b40bfcbc63794a"
+    },
+    {
+      "name": "python-performance-optimization",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/python-performance-optimization",
+      "installed_path": "/home/thannv3/.codex/skills/python-performance-optimization",
+      "skill_md_sha256": "674f8695f32b129e8f314980974c5954620be787e6b44cf91b9da30dd7155fc6"
+    },
+    {
+      "name": "supabase",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/supabase",
+      "installed_path": "/home/thannv3/.codex/skills/supabase",
+      "skill_md_sha256": "16b5a5d81ec346628a3805893e3e780adcf84ac9ad47b2ca13206a8776986f54"
+    },
+    {
+      "name": "supabase-postgres-best-practices",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/supabase-postgres-best-practices",
+      "installed_path": "/home/thannv3/.codex/skills/supabase-postgres-best-practices",
+      "skill_md_sha256": "dc12c6312c7c5a842c52159308a0cefaba27ef7244eef9a71336efc711e77ac6"
+    },
+    {
+      "name": "cloudflare-r2",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/cloudflare-r2",
+      "installed_path": "/home/thannv3/.codex/skills/cloudflare-r2",
+      "skill_md_sha256": "d3c55b3e2a7a68c4185c83f960d2f50768a742c9d781e3e7b85ed24febe4c51c"
+    },
+    {
+      "name": "vercel-deployments",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/vercel-deployments",
+      "installed_path": "/home/thannv3/.codex/skills/vercel-deployments",
+      "skill_md_sha256": "234835f033976f1d627dcf0a0c1a7a5892430fbc74a8606ed25b65724ea17373"
+    },
+    {
+      "name": "form-cro",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/form-cro",
+      "installed_path": "/home/thannv3/.codex/skills/form-cro",
+      "skill_md_sha256": "f656d09985779486a579db4f995a99adfe9d8f61e924bd570296eff1f226d8c1"
+    },
+    {
+      "name": "page-cro",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/page-cro",
+      "installed_path": "/home/thannv3/.codex/skills/page-cro",
+      "skill_md_sha256": "d6da4e8a10b7d3dbf47a8b5dd5f6095bb36d482f329260ca626c4e89c7c6e2fa"
+    },
+    {
+      "name": "analytics-tracking",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/analytics-tracking",
+      "installed_path": "/home/thannv3/.codex/skills/analytics-tracking",
+      "skill_md_sha256": "a3489c4718c41cc9eca90c288a5c10d4b4f422179214d23f4864df7dab8a2288"
+    },
+    {
+      "name": "seo-audit",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/seo-audit",
+      "installed_path": "/home/thannv3/.codex/skills/seo-audit",
+      "skill_md_sha256": "51ede785406b6bbd30a2c579d1e313dc939d121d8bfd91f8ac6addadb7b1c6ae"
+    },
+    {
+      "name": "web-performance-optimization",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/web-performance-optimization",
+      "installed_path": "/home/thannv3/.codex/skills/web-performance-optimization",
+      "skill_md_sha256": "73f9160fac92b4da33e6355949e23e74e9c8a084aff9c3b8b253fa6ccbf9e1d6"
+    },
+    {
+      "name": "fixing-accessibility",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/fixing-accessibility",
+      "installed_path": "/home/thannv3/.codex/skills/fixing-accessibility",
+      "skill_md_sha256": "e59eb812d22f4057e84a186922646fe7fc214657b6181c4f4de35b9299e1cdcc"
+    },
+    {
+      "name": "api-security-best-practices",
+      "repository": "https://github.com/sickn33/agentic-awesome-skills",
+      "commit": "465ad05638fbe1d9e7f98671393396b6d9246393",
+      "upstream_path": "skills/api-security-best-practices",
+      "installed_path": "/home/thannv3/.codex/skills/api-security-best-practices",
+      "skill_md_sha256": "f01d39fb4e2a134f4ae416dc03701d99b5e703d49472376a7ce488cfdd55328f"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "upstream_path": "src/ui-ux-pro-max",
+      "installed_path": "/home/thannv3/.codex/skills/ui-ux-pro-max",
+      "skill_md_sha256": "4c7fb287631d918c6e773555202c43ee84d23412604a42584a3a594576c5f0a1"
+    }
+  ]
+}

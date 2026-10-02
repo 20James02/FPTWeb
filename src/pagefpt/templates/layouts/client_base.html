@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>{% block title %}Lắp Mạng FPT — Tư Vấn Lắp Đặt Internet & Truyền Hình FPT Telecom{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Đăng ký lắp mạng FPT Telecom tốc độ cao, trang bị miễn phí Modem Wi-Fi 6 thế hệ mới, hỗ trợ tư vấn khảo sát hạ tầng nhanh chóng trong 24h.{% endblock %}">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Favicon & Brand Theme -->
+  <meta name="theme-color" content="#F26F21">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%2232%22%20height=%2232%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23F26F21%22/><text x=%2216%22 y=%2221%22 font-size=%2214%22 font-family=%22sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22>FPT</text></svg>">
+
+  <!-- Core Design System & Stylesheets -->
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+  <link rel="stylesheet" href="/static/css/client.css">
+
+  <!-- Modern UI Libraries CSS (Lenis Smooth Scroll & AOS Reveal) -->
+  <link rel="stylesheet" href="/static/css/vendor/lenis.css">
+  <link rel="stylesheet" href="/static/css/vendor/aos.css">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Site Header -->
+  {% include "client/components/header.html" %}
+
+  <!-- Main Content Page -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Site Footer -->
+  {% include "client/components/footer.html" %}
+
+  <!-- Sticky Bottom Bar for Mobile -->
+  {% include "client/components/sticky_cta_bar.html" %}
+
+  <!-- KHU VỰC 6: POSTER QUẢNG CÁO NỔI GÓC MÀN HÌNH (FLOATING CORNER PROMO) -->
+  {% if not display_settings or display_settings.banner_zones.floating_promo %}
+  {% include "client/components/floating_promo.html" %}
+  {% endif %}
+
+  <!-- Modals & Dynamic Drawers -->
+  {% include "client/components/bottom_sheet_form.html" %}
+  {% include "client/components/quiz_modal.html" %}
+  {% include "client/components/compare_modal.html" %}
+  {% include "client/components/confirmation_modal.html" %}
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Modern UI Libraries (Vendored) -->
+  <script src="/static/js/vendor/lenis.min.js"></script>
+  <script src="/static/js/vendor/aos.js"></script>
+  <script src="/static/js/vendor/vanilla-tilt.min.js"></script>
+  <script src="/static/js/vendor/confetti.browser.min.js"></script>
+
+  <script type="application/json" id="published-plans-data">{{ plans | default([]) | tojson }}</script>
+
+  <!-- Client-side Scripts & UI Motion Orchestrator -->
+  <script src="/static/js/client/ui_motion.js"></script>
+  <script src="/static/js/client/api.js"></script>
+  <script src="/static/js/client/regions.js"></script>
+  <script src="/static/js/client/plans_3d.js"></script>
+  <script src="/static/js/client/bottom_sheet.js"></script>
+  <script src="/static/js/client/catalog.js"></script>
+  <script src="/static/js/client/quiz.js"></script>
+  <script src="/static/js/client/compare.js"></script>
+  <script src="/static/js/client/analytics.js"></script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

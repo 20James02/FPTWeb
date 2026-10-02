@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-02",
+  "scope": "Local current handoff inventory and JSON examples; no cloud operations",
+  "operations": 131,
+  "openapi_operations": 127,
+  "preview_html_operations": 12,
+  "production_non_preview_operations": 119,
+  "schemas": 52,
+  "caller_counts": {
+    "preview_html_only": 12,
+    "admin": 92,
+    "public_same_origin_recovery": 2,
+    "login_or_cookie_session": 2,
+    "public": 16,
+    "connector_only": 1,
+    "health_public": 2,
+    "worker_only": 2,
+    "seo_public": 2
+  },
+  "json_example_blocks_parsed": 3,
+  "embedded_appendix_matches": true,
+  "source_references_resolve": true,
+  "success_responses_with_response_model": 0
+}

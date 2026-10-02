@@ -1,0 +1,23 @@
+Browser API contracts: lost-response retry, conflict, malformed receipt, auth failure, MFA, CSRF passed.
+Analytics contract: no tracking or network requests before consent passed.
+Admin navigation: logout/401 race navigates once.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Unchanged manual retry must retain exact original body
++ actual - expected
+
++ '{"phone":"0901234500","consent_version":"v1","plan_id":"published-plan","quote_token":"quote-refreshed","session_token":"session-now-available"}'
+- '{"phone":"0901234500","consent_version":"v1","plan_id":"published-plan","quote_token":"quote-before","session_token":null}'
+
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/browser_api.mjs:60:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '{"phone":"0901234500","consent_version":"v1","plan_id":"published-plan","quote_token":"quote-refreshed","session_token":"session-now-available"}',
+  expected: '{"phone":"0901234500","consent_version":"v1","plan_id":"published-plan","quote_token":"quote-before","session_token":null}',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

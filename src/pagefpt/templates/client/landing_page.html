@@ -1,0 +1,72 @@
+{% extends "layouts/client_base.html" %}
+
+{% block title %}{{ campaign.title or 'Khuyến Mãi Lắp Mạng FPT Đặc Biệt' }}{% endblock %}
+{% block meta_desc %}{{ campaign.desc or 'Ưu đãi lắp mạng FPT siêu tốc: Miễn phí Modem Wi-Fi 6, tặng 1-2 tháng cước, liên hệ trong 5 phút.' }}{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: var(--space-8) var(--space-4);">
+  <!-- Campaign Hero Header -->
+  <div style="text-align: center; max-width: 640px; margin: 0 auto var(--space-8);">
+    <div style="display: inline-block; background: var(--color-danger); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2);">
+      🔥 {{ campaign.badge or 'ƯU ĐÃI ĐỘC QUYỀN HÔM NAY' }}
+    </div>
+
+    <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1.25; margin-bottom: var(--space-3);">
+      {{ campaign.headline or 'Lắp Mạng FPT Wi-Fi 6 — Tặng Tới 2 Tháng Cước' }}
+    </h1>
+
+    <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6;">
+      {{ campaign.subheadline or 'Nhận tư vấn giá, thiết bị và thời gian lắp đặt theo khu vực.' }}
+    </p>
+  </div>
+
+  <!-- Direct Embedded Intake Box for Ads Conversion -->
+  <div class="container-narrow" style="background: var(--bg-surface); border: 2px solid var(--color-primary); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-lg); margin-bottom: var(--space-10);">
+    <div style="text-align: center; margin-bottom: var(--space-4);">
+      <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">ĐĂNG KÝ NHẬN TƯ VẤN & KHẢO SÁT HẠ TẦNG</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">Để lại thông tin để được tư vấn gói và kiểm tra hạ tầng</p>
+    </div>
+
+    <form onsubmit="handleDirectLeadSubmit(event)" style="display: flex; flex-direction: column; gap: var(--space-3);">
+      <div>
+        <label class="form-label" for="lp-phone">Số điện thoại của bạn <span class="req">*</span></label>
+        <input type="tel" id="lp-phone" class="form-input" inputmode="tel" placeholder="Ví dụ: 0981 234 567" required autocomplete="tel" style="font-size: 1.1rem; padding: 14px;">
+      </div>
+
+      <div>
+        <label class="form-label" for="lp-region">Khu vực lắp đặt</label>
+        <select id="lp-region" class="form-select" onchange="landingProvinceChanged()">
+          <option value="">Chọn khu vực hoặc nhận tư vấn</option>
+          {% for region in regions if region.get("level", "province") == "province" %}<option value="{{ region.id }}">{{ region.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label" for="lp-ward">Xã / Phường (không bắt buộc)</label><select id="lp-ward" class="form-select" onchange="refreshLandingQuote()" disabled><option value="">Chọn tỉnh/thành trước</option></select></div>
+
+      <div>
+        <label class="form-label" for="lp-plan">Gói cước quan tâm</label>
+        <select id="lp-plan" class="form-select" onchange="refreshLandingQuote()">
+          <option value="">Tư vấn gói phù hợp</option>
+          {% for plan in plans %}<option value="{{ plan.id }}">{{ plan.name }}</option>{% endfor %}
+        </select>
+      </div>
+
+      <p id="lp-quote" class="form-label" aria-live="polite">Giá được xác nhận theo gói và khu vực.</p>
+
+      <label class="form-label" for="lp-consent">
+        <input type="checkbox" id="lp-consent" required>
+        Tôi đồng ý gửi thông tin để được liên hệ tư vấn theo <a href="/chinh-sach-bao-mat">chính sách bảo mật</a>.
+      </label>
+
+      <button type="submit" class="btn-submit-lead" style="margin-top: var(--space-2); font-size: 1.1rem; padding: 16px;">
+        <span>Gửi Thông Tin Đăng Ký Ngay</span>
+      </button>
+
+      <p style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
+        🔒 Thông tin được bảo mật tuyệt đối theo chính sách bảo vệ dữ liệu.
+      </p>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+{% block extra_scripts %}<script src="/static/js/client/landing.js"></script>{% endblock %}

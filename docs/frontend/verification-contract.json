@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-02",
+  "scope": "Route inventory including geography API sync; local source/OpenAPI consistency, no cloud operations",
+  "operations": 137,
+  "openapi_operations": 133,
+  "preview_html_operations": 12,
+  "production_non_preview_operations": 125,
+  "schemas": 54,
+  "caller_counts": {
+    "preview_html_only": 12,
+    "admin": 97,
+    "public_same_origin_recovery": 2,
+    "login_or_cookie_session": 2,
+    "public": 17,
+    "connector_only": 1,
+    "health_public": 2,
+    "worker_only": 2,
+    "seo_public": 2
+  },
+  "json_example_blocks_parsed": 3,
+  "source_references_resolve": true,
+  "geography_permissions_match_source": true
+}

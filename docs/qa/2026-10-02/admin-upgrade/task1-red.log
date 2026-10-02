@@ -1,0 +1,88 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_________________ test_admin_html_requires_authenticated_actor _________________
+
+client = <httpx.AsyncClient object at 0x7a3f9a6748f0>
+
+    @pytest.mark.asyncio
+    async def test_admin_html_requires_authenticated_actor(client):
+        for path in ['/admin/dashboard', '/admin/leads', '/admin/pricing', '/admin/settings', '/admin/marketing', '/admin/operations', '/admin/content']:
+            response = await client.get(path, follow_redirects=False)
+>           assert response.status_code == 303, (path, response.text[:100])
+E           AssertionError: ('/admin/dashboard', '<!DOCTYPE html>
+E             <html lang="vi" data-theme="light">
+E             <head>
+E               <meta charset="UTF-8">
+E               <meta name="vi')
+E           assert 200 == 303
+E            +  where 200 = <Response [200 OK]>.status_code
+
+tests/integration/test_admin_quality.py:13: AssertionError
+_________________ test_operational_settings_version_and_scope __________________
+
+admin = <httpx.AsyncClient object at 0x7a3f9a6a8830>
+gateway = <conftest.LocalGateway object at 0x7a3f9a677cb0>
+
+    @pytest.mark.asyncio
+    async def test_operational_settings_version_and_scope(admin, gateway):
+        current = await admin.get('/api/v1/admin/operations/settings')
+>       assert current.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/integration/test_admin_quality.py:20: AssertionError
+_________________ test_lead_filters_named_dto_and_bound_cursor _________________
+
+admin = <httpx.AsyncClient object at 0x7a3f9a204410>
+gateway = <conftest.LocalGateway object at 0x7a3f9a30fb00>
+
+    @pytest.mark.asyncio
+    async def test_lead_filters_named_dto_and_bound_cursor(admin, gateway):
+        plan, region, branch = str(uuid4()), str(uuid4()), str(uuid4())
+        with psycopg.connect(gateway.dsn, autocommit=True) as conn:
+            conn.execute("INSERT INTO private.resources(id,kind,payload,status) VALUES(%s,'plan',%s,'published')", [plan,Jsonb({'name':'Test internet'})])
+            conn.execute("INSERT INTO private.resources(id,kind,branch_id,payload,status) VALUES(%s,'region',%s,%s,'published')", [region,branch,Jsonb({'name':'Test ward'})])
+            for index in range(3):
+                contact=conn.execute("INSERT INTO private.contacts(phone_hmac,phone_ciphertext,key_version) VALUES(%s,'encrypted','v1') RETURNING id", [str(uuid4())]).fetchone()[0]
+                conn.execute("INSERT INTO private.leads(contact_id,branch_id,payload,pii_ciphertext,quote_status,status,sla_due_at) VALUES(%s,%s,%s,'encrypted','needs_confirmation',%s,now()-interval '1 hour')", [contact,branch,Jsonb({'plan_id':plan,'region_id':region,'phone_masked':'***1234'}),'assigned' if index < 2 else 'installed'])
+        response=await admin.get('/api/v1/admin/leads',params={'q':'Test internet','overdue':'true','limit':1})
+        assert response.status_code == 200, response.text
+        value=response.json()
+        assert len(value['items']) == 1
+>       assert value['items'][0]['labels']['plan'] == 'Test internet'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'labels'
+
+tests/integration/test_admin_quality.py:47: KeyError
+_________________ test_manual_daily_rebuild_includes_contacted _________________
+
+admin = <httpx.AsyncClient object at 0x7a3f9a2fb020>
+
+    @pytest.mark.asyncio
+    async def test_manual_daily_rebuild_includes_contacted(admin):
+        response=await admin.post('/api/v1/admin/reports/rebuild',json={'day':datetime.now(UTC).date().isoformat()})
+        assert response.status_code==200
+>       assert response.json()['definition_version']=='v2'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'definition_version'
+
+tests/integration/test_admin_quality.py:64: KeyError
+_________ test_system_status_does_not_claim_unconfigured_storage_ready _________
+
+admin = <httpx.AsyncClient object at 0x7a3f9a178a70>
+
+    @pytest.mark.asyncio
+    async def test_system_status_does_not_claim_unconfigured_storage_ready(admin):
+        response=await admin.get('/api/v1/admin/operations/status')
+>       assert response.status_code==200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/integration/test_admin_quality.py:70: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_admin_quality.py::test_admin_html_requires_authenticated_actor
+FAILED tests/integration/test_admin_quality.py::test_operational_settings_version_and_scope
+FAILED tests/integration/test_admin_quality.py::test_lead_filters_named_dto_and_bound_cursor
+FAILED tests/integration/test_admin_quality.py::test_manual_daily_rebuild_includes_contacted
+FAILED tests/integration/test_admin_quality.py::test_system_status_does_not_claim_unconfigured_storage_ready
+5 failed in 2.19s

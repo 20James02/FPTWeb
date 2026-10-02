@@ -1,0 +1,21 @@
+Collecting build
+  Downloading build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting hatchling
+  Using cached hatchling-1.32.4-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: packaging>=24.0 in ./.venv/lib/python3.12/site-packages (from build) (26.3)
+Collecting pyproject_hooks (from build)
+  Downloading pyproject_hooks-1.3.3-py3-none-any.whl.metadata (1.3 kB)
+Requirement already satisfied: pathspec>=0.10.1 in ./.venv/lib/python3.12/site-packages (from hatchling) (1.1.1)
+Requirement already satisfied: pluggy>=1.0.0 in ./.venv/lib/python3.12/site-packages (from hatchling) (1.6.0)
+Collecting tomlkit>=0.11.1 (from hatchling)
+  Using cached tomlkit-0.15.1-py3-none-any.whl.metadata (3.3 kB)
+Collecting trove-classifiers (from hatchling)
+  Using cached trove_classifiers-2026.9.21.13-py3-none-any.whl.metadata (2.4 kB)
+Downloading build-1.6.1-py3-none-any.whl (31 kB)
+Using cached hatchling-1.32.4-py3-none-any.whl (78 kB)
+Using cached tomlkit-0.15.1-py3-none-any.whl (49 kB)
+Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Using cached trove_classifiers-2026.9.21.13-py3-none-any.whl (14 kB)
+Installing collected packages: trove-classifiers, tomlkit, pyproject_hooks, hatchling, build
+
+Successfully installed build-1.6.1 hatchling-1.32.4 pyproject_hooks-1.3.3 tomlkit-0.15.1 trove-classifiers-2026.9.21.13

@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-02",
+  "status": "passed_local",
+  "scope": "Fix F-01 through F-05 from 2026-10-01 QA; cloud not verified",
+  "environment": "FastAPI + real disposable local PostgreSQL; signed test JWTs; Supabase Auth HTTP synthetic; Chrome/Playwright loopback; external page assets blocked",
+  "pytest": {
+    "passed": 142,
+    "failed": 0,
+    "duration_seconds": 22.03,
+    "log": "pytest-final.log"
+  },
+  "browser": {
+    "passed": 31,
+    "failed": 0,
+    "uncaught_js_errors": 0,
+    "log": "browser-final.log",
+    "report": "browser-final.json"
+  },
+  "responsive": {
+    "passed": 48,
+    "failed": 0,
+    "widths": [
+      360,
+      375,
+      390,
+      430,
+      768,
+      1440
+    ],
+    "pages": 8
+  },
+  "diagnostics": {
+    "passed": 7,
+    "failed": 0,
+    "stored_plan_html_executed": false,
+    "runline_safe_render_check": "passed",
+    "report": "diagnostics-final.json"
+  },
+  "mobile": {
+    "status": "passed",
+    "report": "mobile-browser-check.json",
+    "log": "mobile-final.log"
+  },
+  "javascript_contracts": {
+    "status": "passed",
+    "files": 6,
+    "log": "js-contracts.log"
+  },
+  "ruff": {
+    "status": "passed",
+    "log": "ruff.log"
+  },
+  "format": {
+    "status": "passed",
+    "files": 125,
+    "log": "format.log"
+  },
+  "mypy": {
+    "status": "passed",
+    "source_files": 86,
+    "log": "mypy.log"
+  },
+  "architecture": {
+    "status": "passed",
+    "source_files": 86,
+    "log": "architecture.log"
+  },
+  "js_syntax": {
+    "status": "passed",
+    "log": "js-syntax.log"
+  },
+  "build": {
+    "status": "passed",
+    "log": "build.log"
+  },
+  "wheel": {
+    "status": "passed",
+    "log": "wheel.log"
+  },
+  "migration": {
+    "file": "supabase/migrations/20261002014547_password_recovery_session_revoke.sql",
+    "local_applied": true,
+    "total": 9,
+    "cloud_applied": false
+  },
+  "frontend_contract": {
+    "operations": 131,
+    "schemas": 52,
+    "date": "2026-10-02"
+  },
+  "changed_package_sources": 41,
+  "source_manifest": "changed-source-sha256.json",
+  "cloud": {
+    "vercel": "not_tested",
+    "supabase_auth_smtp": "not_tested",
+    "supabase_hosted_postgres": "not_tested",
+    "r2": "not_tested",
+    "deployment_performed": false
+  },
+  "limits": [
+    "HTML preview routes remain mounted only in development/test; production UI exposure unchanged",
+    "Legacy commercial/operational preview content still needs source verification before publication",
+    "No new load-test or production latency claim; earlier performance measurements apply to their source versions",
+    "Pending idempotency state is in memory within the current tab; reload/close loses it"
+  ]
+}

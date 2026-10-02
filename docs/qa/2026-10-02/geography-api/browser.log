@@ -1,0 +1,114 @@
+{
+  "checks": [
+    "Checkbox province search without accents; 126 wards imported with Hanoi",
+    "All 34 provinces / 3321 wards in database; idempotent first province",
+    "Client all-province selection; lazy paginated wards; ward UUID synchronized with form and persists reload",
+    "Live source sync request succeeded; actual source mode recorded"
+  ],
+  "mobile": [
+    {
+      "viewport": 360,
+      "width": 326,
+      "scroll": 324,
+      "client": 324,
+      "inputs": [
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "width": 356,
+      "scroll": 354,
+      "client": 354,
+      "inputs": [
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        }
+      ]
+    },
+    {
+      "viewport": 768,
+      "width": 734,
+      "scroll": 732,
+      "client": 732,
+      "inputs": [
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "width": 760,
+      "scroll": 758,
+      "client": 758,
+      "inputs": [
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        },
+        {
+          "height": 44,
+          "font": 16
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "source": {
+    "provider": "province_open_api_v2",
+    "source_url": "https://provinces.open-api.vn/api/v2/?depth=2",
+    "fetched_at": "2026-10-02T06:55:59.299110+00:00",
+    "checksum": "1307b076e6e3fff94530b9e00359cf645ac5fa11a0f4f7f4d56f72731cf9817c",
+    "mode": "bundled",
+    "warning": null
+  },
+  "live_sync": {
+    "total": 3355,
+    "created": 0,
+    "skipped": 0,
+    "updated": 0,
+    "revision": 3,
+    "source": {
+      "provider": "province_open_api_v2",
+      "source_url": "https://provinces.open-api.vn/api/v2/?depth=2",
+      "fetched_at": "2026-10-02T07:04:08.135643+00:00",
+      "checksum": "1307b076e6e3fff94530b9e00359cf645ac5fa11a0f4f7f4d56f72731cf9817c",
+      "mode": "live",
+      "warning": null
+    }
+  }
+}

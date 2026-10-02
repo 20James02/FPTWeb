@@ -1,0 +1,312 @@
+{
+  "environment": "Disposable loopback PostgreSQL and synthetic Auth only",
+  "checks": [
+    {
+      "name": "price UI submit creates a persisted draft",
+      "status": "passed"
+    },
+    {
+      "name": "pricing renderer treats stored plan names as text",
+      "status": "failed",
+      "error": "Stored plan name executed an inline event handler\n\ntrue !== false\n"
+    },
+    {
+      "name": "public package selection carries backend plan UUID",
+      "status": "failed",
+      "error": "A package selection must identify a backend plan"
+    },
+    {
+      "name": "settings save handler persists UI values",
+      "status": "passed"
+    },
+    {
+      "name": "password recovery sends a server request before claiming completion",
+      "status": "failed",
+      "error": "Recovery UI completed without any backend recovery request"
+    }
+  ],
+  "layouts": [
+    {
+      "path": "/",
+      "viewport": 390,
+      "scroll": 480,
+      "offenders": [
+        {
+          "tag": "DIV",
+          "id": "runline-marquee-text",
+          "classes": "runline-marquee-content",
+          "width": 357,
+          "right": 396
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "marquee-item",
+          "width": 178,
+          "right": 396
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "js-tilt-glare-inner",
+          "width": 320,
+          "right": 438
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "js-tilt-glare-inner",
+          "width": 320,
+          "right": 438
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "showcase-poster-card poster-wifi aos-init",
+          "width": 181,
+          "right": 480
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-glow-backdrop glow-orange",
+          "width": 250,
+          "right": 539
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-content",
+          "width": 163,
+          "right": 471
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-badge-wrap",
+          "width": 163,
+          "right": 471
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "poster-tag-highlight tag-orange",
+          "width": 57,
+          "right": 444
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "tag-text-mobile",
+          "width": 52,
+          "right": 444
+        },
+        {
+          "tag": "H3",
+          "id": "",
+          "classes": "poster-title",
+          "width": 163,
+          "right": 471
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "title-mobile",
+          "width": 116,
+          "right": 424
+        }
+      ]
+    },
+    {
+      "path": "/admin/dashboard",
+      "viewport": 360,
+      "scroll": 384,
+      "offenders": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "panel-card",
+          "width": 360,
+          "right": 384
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "SPAN",
+          "id": "funnel-badge-count",
+          "classes": "",
+          "width": 73,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "funnel-container",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "SPAN",
+          "id": "funnel-lbl-leads",
+          "classes": "",
+          "width": 10,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "funnel-bar-leads",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "",
+          "width": 318,
+          "right": 363
+        },
+        {
+          "tag": "SPAN",
+          "id": "funnel-lbl-contacted",
+          "classes": "",
+          "width": 10,
+          "right": 363
+        }
+      ]
+    },
+    {
+      "path": "/admin/settings",
+      "viewport": 390,
+      "scroll": 449,
+      "offenders": [
+        {
+          "tag": "TABLE",
+          "id": "",
+          "classes": "leads-table",
+          "width": 404,
+          "right": 449
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "classes": "",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "classes": "",
+          "width": 45,
+          "right": 447
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "classes": "",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "LABEL",
+          "id": "",
+          "classes": "admin-switch",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "admin-slider",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "classes": "",
+          "width": 45,
+          "right": 447
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "btn-action-detail",
+          "width": 45,
+          "right": 447
+        }
+      ]
+    }
+  ],
+  "price_form_valid": true,
+  "price_submit_status": 201,
+  "price_draft_persisted": true,
+  "stored_html_executed": true,
+  "public_plan_onclick": "openBottomSheet('Gói GIGA (150Mbps)', '185.000đ')",
+  "selected_plan_id": null,
+  "password_recovery_post_paths": [],
+  "passed": 2,
+  "failed": 3
+}

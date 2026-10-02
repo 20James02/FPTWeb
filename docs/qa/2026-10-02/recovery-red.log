@@ -1,0 +1,52 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_recovery_request_waits_for_provider_and_does_not_enumerate ________
+tests/integration/test_password_recovery.py:38: in test_recovery_request_waits_for_provider_and_does_not_enumerate
+    assert result.status_code == 202
+E   assert 404 == 202
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_______ test_recovery_reset_changes_password_and_revokes_local_sessions ________
+tests/integration/test_password_recovery.py:63: in test_recovery_reset_changes_password_and_revokes_local_sessions
+    assert result.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_ test_recovery_invalid_expired_or_limited_code_never_changes_password[400-401] _
+tests/integration/test_password_recovery.py:78: in test_recovery_invalid_expired_or_limited_code_never_changes_password
+    assert result.status_code == expected
+E   assert 404 == 401
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_ test_recovery_invalid_expired_or_limited_code_never_changes_password[429-429] _
+tests/integration/test_password_recovery.py:78: in test_recovery_invalid_expired_or_limited_code_never_changes_password
+    assert result.status_code == expected
+E   assert 404 == 429
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_ test_recovery_invalid_expired_or_limited_code_never_changes_password[500-503] _
+tests/integration/test_password_recovery.py:78: in test_recovery_invalid_expired_or_limited_code_never_changes_password
+    assert result.status_code == expected
+E   assert 404 == 503
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______________ test_recovery_mfa_required_without_password_write _______________
+tests/integration/test_password_recovery.py:89: in test_recovery_mfa_required_without_password_write
+    assert result.status_code == 403 and result.json()["code"] == "MFA_REQUIRED"
+E   assert (404 == 403)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______________ test_recovery_cross_origin_and_bad_input_rejected _______________
+tests/integration/test_password_recovery.py:95: in test_recovery_cross_origin_and_bad_input_rejected
+    assert (await client.post("/api/v1/auth/recovery", json={"email": PAYLOAD["email"]}, headers={"Origin": "https://evil.example"})).status_code == 403
+E   assert 404 == 403
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_____________ test_recovery_revoked_member_cannot_change_password ______________
+tests/integration/test_password_recovery.py:107: in test_recovery_revoked_member_cannot_change_password
+    assert result.status_code == 403
+E   assert 404 == 403
+E    +  where 404 = <Response [404 Not Found]>.status_code
+=========================== short test summary info ============================
+FAILED tests/integration/test_password_recovery.py::test_recovery_request_waits_for_provider_and_does_not_enumerate
+FAILED tests/integration/test_password_recovery.py::test_recovery_reset_changes_password_and_revokes_local_sessions
+FAILED tests/integration/test_password_recovery.py::test_recovery_invalid_expired_or_limited_code_never_changes_password[400-401]
+FAILED tests/integration/test_password_recovery.py::test_recovery_invalid_expired_or_limited_code_never_changes_password[429-429]
+FAILED tests/integration/test_password_recovery.py::test_recovery_invalid_expired_or_limited_code_never_changes_password[500-503]
+FAILED tests/integration/test_password_recovery.py::test_recovery_mfa_required_without_password_write
+FAILED tests/integration/test_password_recovery.py::test_recovery_cross_origin_and_bad_input_rejected
+FAILED tests/integration/test_password_recovery.py::test_recovery_revoked_member_cannot_change_password
+8 failed in 2.59s

@@ -1,0 +1,19 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}{{ {'marketing':'Marketing & Quảng cáo','content':'Nội dung & Ưu đãi','operations':'Vận hành & Nhân sự'}[active_page] }} — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}Quản trị / {{ {'marketing':'Marketing & Quảng cáo','content':'Nội dung & Ưu đãi','operations':'Vận hành & Nhân sự'}[active_page] }}{% endblock %}
+{% block content %}
+<h1>{{ {'marketing':'Marketing & Quảng cáo','content':'Nội dung & Ưu đãi','operations':'Vận hành & Nhân sự'}[active_page] }}</h1>
+<p id="workspace-description"></p>
+<nav class="workspace-tabs" id="workspace-tabs" aria-label="Nhóm chức năng"></nav>
+<div class="workspace-item-actions"><button id="workspace-create" type="button" class="btn-action-call">Thêm mới</button><button id="workspace-refresh" type="button" class="btn-action-detail">Làm mới</button></div>
+<p id="workspace-state" role="status" aria-live="polite"></p>
+<div id="workspace-list" class="workspace-list"></div>
+<button id="workspace-more" type="button" class="btn-action-detail" hidden>Tải thêm</button>
+<dialog id="workspace-editor" class="admin-dialog" aria-labelledby="workspace-editor-title">
+<form id="workspace-form"><h2 id="workspace-editor-title">Thiết lập</h2><div id="workspace-fields" class="admin-form-grid"></div><div id="workspace-special-fields"></div><p id="workspace-editor-error" class="workspace-error" role="alert"></p><div class="admin-dialog-actions"><button id="workspace-cancel" type="button" class="btn-action-detail">Hủy</button><button id="workspace-save" type="submit" class="btn-action-call">Lưu</button></div></form>
+</dialog>
+{% endblock %}
+{% block extra_scripts %}
+<script>window.adminWorkspace={{ active_page | tojson }};</script>
+<script src="/static/js/admin/workspace.js"></script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{
+  "environment": "Local Chrome + disposable PostgreSQL; Supabase Auth HTTP simulated; no cloud calls",
+  "checks": [
+    {
+      "name": "guest private API denied",
+      "status": "passed"
+    },
+    {
+      "name": "wrong password rejected without session",
+      "status": "passed"
+    },
+    {
+      "name": "login UI requires MFA and keeps session absent",
+      "status": "passed"
+    },
+    {
+      "name": "MFA UI login creates HttpOnly cookie and dashboard hydration",
+      "status": "passed"
+    },
+    {
+      "name": "cookie mutation without CSRF is denied",
+      "status": "passed"
+    },
+    {
+      "name": "CRM first page and masked PII hydrate",
+      "status": "passed"
+    },
+    {
+      "name": "CRM pagination loads remaining leads",
+      "status": "passed"
+    },
+    {
+      "name": "CRM filter returns real empty state",
+      "status": "passed"
+    },
+    {
+      "name": "detail hydration uses selected lead and safe DTO",
+      "status": "passed"
+    },
+    {
+      "name": "explicit PII reveal succeeds with AAL2",
+      "status": "passed"
+    },
+    {
+      "name": "appointment UI commits accepted kind to SQL",
+      "status": "failed",
+      "error": "Expected values to be strictly equal:\n\n0 !== 1\n"
+    },
+    {
+      "name": "CRM note is stored and timeline refetches",
+      "status": "passed"
+    },
+    {
+      "name": "assignment and status transition commit real lead versions",
+      "status": "passed"
+    },
+    {
+      "name": "stale version fails with 409 and leaves state intact",
+      "status": "passed"
+    },
+    {
+      "name": "recompute returns queued rather than fake completion",
+      "status": "passed"
+    },
+    {
+      "name": "plan selector hydrates from admin payload wrapper",
+      "status": "passed"
+    },
+    {
+      "name": "price create UI commits draft",
+      "status": "failed",
+      "error": "response.json: Target page, context or browser has been closed"
+    },
+    {
+      "name": "price publish UI commits published snapshot",
+      "status": "failed",
+      "error": "page.evaluate: Target page, context or browser has been closed"
+    },
+    {
+      "name": "public quote matches backend published plan, region and price",
+      "status": "failed",
+      "error": "page.evaluate: Target page, context or browser has been closed"
+    },
+    {
+      "name": "CSV preview and apply create drafts only",
+      "status": "failed",
+      "error": "page.evaluate: Target page, context or browser has been closed"
+    }
+  ],
+  "page_errors": [],
+  "api_errors": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/system/display-settings",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/6480970b-1a03-4cf6-bdab-3f0d35c60b02/appointments",
+      "status": 422
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/6480970b-1a03-4cf6-bdab-3f0d35c60b02/transitions",
+      "status": 409
+    }
+  ],
+  "viewports": [],
+  "passed": 15,
+  "failed": 5
+}

@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_stored_runline_html_is_escaped_in_server_rendering ____________
+
+admin = <httpx.AsyncClient object at 0x7bba55265280>
+
+    @pytest.mark.asyncio
+    async def test_stored_runline_html_is_escaped_in_server_rendering(admin):
+        current = (await admin.get('/api/v1/system/display-settings')).json()
+        marker = '<img src="/qa-missing" onerror="window.__qaRunlineHtml=1">'
+        assert (await admin.post('/api/v1/system/display-settings', json={"expected_version": current['version'], "runline_text": marker})).status_code == 200
+        rendered = (await admin.get('/')).text
+>       assert marker not in rendered
+E       assert '<img src="/...lineHtml=1">' not in '<!DOCTYPE h...dy>\n</html>'
+E         
+E         '<img src="/qa-miss...__qaRunlineHtml=1">' is contained here:
+E           ee-item"><img src="/qa-missing" onerror="window.__qaRunlineHtml=1"></span>
+E                       
+E                     
+E                   
+E                 </div>...
+E         
+E         ...Full output truncated (1872 lines hidden), use '-vv' to show
+
+tests/integration/test_published_client_catalog.py:76: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_published_client_catalog.py::test_stored_runline_html_is_escaped_in_server_rendering
+1 failed, 3 deselected in 1.06s

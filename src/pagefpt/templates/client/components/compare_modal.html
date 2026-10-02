@@ -1,0 +1,24 @@
+<!-- Mobile-Optimized Vertical Plan Comparison Modal -->
+<div class="bottom-sheet-backdrop" id="compare-backdrop" onclick="handleCompareBackdropClick(event)">
+  <div class="bottom-sheet" id="compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title" style="max-height: 90vh;">
+    <div class="bottom-sheet-drag-handle"></div>
+
+    <div class="bottom-sheet-header">
+      <div class="bottom-sheet-title" id="compare-modal-title">So Sánh Gói Cước Internet</div>
+      <button type="button" class="btn-close-sheet" onclick="closeCompareModal()" aria-label="Đóng so sánh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="bottom-sheet-body" id="compare-modal-body" style="padding-bottom: var(--space-8);">
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-4); text-align: center;">
+        So sánh chi tiết tốc độ, thiết bị và chi phí để bạn chọn đúng nhu cầu:
+      </p>
+
+      <!-- Vertical Cards Comparison Container -->
+      <div id="compare-cards-container" style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <!-- Injected dynamically via JS or rendered from templates -->
+      </div>
+    </div>
+  </div>
+</div>

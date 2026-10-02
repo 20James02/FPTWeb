@@ -1,0 +1,25 @@
+........................................................................ [ 62%]
+.......FF.........FF........................                             [100%]
+=================================== FAILURES ===================================
+________________ test_plans_3d_flip_slider_tags_menu_and_footer ________________
+tests/integration/test_web_ui.py:168: in test_plans_3d_flip_slider_tags_menu_and_footer
+    assert "plan-card-3d-wrapper" in text
+E   assert 'plan-card-3d-wrapper' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+_________________ test_multitask_3card_zoom_in_and_light_sheen _________________
+tests/integration/test_web_ui.py:212: in test_multitask_3card_zoom_in_and_light_sheen
+    assert "is-center" in text
+E   assert 'is-center' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+______________________ test_mobile_layout_and_sales_focus ______________________
+tests/integration/test_web_ui.py:692: in test_mobile_layout_and_sales_focus
+    assert "plans-slider-dots-wrap" in home_html
+E   assert 'plans-slider-dots-wrap' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+______________________ test_desktop_css_layout_and_styles ______________________
+tests/integration/test_web_ui.py:755: in test_desktop_css_layout_and_styles
+    assert "flip-text-desktop" in home_html
+E   assert 'flip-text-desktop' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+=========================== short test summary info ============================
+FAILED tests/integration/test_web_ui.py::test_plans_3d_flip_slider_tags_menu_and_footer
+FAILED tests/integration/test_web_ui.py::test_multitask_3card_zoom_in_and_light_sheen
+FAILED tests/integration/test_web_ui.py::test_mobile_layout_and_sales_focus
+FAILED tests/integration/test_web_ui.py::test_desktop_css_layout_and_styles
+4 failed, 112 passed in 17.79s

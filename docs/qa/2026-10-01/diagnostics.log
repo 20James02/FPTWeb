@@ -1,0 +1,8 @@
+Opening synthetic fixture login
+Authenticating synthetic fixture
+Waiting for pricing catalog
+passed: price UI submit creates a persisted draft
+failed: pricing renderer treats stored plan names as text
+failed: public package selection carries backend plan UUID
+passed: settings save handler persists UI values
+failed: password recovery sends a server request before claiming completion

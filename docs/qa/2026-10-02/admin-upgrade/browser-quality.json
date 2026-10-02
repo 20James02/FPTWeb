@@ -1,0 +1,340 @@
+{
+  "checks": [
+    {
+      "name": "login has no preview password or default admin identity",
+      "pass": true
+    },
+    {
+      "name": "sidebar count comes from scoped API",
+      "pass": true
+    },
+    {
+      "name": "SLA and notification settings commit and survive page reload",
+      "pass": true
+    },
+    {
+      "name": "R2 status is honest when unconfigured",
+      "pass": true
+    },
+    {
+      "name": "refresh keeps search, status and loaded pagination window",
+      "pass": true
+    },
+    {
+      "name": "saved filter is stored and can be reapplied",
+      "pass": true
+    },
+    {
+      "name": "Kanban renders all valid status variants",
+      "pass": true
+    },
+    {
+      "name": "manual assignment picker commits through atomic endpoint",
+      "pass": true
+    },
+    {
+      "name": "score objects are readable and clearly points",
+      "pass": true
+    },
+    {
+      "name": "campaign typed editor creates actual server resource",
+      "pass": true
+    },
+    {
+      "name": "UTM generator rejects executable URL schemes",
+      "pass": true
+    },
+    {
+      "name": "cost editor links actual campaign and report receives amount",
+      "pass": true
+    },
+    {
+      "name": "experiment weights are checked before saving",
+      "pass": true
+    },
+    {
+      "name": "landing blocks save as structured content",
+      "pass": true
+    },
+    {
+      "name": "unconfigured media upload shows real failure and keeps editor",
+      "pass": true
+    },
+    {
+      "name": "jobs, audit, memberships and export screens use scoped APIs",
+      "pass": true
+    },
+    {
+      "name": "report date filter shows cohort definition and unknown CPL",
+      "pass": true
+    },
+    {
+      "name": "36 responsive layouts do not overflow document",
+      "pass": true
+    },
+    {
+      "name": "mobile CRM shows cards with touchable actions",
+      "pass": true
+    },
+    {
+      "name": "no uncaught browser exception on new or existing screens",
+      "pass": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "path": "dashboard",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "leads",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "leads/detail?id=b1ee9476-b049-4f7a-97a6-16cbc80f4e3f",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "pricing",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "reports",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "settings",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "marketing",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "content",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "path": "operations",
+      "viewport": 1440,
+      "scroll": 1440,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "dashboard",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "leads",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "leads/detail?id=b1ee9476-b049-4f7a-97a6-16cbc80f4e3f",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "pricing",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "reports",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "settings",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "marketing",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "content",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 768,
+      "path": "operations",
+      "viewport": 768,
+      "scroll": 768,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "dashboard",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "leads",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "leads/detail?id=b1ee9476-b049-4f7a-97a6-16cbc80f4e3f",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "pricing",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "reports",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "settings",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "marketing",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "content",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "path": "operations",
+      "viewport": 390,
+      "scroll": 390,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "dashboard",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "leads",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "leads/detail?id=b1ee9476-b049-4f7a-97a6-16cbc80f4e3f",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "pricing",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "reports",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "settings",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "marketing",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "content",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    },
+    {
+      "width": 360,
+      "path": "operations",
+      "viewport": 360,
+      "scroll": 360,
+      "pass": true
+    }
+  ],
+  "page_errors": [],
+  "environment": "Disposable PostgreSQL + synthetic provider Auth; R2 unconfigured"
+}

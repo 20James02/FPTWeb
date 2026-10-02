@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const id='11111111-1111-4111-8111-111111111111';
+const label={dataset:{quotePlan:id},textContent:'old-price'};
+const comparison={id,fee:'old-price'};
+let fulfill;
+const context=vm.createContext({document:{querySelectorAll:selector=>selector==='[data-quote-plan]'?[label]:[],getElementById:()=>null,addEventListener(){}},compareItems:[comparison],renderCompareCards(){},Intl,AbortSignal,fetch:()=>new Promise(resolve=>fulfill=resolve)});
+vm.runInContext(fs.readFileSync('src/pagefpt/static/js/client/catalog.js','utf8'),context);
+const pending=context.refreshCatalogPrices('22222222-2222-4222-8222-222222222222');
+assert.equal(comparison.fee,'Cần tư vấn','Region change immediately invalidates comparison prices');
+fulfill({ok:true,json:async()=>({status:'confirmed',monthly_vnd:200,initial_total_vnd:1200,billing_months:6})});
+await pending;
+assert.equal(comparison.fee,label.textContent);
+assert.equal(comparison.fee,'200đ/tháng');
+await context.refreshCatalogPrices();
+assert.equal(comparison.fee,'Cần tư vấn','Cleared region cannot retain confirmed prices');
+console.log('Comparison prices: region invalidation and quote refresh passed.');

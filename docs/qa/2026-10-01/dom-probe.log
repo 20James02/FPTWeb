@@ -1,0 +1,19 @@
+fixture login status 200
+form validation {
+  valid: true,
+  invalid: [],
+  backdrop: 'static',
+  buttonRect: {
+    x: 973.640625,
+    y: 742,
+    width: 115.359375,
+    height: 26,
+    top: 742,
+    right: 1089,
+    bottom: 768,
+    left: 973.640625
+  }
+}
+price clicked
+probe creation { plan: 201, price: 201 }
+stored HTML executes true

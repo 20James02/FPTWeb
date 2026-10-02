@@ -1,0 +1,72 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+___________ test_recovery_malformed_mfa_metadata_fails_closed[None] ____________
+
+recovery_backend = (<httpx.AsyncClient object at 0x7fb70147d340>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMDg1OSwiYWFsIjoiYWFsMiJ9.KLse7iRRamfH4Mp4AQCl2Jb539PhVOBVQZdTvKvqpWKr79T7F9vCNYerkHvq9Lox5cprMwmG01rIvSX26gcuow')
+factors = None
+
+    @respx.mock
+    @pytest.mark.parametrize("factors", [None, {}, [None], [{"status": "verified", "factor_type": "totp", "id": "bad-uuid"}]])
+    async def test_recovery_malformed_mfa_metadata_fails_closed(recovery_backend, factors):
+        client, token = recovery_backend
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": factors}}))
+        result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
+>       assert result.status_code == 503 and not result.json().get("changed")
+E       assert (500 == 503)
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+tests/integration/test_password_recovery.py:265: AssertionError
+_________ test_recovery_malformed_mfa_metadata_fails_closed[factors1] __________
+
+recovery_backend = (<httpx.AsyncClient object at 0x7fb7013ce030>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMDg1OSwiYWFsIjoiYWFsMiJ9.M-_Idb6yNckF5cC4ASgQ8TaPqk82PohdiUYEMWAR2bsi9DsqMv8uqzHC98PnxGhZecNYNfab8t8eVBWUheTF7w')
+factors = {}
+
+    @respx.mock
+    @pytest.mark.parametrize("factors", [None, {}, [None], [{"status": "verified", "factor_type": "totp", "id": "bad-uuid"}]])
+    async def test_recovery_malformed_mfa_metadata_fails_closed(recovery_backend, factors):
+        client, token = recovery_backend
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": factors}}))
+        result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
+>       assert result.status_code == 503 and not result.json().get("changed")
+E       assert (500 == 503)
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+tests/integration/test_password_recovery.py:265: AssertionError
+_________ test_recovery_malformed_mfa_metadata_fails_closed[factors2] __________
+
+recovery_backend = (<httpx.AsyncClient object at 0x7fb7012f9e20>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMDg2MCwiYWFsIjoiYWFsMiJ9.yAw0RXCUWzcUEHFbttONzYV8RDJCzu3RU3fO0C0aJfpJwRb79jegSoklLC5BGRo6Anc8BkyuixYMdJ82yJtzxg')
+factors = [None]
+
+    @respx.mock
+    @pytest.mark.parametrize("factors", [None, {}, [None], [{"status": "verified", "factor_type": "totp", "id": "bad-uuid"}]])
+    async def test_recovery_malformed_mfa_metadata_fails_closed(recovery_backend, factors):
+        client, token = recovery_backend
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": factors}}))
+        result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
+>       assert result.status_code == 503 and not result.json().get("changed")
+E       assert (500 == 503)
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+tests/integration/test_password_recovery.py:265: AssertionError
+_________ test_recovery_malformed_mfa_metadata_fails_closed[factors3] __________
+
+recovery_backend = (<httpx.AsyncClient object at 0x7fb7011fcd10>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMDg2MCwiYWFsIjoiYWFsMiJ9.i1Vd0uKJ6of5NEf9bUPq_MGzLvbWf9Mv6VfiaqfWLTXAz_0Tyk4lAUn5HRyyh_Q61QAKkprLpfkPpxGhpouN1w')
+factors = [{'status': 'verified', 'factor_type': 'totp', 'id': 'bad-uuid'}]
+
+    @respx.mock
+    @pytest.mark.parametrize("factors", [None, {}, [None], [{"status": "verified", "factor_type": "totp", "id": "bad-uuid"}]])
+    async def test_recovery_malformed_mfa_metadata_fails_closed(recovery_backend, factors):
+        client, token = recovery_backend
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": factors}}))
+        result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
+>       assert result.status_code == 503 and not result.json().get("changed")
+E       assert (500 == 503)
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+tests/integration/test_password_recovery.py:265: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_password_recovery.py::test_recovery_malformed_mfa_metadata_fails_closed[None]
+FAILED tests/integration/test_password_recovery.py::test_recovery_malformed_mfa_metadata_fails_closed[factors1]
+FAILED tests/integration/test_password_recovery.py::test_recovery_malformed_mfa_metadata_fails_closed[factors2]
+FAILED tests/integration/test_password_recovery.py::test_recovery_malformed_mfa_metadata_fails_closed[factors3]
+4 failed, 25 deselected in 1.62s

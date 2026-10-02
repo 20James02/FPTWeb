@@ -1,0 +1,11 @@
+passed: Geographic CRUD uses named parent and inherited branch
+passed: Plan create uses province checkbox and published snapshot
+passed: Bulk named province prices publish atomically from UI
+passed: Ward override uses lazy named checkbox and VND formatting
+passed: Client ward price and form selection stay synchronized
+passed: Province fallback clears ward and updates prices
+passed: Campaign landing sends selected ward and confirmed quote
+passed: Published ward price replacement preserves version history
+passed: Plan edit requires republish and keeps geographic selection
+passed: Dialogs support keyboard Escape, focus and mobile layout
+passed: Soft delete plan removes it from public catalog

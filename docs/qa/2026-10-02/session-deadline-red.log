@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 3000
+
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/session_deadline.mjs:14:8 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 3000,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,50 @@
+{
+  name: 'login has no preview password or default admin identity',
+  pass: true
+}
+{ name: 'sidebar count comes from scoped API', pass: true }
+{
+  name: 'SLA and notification settings commit and survive page reload',
+  pass: true
+}
+{ name: 'R2 status is honest when unconfigured', pass: true }
+{
+  name: 'refresh keeps search, status and loaded pagination window',
+  pass: true
+}
+{ name: 'saved filter is stored and can be reapplied', pass: true }
+{ name: 'Kanban renders all valid status variants', pass: true }
+{
+  name: 'manual assignment picker commits through atomic endpoint',
+  pass: true
+}
+{ name: 'score objects are readable and clearly points', pass: true }
+{
+  name: 'campaign typed editor creates actual server resource',
+  pass: true
+}
+{ name: 'UTM generator rejects executable URL schemes', pass: true }
+{
+  name: 'cost editor links actual campaign and report receives amount',
+  pass: true
+}
+{ name: 'experiment weights are checked before saving', pass: true }
+{ name: 'landing blocks save as structured content', pass: true }
+{
+  name: 'unconfigured media upload shows real failure and keeps editor',
+  pass: true
+}
+{
+  name: 'jobs, audit, memberships and export screens use scoped APIs',
+  pass: true
+}
+{
+  name: 'report date filter shows cohort definition and unknown CPL',
+  pass: true
+}
+{ name: '36 responsive layouts do not overflow document', pass: true }
+{ name: 'mobile CRM shows cards with touchable actions', pass: true }
+{
+  name: 'no uncaught browser exception on new or existing screens',
+  pass: true
+}

@@ -1,0 +1,22 @@
+{
+  "environment": "local ASGI + PostgreSQL16 Unix socket + service_role; no hosted network or worker load",
+  "duration_s": 900,
+  "rate_rps": 5,
+  "requests": 4650,
+  "errors": {},
+  "burst50": {
+    "p50_ms": 145.439,
+    "p95_ms": 198.447,
+    "p99_ms": 199.409
+  },
+  "sustained": {
+    "p50_ms": 20.687,
+    "p95_ms": 74.172,
+    "p99_ms": 87.421
+  },
+  "burst100": {
+    "p50_ms": 499.514,
+    "p95_ms": 512.15,
+    "p99_ms": 515.967
+  }
+}

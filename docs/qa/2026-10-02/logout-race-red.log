@@ -1,0 +1,20 @@
+Browser API contracts: lost-response retry, conflict, malformed receipt, auth failure, MFA, CSRF passed.
+Analytics contract: no tracking or network requests before consent passed.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Logout and an in-flight expired request must navigate only once
+
+2 !== 1
+
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/browser_api.mjs:50:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 2,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,73 @@
+<!-- Cascading Regions Selector Component (2 Comboboxes: Vùng miền & Tỉnh/Thành) -->
+<section class="region-cascading-section" id="region-selector-bar" aria-label="Tra cứu giá cước theo khu vực">
+  <div class="container">
+    <div class="region-cascading-card" id="cascading-region-box">
+      <div class="region-card-header">
+        <div class="region-header-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+        <div class="region-header-text">
+          <h2 class="region-title">Tra Cứu Bảng Giá & Ưu Đãi Theo Khu Vực</h2>
+          <p class="region-desc">Chọn tỉnh/thành và xã/phường để xem giá áp dụng. Nếu chưa có giá riêng xã/phường, hệ thống dùng giá của tỉnh/thành.</p>
+        </div>
+      </div>
+
+      <div class="region-combobox-grid">
+        <!-- COMBOBOX 1: VÙNG MIỀN (Bắc - Trung - Nam) -->
+        <div class="combobox-field">
+          <label class="combobox-label" for="home-zone-select">
+            <span class="label-step">1</span>
+            <span>Chọn Vùng Miền</span>
+          </label>
+          <div class="combobox-wrapper">
+            <select id="home-zone-select" class="fpt-select-custom" aria-label="Combobox 1: Chọn Vùng Miền">
+              <option value="">Đang tải vùng miền…</option>
+            </select>
+            <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <!-- COMBOBOX 2: TỈNH / THÀNH PHỐ (Động theo vùng) -->
+        <div class="combobox-field">
+          <label class="combobox-label" for="home-province-select">
+            <span class="label-step">2</span>
+            <span>Chọn Tỉnh / Thành Phố</span>
+          </label>
+          <div class="combobox-wrapper">
+            <select id="home-province-select" class="fpt-select-custom" aria-label="Combobox 2: Chọn Tỉnh / Thành Phố">
+              <option value="">Đang tải danh sách tỉnh thành...</option>
+            </select>
+            <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="combobox-field">
+          <label class="combobox-label" for="home-ward-select"><span class="label-step">3</span><span>Xã / Phường</span></label>
+          <div class="combobox-wrapper"><select id="home-ward-select" class="fpt-select-custom" disabled><option value="">Chọn tỉnh/thành trước</option></select></div>
+        </div>
+
+        <!-- Action / CTA to open intake form -->
+        <div class="combobox-cta">
+          <button type="button" class="btn-region-inquiry" onclick="openBottomSheet('Tư Vấn Theo Khu Vực', '', null, 'internet')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Nhận tư vấn tại địa bàn này</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Selected Region Status & Note -->
+      <div class="region-card-footer">
+        <div id="active-province-badge" class="active-province-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Đang xem giá cước tại: <strong>Chưa chọn địa bàn</strong></span>
+        </div>
+        <div class="region-tax-note">
+          VAT, phí thiết bị và kỳ thanh toán được hiển thị theo báo giá của từng gói.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

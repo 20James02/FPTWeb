@@ -1,0 +1,188 @@
+{% extends "layouts/client_base.html" %}
+
+{% block title %}Lắp Mạng FPT 2026 — Bảng Giá Cáp Quang & Modem Wi-Fi 6 FPT Telecom{% endblock %}
+
+{% block meta_desc %}Đăng ký lắp mạng FPT mới nhất 2026: Tốc độ cao 150Mbps - 1Gbps, trang bị Modem Wi-Fi 6 miễn phí, tặng đến 2 tháng cước, tư vấn khảo sát hạ tầng tận nơi 24/7.{% endblock %}
+
+{% block content %}
+<!-- Hero Advertising Carousel / Slider Component -->
+{% if not display_settings or display_settings.banner_zones.hero_slider %}
+{% include "client/components/hero_carousel.html" %}
+{% endif %}
+
+<!-- Quick Utilities & Shortcuts Bar (fpt.vn style) -->
+{% include "client/components/quick_utilities.html" %}
+
+<!-- Cascading Regions Selector (Combobox 1: Vùng miền, Combobox 2: 63 Tỉnh/Thành) -->
+{% include "client/components/cascading_regions.html" %}
+
+<!-- KHU VỰC 2: BANNERS ĐÔI SHOWCASE QUẢNG CÁO (FPT Play Thể Thao C1 & Wi-Fi 6) -->
+{% if not display_settings or display_settings.banner_zones.showcase_posters %}
+{% include "client/components/showcase_banners.html" %}
+{% endif %}
+
+<!-- Main Plans Section -->
+<section class="container" id="plans-section" style="padding-top: var(--space-8);">
+  <div class="section-heading">
+    <h2 class="section-title">Bảng Giá Các Gói Cước Internet FPT</h2>
+    <p class="section-subtitle">Trang bị công nghệ Wi-Fi 6 mới nhất, băng thông vượt trội, kết nối không giới hạn thiết bị.</p>
+  </div>
+
+  <!-- Segment Filter Tabs -->
+  <div class="segment-tabs-wrap">
+    <div class="segment-tabs" role="tablist">
+      <button type="button" class="segment-tab-btn active" onclick="filterPlans('all', this)">Tất cả các gói</button>
+      <button type="button" class="segment-tab-btn" onclick="filterPlans('internet', this)">Internet gia đình</button>
+      <button type="button" class="segment-tab-btn" onclick="filterPlans('business', this)">Internet doanh nghiệp</button>
+      <button type="button" class="segment-tab-btn" onclick="filterPlans('combo', this)">Combo Internet + Truyền hình / Camera</button>
+    </div>
+  </div>
+
+  <!-- Plan Cards 3D Stage & Track (3-Card Multitask Mode) -->
+  <div class="plans-3d-stage slider-active-3d multitask-mode" id="plans-3d-stage">
+    
+    <!-- Slider Navigation & Hint Controls -->
+    <div class="plans-slider-controls" id="plans-slider-controls">
+      <div class="plans-slider-hint">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <span class="hint-desktop">Chế độ thẻ đa nhiệm: <strong>Chỉ 3 gói chính</strong> hiển thị &bull; Thẻ ở giữa <strong>Zoom In &amp; Lướt Sáng</strong> khi cuộn</span>
+        <span class="hint-mobile">Chạm mũi tên hoặc vuốt ngang để xem các gói cước</span>
+      </div>
+      <div class="plans-slider-arrows">
+        <button type="button" class="plans-slider-btn prev" onclick="slidePlansPrev()" aria-label="Gói cước trước">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button type="button" class="plans-slider-btn next" onclick="slidePlansNext()" aria-label="Gói cước tiếp theo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3D Multitask Track (Strictly displays 3 primary cards) -->
+    <div class="plans-3d-track" id="plans-slider-track">
+      
+      {% include "client/components/published_plan_cards.html" %}
+    </div>
+    <div class="plans-slider-dots-wrap"><div class="plans-slider-dots" id="plans-slider-dots"></div></div>
+  </div>
+</section>
+
+<!-- KHU VỰC 3: DẢI BANNER BĂNG CHUYỀN FLASH DEAL GIỮA TRANG -->
+{% if not display_settings or display_settings.banner_zones.ribbon_banner %}
+{% include "client/components/ribbon_banner.html" %}
+{% endif %}
+
+<!-- KHU VỰC 4: LƯỚI POSTER QUẢNG CÁO ĐẶC QUYỀN & CHÍNH SÁCH 2026 -->
+{% if not display_settings or display_settings.banner_zones.promo_grid %}
+{% include "client/components/promotions_section.html" %}
+{% endif %}
+
+<!-- FPT Ecosystem Grid (Internet, FPT Play, Camera AI, Smart Home) -->
+{% include "client/components/ecosystem_grid.html" %}
+
+<!-- KHU VỰC 5: BANNER GIỚI THIỆU ỨNG DỤNG HI FPT & TIỆN ÍCH CHĂM SÓC SỐ -->
+{% if not display_settings or display_settings.banner_zones.app_banner %}
+{% include "client/components/app_banner.html" %}
+{% endif %}
+
+<!-- Interactive Quiz Banner Section -->
+<section class="container">
+  <div class="quiz-banner" data-aos="zoom-in" data-aos-duration="650">
+    <div class="quiz-badge">Hệ Thống Gợi Ý Thông Minh</div>
+    <h2 class="quiz-title">Bạn Chưa Biết Chọn Gói Cước Nào Phù Hợp?</h2>
+    <p class="quiz-desc">
+      Chỉ với 3 câu hỏi nhanh trong 30 giây (diện tích nhà, số người dùng, mục đích chính), hệ thống sẽ tính toán và đưa ra lựa chọn tối ưu chi phí nhất cho bạn.
+    </p>
+    <button type="button" class="btn-start-quiz" onclick="openQuizModal()">
+      <span>Bắt Đầu Làm Trắc Nghiệm Ngay</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- Installation Process 4 Steps -->
+<section class="container" id="process-section">
+  <div class="section-heading" data-aos="fade-up">
+    <h2 class="section-title">Quy Trình Đăng Ký &amp; Lắp Đặt Nhanh Chóng</h2>
+    <p class="section-subtitle">Đơn giản, minh bạch, chỉ 4 bước là có mạng tốc độ cao sử dụng ngay trong ngày.</p>
+  </div>
+
+  <div class="process-grid">
+    <div class="process-card" data-aos="fade-up" data-aos-delay="100">
+      <div class="process-step-num">1</div>
+      <h3 class="process-card-title">Đăng Ký Nhu Cầu</h3>
+      <p class="process-card-desc">Để lại số điện thoại và địa chỉ lắp đặt trên website hoặc gọi hotline tư vấn.</p>
+    </div>
+
+    <div class="process-card" data-aos="fade-up" data-aos-delay="200">
+      <div class="process-step-num">2</div>
+      <h3 class="process-card-title">Khảo Sát Hộp Cáp</h3>
+      <p class="process-card-desc">Chuyên viên FPT liên hệ trong 5-10 phút, kiểm tra cổng cáp và tư vấn gói tối ưu.</p>
+    </div>
+
+    <div class="process-card" data-aos="fade-up" data-aos-delay="300">
+      <div class="process-step-num">3</div>
+      <h3 class="process-card-title">Ký Hợp Đồng &amp; Lắp Đặt</h3>
+      <p class="process-card-desc">Ký hợp đồng điện tử tiện lợi. Kỹ thuật viên kéo cáp và cấu hình Modem Wi-Fi 6.</p>
+    </div>
+
+    <div class="process-card" data-aos="fade-up" data-aos-delay="400">
+      <div class="process-step-num">4</div>
+      <h3 class="process-card-title">Nghiệm Thu &amp; Sử Dụng</h3>
+      <p class="process-card-desc">Khách hàng kiểm tra tốc độ đạt cam kết mới thanh toán cước. Hỗ trợ 24/7 suốt quá trình.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Accordion -->
+<section class="container" id="faq-section">
+  <div class="section-heading" data-aos="fade-up">
+    <h2 class="section-title">Câu Hỏi Thường Gặp</h2>
+    <p class="section-subtitle">Giải đáp các thắc mắc phổ biến của khách hàng khi đăng ký lắp mạng FPT.</p>
+  </div>
+
+  <div class="faq-wrap" data-aos="fade-up" data-aos-delay="150">
+    <div class="faq-item">
+      <button type="button" class="faq-question" onclick="toggleFaq(this)">
+        <span>1. Thủ tục đăng ký lắp mạng FPT cần những giấy tờ gì?</span>
+        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        Đối với cá nhân hoặc hộ gia đình, thủ tục rất đơn giản: chỉ cần hình ảnh CCCD (Căn cước công dân) bản gốc còn hiệu lực. Đối với doanh nghiệp: cần Giấy phép đăng ký kinh doanh và chữ ký/con dấu của người đại diện pháp luật.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button type="button" class="faq-question" onclick="toggleFaq(this)">
+        <span>2. Thời gian từ lúc đăng ký đến khi có mạng dùng là bao lâu?</span>
+        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        Thời gian triển khai lắp đặt trung bình chỉ từ 12 đến 24 giờ kể từ khi hoàn tất đăng ký thông tin. Trong trường hợp khách hàng cần mạng gấp, kỹ thuật viên có thể hỗ trợ lắp đặt ngay trong buổi sáng hoặc chiều.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button type="button" class="faq-question" onclick="toggleFaq(this)">
+        <span>3. Nhà nhiều tầng hoặc phòng rộng có sợ sóng Wi-Fi bị yếu không?</span>
+        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        Với các gói cước như SKY hoặc META, FPT trang bị Modem Wi-Fi 6 có khả năng xuyên tường vượt trội. Nếu nhà có từ 3 tầng trở lên hoặc diện tích >100m², bạn có thể chọn gói cước kèm thêm thiết bị phát phụ (Wi-Fi Mesh) để phủ sóng toàn bộ ngôi nhà mà không cần kéo dây rườm rà.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button type="button" class="faq-question" onclick="toggleFaq(this)">
+        <span>4. Có mất chi phí khảo sát nếu địa chỉ chưa có hạ tầng cáp không?</span>
+        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        Khảo sát hạ tầng là hoàn toàn MIỄN PHÍ. Kỹ thuật viên sẽ kiểm tra cổng cáp trước. Trong trường hợp khu vực của bạn hết cổng cáp hoặc chưa thể thi công, bạn không phải trả bất kỳ khoản phí nào.
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

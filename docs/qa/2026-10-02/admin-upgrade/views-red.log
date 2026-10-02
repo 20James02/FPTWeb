@@ -1,0 +1,32 @@
+.........FF.                                                             [100%]
+=================================== FAILURES ===================================
+_________________ test_saved_views_owner_isolation_and_version _________________
+
+admin = <httpx.AsyncClient object at 0x7fda593a1040>
+gateway = <conftest.LocalGateway object at 0x7fda595dba10>
+
+    @pytest.mark.asyncio
+    async def test_saved_views_owner_isolation_and_version(admin,gateway):
+        response=await admin.post('/api/v1/admin/lead-views',json={'name':'Overdue','expected_version':0,'filters':{'status':'assigned','q':'internet','overdue':True}})
+>       assert response.status_code==201,response.text
+E       AssertionError: {"code":"NOT_FOUND","message":"Request cannot be completed","fields":{},"request_id":"189d6b8c-13d6-4de6-9cca-321d9fd09876"}
+E       assert 404 == 201
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/integration/test_admin_quality.py:264: AssertionError
+_____________ test_cost_requires_authorized_campaign_and_valid_day _____________
+
+admin = <httpx.AsyncClient object at 0x7fda591fdd30>
+gateway = <conftest.LocalGateway object at 0x7fda591b1f40>
+
+    @pytest.mark.asyncio
+    async def test_cost_requires_authorized_campaign_and_valid_day(admin,gateway):
+>       assert (await admin.post('/api/v1/admin/costs',json={'campaign_id':str(uuid4()),'day':'2026-10-02','cost_vnd':100})).status_code==422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/integration/test_admin_quality.py:278: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_admin_quality.py::test_saved_views_owner_isolation_and_version
+FAILED tests/integration/test_admin_quality.py::test_cost_requires_authorized_campaign_and_valid_day
+2 failed, 10 passed in 4.05s

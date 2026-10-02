@@ -1,0 +1,37 @@
+{% for plan in plans %}
+<div class="plan-card-3d-wrapper {{ 'is-center' if loop.first else 'is-hidden' }}" data-category="{{ 'combo' if plan.service in ['combo', 'camera', 'play'] else plan.service }}">
+  <div class="plan-card-3d-inner" id="card-3d-{{ plan.id }}">
+    <div class="card-face card-face-front">
+      <div class="card-light-streak" aria-hidden="true"></div>
+      <span class="plan-tag-badge badge-basic">Gói đang cung cấp</span>
+      <div class="plan-header">
+        <div class="plan-title-row"><h3 class="plan-name">{{ plan.name }}</h3>
+          {% if plan.speed_mbps %}<span class="plan-speed-badge">{{ plan.speed_mbps }} Mbps</span>{% endif %}
+        </div>
+        <p class="plan-target">{{ plan.description or 'Nhận tư vấn điều kiện lắp đặt và gói phù hợp.' }}</p>
+      </div>
+      <div class="plan-price-box">
+        <div class="plan-price-row"><span class="plan-price-amount" data-quote-plan="{{ plan.id }}">Cần tư vấn</span></div>
+        <div class="plan-price-note" data-quote-note="{{ plan.id }}">Chọn khu vực để xem báo giá được xác nhận.</div>
+      </div>
+      <ul class="plan-features">
+        {% for equipment in plan.equipment or [] %}<li class="plan-feature-item">{{ equipment }}</li>{% endfor %}
+      </ul>
+      <div class="plan-card-actions">
+        <button type="button" class="btn-select-plan primary" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận Tư Vấn Gói Này</button>
+        <button type="button" class="btn-flip-trigger" data-card="card-3d-{{ plan.id }}" onclick="flipPlanCard(this.dataset.card)"><span class="flip-text-desktop">Xem Chi Tiết</span><span class="flip-text-mobile">Chi Tiết</span></button>
+        <button type="button" class="btn-compare-toggle" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" data-speed="{{ plan.speed_mbps or 'Cần tư vấn' }}" data-equipment="{{ (plan.equipment or []) | join(', ') }}" onclick="comparePublishedPlan(this)"><span class="compare-text-desktop">So Sánh Gói Này</span><span class="compare-text-mobile">So Sánh</span></button>
+      </div>
+    </div>
+    <div class="card-face card-face-back">
+      <h3 class="plan-name">{{ plan.name }}</h3>
+      <p>{{ plan.description or 'Nhân viên sẽ tư vấn chi tiết theo nhu cầu và địa chỉ lắp đặt.' }}</p>
+      <div class="plan-price-note">Chi phí ban đầu, VAT và kỳ thanh toán được xác nhận trong báo giá.</div>
+      <button type="button" class="btn-select-plan primary" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận Tư Vấn Gói Này</button>
+      <button type="button" class="btn-flip-back-trigger" data-card="card-3d-{{ plan.id }}" onclick="flipPlanCard(this.dataset.card)">Quay Lại</button>
+    </div>
+  </div>
+</div>
+{% else %}
+<p class="catalog-empty">Chưa có gói được công bố. Để lại thông tin để được tư vấn.</p>
+{% endfor %}

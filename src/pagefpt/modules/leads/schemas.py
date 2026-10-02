@@ -1,0 +1,35 @@
+from datetime import datetime
+from typing import Literal
+from uuid import UUID
+
+from pydantic import Field, field_validator
+
+from pagefpt.modules.pricing.schemas import Command
+
+
+class LeadRequest(Command):
+    phone: str = Field(min_length=5, max_length=40)
+    name: str = Field(default="", max_length=150)
+    service_ids: list[Literal["internet", "combo", "camera", "business", "play"]] = Field(
+        default_factory=list, max_length=5
+    )
+    plan_id: UUID | None = None
+    region_id: UUID | None = None
+    installation_address: str = Field(default="", max_length=500)
+    notes: str = Field(default="", max_length=2000)
+    preferred_contact_at: datetime | None = None
+    quote_token: str | None = Field(default=None, max_length=8192)
+    consent_version: str = Field(min_length=1, max_length=50)
+    analytics_opt_in: bool = False
+    marketing_opt_in: bool = False
+    session_token: str | None = Field(default=None, max_length=8192)
+    attribution_token: str | None = Field(default=None, max_length=8192)
+    challenge_token: str | None = Field(default=None, max_length=8192)
+    website: str = Field(default="", max_length=200)
+
+    @field_validator("preferred_contact_at")
+    @classmethod
+    def aware(cls, value):
+        if value and value.tzinfo is None:
+            raise ValueError("Timezone required")
+        return value

@@ -1,0 +1,80 @@
+{
+  "environment": "Loopback Chrome + real PostgreSQL; synthetic Auth and geographic/price data",
+  "checks": [
+    {
+      "name": "Geographic CRUD uses named parent and inherited branch",
+      "status": "passed"
+    },
+    {
+      "name": "Plan create uses province checkbox and published snapshot",
+      "status": "passed"
+    },
+    {
+      "name": "Bulk named province prices publish atomically from UI",
+      "status": "passed"
+    },
+    {
+      "name": "Ward override uses lazy named checkbox and VND formatting",
+      "status": "passed"
+    },
+    {
+      "name": "Client ward price and form selection stay synchronized",
+      "status": "passed"
+    },
+    {
+      "name": "Province fallback clears ward and updates prices",
+      "status": "passed"
+    },
+    {
+      "name": "Campaign landing sends selected ward and confirmed quote",
+      "status": "passed"
+    },
+    {
+      "name": "Published ward price replacement preserves version history",
+      "status": "passed"
+    },
+    {
+      "name": "Plan edit requires republish and keeps geographic selection",
+      "status": "passed"
+    },
+    {
+      "name": "Dialogs support keyboard Escape, focus and mobile layout",
+      "status": "passed"
+    },
+    {
+      "name": "Soft delete plan removes it from public catalog",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "mobile": [
+    {
+      "width": 360,
+      "overflow": false,
+      "dialogWidth": 326,
+      "inputHeight": 44,
+      "font": "16px"
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "dialogWidth": 356,
+      "inputHeight": 44,
+      "font": "16px"
+    },
+    {
+      "width": 768,
+      "overflow": false,
+      "dialogWidth": 734,
+      "inputHeight": 44,
+      "font": "16px"
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "dialogWidth": 760,
+      "inputHeight": 44,
+      "font": "16px"
+    }
+  ]
+}

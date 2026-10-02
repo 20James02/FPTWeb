@@ -1,0 +1,32 @@
+passed: guest private API denied
+passed: wrong password rejected without session
+passed: login UI requires MFA and keeps session absent
+passed: MFA UI login creates HttpOnly cookie and dashboard hydration
+passed: cookie mutation without CSRF is denied
+passed: CRM first page and masked PII hydrate
+passed: CRM pagination loads remaining leads
+passed: CRM filter returns real empty state
+passed: detail hydration uses selected lead and safe DTO
+passed: explicit PII reveal succeeds with AAL2
+passed: appointment UI commits accepted kind to SQL
+passed: CRM note is stored and timeline refetches
+passed: assignment and status transition commit real lead versions
+passed: stale version fails with 409 and leaves state intact
+passed: recompute returns queued rather than fake completion
+passed: plan selector hydrates from admin payload wrapper
+passed: price create UI commits draft
+passed: price publish UI commits published snapshot
+passed: public quote matches backend published plan, region and price
+passed: CSV preview and apply create drafts only
+passed: report funnel is hydrated from real API
+passed: daily rebuild produces daily metrics and renders rows
+passed: display settings persist with CSRF and expected version
+passed: unconfigured R2 export reports error without fake success
+passed: published card sends plan UUID and stores the confirmed quote on lead
+passed: mobile published packages navigate and filters exclude only other services
+passed: campaign direct form submits published plan, region and stored quote
+passed: manual retry after lost responses replays the original committed receipt
+passed: all client/admin HTML pages load without uncaught JS exceptions
+passed: responsive pages avoid document horizontal overflow
+passed: logout clears cookie and private API rejects session
+Browser integration: 31 passed, 0 failed; 48 responsive checks.

@@ -1,0 +1,786 @@
+{
+  "environment": "Loopback PostgreSQL, synthetic Auth/lead/plan, real imported geography",
+  "screens": [
+    {
+      "name": "dashboard",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        }
+      ]
+    },
+    {
+      "name": "dashboard",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        }
+      ]
+    },
+    {
+      "name": "leads",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Dạng Bảng",
+          "height": 31
+        },
+        {
+          "text": "Dạng Cột (Kanban)",
+          "height": 31
+        },
+        {
+          "text": "Gọi Nhanh",
+          "height": 31
+        },
+        {
+          "text": "Zalo Tư Vấn",
+          "height": 31
+        },
+        {
+          "text": "Xuất CSV Metadata",
+          "height": 31
+        },
+        {
+          "text": "🔍 Lọc trong trang theo ID/Nội dung...",
+          "height": 31
+        },
+        {
+          "text": "Tất cả trạng thái\n    Mới tiếp nhận\n    Đã phân cô",
+          "height": 31
+        },
+        {
+          "text": "Làm Mới",
+          "height": 31
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Tải Thêm Đơn Tư Vấn (Trang Tiếp)",
+          "height": 32
+        }
+      ]
+    },
+    {
+      "name": "leads",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Dạng Bảng",
+          "height": 31
+        },
+        {
+          "text": "Dạng Cột (Kanban)",
+          "height": 31
+        },
+        {
+          "text": "Gọi Nhanh",
+          "height": 31
+        },
+        {
+          "text": "Zalo Tư Vấn",
+          "height": 31
+        },
+        {
+          "text": "Xuất CSV Metadata",
+          "height": 31
+        },
+        {
+          "text": "🔍 Lọc trong trang theo ID/Nội dung...",
+          "height": 28
+        },
+        {
+          "text": "Tất cả trạng thái\n    Mới tiếp nhận\n    Đã phân cô",
+          "height": 31
+        },
+        {
+          "text": "Làm Mới",
+          "height": 31
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Xem số",
+          "height": 20
+        },
+        {
+          "text": "Tải Thêm Đơn Tư Vấn (Trang Tiếp)",
+          "height": 32
+        }
+      ]
+    },
+    {
+      "name": "detail",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Giải Mã PII (Xem Số Thật)",
+          "height": 41
+        },
+        {
+          "text": "Phân Công Tự Động",
+          "height": 38
+        },
+        {
+          "text": "Chuyển trạng thái...→ Đã phân công→ Không hợp lệ→ ",
+          "height": 36
+        },
+        {
+          "text": "Sao chép",
+          "height": 20
+        },
+        {
+          "text": "+ Tạo Lịch Hẹn",
+          "height": 24
+        },
+        {
+          "text": "Tính Lại Điểm",
+          "height": 22
+        },
+        {
+          "text": "✓ Đồng ý gói",
+          "height": 24
+        },
+        {
+          "text": "⏰ Hẹn gọi lại tối",
+          "height": 24
+        },
+        {
+          "text": "📞 Đang bận",
+          "height": 24
+        },
+        {
+          "text": "❌ Không nghe máy",
+          "height": 24
+        },
+        {
+          "text": "Nhập nội dung trao đổi với khách...",
+          "height": 33
+        },
+        {
+          "text": "Lưu Ghi Chú",
+          "height": 33
+        }
+      ]
+    },
+    {
+      "name": "detail",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Giải Mã PII (Xem Số Thật)",
+          "height": 41
+        },
+        {
+          "text": "Phân Công Tự Động",
+          "height": 38
+        },
+        {
+          "text": "Chuyển trạng thái...→ Đã phân công→ Không hợp lệ→ ",
+          "height": 36
+        },
+        {
+          "text": "Sao chép",
+          "height": 20
+        },
+        {
+          "text": "+ Tạo Lịch Hẹn",
+          "height": 24
+        },
+        {
+          "text": "Tính Lại Điểm",
+          "height": 34
+        },
+        {
+          "text": "✓ Đồng ý gói",
+          "height": 24
+        },
+        {
+          "text": "⏰ Hẹn gọi lại tối",
+          "height": 24
+        },
+        {
+          "text": "📞 Đang bận",
+          "height": 24
+        },
+        {
+          "text": "❌ Không nghe máy",
+          "height": 24
+        },
+        {
+          "text": "Nhập nội dung trao đổi với khách...",
+          "height": 33
+        },
+        {
+          "text": "Lưu Ghi Chú",
+          "height": 33
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        }
+      ]
+    },
+    {
+      "name": "reports",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Tính Lại Chỉ Số Hôm Nay",
+          "height": 33
+        }
+      ]
+    },
+    {
+      "name": "reports",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Tính Lại Chỉ Số Hôm Nay",
+          "height": 33
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "width": 1440,
+      "documentWidth": 1440,
+      "windowWidth": 1440,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Lưu Cài Đặt",
+          "height": 36
+        },
+        {
+          "text": "⚡ Trong vòng 10 phút (Khuyên dùng - Đạt tỷ lệ chốt",
+          "height": 38
+        },
+        {
+          "text": "Phân phối tự động theo Tỉnh/Thành phố của khách\n  ",
+          "height": 38
+        },
+        {
+          "text": "Đổi mật khẩu",
+          "height": 26
+        },
+        {
+          "text": "Lưu Cài Đặt Giao Diện",
+          "height": 35
+        },
+        {
+          "text": "🌊 Lượn sóng nhẹ nhàng (Wave - Khuyên dùng)\n      ",
+          "height": 34
+        },
+        {
+          "text": "Chậm rãi (42 giây/vòng - Dễ đọc)\n              Tiê",
+          "height": 34
+        },
+        {
+          "text": "Lưu Vị Trí",
+          "height": 27
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Hẹn Giờ",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "width": 390,
+      "documentWidth": 390,
+      "windowWidth": 390,
+      "smallControls": [
+        {
+          "text": "",
+          "height": 21
+        },
+        {
+          "text": "",
+          "height": 34
+        },
+        {
+          "text": "",
+          "height": 35
+        },
+        {
+          "text": "Lưu Cài Đặt",
+          "height": 36
+        },
+        {
+          "text": "⚡ Trong vòng 10 phút (Khuyên dùng - Đạt tỷ lệ chốt",
+          "height": 38
+        },
+        {
+          "text": "Phân phối tự động theo Tỉnh/Thành phố của khách\n  ",
+          "height": 38
+        },
+        {
+          "text": "Đổi mật khẩu",
+          "height": 26
+        },
+        {
+          "text": "Lưu Cài Đặt Giao Diện",
+          "height": 35
+        },
+        {
+          "text": "🌊 Lượn sóng nhẹ nhàng (Wave - Khuyên dùng)\n      ",
+          "height": 34
+        },
+        {
+          "text": "Chậm rãi (42 giây/vòng - Dễ đọc)\n              Tiê",
+          "height": 34
+        },
+        {
+          "text": "Lưu Vị Trí",
+          "height": 27
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Hẹn Giờ",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        },
+        {
+          "text": "Chi Tiết",
+          "height": 40
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "data": {
+    "listed": 30,
+    "hasNext": true,
+    "funnel": {
+      "leads": 35,
+      "overdue": 35,
+      "contacted": 0,
+      "installed": 0,
+      "qualified": 0
+    }
+  },
+  "settingsSave": {
+    "writeRequests": [],
+    "successToast": true
+  },
+  "changeApi": {
+    "status": 200,
+    "count": 43
+  },
+  "crm": {
+    "loaded": 30,
+    "sidebarCounter": "3",
+    "kanbanColumns": [
+      "new",
+      "contacting",
+      "qualified",
+      "survey",
+      "installed"
+    ]
+  },
+  "assignedKanban": {
+    "rendered": 0
+  },
+  "scoreReason": {
+    "renderedText": "✓ [object Object]"
+  }
+}

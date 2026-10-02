@@ -1,0 +1,12 @@
+Admin status coverage, score provenance and Vietnam calendar PASS
+file:///mnt/DATA/Workspace/PageFPT/tests/contracts/admin_quality.mjs:19
+assert.equal(context.adminDraftCost({monthly_vnd:200000,billing_months:6,setup_vnd:100000,equipment_vnd:50000,vat_included:false,vat_bps:1000}),1485000);
+                     ^
+
+TypeError: context.adminDraftCost is not a function
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/admin_quality.mjs:19:22
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

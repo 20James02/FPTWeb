@@ -1,0 +1,16 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_client_cards_are_bound_to_published_catalog _______________
+tests/integration/test_published_client_catalog.py:14: in test_client_cards_are_bound_to_published_catalog
+    assert f'data-plan-id="{plan["id"]}"' in after.text
+E   assert 'data-plan-id="f940d912-ab1d-46c4-9dc7-67f0b3930fc8"' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+E    +  where '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>' = <Response [200 OK]>.text
+_______________ test_empty_catalog_has_no_invented_package_cards _______________
+tests/integration/test_published_client_catalog.py:25: in test_empty_catalog_has_no_invented_package_cards
+    assert 'Chưa có gói được công bố' in response.text
+E   assert 'Chưa có gói được công bố' in '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>'
+E    +  where '<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-wi...atic/js/client/compare.js"></script>\n  <script src="/static/js/client/analytics.js"></script>\n\n  \n</body>\n</html>' = <Response [200 OK]>.text
+=========================== short test summary info ============================
+FAILED tests/integration/test_published_client_catalog.py::test_client_cards_are_bound_to_published_catalog
+FAILED tests/integration/test_published_client_catalog.py::test_empty_catalog_has_no_invented_package_cards
+2 failed in 1.34s

@@ -1,0 +1,11 @@
+........................................................................ [ 62%]
+.......F....................................                             [100%]
+=================================== FAILURES ===================================
+________________ test_plans_3d_flip_slider_tags_menu_and_footer ________________
+tests/integration/test_web_ui.py:199: in test_plans_3d_flip_slider_tags_menu_and_footer
+    assert plan["name"] in text
+           ^^^^^^^^^^^^
+E   KeyError: 'name'
+=========================== short test summary info ============================
+FAILED tests/integration/test_web_ui.py::test_plans_3d_flip_slider_tags_menu_and_footer
+1 failed, 115 passed in 17.79s

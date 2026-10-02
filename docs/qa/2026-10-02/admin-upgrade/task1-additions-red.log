@@ -1,0 +1,28 @@
+......F.                                                                 [100%]
+=================================== FAILURES ===================================
+_______________ test_manual_assignment_and_atomic_bulk_capacity ________________
+
+admin = <httpx.AsyncClient object at 0x77f2be3d5be0>
+gateway = <conftest.LocalGateway object at 0x77f2be06be60>
+
+    @pytest.mark.asyncio
+    async def test_manual_assignment_and_atomic_bulk_capacity(admin,gateway):
+        from tests.integration.test_worker_crm import lead
+        first=await lead(admin,gateway)
+        second_result=await admin.post('/api/v1/leads',json={'phone':'0901234568','consent_version':'v1'},headers={'Idempotency-Key':str(uuid4())})
+        assert second_result.status_code==201,second_result.text
+        with psycopg.connect(gateway.dsn) as db:
+            second=str(db.execute('SELECT id FROM private.leads WHERE id<>%s',[first]).fetchone()[0])
+        staff=str(uuid4())
+        membership={'user_id':staff,'branch_id':'00000000-0000-0000-0000-000000000000','display_name':'Test agent','permissions':['lead.read','lead.write'],'capacity':1,'active':True,'shift':{'weekdays':[0,1,2,3,4,5,6],'start':'00:00','end':'23:59'}}
+        assert (await admin.put('/api/v1/admin/memberships',json=membership)).status_code==200
+        response=await admin.post('/api/v1/admin/lead-assignments',json={'assignee_id':staff,'items':[{'id':first,'expected_version':1},{'id':second,'expected_version':1}]})
+>       assert response.status_code==409,response.text
+E       AssertionError: {"code":"NOT_FOUND","message":"Request cannot be completed","fields":{},"request_id":"c0f37c1a-453c-4d0d-a4a4-343f7d72fb3b"}
+E       assert 404 == 409
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/integration/test_admin_quality.py:101: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_admin_quality.py::test_manual_assignment_and_atomic_bulk_capacity
+1 failed, 7 passed in 2.92s

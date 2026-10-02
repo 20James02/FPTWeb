@@ -1,0 +1,810 @@
+{% extends "layouts/admin_base.html" %}
+
+{% set active_page = "leads" %}
+
+{% block title %}Hồ Sơ Khách Hàng — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}
+<a href="/admin/leads" style="color: var(--text-secondary); text-decoration: none;">Khách hàng & Đơn tư vấn</a> / <span style="font-weight: 700;" id="breadcrumb-lead-id">Chi tiết hồ sơ</span>
+{% endblock %}
+
+{% block content %}
+<div id="lead-detail-wrapper" style="display: flex; flex-direction: column; gap: var(--space-6);">
+
+  <!-- Loading State Indicator -->
+  <div id="lead-loading-panel" class="panel-card" style="text-align: center; padding: 48px; color: var(--text-muted);">
+    <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Đang tải thông tin hồ sơ...</div>
+    <div style="font-size: 0.85rem;">Hệ thống đang kết nối và nạp dữ liệu chi tiết từ máy chủ.</div>
+  </div>
+
+  <!-- Invalid ID Notice (Hidden by default) -->
+  <div id="lead-invalid-panel" class="panel-card" style="display: none; text-align: center; padding: 48px;">
+    <div style="font-size: 1.2rem; font-weight: 800; color: var(--color-danger); margin-bottom: 8px;">
+      Chưa Chọn Hồ Sơ Hợp Lệ
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+      Vui lòng quay lại danh sách để chọn một hồ sơ khách hàng cụ thể hoặc đường dẫn không chính xác.
+    </p>
+    <a href="/admin/leads" class="btn-action-detail" style="display: inline-block; padding: 10px 24px; font-weight: 700;">
+      Quay Về Danh Sách Đơn Tư Vấn
+    </a>
+  </div>
+
+  <!-- Main Lead Container (Shown after hydration) -->
+  <div id="lead-content-panel" style="display: none; flex-direction: column; gap: var(--space-6);">
+    
+    <!-- Thẻ Đầu Trang: Tóm Tắt Khách Hàng & Nút Thao Tác Nhanh -->
+    <div class="panel-card" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4);">
+      <div>
+        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: 4px;">
+          <h1 style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary);" id="detail-customer-title">Hồ Sơ Khách Hàng</h1>
+          <span class="status-badge" id="detail-lead-status-badge">Đang tải...</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          Mã hồ sơ: <strong style="color: var(--color-primary);" id="detail-id-display">...</strong> • 
+          Thời gian tạo: <strong id="detail-created-at">...</strong> • 
+          Phiên bản: <strong id="detail-version-display">1</strong>
+        </div>
+      </div>
+
+      <!-- Nút Hành Động Trực Tiếp (Gọi, Zalo, Reveal, Phân Công, Trạng Thái) -->
+      <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+        <!-- Reveal PII -->
+        <button type="button" class="btn-reveal-phone" id="btn-reveal-pii" style="padding: 10px 16px; font-size: 0.88rem; font-weight: 700;" onclick="handleRevealAction()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="btn-reveal-text">Giải Mã PII (Xem Số Thật)</span>
+        </button>
+
+        <a href="#" id="btn-call-customer" class="btn-action-call" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Gọi Cho Khách</span>
+        </a>
+
+        <a href="#" id="btn-zalo-customer" target="_blank" class="btn-action-zalo" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span>Nhắn Zalo</span>
+        </a>
+
+        <!-- Phân công tự động -->
+        <button type="button" class="btn-action-detail" onclick="adminChooseAssignee([currentLead])">Chọn nhân viên</button>
+        <button type="button" class="btn-action-detail" id="btn-assign" style="padding: 10px 16px; font-size: 0.88rem;" onclick="handleAutoAssign()">
+          Phân Công Tự Động
+        </button>
+
+        <!-- Dropdown Chuyển Trạng Thái -->
+        <div>
+          <select class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
+            <option value="" disabled selected>Chuyển trạng thái...</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bố Cục 2 Cột: Thông Tin Khách & Đánh Giá Chất Lượng -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: var(--space-6);">
+      
+      <!-- CỘT TRÁI: Chi Tiết Thông Tin & Bảng Giá Khách Chọn -->
+      <div style="display: flex; flex-direction: column; gap: var(--space-6);">
+        
+        <!-- Thẻ Thông Tin Liên Hệ Khách Hàng -->
+        <div class="panel-card">
+          <h2 style="font-size: 1.05rem; font-weight: 800; margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2);">
+            Thông Tin Khách Hàng
+          </h2>
+
+          <div class="lead-contact-grid" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--space-4); font-size: 0.88rem;">
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Số điện thoại:</span>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 3px;">
+                <span id="detail-phone-val" style="font-family: monospace; font-size: 1.05rem; font-weight: 800; color: var(--color-primary);">...</span>
+                <button type="button" class="btn-reveal-phone" onclick="copyDetailPhone()">Sao chép</button>
+              </div>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Họ và tên:</span>
+              <strong style="margin-top: 3px; display: block; font-size: 0.9rem;" id="detail-name-val">Bảo vệ thông tin (Cần giải mã)</strong>
+            </div>
+
+            <div style="grid-column: span 2;">
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Địa chỉ lắp đặt:</span>
+              <span style="margin-top: 3px; display: block; font-weight: 600;" id="detail-address-val">Bảo vệ thông tin (Cần giải mã)</span>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Khu vực đăng ký (ID):</span>
+              <span style="color: var(--text-primary); font-weight: 700; margin-top: 3px; display: block;" id="detail-region-val">Cần xác nhận</span>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Nhân viên tiếp nhận (Assignee):</span>
+              <span style="margin-top: 3px; display: block; font-weight: 700; color: var(--text-primary);" id="detail-assignee-val">Chưa phân công</span>
+            </div>
+          </div>
+
+          <div style="margin-top: var(--space-4); background: var(--bg-surface-muted); padding: var(--space-3) var(--space-4); border-radius: 10px; font-size: 0.85rem;">
+            <strong style="color: var(--text-primary);">Ghi chú từ khách:</strong>
+            <p style="color: var(--text-secondary); margin-top: 3px; line-height: 1.45;" id="detail-notes-val">
+              Chưa có ghi chú hoặc thông tin được bảo vệ.
+            </p>
+          </div>
+        </div>
+
+        <!-- Thẻ Báo Giá Hồ Sơ -->
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2);">
+            <h2 style="font-size: 1.05rem; font-weight: 800;">Báo Giá & Gói Cước Hồ Sơ</h2>
+            <span style="font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; font-weight: 800;" id="detail-quote-badge">
+              Chờ xác nhận
+            </span>
+          </div>
+
+          <div style="font-size: 0.88rem; display: flex; flex-direction: column; gap: var(--space-3);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: var(--text-muted);">Gói cước (Plan ID):</span>
+              <strong style="font-size: 1rem; color: var(--color-primary);" id="detail-plan-val">Chưa chọn gói</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Trạng thái báo giá:</span>
+              <span style="font-weight: 700;" id="detail-quote-status-val">Cần nhân viên tư vấn giá</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Kỳ thanh toán:</span>
+              <span id="detail-billing-months-val">6 tháng</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-subtle); padding-top: var(--space-3); margin-top: 4px;">
+              <span><strong style="font-size: 0.95rem;">Tổng tiền (tạm tính):</strong></span>
+              <strong style="font-size: 1.15rem; color: var(--color-primary);" id="detail-quote-total-val">Nhân viên sẽ xác nhận</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thẻ Lịch Hẹn Tư Vấn & Khảo Sát (Appointments) -->
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2);">
+            <h2 style="font-size: 1.05rem; font-weight: 800;">Lịch Hẹn Khách Hàng</h2>
+            <button type="button" class="btn-action-detail" style="font-size: 0.75rem; padding: 4px 10px;" onclick="showAppointmentForm()">
+              + Tạo Lịch Hẹn
+            </button>
+          </div>
+
+          <!-- Form tạo lịch hẹn mới -->
+          <div id="appointment-create-box" style="display: none; background: var(--bg-surface-muted); padding: var(--space-3); border-radius: 8px; margin-bottom: var(--space-3);">
+            <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">Thời gian hẹn:</div>
+            <input type="datetime-local" id="new-appointment-time" class="form-input" style="font-size: 0.82rem; margin-bottom: 6px;">
+            <input type="text" id="new-appointment-notes" class="form-input" placeholder="Ghi chú nội dung lịch hẹn..." style="font-size: 0.82rem; margin-bottom: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-action-call" style="padding: 6px 14px; font-size: 0.8rem;" onclick="submitNewAppointment()">Lưu Lịch Hẹn</button>
+              <button type="button" class="btn-action-detail" style="padding: 6px 10px; font-size: 0.8rem;" onclick="hideAppointmentForm()">Hủy</button>
+            </div>
+          </div>
+
+          <!-- Danh sách lịch hẹn -->
+          <div id="appointments-list-container" style="display: flex; flex-direction: column; gap: var(--space-2); font-size: 0.82rem;">
+            <div style="color: var(--text-muted); text-align: center; padding: 12px;">Đang tải lịch hẹn...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CỘT PHẢI: Đánh Giá Khách Hàng & Nhật Ký Cuộc Gọi -->
+      <div style="display: flex; flex-direction: column; gap: var(--space-6);">
+        
+        <!-- Thẻ Đánh Giá Mức Độ Sẵn Sàng (Nhu cầu mua (điểm)) -->
+        <div class="intel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2); margin-bottom: var(--space-3);">
+            <h2 style="font-size: 1.05rem; font-weight: 800;">
+              Đánh giá chất lượng yêu cầu
+            </h2>
+            <button type="button" class="btn-action-detail" style="font-size: 0.72rem; padding: 4px 8px;" onclick="handleRecomputeScores()">
+              Tính Lại Điểm
+            </button>
+          </div>
+
+          <div class="intel-grid">
+            <!-- 1. Độ Chính Xác Số ĐT -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Tin cậy liên hệ (điểm /100)</span>
+                <span class="score-number" id="score-contact-conf" style="color: #16A34A;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-contact-bar" style="width: 0%; background: #16A34A;"></div>
+              </div>
+            </div>
+
+            <!-- 2. Mức Độ Sẵn Sàng Mua -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Nhu cầu đăng ký (điểm /100)</span>
+                <span class="score-number" id="score-intent" style="color: var(--color-primary);">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-intent-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- 3. Mức Độ Đầy Đủ Dữ Liệu -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Mức Độ Đầy Đủ Hồ Sơ (Completeness)</span>
+                <span class="score-number" id="score-completeness" style="color: #2563EB;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-completeness-bar" style="width: 0%; background: #2563EB;"></div>
+              </div>
+            </div>
+
+            <!-- 4. Rủi Ro Tự Động Hóa -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Rủi Ro Tự Động (Automation Risk)</span>
+                <span class="score-number" id="score-risk" style="color: #DC2626;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-risk-bar" style="width: 0%; background: #DC2626;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danh sách lý do đánh giá từ backend -->
+          <div style="margin-top: var(--space-3); background: var(--bg-surface-muted); padding: var(--space-3) var(--space-4); border-radius: 10px; font-size: 0.8rem; line-height: 1.5;">
+            <strong>Cơ sở chấm điểm từ hệ thống:</strong>
+            <p id="lead-sla-summary"></p><div id="lead-evidence-summary" class="admin-evidence"></div><div id="lead-quote-details" class="admin-evidence"></div><div id="score-reasons-container" style="margin-top: 4px; color: var(--text-secondary);">
+              Chưa có dữ liệu phân tích từ worker.
+            </div>
+          </div>
+        </div>
+
+        <!-- Nhật Ký Chăm Sóc & Thao Tác Ghi Chú Nhanh -->
+        <div class="panel-card">
+          <h2 style="font-size: 1.05rem; font-weight: 800; margin-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2);">
+            Nhật Ký Tư Vấn & Chăm Sóc
+          </h2>
+
+          <!-- Gợi ý Ghi chú nhanh 1-chạm -->
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 700;">
+            Gợi ý ghi chú nhanh:
+          </div>
+          <div class="quick-notes-container">
+            <button type="button" class="quick-note-pill" onclick="quickAddNote('Khách đồng ý gói, hẹn khảo sát')">✓ Đồng ý gói</button>
+            <button type="button" class="quick-note-pill" onclick="quickAddNote('Khách hẹn gọi lại vào buổi tối')">⏰ Hẹn gọi lại tối</button>
+            <button type="button" class="quick-note-pill" onclick="quickAddNote('Khách đang bận, hẹn gọi lại sau')">📞 Đang bận</button>
+            <button type="button" class="quick-note-pill" onclick="quickAddNote('Không nghe máy lần 1')">❌ Không nghe máy</button>
+          </div>
+
+          <!-- Ô Nhập Ghi Chú Tùy Chọn -->
+          <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4);">
+            <input type="text" id="new-call-note" class="form-input" placeholder="Nhập nội dung trao đổi với khách..." style="font-size: 0.85rem; border-radius: 8px;">
+            <button type="button" class="btn-action-call" style="padding: 8px 16px; font-size: 0.85rem; white-space: nowrap;" onclick="addCallNote()">
+              Lưu Ghi Chú
+            </button>
+          </div>
+
+          <!-- Dòng Thời Gian Lịch Sử -->
+          <div id="activity-timeline-list" style="display: flex; flex-direction: column; gap: var(--space-3); font-size: 0.82rem;">
+            <div style="color: var(--text-muted); text-align: center; padding: 12px;">Đang tải nhật ký...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentLead = null;
+let revealedPii = null;
+
+// Valid State Transitions per State Machine Contract
+const ALLOWED_TRANSITIONS = {
+  'new': ['assigned', 'invalid', 'rejected', 'duplicate'],
+  'assigned': ['contacting', 'unreachable', 'rejected'],
+  'contacting': ['contacted', 'unreachable', 'invalid', 'rejected'],
+  'contacted': ['qualified', 'no_infrastructure', 'rejected'],
+  'qualified': ['survey', 'quoted', 'closed', 'rejected'],
+  'survey': ['quoted', 'no_infrastructure', 'rejected'],
+  'surveying': ['quoted', 'no_infrastructure', 'rejected'],
+  'quoted': ['closed', 'rejected'],
+  'closed': ['installed', 'rejected'],
+  'unreachable': ['contacting', 'rejected'],
+  'no_infrastructure': ['survey', 'rejected'],
+  'installed': [],
+  'invalid': [],
+  'duplicate': [],
+  'rejected': []
+};
+
+const STATUS_LABELS = {
+  'new': 'Mới tiếp nhận',
+  'assigned': 'Đã phân công',
+  'contacting': 'Đang liên hệ tư vấn',
+  'contacted': 'Đã liên hệ',
+  'qualified': 'Khách chốt gói',
+  'survey': 'Khảo sát hạ tầng',
+  'surveying': 'Khảo sát hạ tầng',
+  'quoted': 'Đã báo giá',
+  'closed': 'Đã ký hợp đồng',
+  'installed': 'Đã lắp đặt xong',
+  'unreachable': 'Chưa liên lạc được',
+  'no_infrastructure': 'Chưa có hạ tầng',
+  'rejected': 'Từ chối / Hủy',
+  'invalid': 'Không hợp lệ',
+  'duplicate': 'Trùng lặp'
+};
+
+async function initLeadDetail() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  const loadingPanel = document.getElementById('lead-loading-panel');
+  const invalidPanel = document.getElementById('lead-invalid-panel');
+  const contentPanel = document.getElementById('lead-content-panel');
+
+  if (!id || !uuidPattern.test(id)) {
+    if (loadingPanel) loadingPanel.style.display = 'none';
+    if (invalidPanel) invalidPanel.style.display = 'block';
+    if (contentPanel) contentPanel.style.display = 'none';
+    return;
+  }
+
+  try {
+    const data = await crmRequest('/leads/' + id);
+    currentLead = data;
+    renderLeadDetailData(data);
+    await loadAppointmentsList(id);
+
+    if (loadingPanel) loadingPanel.style.display = 'none';
+    if (invalidPanel) invalidPanel.style.display = 'none';
+    if (contentPanel) contentPanel.style.display = 'flex';
+    return true;
+  } catch (error) {
+    if (loadingPanel) loadingPanel.style.display = 'none';
+    if (invalidPanel) {
+      invalidPanel.style.display = 'block';
+      const msgEl = invalidPanel.querySelector('p');
+      if (msgEl) msgEl.textContent = error.message;
+      return false;
+    }
+  }
+}
+
+function renderLeadDetailData(lead) {
+  // Breadcrumbs & Header
+  const bcId = document.getElementById('breadcrumb-lead-id');
+  if (bcId) bcId.textContent = 'Hồ sơ ' + lead.id.slice(0, 8).toUpperCase();
+
+  const idDisp = document.getElementById('detail-id-display');
+  if (idDisp) idDisp.textContent = lead.id.slice(0, 8).toUpperCase();
+
+  const verDisp = document.getElementById('detail-version-display');
+  if (verDisp) verDisp.textContent = String(lead.version || 1);
+
+  const createdAt = document.getElementById('detail-created-at');
+  if (createdAt) {
+    const d = new Date(lead.created_at);
+    createdAt.textContent = isNaN(d) ? 'Gần đây' : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+  }
+
+  // Status Badge
+  const badge = document.getElementById('detail-lead-status-badge');
+  if (badge) {
+    badge.className = 'status-badge ' + lead.status;
+    badge.textContent = STATUS_LABELS[lead.status] || lead.status;
+  }
+
+  // Phone Masked
+  const phoneVal = document.getElementById('detail-phone-val');
+  if (phoneVal) {
+    phoneVal.textContent = lead.payload?.phone_masked || '***';
+  }
+
+  // Plan & Region
+  const planVal = document.getElementById('detail-plan-val');
+  if (planVal) planVal.textContent = lead.labels?.plan || 'Chưa chọn gói';
+
+  const regVal = document.getElementById('detail-region-val');
+  if (regVal) regVal.textContent = lead.labels?.region || 'Cần xác nhận địa bàn';
+
+  const assVal = document.getElementById('detail-assignee-val');
+  if (assVal) assVal.textContent = lead.assignee_id ? (lead.labels?.assignee || `Nhân sự ${lead.assignee_id.slice(0, 8)}`) : 'Chưa phân công';
+
+  // Notes
+  const notesVal = document.getElementById('detail-notes-val');
+  if (notesVal) {
+    notesVal.textContent = lead.payload?.notes || 'Bảo vệ thông tin (Cần bấm Giải mã PII).';
+  }
+
+  // Quote info
+  const quoteBadge = document.getElementById('detail-quote-badge');
+  const quoteStatusVal = document.getElementById('detail-quote-status-val');
+  if (quoteBadge && quoteStatusVal) {
+    if (lead.quote_status === 'confirmed') {
+      quoteBadge.textContent = 'Giá hệ thống xác nhận';
+      quoteBadge.style.background = '#DCFCE7';
+      quoteBadge.style.color = '#16A34A';
+      quoteStatusVal.textContent = 'Giá cước đã được hệ thống xác nhận';
+    } else {
+      quoteBadge.textContent = 'Cần xác nhận';
+      quoteBadge.style.background = '#FEF3C7';
+      quoteBadge.style.color = '#D97706';
+      quoteStatusVal.textContent = 'Cần chuyên viên tư vấn & xác nhận báo giá';
+    }
+  }
+
+  // Intelligence Scores
+  const scores = lead.scores || {};
+  const contactConfEl = document.getElementById('score-contact-conf');
+  const contactConfBar = document.getElementById('score-contact-bar');
+  if (contactConfEl && contactConfBar) {
+    const val = scores.contact_confidence != null ? scores.contact_confidence : '--';
+    contactConfEl.textContent = val !== '--' ? `${val}/100` : '--';
+    contactConfBar.style.width = val !== '--' ? `${val}%` : '0%';
+  }
+
+  const intentEl = document.getElementById('score-intent');
+  const intentBar = document.getElementById('score-intent-bar');
+  if (intentEl && intentBar) {
+    const val = scores.intent != null ? scores.intent : '--';
+    intentEl.textContent = val !== '--' ? `${val}/100` : '--';
+    intentBar.style.width = val !== '--' ? `${val}%` : '0%';
+  }
+
+  const compEl = document.getElementById('score-completeness');
+  const compBar = document.getElementById('score-completeness-bar');
+  if (compEl && compBar) {
+    const val = scores.completeness != null ? Math.round(scores.completeness * 100) : '--';
+    compEl.textContent = val !== '--' ? `${val}/100` : '--';
+    compBar.style.width = val !== '--' ? `${val}%` : '0%';
+  }
+
+  const riskEl = document.getElementById('score-risk');
+  const riskBar = document.getElementById('score-risk-bar');
+  if (riskEl && riskBar) {
+    const val = scores.automation_risk != null ? scores.automation_risk : '--';
+    riskEl.textContent = val !== '--' ? `${val}/100` : '--';
+    riskBar.style.width = val !== '--' ? `${val}%` : '0%';
+  }
+
+  const reasonsCont = document.getElementById('score-reasons-container');
+  if (reasonsCont) {
+    if (scores.reasons && scores.reasons.length > 0) {
+      reasonsCont.replaceChildren(...scores.reasons.map(reason=>{
+        const node=document.createElement('div');node.textContent=adminScoreReason(reason);return node;
+      }));
+    } else {
+      reasonsCont.textContent = 'Chưa có phân tích hành vi bổ sung.';
+    }
+  }
+
+  const sla=document.getElementById('lead-sla-summary');
+  if(sla) sla.textContent='SLA: '+(lead.sla_due_at?new Date(lead.sla_due_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'Chưa có')+' · Cập nhật '+new Date(lead.updated_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'});
+  const facts=document.getElementById('lead-evidence-summary');
+  if(facts) {
+    facts.replaceChildren(adminNode('p',`Quy tắc: ${scores.ruleset_version||'Chưa tính'} · ${scores.computed_at?new Date(scores.computed_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'Chưa có thời điểm tính'}`));
+    facts.append(adminNode('p','IP, GeoIP và đầu số là ước tính; không xác định danh tính, vị trí chính xác hoặc nhà mạng hiện tại.'));
+    for(const observation of lead.observations||[]) facts.append(adminNode('p',`${observation.field}: ${typeof observation.value==='object'?JSON.stringify(observation.value):observation.value} · ${observation.source} · ${observation.status}`));
+  }
+  const quoteDetails=document.getElementById('lead-quote-details');
+  if(quoteDetails) {
+    quoteDetails.replaceChildren(adminNode('h3','Chi phí đã xác nhận tại lúc gửi hồ sơ'));
+    const quote=lead.quote||{};
+    if(lead.quote_status!=='confirmed') quoteDetails.append(adminNode('p','Chưa có snapshot giá hợp lệ. Cần tư vấn và xác nhận lại.'));
+    else {
+      quoteDetails.append(adminNode('p',`Cước / tháng: ${adminMoney(quote.monthly_vnd)} · Kỳ thanh toán: ${quote.billing_months} tháng · Dịch vụ: ${quote.service_months} tháng`));
+      const names={term_vnd:'Cước kỳ thanh toán',setup_vnd:'Hòa mạng',equipment_vnd:'Thiết bị',vat_added_vnd:'VAT cộng thêm',discount_vnd:'Giảm giá'};
+      for(const [key,title] of Object.entries(names))if(quote.line_items?.[key]!=null) quoteDetails.append(adminNode('p',`${title}: ${adminMoney(quote.line_items[key])}`));
+      quoteDetails.append(adminNode('strong','Tổng ban đầu: '+adminMoney(quote.initial_total_vnd)));
+    }
+  }
+  // Populate Allowed Transitions Dropdown
+  const selectTrans = document.getElementById('lead-status-select');
+  if (selectTrans) {
+    selectTrans.innerHTML = '<option value="" disabled selected>Chuyển trạng thái...</option>';
+    const allowed = ALLOWED_TRANSITIONS[lead.status] || [];
+    allowed.forEach(targetStatus => {
+      const opt = document.createElement('option');
+      opt.value = targetStatus;
+      opt.textContent = '→ ' + (STATUS_LABELS[targetStatus] || targetStatus);
+      selectTrans.appendChild(opt);
+    });
+    if (allowed.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.disabled = true;
+      opt.textContent = '(Trạng thái cuối cùng - Không thể chuyển tiếp)';
+      selectTrans.appendChild(opt);
+    }
+  }
+
+  // Render Timeline Activities
+  renderActivitiesTimeline(lead.activities || []);
+}
+
+function renderActivitiesTimeline(activities) {
+  const timeline = document.getElementById('activity-timeline-list');
+  if (!timeline) return;
+
+  if (activities.length === 0) {
+    timeline.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 12px;">Chưa có hoạt động nào được ghi nhận.</div>';
+    return;
+  }
+
+  timeline.replaceChildren();
+  activities.forEach(act => {
+    const item = document.createElement('div');
+    item.style.display = 'flex';
+    item.style.gap = 'var(--space-3)';
+    item.style.alignItems = 'flex-start';
+
+    const dot = document.createElement('span');
+    dot.style.width = '10px';
+    dot.style.height = '10px';
+    dot.style.background = act.kind === 'note' ? 'var(--color-primary)' : '#6366F1';
+    dot.style.borderRadius = '50%';
+    dot.style.marginTop = '4px';
+    dot.style.flexShrink = '0';
+
+    const textWrap = document.createElement('div');
+    const boldTitle = document.createElement('strong');
+    boldTitle.textContent = (act.kind === 'note' ? 'Ghi chú' : act.kind.toUpperCase()) + ': ';
+    textWrap.appendChild(boldTitle);
+
+    const desc = document.createElement('span');
+    desc.textContent = act.notes || (act.kind==='transition'?adminStatusLabel(act.payload?.to):'Nội dung ghi chú được bảo vệ; giải mã theo quyền PII.');
+    textWrap.appendChild(desc);
+
+    const timeDiv = document.createElement('div');
+    timeDiv.style.fontSize = '0.72rem';
+    timeDiv.style.color = 'var(--text-muted)';
+    timeDiv.style.marginTop = '2px';
+    const d = new Date(act.created_at);
+    timeDiv.textContent = isNaN(d) ? 'Gần đây' : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    textWrap.appendChild(timeDiv);
+
+    item.appendChild(dot);
+    item.appendChild(textWrap);
+    timeline.appendChild(item);
+  });
+}
+
+/**
+ * Reveal PII
+ */
+async function handleRevealAction() {
+  if (!currentLead) return;
+  const btn = document.getElementById('btn-reveal-pii');
+  const btnText = document.getElementById('btn-reveal-text');
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.textContent = 'Đang giải mã...';
+
+  try {
+    const pii = await revealLeadPhone(currentLead.id, document.getElementById('detail-phone-val'));
+    if (pii) {
+      revealedPii = pii;
+      if (btnText) btnText.textContent = 'Đã Giải Mã PII';
+
+      if (pii.name) {
+        const nameEl = document.getElementById('detail-name-val');
+        if (nameEl) nameEl.textContent = pii.name;
+        const titleEl = document.getElementById('detail-customer-title');
+        if (titleEl) titleEl.textContent = 'Khách Hàng: ' + pii.name;
+      }
+      if (pii.installation_address) {
+        const addrEl = document.getElementById('detail-address-val');
+        if (addrEl) addrEl.textContent = pii.installation_address;
+      }
+      if (pii.notes) {
+        const notesEl = document.getElementById('detail-notes-val');
+        if (notesEl) notesEl.textContent = pii.notes;
+      }
+      if (pii.phone) {
+        const callBtn = document.getElementById('btn-call-customer');
+        if (callBtn) {
+          callBtn.href = 'tel:' + pii.phone;
+          callBtn.style.opacity = '1';
+          callBtn.style.pointerEvents = 'auto';
+        }
+        const zaloBtn = document.getElementById('btn-zalo-customer');
+        if (zaloBtn) {
+          zaloBtn.href = 'https://zalo.me/' + pii.phone;
+          zaloBtn.style.opacity = '1';
+          zaloBtn.style.pointerEvents = 'auto';
+        }
+      }
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+/**
+ * Handle Status Transition
+ */
+async function handleStatusTransition(newStatus) {
+  if (!currentLead || !newStatus) return;
+
+  let reason = '';
+  if (['rejected', 'invalid', 'duplicate'].includes(newStatus)) {
+    reason = await adminAskText('Lý do hủy / từ chối hồ sơ',500) || '';
+    if (!reason.trim()) {
+      showToast('Cần nhập lý do khi chuyển sang trạng thái này.', 'error');
+      document.getElementById('lead-status-select').value = '';
+      return;
+    }
+  }
+
+  let installation = null;
+  if (newStatus === 'installed') {
+    const ref = await adminAskText('Mã nghiệm thu hợp đồng / biên bản lắp đặt',100) || '';
+    if (!ref.trim()) {
+      showToast('Cần mã hợp đồng nghiệm thu để hoàn tất trạng thái installed.', 'error');
+      document.getElementById('lead-status-select').value = '';
+      return;
+    }
+    installation = { reference: ref.trim(), installed_at: new Date().toISOString() };
+  }
+
+  try {
+    const updated = await transitionLead(currentLead.id, currentLead.version, newStatus, reason, installation);
+    currentLead = updated;
+    renderLeadDetailData(updated);
+    showToast('Đã chuyển trạng thái sang: ' + (STATUS_LABELS[newStatus] || newStatus), 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+    // Refresh to resync version
+    initLeadDetail();
+  }
+}
+
+/**
+ * Auto Assign Lead
+ */
+async function handleAutoAssign() {
+  if (!currentLead) return;
+  const btn = document.getElementById('btn-assign');
+  if (btn) btn.disabled = true;
+  try {
+    const res = await assignLead(currentLead.id, currentLead.version);
+    currentLead = res;
+    renderLeadDetailData(res);
+    showToast(res.status === 'unassigned' ? 'Chưa tìm được nhân sự trống trong ca.' : 'Đã phân công chuyên viên xử lý.', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+/**
+ * Recompute Scores
+ */
+async function handleRecomputeScores() {
+  if (!currentLead) return;
+  try {
+    await recomputeLead(currentLead.id);
+    showToast('Đã xếp hàng yêu cầu tính lại điểm đánh giá.', 'info');
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+/**
+ * Appointments
+ */
+function showAppointmentForm() {
+  const box = document.getElementById('appointment-create-box');
+  if (box) box.style.display = 'block';
+}
+
+function hideAppointmentForm() {
+  const box = document.getElementById('appointment-create-box');
+  if (box) box.style.display = 'none';
+}
+
+async function loadAppointmentsList(leadId) {
+  const container = document.getElementById('appointments-list-container');
+  if (!container) return;
+
+  try {
+    const data = await loadLeadAppointments(leadId);
+    const items = data.items || [];
+    if (items.length === 0) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 12px;">Chưa có lịch hẹn nào. Bấm Tạo Lịch Hẹn để thêm mới.</div>';
+      return;
+    }
+    container.replaceChildren();
+    items.forEach(apt => {
+      const row = document.createElement('div');
+      row.style.background = 'var(--bg-surface-muted)';
+      row.style.padding = '8px 12px';
+      row.style.borderRadius = '6px';
+      row.style.display = 'flex';
+      row.style.justifyContent = 'space-between';
+      row.style.alignItems = 'center';
+
+      const left = document.createElement('div');
+      const timeSpan = document.createElement('strong');
+      const d = new Date(apt.due_at);
+      timeSpan.textContent = isNaN(d) ? apt.due_at : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+      left.appendChild(timeSpan);
+
+      if (apt.notes) {
+        const noteSpan = document.createElement('div');
+        noteSpan.style.color = 'var(--text-muted)';
+        noteSpan.style.fontSize = '0.75rem';
+        noteSpan.textContent = apt.notes;
+        left.appendChild(noteSpan);
+      }
+
+      const statusBadge = document.createElement('span');
+      statusBadge.className = 'status-badge ' + (apt.status || 'pending');
+      statusBadge.textContent = apt.status || 'pending';
+
+      row.appendChild(left);
+      row.appendChild(statusBadge);
+      container.appendChild(row);
+    });
+  } catch (_) {
+    container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 8px;">Không thể tải danh sách lịch hẹn.</div>';
+  }
+}
+
+async function submitNewAppointment() {
+  if (!currentLead) return;
+  const timeInput = document.getElementById('new-appointment-time');
+  const notesInput = document.getElementById('new-appointment-notes');
+
+  const timeVal = timeInput?.value;
+  if (!timeVal) {
+    showToast('Vui lòng chọn thời gian lịch hẹn.', 'error');
+    return;
+  }
+
+  const isoTime = new Date(timeVal).toISOString();
+
+  try {
+    await createLeadAppointment(currentLead.id, currentLead.version, isoTime, 'callback', notesInput?.value || '');
+    showToast('Đã lên lịch hẹn thành công.', 'success');
+    hideAppointmentForm();
+    if (notesInput) notesInput.value = '';
+    await loadAppointmentsList(currentLead.id);
+    // Reload lead version
+    await initLeadDetail();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+/**
+ * Add Notes
+ */
+async function quickAddNote(text) {
+  if (!currentLead || !text) return;
+  try {
+    await saveLeadActivity(currentLead.id, 'note', text);
+    showToast('Đã lưu ghi chú thành công.', 'success');
+    await initLeadDetail();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function addCallNote() {
+  const input = document.getElementById('new-call-note');
+  const val = input?.value.trim();
+  if (!val) return;
+  await quickAddNote(val);
+  if (input) input.value = '';
+}
+
+function copyDetailPhone() {
+  const val = document.getElementById('detail-phone-val')?.textContent;
+  if (val && !val.includes('*') && navigator.clipboard) {
+    navigator.clipboard.writeText(val);
+    showToast('Đã sao chép số điện thoại: ' + val, 'success');
+  } else {
+    showToast('Vui lòng giải mã số điện thoại trước khi sao chép.', 'info');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initLeadDetail);
+</script>
+{% endblock %}

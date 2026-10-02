@@ -1,0 +1,55 @@
+<!-- ===================================================================
+     KHU VỰC 6: POSTER QUẢNG CÁO NỔI GÓC MÀN HÌNH (FLOATING CORNER PROMO)
+     Poster widget thu nhỏ góc màn hình máy tính với ưu đãi hot và nút hành động nhanh
+     =================================================================== -->
+<aside class="floating-promo-widget" id="floating-promo-widget" aria-label="Khuyến mãi nhanh trong ngày">
+  <!-- Nút Icon Thu Gọn (Khi đang đóng) -->
+  <button type="button" class="btn-floating-toggle" id="btn-floating-toggle" onclick="toggleFloatingPromo()" aria-label="Mở poster khuyến mãi">
+    <span class="floating-gift-icon">🎁</span>
+    <span class="floating-badge-pulse"></span>
+    <span class="floating-toggle-text">Ưu đãi hôm nay</span>
+  </button>
+
+  <!-- Thẻ Poster Thu Nhỏ Mở Rộng -->
+  <div class="floating-promo-card" id="floating-promo-card">
+    <button type="button" class="btn-close-floating" onclick="closeFloatingPromo()" aria-label="Đóng poster">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
+    <div class="floating-card-header">
+      <span class="floating-tag">⚡ DEAL CHỚP NHOÁNG</span>
+      <h4 class="floating-card-title">Tặng Đến 2 Tháng Cước</h4>
+    </div>
+
+    <div class="floating-card-body">
+      <div class="floating-perk-item">✓ Miễn phí 100% Modem Wi-Fi 6</div>
+      <div class="floating-perk-item">✓ Tặng tài khoản FPT Play trọn gói</div>
+      <div class="floating-perk-item">✓ Khảo sát &amp; Lắp đặt siêu tốc 24h</div>
+    </div>
+
+    <div class="floating-card-footer">
+      <button type="button" class="btn-floating-cta" onclick="openBottomSheet('Tư vấn gói và ưu đãi theo khu vực', '', null, 'internet')">
+        Đăng Ký Ngay
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+function toggleFloatingPromo() {
+  const card = document.getElementById('floating-promo-card');
+  const toggleBtn = document.getElementById('btn-floating-toggle');
+  if (!card) return;
+  const isOpen = card.classList.toggle('active');
+  if (toggleBtn) {
+    toggleBtn.classList.toggle('is-open', isOpen);
+  }
+}
+
+function closeFloatingPromo() {
+  const card = document.getElementById('floating-promo-card');
+  const toggleBtn = document.getElementById('btn-floating-toggle');
+  if (card) card.classList.remove('active');
+  if (toggleBtn) toggleBtn.classList.remove('is-open');
+}
+</script>

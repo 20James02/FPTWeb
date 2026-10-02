@@ -1,0 +1,2 @@
+Browser API contracts: lost-response retry, conflict, malformed receipt, auth failure, MFA, CSRF passed.
+Analytics contract: no tracking or network requests before consent passed.

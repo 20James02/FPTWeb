@@ -1,0 +1,4 @@
+Portable PostgreSQL only; not a live Supabase advisor run.
+{"results":[],"message":"db advisors"}
+Connecting to remote database...
+No issues found

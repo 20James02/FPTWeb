@@ -1,0 +1,51 @@
+<!-- Receipt / Confirmation Success Modal -->
+<div class="bottom-sheet-backdrop" id="confirmation-backdrop">
+  <div class="bottom-sheet" id="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title" style="max-height: 85vh;">
+    <div class="bottom-sheet-drag-handle"></div>
+
+    <div class="bottom-sheet-body">
+      <div class="receipt-card">
+        <!-- Success Pulse Icon -->
+        <div class="receipt-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+
+        <h3 class="receipt-title" id="receipt-title">Tiếp Nhận Thành Công!</h3>
+        <p class="receipt-subtitle">
+          Thông tin đăng ký của bạn đã được lưu vào hệ thống tư vấn dịch vụ.
+        </p>
+
+        <!-- Receipt Code Chip -->
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Mã Tiếp Nhận Yêu Cầu:</span>
+          <div class="receipt-id-badge" id="receipt-code-box">
+            <span id="receipt-id-val">Đang tạo mã...</span>
+            <button type="button" onclick="copyReceiptCode()" style="background:none; border:none; color:var(--color-primary); cursor:pointer; font-size:0.75rem; font-weight:bold; margin-left:4px;">Sao chép</button>
+          </div>
+        </div>
+
+        <!-- SLA Commitment Banner -->
+        <div class="sla-notice-box">
+          <strong style="display: block; margin-bottom: 2px;">⚡ Cam kết thời gian phản hồi:</strong>
+          Chuyên viên FPT sẽ liên hệ trực tiếp trong <strong>5 – 10 phút</strong> (giờ làm việc) để xác nhận địa chỉ và cử kỹ thuật viên khảo sát hộp cáp.
+        </div>
+
+        <!-- Urgent Actions -->
+        <div class="receipt-actions">
+          <a href="tel:19006600" class="btn-primary-hero" style="padding: 12px; font-size: 0.95rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Tổng Đài Hỗ Trợ 24/7: 1900 6600</span>
+          </a>
+
+          <a href="https://zalo.me/19006600" target="_blank" rel="noopener noreferrer" class="btn-secondary-hero" style="padding: 12px; font-size: 0.95rem;">
+            <span>Nhắn Tin Trực Tiếp Qua Zalo</span>
+          </a>
+
+          <button type="button" class="btn-select-plan outline" onclick="closeConfirmationModal()" style="margin-top: 6px;">
+            Đóng & Quay Lại Trang Chủ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

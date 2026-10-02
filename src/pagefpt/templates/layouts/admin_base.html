@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Cổng Quản Trị Kinh Doanh — PageFPT{% endblock %}</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%2232%22%20height=%2232%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230B192C%22/><text x=%2216%22 y=%2222%22 font-size=%2216%22 font-family=%22sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22%23F26F21%22>P</text></svg>">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+  <link rel="stylesheet" href="/static/css/admin.css">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="admin-body">
+  <!-- Mobile Sidebar Backdrop -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+  <!-- Admin Sidebar -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-header">
+      {% if admin_actor.permits("report.read") %}
+      <a href="/admin/dashboard" class="sidebar-logo">
+        <div style="background: linear-gradient(135deg, var(--color-primary), #FF7A29); color: #fff; font-weight: 800; font-size: 1rem; padding: 4px 8px; border-radius: 6px;">FPT</div>
+        <span style="font-weight: 800; color: var(--text-primary); font-size: 1.05rem;">PageFPT</span>
+        <span class="badge-admin">Quản Trị</span>
+      </a>
+      {% endif %}
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Kinh Doanh & Bán Hàng</div>
+      <a href="/admin/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Tổng quan kinh doanh</span>
+      </a>
+
+      {% if admin_actor.permits("lead.read") %}
+      <a href="/admin/leads" class="nav-link {% if active_page == 'leads' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Quản Lý Lead CRM (Khách Hàng)</span>
+        <span class="nav-counter" id="sidebar-new-leads-count">—</span>
+      </a>
+      {% endif %}
+
+      <div class="nav-section-title">Dịch Vụ & Bảng Giá</div>
+      {% if admin_actor.permits("catalog.write") or admin_actor.permits("pricing.write") %}
+      <a href="/admin/pricing" class="nav-link {% if active_page == 'pricing' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Gói cước & Bảng giá</span>
+      </a>
+      {% endif %}
+
+      <div class="nav-section-title">Phân Tích & Báo Cáo</div>
+      {% if admin_actor.permits("report.read") %}
+      <a href="/admin/reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Báo cáo hiệu quả</span>
+      </a>
+      {% endif %}
+
+      <div class="nav-section-title">Hệ Thống</div>
+      {% if admin_actor.permits("workflow.manage") or admin_actor.permits("content.publish") %}
+      <a href="/admin/settings" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Cài đặt & Trạng thái</span>
+      </a>
+      {% endif %}
+{% if admin_actor.permits("marketing.write") %}<a href="/admin/marketing" class="nav-link {% if active_page == "marketing" %}active{% endif %}"><span>Marketing & Quảng cáo</span></a>{% endif %}
+{% if admin_actor.permits("content.write") or admin_actor.permits("catalog.write") %}<a href="/admin/content" class="nav-link {% if active_page == "content" %}active{% endif %}"><span>Nội dung & Ưu đãi</span></a>{% endif %}
+{% if admin_actor.permits("workflow.manage") or admin_actor.permits("identity.manage") or admin_actor.permits("governance.audit") or admin_actor.permits("governance.export") or admin_actor.permits("governance.write") %}<a href="/admin/operations" class="nav-link {% if active_page == "operations" %}active{% endif %}"><span>Vận hành & Nhân sự</span></a>{% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile-mini">
+        <div class="user-avatar" id="admin-user-avatar">AD</div>
+        <div class="user-meta">
+          <span class="user-name" id="admin-user-name">{{ admin_actor.user_id[:8] }}</span>
+          <span class="user-role" id="admin-user-role">{{ "MFA đã xác thực" if admin_actor.aal == "aal2" else "Phiên AAL1" }}</span>
+        </div>
+      </div>
+      <button type="button" onclick="logoutAdmin()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Đăng xuất">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Admin Main Wrapper -->
+  <div class="admin-main">
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button type="button" class="btn-sidebar-toggle" onclick="toggleSidebar()" aria-label="Mở menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-breadcrumbs">
+          {% block breadcrumbs %}Tổng quan kinh doanh FPT Telecom{% endblock %}
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Live Status Indicator -->
+        <div class="realtime-status-pill" id="realtime-status-pill" title="Đồng bộ qua API khi trang đang hiển thị">
+          <span class="status-beacon-dot"></span>
+          <span id="realtime-status-text">Đang kiểm tra kết nối</span>
+        </div>
+
+        {% if admin_actor.permits("lead.read") %}<button type="button" class="btn-theme-toggle" onclick="adminEnableSound()" aria-label="Cho phép phát chuông trên trang này" title="Cho phép chuông khi có lead mới"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>{% endif %}
+        <!-- Dark/Light Theme Toggle -->
+        <button type="button" class="btn-theme-toggle" onclick="toggleAdminTheme()" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện sáng / tối">
+          <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="admin-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Core Admin Scripts -->
+  <script src="/static/js/client/api.js"></script>
+  <script src="/static/js/admin/auth.js"></script>
+  <script src="/static/js/admin/common.js"></script>
+  <script src="/static/js/admin/realtime.js"></script>
+  <script src="/static/js/admin/crm.js"></script>
+  <script src="/static/js/admin/charts.js"></script>
+
+  <script>
+  window.adminPermissions = {{ admin_actor.memberships | tojson }};
+  function adminHasPermission(name) {return window.adminPermissions.some(m=>m.permissions.includes(name)||m.permissions.includes("*"));}
+
+  function toggleSidebar() {
+    document.getElementById('admin-sidebar').classList.toggle('open');
+    document.getElementById('sidebar-backdrop').classList.toggle('active');
+  }
+
+  function toggleAdminTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme') || 'light';
+    const next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('pagefpt_admin_theme', next);
+  }
+
+  // Restore saved theme
+  const savedTheme = localStorage.getItem('pagefpt_admin_theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

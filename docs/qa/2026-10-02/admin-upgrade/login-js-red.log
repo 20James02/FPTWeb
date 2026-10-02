@@ -1,0 +1,21 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: handlePasswordLogin must enter the server permission resolver
++ actual - expected
+
++ '/admin/dashboard'
+- '/admin'
+         ^
+
+    at file:///mnt/DATA/Workspace/PageFPT/tests/contracts/admin_login.mjs:12:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '/admin/dashboard',
+  expected: '/admin',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

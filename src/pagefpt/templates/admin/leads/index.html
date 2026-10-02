@@ -1,0 +1,188 @@
+{% extends "layouts/admin_base.html" %}
+
+{% set active_page = "leads" %}
+
+{% block title %}Quản Lý Khách Hàng & Đơn Tư Vấn — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}Quản lý Khách hàng / Tiếp nhận & Điều phối tư vấn{% endblock %}
+
+{% block content %}
+<!-- CRM Header Controls -->
+<div class="crm-header-bar">
+  <div style="display: flex; align-items: center; gap: var(--space-3);">
+    <h1 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary);">Danh Sách Đơn Tư Vấn</h1>
+    <span class="kanban-count-pill" id="leads-total-counter">Đang tải...</span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+    <!-- View Switcher -->
+    <div class="crm-view-switch">
+      <button type="button" class="view-switch-btn active" id="btn-view-table" onclick="switchCrmView('table')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>Dạng Bảng</span>
+      </button>
+
+      <button type="button" class="view-switch-btn" id="btn-view-kanban" onclick="switchCrmView('kanban')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
+        <span>Dạng Cột (Kanban)</span>
+      </button>
+    </div>
+
+    <!-- Fast Action Dialing Toolbar -->
+    <button type="button" class="btn-action-call" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để thực hiện cuộc gọi', 'info')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Gọi Nhanh</span>
+    </button>
+    <button type="button" class="btn-action-zalo" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để chat Zalo', 'info')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span>Zalo Tư Vấn</span>
+    </button>
+
+    <!-- Export Lead Metadata CSV -->
+    <button type="button" class="btn-action-detail" style="padding: 7px 14px; font-size: 0.8rem;" onclick="triggerLeadExport()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>Xuất CSV Metadata</span>
+    </button>
+  </div>
+</div>
+
+{% if admin_actor.permits("lead.assign") %}<button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button>{% endif %}
+<!-- Thanh Bộ Lọc Nhanh -->
+<div class="crm-filters-row">
+  <input type="text" class="filter-input" placeholder="Tìm theo mã hồ sơ, gói, địa bàn hoặc số đã che" aria-label="Tìm hồ sơ trên server" id="filter-search" oninput="applyLocalSearch()" style="min-width: 240px; border-radius: 8px;">
+
+  <select class="filter-select" aria-label="Lọc trạng thái" id="filter-status" onchange="onStatusFilterChanged(this.value)" style="border-radius: 8px;">
+    <option value="all">Tất cả trạng thái</option>
+    <option value="new">Mới tiếp nhận</option>
+    <option value="assigned">Đã phân công</option>
+    <option value="contacting">Đang liên hệ tư vấn</option>
+    <option value="contacted">Đã liên hệ</option>
+    <option value="qualified">Khách chốt gói</option>
+    <option value="survey">Khảo sát hạ tầng</option>
+    <option value="quoted">Đã báo giá</option>
+    <option value="closed">Đã ký hợp đồng</option>
+    <option value="installed">Đã lắp đặt xong</option>
+    <option value="unreachable">Chưa liên lạc được</option>
+    <option value="no_infrastructure">Chưa có hạ tầng</option>
+    <option value="rejected">Từ chối / Hủy</option>
+    <option value="invalid">Thông tin không hợp lệ</option>
+    <option value="duplicate">Trùng lặp</option>
+  </select>
+
+  <button type="button" class="btn-action-detail" style="padding: 7px 14px; font-size: 0.8rem;" onclick="reloadCrmData()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    <span>Làm Mới</span>
+  </button>
+</div>
+
+<div class="admin-filter-grid">
+<label>Chi nhánh<select id="filter-branch" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+<label>Nhân viên<select id="filter-assignee" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+<label>Tỉnh/thành<select id="filter-region" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+<label>Từ ngày<input id="filter-start" type="date" onchange="reloadCrmData()"></label>
+<label>Đến ngày<input id="filter-end" type="date" onchange="reloadCrmData()"></label>
+<label class="admin-check"><input id="filter-overdue" type="checkbox" onchange="reloadCrmData()">Chỉ hồ sơ quá SLA</label>
+</div>
+<div class="workspace-item-actions"><select id="crm-saved-view" aria-label="Bộ lọc cá nhân" onchange="crmApplyView(this.value)"><option value="">Bộ lọc đã lưu</option></select><button class="btn-action-detail" type="button" onclick="crmSaveView()">Lưu bộ lọc</button><button class="btn-action-detail" type="button" onclick="crmDeleteView()">Xóa bộ lọc</button></div>
+<!-- ==========================================
+     CHẾ ĐỘ 1: DẠNG BẢNG CHI TIẾT (TABLE VIEW)
+     ========================================== -->
+<div class="data-table-card" id="crm-table-view">
+  <div id="crm-mobile-cards" class="crm-mobile-cards" aria-live="polite"></div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Mã Hồ Sơ</th>
+        <th>Thời Gian</th>
+        <th>Số Điện Thoại (Masked)</th>
+        <th>Gói Quan Tâm</th>
+        <th>Khu Vực</th>
+        <th>Trạng Thái</th>
+        <th>Điểm Nhu Cầu</th>
+        <th>Thao Tác</th>
+      </tr>
+    </thead>
+    <tbody id="crm-table-tbody">
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 32px; color: var(--text-muted);">
+          Đang tải dữ liệu hồ sơ từ máy chủ...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination Load More Control -->
+  <div id="crm-pagination-box" style="display: none; padding: var(--space-4); text-align: center; border-top: 1px solid var(--border-subtle);">
+    <button type="button" id="btn-load-more" class="btn-action-detail" style="padding: 8px 24px; font-weight: 700;" onclick="loadMoreLeads()">
+      Tải Thêm Đơn Tư Vấn (Trang Tiếp)
+    </button>
+  </div>
+</div>
+
+<!-- ==========================================
+     CHẾ ĐỘ 2: DẠNG KANBAN TIẾN TRÌNH
+     ========================================== -->
+<div class="kanban-board" id="crm-kanban-view" style="display:none">
+{% for key,label in [('new','Mới / Đã phân công'),('contacting','Liên hệ / Chưa liên lạc được'),('qualified','Đủ điều kiện / Báo giá / Đồng ý'),('survey','Khảo sát / Chờ hạ tầng'),('installed','Đã lắp đặt'),('rejected','Từ chối / Không hợp lệ / Trùng')] %}
+<div class="kanban-column"><div class="kanban-column-header"><strong>{{ label }}</strong><span class="kanban-count-pill" id="kanban-count-{{key}}">0</span></div><div class="kanban-cards-list" id="kanban-list-{{key}}"></div></div>
+{% endfor %}
+</div>
+<script>
+function switchCrmView(viewMode) {
+  const tableView = document.getElementById('crm-table-view');
+  const kanbanView = document.getElementById('crm-kanban-view');
+  const btnTable = document.getElementById('btn-view-table');
+  const btnKanban = document.getElementById('btn-view-kanban');
+
+  if (viewMode === 'kanban') {
+    tableView.style.display = 'none';
+    kanbanView.style.display = 'flex';
+    btnKanban.classList.add('active');
+    btnTable.classList.remove('active');
+  } else {
+    tableView.style.display = 'block';
+    kanbanView.style.display = 'none';
+    btnTable.classList.add('active');
+    btnKanban.classList.remove('active');
+  }
+}
+
+function onStatusFilterChanged(statusVal) {
+  const status = statusVal === 'all' ? null : statusVal;
+  if (typeof loadCrmLeads === 'function') {
+    loadCrmLeads(status, null, false);
+  }
+}
+
+function reloadCrmData() {
+  const statusVal = document.getElementById('filter-status')?.value || 'all';
+  onStatusFilterChanged(statusVal);
+}
+
+let crmSearchTimer;
+function applyLocalSearch() {
+  clearTimeout(crmSearchTimer);
+  crmSearchTimer=setTimeout(reloadCrmData,300);
+}
+async function triggerLeadExport() {
+  try {
+    showToast('Đang gửi yêu cầu xuất CSV metadata...', 'info');
+    const res = await adminFetch('/api/v1/admin/exports', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ format: 'csv', branch_id: null })
+    });
+    const data = await res.json();
+    if (res.status === 201) {
+      showToast('Đã xếp hàng xuất CSV. Theo dõi và tải kết quả tại Vận hành.', 'success');
+      window.location.assign('/admin/operations?tab=exports');
+    } else {
+      showToast(data.message || 'Chưa thể xuất CSV. Yêu cầu quyền governance.export và AAL2.', 'error');
+    }
+  } catch (err) {
+    showToast('Lỗi gửi yêu cầu xuất file.', 'error');
+  }
+}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}<script src="/static/js/admin/crm-tools.js"></script>{% endblock %}

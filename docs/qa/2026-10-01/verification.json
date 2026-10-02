@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-01",
+  "status": "failed_acceptance",
+  "environment": "local_only_synthetic_data",
+  "report": "BAO-CAO-KIEM-THU.md",
+  "pytest": {
+    "tests": 106,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "static_checks": {
+    "ruff-check.log": "passed",
+    "ruff-format.log": "passed",
+    "mypy.log": "passed",
+    "architecture.log": "passed",
+    "build.log": "passed",
+    "wheel.log": "passed",
+    "browser-contracts.log": "passed"
+  },
+  "js_syntax": {
+    "checked": 20,
+    "failed": 0,
+    "failures": []
+  },
+  "browser_integration": {
+    "passed": 25,
+    "failed": 2,
+    "failed_checks": [
+      "appointment UI commits accepted kind to SQL",
+      "responsive pages avoid document horizontal overflow"
+    ],
+    "uncaught_page_errors": 0
+  },
+  "responsive": {
+    "total": 48,
+    "passed": 37,
+    "failed": 11
+  },
+  "diagnostics": {
+    "passed": 2,
+    "failed": 3,
+    "failed_checks": [
+      "pricing renderer treats stored plan names as text",
+      "public package selection carries backend plan UUID",
+      "password recovery sends a server request before claiming completion"
+    ]
+  },
+  "mobile_form": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "browser": "local Chrome / Playwright",
+    "real_postgres_receipt": true,
+    "published_region_uuid_selected": true,
+    "campaign_landing_receipt": true,
+    "no_horizontal_overflow": true,
+    "failed_request_not_confirmed": true,
+    "stable_retry_key": true,
+    "no_phone_in_browser_console": true
+  },
+  "performance": {
+    "environment": "local ASGI + PostgreSQL16 Unix socket + service_role; no hosted network or worker load",
+    "duration_s": 60,
+    "rate_rps": 5,
+    "requests": 450,
+    "errors": {},
+    "burst50": {
+      "p50_ms": 144.471,
+      "p95_ms": 201.888,
+      "p99_ms": 207.542
+    },
+    "sustained": {
+      "p50_ms": 47.338,
+      "p95_ms": 63.687,
+      "p99_ms": 83.191
+    },
+    "burst100": {
+      "p50_ms": 1189.65,
+      "p95_ms": 1481.273,
+      "p99_ms": 1504.036
+    }
+  },
+  "known_runtime_defects": [
+    "F-01 stored HTML execution in pricing renderer",
+    "F-02 package CTA lacks backend plan UUID",
+    "F-03 appointment enum rejected with 422",
+    "F-04 horizontal overflow in 11 viewport cases",
+    "F-05 password recovery has no server request"
+  ],
+  "production_functional_fixes_applied": false,
+  "cloud_deployment_verified": false,
+  "limitations": [
+    "Supabase Auth HTTP simulated; hosted Auth not exercised",
+    "SQL through local gateway; hosted PostgREST and Realtime configuration not exercised",
+    "R2/ad delivery uses existing mocked contract tests; no real cloud credentials",
+    "Browser blocks external media/font requests",
+    "Performance excludes cloud RTT/cold start and concurrent worker load",
+    "Does not prove every endpoint/role/UX permutation is covered"
+  ],
+  "source_snapshot": {
+    "files": 185,
+    "sha256": "02ba8f396d24b5668e4e11dcd3d87452a821ed201d703e6cf6d3e4c00634957b"
+  }
+}

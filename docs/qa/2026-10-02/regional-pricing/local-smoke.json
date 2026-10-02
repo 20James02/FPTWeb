@@ -1,0 +1,9 @@
+{
+  "origin": "http://127.0.0.1:8000",
+  "health": 200,
+  "login": 200,
+  "toast_position": "fixed",
+  "mobile_overflow": false,
+  "escape_closes_dialog": true,
+  "page_errors": []
+}

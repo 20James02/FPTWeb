@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_recovery_database_failure_never_leaves_changed_password_with_live_sessions[auth_recovery_revoke_sessions-0] _
+
+recovery_backend = (<httpx.AsyncClient object at 0x7eff6695d910>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMTM4MSwiYWFsIjoiYWFsMiJ9.xCvszrb2eik9a4JCDgGEtRVepYBe5pm80ozkMyodgQYDs1ScA-nxfPZmCVqQ4CrbI8jGoqElO6DCoccREXQqqA')
+gateway = <conftest.LocalGateway object at 0x7eff6a903b60>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7eff6a902120>
+failed_operation = 'auth_recovery_revoke_sessions', update_count = 0
+
+    @respx.mock
+    @pytest.mark.parametrize("failed_operation,update_count", [("auth_recovery_revoke_sessions", 0), ("auth_recovery_complete", 1)])
+    async def test_recovery_database_failure_never_leaves_changed_password_with_live_sessions(recovery_backend, gateway, monkeypatch, failed_operation, update_count):
+        from pagefpt.core.errors import DomainError
+        client, token = recovery_backend
+        pair = provider_pair(token)
+        respx.post("https://test.supabase.co/auth/v1/token").mock(return_value=httpx.Response(200, json={**pair, "refresh_token": "private-refresh"}))
+        assert (await client.post("/api/v1/auth/session", json={"email": PAYLOAD["email"], "password": "old"})).status_code == 200
+        original = gateway.rpc
+        async def failing(name, payload, actor_token=None):
+            if payload.get("command", payload).get("op") == failed_operation:
+                raise DomainError("DATABASE_UNAVAILABLE", 503)
+            return await original(name, payload, actor_token)
+        monkeypatch.setattr(gateway, "rpc", failing)
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json=pair))
+        update = respx.put("https://test.supabase.co/auth/v1/user").mock(return_value=httpx.Response(200, json=provider_user(token)))
+        logout = respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(204))
+        result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
+>       assert result.status_code == 503 and update.call_count == update_count
+E       assert (200 == 503)
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/integration/test_password_recovery.py:362: AssertionError
+_ test_recovery_database_failure_never_leaves_changed_password_with_live_sessions[auth_recovery_complete-1] _
+
+recovery_backend = (<httpx.AsyncClient object at 0x7eff66884fe0>, 'eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3Qta2V5IiwidHlwIjoiSldUIn0.eyJzdWIiOi...c5MDkxMTM4MSwiYWFsIjoiYWFsMiJ9.k7cS7xKY7Pv-ypLTlbA4TwmCh_i1vxR9YvatELJXPED6xNkSDk7cUKYlYm6_vg9vwALr5oekQCeAcsDewfp1jQ')
+gateway = <conftest.LocalGateway object at 0x7eff66984f50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7eff66922840>
+failed_operation = 'auth_recovery_complete', update_count = 1
+
+    @respx.mock
+    @pytest.mark.parametrize("failed_operation,update_count", [("auth_recovery_revoke_sessions", 0), ("auth_recovery_complete", 1)])
+    async def test_recovery_database_failure_never_leaves_changed_password_with_live_sessions(recovery_backend, gateway, monkeypatch, failed_operation, update_count):
+        from pagefpt.core.errors import DomainError
+        client, token = recovery_backend
+        pair = provider_pair(token)
+        respx.post("https://test.supabase.co/auth/v1/token").mock(return_value=httpx.Response(200, json={**pair, "refresh_token": "private-refresh"}))
+        assert (await client.post("/api/v1/auth/session", json={"email": PAYLOAD["email"], "password": "old"})).status_code == 200
+        original = gateway.rpc
+        async def failing(name, payload, actor_token=None):
+            if payload.get("command", payload).get("op") == failed_operation:
+                raise DomainError("DATABASE_UNAVAILABLE", 503)
+            return await original(name, payload, actor_token)
+        monkeypatch.setattr(gateway, "rpc", failing)
+        respx.post("https://test.supabase.co/auth/v1/verify").mock(return_value=httpx.Response(200, json=pair))
+        update = respx.put("https://test.supabase.co/auth/v1/user").mock(return_value=httpx.Response(200, json=provider_user(token)))
+        logout = respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(204))
+        result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
+        assert result.status_code == 503 and update.call_count == update_count
+        if update_count:
+>           assert logout.call_count == 1
+E           AssertionError: assert 0 == 1
+E            +  where 0 = <Route <Scheme eq 'https'> AND <Host eq 'test.supabase.co'> AND <Path eq '/auth/v1/logout'> AND <Method eq 'POST'>>.call_count
+
+tests/integration/test_password_recovery.py:364: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_password_recovery.py::test_recovery_database_failure_never_leaves_changed_password_with_live_sessions[auth_recovery_revoke_sessions-0]
+FAILED tests/integration/test_password_recovery.py::test_recovery_database_failure_never_leaves_changed_password_with_live_sessions[auth_recovery_complete-1]
+2 failed, 29 deselected in 1.34s

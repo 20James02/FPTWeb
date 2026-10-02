@@ -1,0 +1,14 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "local Chrome / Playwright",
+  "real_postgres_receipt": true,
+  "published_region_uuid_selected": true,
+  "campaign_landing_receipt": true,
+  "no_horizontal_overflow": true,
+  "failed_request_not_confirmed": true,
+  "stable_retry_key": true,
+  "no_phone_in_browser_console": true
+}

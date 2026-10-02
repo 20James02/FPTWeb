@@ -1,0 +1,58 @@
+const {chromium} = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+(async()=>{
+ const browser = await chromium.launch({executablePath:process.env.PAGEFPT_CHROME || '/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
+ try {
+  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+  const consoleLines=[];
+  page.on('console',message=>consoleLines.push(message.text()));
+  await page.goto(process.env.PAGEFPT_TEST_ORIGIN || 'http://127.0.0.1:8091/');
+  await page.waitForFunction(()=>/^[0-9a-f-]{36}$/i.test(document.getElementById('form-lead-province').value));
+  await page.evaluate(()=>openBottomSheet('Gói kiểm thử','Cần xác nhận'));
+  await page.locator('#lead-phone').fill('0901234567');
+  await page.locator('#lead-consent').check();
+  const responsePromise=page.waitForResponse(response=>response.url().endsWith('/api/v1/leads') && response.request().method()==='POST');
+  await page.locator('#btn-submit-lead').click();
+  const response=await responsePromise;
+  assert.equal(response.status(),201);
+  const receipt=(await response.json()).receipt;
+  await page.waitForFunction(()=>document.getElementById('confirmation-backdrop').classList.contains('active'));
+  assert.equal(await page.locator('#receipt-id-val').textContent(),receipt);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
+  await page.evaluate(()=>{closeConfirmationModal();openBottomSheet('Gói kiểm thử','Cần xác nhận');});
+  await page.locator('#lead-phone').fill('0901234568');
+  await page.locator('#lead-consent').check();
+  const retryKeys=[];
+  await page.route('**/api/v1/leads',async route=>{
+    retryKeys.push(route.request().headers()['idempotency-key']);
+    await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({code:'DATABASE_UNAVAILABLE'})});
+  });
+  await page.locator('#btn-submit-lead').click();
+  await page.waitForFunction(()=>!document.getElementById('btn-submit-lead').disabled);
+  assert.equal(retryKeys.length,3);
+  assert.equal(new Set(retryKeys).size,1);
+  assert.equal(await page.evaluate(()=>document.getElementById('confirmation-backdrop').classList.contains('active')),false);
+  assert.equal(consoleLines.some(line=>line.includes('0901234567')||line.includes('0901234568')),false);
+  await page.unroute('**/api/v1/leads');
+  await page.goto((process.env.PAGEFPT_TEST_ORIGIN || 'http://127.0.0.1:8091') + '/khuyen-mai');
+  await page.locator('#lp-phone').fill('0902345671');
+  if (await page.locator('#lp-consent').count()) await page.locator('#lp-consent').check();
+  const campaignResponse = page.waitForResponse(response=>response.url().endsWith('/api/v1/leads') && response.request().method()==='POST');
+  await page.locator('form[onsubmit="handleDirectLeadSubmit(event)"] button[type="submit"]').click();
+  const campaignResult = await campaignResponse;
+  assert.equal(campaignResult.status(),201);
+  const campaignBody = campaignResult.request().postDataJSON();
+  assert.equal(campaignBody.analytics_opt_in,false);
+  assert.equal(campaignBody.preferred_contact_at,null);
+  await page.waitForFunction(()=>document.getElementById('confirmation-backdrop').classList.contains('active'));
+  assert.equal(await page.locator('#receipt-id-val').textContent(),(await campaignResult.json()).receipt);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
+  assert.equal(consoleLines.some(line=>line.includes('0902345671')),false);
+  const outputDir=process.env.PAGEFPT_TEST_OUTPUT_DIR || 'docs/backend';
+  fs.mkdirSync(outputDir,{recursive:true});
+  await page.screenshot({path:require('node:path').join(outputDir,'mobile-lead-check.png'),fullPage:false});
+  fs.writeFileSync(require('node:path').join(outputDir,'mobile-browser-check.json'),JSON.stringify({viewport:{width:390,height:844},browser:'local Chrome / Playwright',real_postgres_receipt:true,published_region_uuid_selected:true,campaign_landing_receipt:true,no_horizontal_overflow:true,failed_request_not_confirmed:true,stable_retry_key:true,no_phone_in_browser_console:true},null,2)+'\n');
+  console.log('Mobile browser checks passed: committed receipt, no overflow, 503 retry key, no false success, no phone console log.');
+ } finally {await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

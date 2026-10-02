@@ -1,0 +1,68 @@
+{% extends "layouts/admin_base.html" %}
+{% set active_page = "pricing" %}
+{% block title %}Gói cước & giá theo địa bàn — PageFPT{% endblock %}
+{% block breadcrumbs %}Dịch vụ / Gói cước & bảng giá{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-pricing.css">{% endblock %}
+{% block content %}
+<div class="pricing-workspace">
+  <header class="pricing-heading"><div><span class="pricing-eyebrow">DỊCH VỤ & ĐỊA BÀN</span><h1>Gói cước & bảng giá</h1><p>Thiết lập một giá cho nhiều nơi, điều chỉnh riêng từng xã/phường.</p></div><button class="pricing-btn" onclick="loadPricesList()">Làm mới dữ liệu</button></header>
+  <div class="pricing-guide"><strong>Giá khách thấy theo địa bàn đã chọn</strong><span>Xã/phường → Tỉnh/thành → Nhóm giá → Giá mặc định. Chỉ sử dụng bản đã công bố còn hiệu lực.</span></div>
+  <nav class="pricing-tabs" aria-label="Quản lý dịch vụ"><button class="pricing-tab active" data-tab="prices" onclick="pricingTab('prices')">Bảng giá</button><button class="pricing-tab" data-tab="plans" onclick="pricingTab('plans')">Gói cước</button><button class="pricing-tab" data-tab="locations" onclick="pricingTab('locations')">Địa bàn</button></nav>
+  <div id="pricing-page-error" class="pricing-error" role="alert" hidden></div>
+  <div class="pricing-toolbar"><label class="pricing-search">Tìm trong danh sách<input id="pricing-search" type="search" placeholder="Tên gói, tỉnh/thành, xã/phường…" oninput="renderPricing()"></label><label>Trạng thái<select id="pricing-status" onchange="renderPricing()"><option value="">Tất cả</option><option value="draft">Bản nháp</option><option value="published">Đã công bố</option><option value="retired">Đã ngừng</option></select></label><div class="pricing-actions"><button class="pricing-btn primary" id="pricing-add" onclick="pricingAdd()">+ Thêm giá mới</button><button class="pricing-btn" id="geography-open" onclick="openGeographyDialog()">Đồng bộ tỉnh, xã từ API</button><button class="pricing-btn" onclick="openCsvModal()">Nhập CSV</button></div></div>
+  <section id="pricing-prices" class="pricing-panel"><div class="pricing-panel-title"><h2>Bảng giá theo địa bàn</h2><span id="prices-count-badge" aria-live="polite">Đang tải…</span></div><div class="pricing-table-scroll"><table class="pricing-table"><thead><tr><th>Gói cước / Địa bàn</th><th>Cước tháng</th><th>Kỳ / VAT</th><th>Hiệu lực</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody id="prices-tbody"></tbody></table></div><button id="pricing-load-more" class="pricing-btn" onclick="loadMorePrices()" hidden>Tải thêm bảng giá</button></section>
+  <section id="pricing-plans" class="pricing-panel" hidden><div class="pricing-panel-title"><h2>Danh mục gói cước</h2><span>Ngừng cung cấp giữ nguyên lịch sử khách hàng.</span></div><div id="plans-list" class="pricing-list"></div></section>
+  <section id="pricing-locations" class="pricing-panel" hidden><div class="pricing-panel-title"><h2>Danh mục địa bàn</h2><span>Đồng bộ danh mục API, rồi chọn tỉnh/thành để xem xã/phường.</span></div><label class="pricing-location-filter">Xem xã/phường của tỉnh/thành<select id="location-province-filter" onchange="loadLocationWards()"><option value="">Tất cả tỉnh/thành</option></select></label><div id="locations-list" class="pricing-list"></div></section>
+</div>
+
+<dialog id="create-price-backdrop" class="pricing-dialog" aria-labelledby="price-dialog-title">
+ <form id="create-price-form" onsubmit="handleCreatePriceSubmit(event)">
+  <header class="pricing-dialog-head"><div><span class="pricing-eyebrow">BẢNG GIÁ</span><h2 id="price-dialog-title">Thêm giá mới</h2></div><button type="button" class="pricing-close" aria-label="Đóng" onclick="closeCreatePriceModal()">×</button></header>
+  <div class="pricing-dialog-body"><div id="price-error" class="pricing-error" tabindex="-1" role="alert" hidden></div>
+   <div class="pricing-fields"><label>Gói cước *<select id="inp-plan-id" required></select></label><label>Áp dụng giá<select id="inp-scope-kind" onchange="onScopeKindChange(this.value)"><option value="default">Giá mặc định</option><option value="region">Chọn tỉnh/thành, xã/phường</option></select></label></div>
+   <div id="price-location-picker" hidden></div><p id="price-scope-summary" class="pricing-hint">Giá mặc định cho các địa bàn chưa có giá riêng, trong phạm vi gói áp dụng.</p>
+   <fieldset class="pricing-fieldset"><legend>Cước và kỳ thanh toán</legend><div class="pricing-fields">
+    <label>Cước / tháng (VND) *<input id="inp-monthly-vnd" inputmode="numeric" data-money required placeholder="Ví dụ: 225.000"><small data-money-preview="inp-monthly-vnd"></small></label>
+    <label>Thanh toán trước (tháng) *<input id="inp-billing-months" type="number" value="6" min="1" max="36" required></label>
+    <label>Phí hòa mạng (VND)<input id="inp-setup-vnd" data-money inputmode="numeric" value="0"></label>
+    <label>Phí thiết bị (VND)<input id="inp-equipment-vnd" data-money inputmode="numeric" value="0"></label>
+    <label>Tặng thêm (tháng)<input id="inp-gift-months" type="number" value="0" min="0" max="36"></label>
+    <label>Thuế VAT (%)<input id="inp-vat-bps" type="number" value="0" min="0" max="100" step="0.01"></label>
+   </div><label class="pricing-check"><input id="inp-vat-included" type="checkbox" checked>Đã gồm VAT trong cước (không cộng thuế lần nữa)</label></fieldset>
+   <div class="pricing-fields"><label>Bắt đầu áp dụng *<input id="inp-start" type="datetime-local" step="1" required></label><label>Kết thúc (để trống nếu chưa có)<input id="inp-end" type="datetime-local" step="1"></label></div>
+   <label>Nguồn / căn cứ giá *<input id="inp-source" maxlength="500" required placeholder="Tên bảng giá, số quyết định hoặc liên kết đã kiểm chứng"></label>
+   <label class="pricing-check" id="price-publish-control"><input id="price-publish-now" type="checkbox">Công bố ngay sau khi lưu (cần quyền và MFA)</label>
+   <p id="price-draft-preview" class="pricing-hint" role="status" aria-live="polite"></p>
+   <p id="price-version-note" class="pricing-hint">Một mức giá chung cho các ô đã chọn. Muốn giá khác ở một xã/phường: tạo thêm giá riêng cho xã/phường đó.</p>
+  </div>
+  <footer class="pricing-dialog-foot"><button type="button" class="pricing-btn" onclick="closeCreatePriceModal()">Hủy</button><button type="submit" id="btn-submit-price" class="pricing-btn primary">Lưu bản nháp</button></footer>
+ </form>
+</dialog>
+
+<dialog id="plan-dialog" class="pricing-dialog" aria-labelledby="plan-dialog-title"><form id="plan-form" onsubmit="savePlan(event)">
+ <header class="pricing-dialog-head"><h2 id="plan-dialog-title">Thêm gói cước</h2><button type="button" class="pricing-close" aria-label="Đóng" onclick="closePricingDialog('plan-dialog')">×</button></header>
+ <div class="pricing-dialog-body"><div id="plan-error" class="pricing-error" tabindex="-1" role="alert" hidden></div><div class="pricing-fields"><label>Tên gói *<input id="plan-name" required maxlength="200"></label><label>Mã gói *<input id="plan-code" required pattern="[a-z0-9-]+" maxlength="60" placeholder="internet-home"></label><label>Dịch vụ<select id="plan-service"><option value="internet">Internet</option><option value="combo">Combo</option><option value="camera">Camera</option><option value="business">Doanh nghiệp</option><option value="play">Truyền hình</option></select></label><label>Tốc độ (Mbps)<input id="plan-speed" type="number" min="1" max="100000"></label></div><label>Mô tả<textarea id="plan-description" rows="3" maxlength="4000"></textarea></label><label>Thiết bị (mỗi dòng một mục)<textarea id="plan-equipment" rows="2"></textarea></label><fieldset class="pricing-fieldset"><legend>Địa bàn cung cấp gói</legend><label class="pricing-check"><input id="plan-all-locations" type="checkbox" checked onchange="document.getElementById('plan-location-picker').hidden=this.checked">Tất cả địa bàn đã cấu hình</label><div id="plan-location-picker" hidden></div><p class="pricing-hint">Chọn tỉnh/thành để áp dụng toàn bộ xã/phường con, hoặc mở tỉnh để chọn từng xã/phường.</p></fieldset><p class="pricing-hint">Lưu thay đổi vào bản nháp; bấm Công bố để cập nhật trên trang khách.</p></div>
+ <footer class="pricing-dialog-foot"><button type="button" class="pricing-btn" onclick="closePricingDialog('plan-dialog')">Hủy</button><button type="submit" class="pricing-btn primary">Lưu gói cước</button></footer>
+</form></dialog>
+
+<dialog id="location-dialog" class="pricing-dialog" aria-labelledby="location-dialog-title"><form id="location-form" onsubmit="saveLocation(event)">
+ <header class="pricing-dialog-head"><h2 id="location-dialog-title">Thêm địa bàn</h2><button type="button" class="pricing-close" aria-label="Đóng" onclick="closePricingDialog('location-dialog')">×</button></header>
+ <div class="pricing-dialog-body"><div id="location-error" class="pricing-error" role="alert" tabindex="-1" hidden></div><div class="pricing-fields"><label>Cấp địa bàn<select id="location-level" onchange="locationParentChanged()"><option value="province">Tỉnh/thành</option><option value="ward">Xã/phường</option></select></label><label>Tỉnh/thành trực thuộc<select id="location-parent" onchange="locationParentChanged()"></select></label><label>Tên địa bàn *<input id="location-name" required maxlength="200"></label><label>Mã địa bàn *<input id="location-code" required maxlength="80"></label><label>Vùng miền<select id="location-zone"><option value="mien_bac">Miền Bắc</option><option value="mien_trung">Miền Trung</option><option value="mien_nam">Miền Nam</option><option value="khac">Khác</option></select></label><label>Chi nhánh phụ trách<select id="location-branch" required></select></label></div><p class="pricing-hint">Xã/phường kế thừa chi nhánh và vùng miền của tỉnh/thành. Cấp địa bàn và tỉnh trực thuộc được giữ cố định sau khi tạo.</p></div>
+ <footer class="pricing-dialog-foot"><button type="button" class="pricing-btn" onclick="closePricingDialog('location-dialog')">Hủy</button><button class="pricing-btn primary" type="submit">Lưu địa bàn</button></footer>
+</form></dialog>
+
+<dialog id="csv-modal-backdrop" class="pricing-dialog" aria-labelledby="csv-title"><header class="pricing-dialog-head"><h2 id="csv-title">Nhập bảng giá CSV</h2><button class="pricing-close" aria-label="Đóng" onclick="closeCsvModal()">×</button></header><div class="pricing-dialog-body"><p class="pricing-hint">Công cụ nâng cao dùng ID gói/địa bàn trong mẫu CSV của API. Xem trước trước khi lưu bản nháp.</p><label>Nội dung CSV<textarea id="csv-content-input" rows="8"></textarea></label><div id="csv-preview-summary" role="status"></div><div id="csv-preview-errors" class="pricing-error" hidden></div></div><footer class="pricing-dialog-foot"><button class="pricing-btn" id="btn-csv-preview" onclick="handleCsvPreview()">Xem trước</button><button id="btn-csv-apply" class="pricing-btn primary" onclick="handleCsvApply()" hidden>Áp dụng</button></footer></dialog>
+<dialog id="pricing-confirm" class="pricing-dialog compact" aria-labelledby="confirm-title"><header class="pricing-dialog-head"><h2 id="confirm-title">Xác nhận ngừng áp dụng</h2></header><div class="pricing-dialog-body"><p id="confirm-message"></p><div id="confirm-error" class="pricing-error" role="alert" tabindex="-1" hidden></div></div><footer class="pricing-dialog-foot"><button class="pricing-btn" onclick="closePricingDialog('pricing-confirm')">Hủy</button><button id="confirm-action" class="pricing-btn danger">Ngừng áp dụng</button></footer></dialog>
+
+<dialog id="geography-dialog" class="pricing-dialog" aria-labelledby="geography-title"><form onsubmit="syncGeography(event)">
+<header class="pricing-dialog-head"><h2 id="geography-title">Đồng bộ tỉnh/thành và xã/phường</h2><button type="button" class="pricing-close" aria-label="Đóng" onclick="closePricingDialog('geography-dialog')">×</button></header>
+<div class="pricing-dialog-body"><div id="geography-error" class="pricing-error" tabindex="-1" role="alert" hidden></div>
+<p id="geography-provenance" class="pricing-hint"></p><p class="pricing-hint">Danh mục hành chính sau sáp nhập 2025. Đồng bộ công bố địa bàn để lựa chọn; phạm vi cung cấp và giá do bạn thiết lập. Địa bàn hiện có, bảng giá và chỉnh sửa thủ công được giữ nguyên.</p>
+<div class="pricing-fields"><label>Chi nhánh phụ trách<select id="geography-branch" required></select></label><label>Nguồn dữ liệu<select id="geography-source"><option value="live">Lấy mới từ API (dự phòng khi lỗi)</option><option value="bundled">Dùng bản dự phòng có ngày tải</option></select></label></div>
+<label>Tìm tỉnh/thành<input id="geography-search" type="search" placeholder="Ví dụ: Hà Nội hoặc ha noi" oninput="geographyChoices()"></label>
+<label class="pricing-check"><input id="geography-all" type="checkbox" onchange="geographySelectAll(this.checked)">Chọn tất cả tỉnh/thành</label><p id="geography-selection" role="status"></p>
+<div id="geography-provinces" class="geography-provinces"></div><p id="geography-result" role="status"></p>
+<p class="pricing-hint">Nguồn: <a href="https://provinces.open-api.vn/api/v2/redoc" target="_blank" rel="noopener noreferrer">Province Open API v2</a>. Cần quyền quản lý danh mục và MFA.</p>
+</div><footer class="pricing-dialog-foot"><button type="button" class="pricing-btn" onclick="closePricingDialog('geography-dialog')">Đóng</button><button id="geography-submit" type="submit" class="pricing-btn primary">Đồng bộ địa bàn đã chọn</button></footer></form></dialog>
+{% endblock %}
+{% block extra_scripts %}<script src="/static/js/admin/pricing.js"></script><script src="/static/js/admin/geography.js"></script>{% endblock %}

@@ -1,0 +1,11 @@
+Browser API contracts: lost-response retry, conflict, malformed receipt, auth failure, MFA, CSRF passed.
+Analytics contract: no tracking or network requests before consent passed.
+Admin navigation: logout/401 race navigates once.
+Manual retry: refreshed quote/session preserve body and key; edited phone creates a new request.
+Uncertain retry: later 4xx does not discard an unresolved original key.
+Comparison prices: region invalidation and quote refresh passed.
+Mobile catalog: navigation, category exclusion and desktop resize passed.
+Quiz catalog: published UUID and empty-catalog consultation passed.
+Quote selection: stale responses fenced; generic CTA clears package and quote.
+Quote selection: region changes fenced; timeout falls back to consultation.
+Session deadline: auxiliary timeout falls back to null token and lead submission succeeds.

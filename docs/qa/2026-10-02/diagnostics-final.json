@@ -1,0 +1,235 @@
+{
+  "environment": "Disposable loopback PostgreSQL and synthetic Auth only",
+  "checks": [
+    {
+      "name": "price UI submit creates a persisted draft",
+      "status": "passed"
+    },
+    {
+      "name": "pricing renderer treats stored plan names as text",
+      "status": "passed"
+    },
+    {
+      "name": "public package selection carries backend plan UUID",
+      "status": "passed"
+    },
+    {
+      "name": "settings save handler persists UI values",
+      "status": "passed"
+    },
+    {
+      "name": "client runline renders stored settings as text",
+      "status": "passed"
+    },
+    {
+      "name": "password recovery sends a server request before claiming completion",
+      "status": "passed"
+    },
+    {
+      "name": "email and MFA recovery changes password, clears credentials and revokes session",
+      "status": "passed"
+    }
+  ],
+  "layouts": [
+    {
+      "path": "/",
+      "viewport": 390,
+      "scroll": 390,
+      "offenders": [
+        {
+          "tag": "DIV",
+          "id": "runline-marquee-text",
+          "classes": "runline-marquee-content",
+          "width": 787,
+          "right": 827
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "marquee-item",
+          "width": 394,
+          "right": 433
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "marquee-item",
+          "width": 394,
+          "right": 827
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "js-tilt-glare-inner",
+          "width": 320,
+          "right": 438
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "js-tilt-glare-inner",
+          "width": 320,
+          "right": 438
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "showcase-poster-card poster-wifi aos-init",
+          "width": 181,
+          "right": 480
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-glow-backdrop glow-orange",
+          "width": 250,
+          "right": 539
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-content",
+          "width": 163,
+          "right": 471
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "classes": "poster-badge-wrap",
+          "width": 163,
+          "right": 471
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "poster-tag-highlight tag-orange",
+          "width": 57,
+          "right": 444
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "tag-text-mobile",
+          "width": 52,
+          "right": 444
+        },
+        {
+          "tag": "H3",
+          "id": "",
+          "classes": "poster-title",
+          "width": 163,
+          "right": 471
+        }
+      ]
+    },
+    {
+      "path": "/admin/dashboard",
+      "viewport": 360,
+      "scroll": 360,
+      "offenders": []
+    },
+    {
+      "path": "/admin/settings",
+      "viewport": 390,
+      "scroll": 390,
+      "offenders": [
+        {
+          "tag": "TABLE",
+          "id": "",
+          "classes": "leads-table",
+          "width": 404,
+          "right": 449
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "classes": "",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "classes": "",
+          "width": 45,
+          "right": 447
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "classes": "",
+          "width": 400,
+          "right": 447
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "classes": "",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "LABEL",
+          "id": "",
+          "classes": "admin-switch",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "classes": "admin-slider",
+          "width": 42,
+          "right": 401
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "classes": "",
+          "width": 45,
+          "right": 447
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "btn-action-detail",
+          "width": 45,
+          "right": 447
+        }
+      ]
+    }
+  ],
+  "price_form_valid": true,
+  "price_submit_status": 201,
+  "price_draft_persisted": true,
+  "stored_html_executed": false,
+  "public_plan_onclick": "selectPublishedPlan(this)",
+  "selected_plan_id": "c8a5d2a3-c099-4ecb-b827-9221ae348b72",
+  "password_recovery_post_paths": [
+    "/api/v1/auth/recovery",
+    "/api/v1/auth/recovery/reset"
+  ],
+  "passed": 7,
+  "failed": 0
+}

@@ -1,0 +1,4 @@
+{
+  "refetchArguments": [],
+  "note": "loadCrmLeads defaults status=null,cursor=null,append=false; chosen filter and loaded pages will reset"
+}
