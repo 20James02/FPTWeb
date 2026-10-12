@@ -122,7 +122,7 @@ function renderCrmWindow() {
   if (!crmLoadedLeads.length) {
     const row = document.createElement("tr");
     const cell = adminNode("td", "Chưa có đơn tư vấn theo bộ lọc này.");
-    cell.colSpan = 8;
+    cell.colSpan = 9;
     row.append(cell);
     tbody.append(row);
     if (mobile)
@@ -269,14 +269,25 @@ function renderLeadTableRow(tbody, lead) {
   tdId.appendChild(linkId);
   row.appendChild(tdId);
 
-  // 2. Thời gian tạo
+  // 2. Thời gian tạo & Cảnh báo SLA
   const tdTime = document.createElement("td");
   const dateObj = new Date(lead.created_at);
-  tdTime.textContent = isNaN(dateObj)
+  const timeFormatted = isNaN(dateObj)
     ? "Vừa xong"
     : PageFPTDates.format(dateObj);
   tdTime.style.fontSize = "0.8rem";
   tdTime.style.color = "var(--text-muted)";
+  const isOverdue =
+    ["new", "assigned", "contacting"].includes(lead.status) &&
+    lead.sla_due_at &&
+    new Date(lead.sla_due_at) < new Date();
+  if (isOverdue) {
+    const timeSpan = adminNode("div", timeFormatted);
+    const overdueSpan = adminNode("span", "⚠️ Quá hạn SLA", "badge-sla-overdue");
+    tdTime.append(timeSpan, overdueSpan);
+  } else {
+    tdTime.textContent = timeFormatted;
+  }
   row.appendChild(tdTime);
 
   // 3. Số điện thoại (Masked + Reveal button)
@@ -321,7 +332,22 @@ function renderLeadTableRow(tbody, lead) {
   tdStatus.appendChild(badge);
   row.appendChild(tdStatus);
 
-  // 7. Điểm nhu cầu (Scores)
+  // 7. Phân công nhân sự
+  const tdAssignee = document.createElement("td");
+  const assigneeBadge = document.createElement("div");
+  assigneeBadge.className = "crm-assignee-badge";
+  if (lead.labels?.assignee) {
+    const avatar = adminNode("span", "👤", "assignee-avatar");
+    const name = adminNode("span", lead.labels.assignee, "assignee-name");
+    assigneeBadge.append(avatar, name);
+  } else {
+    const unassigned = adminNode("span", "Chưa phân công", "assignee-unassigned");
+    assigneeBadge.append(unassigned);
+  }
+  tdAssignee.appendChild(assigneeBadge);
+  row.appendChild(tdAssignee);
+
+  // 8. Điểm nhu cầu (Scores)
   const tdScore = document.createElement("td");
   const scoreIntent = lead.scores?.intent;
   if (scoreIntent != null) {
@@ -341,13 +367,31 @@ function renderLeadTableRow(tbody, lead) {
   }
   row.appendChild(tdScore);
 
-  // 8. Thao tác
+  // 9. Thao tác
   const tdAction = document.createElement("td");
+  const actionWrap = document.createElement("div");
+  actionWrap.style.display = "flex";
+  actionWrap.style.gap = "6px";
+  actionWrap.style.alignItems = "center";
+
   const btnDetail = document.createElement("a");
   btnDetail.href = "/admin/leads/detail?id=" + encodeURIComponent(lead.id);
   btnDetail.className = "btn-action-detail";
   btnDetail.textContent = "Hồ Sơ";
-  tdAction.appendChild(btnDetail);
+  actionWrap.appendChild(btnDetail);
+
+  if (adminHasPermission("lead.assign") && adminCanAssignLead(lead) && !lead.labels?.assignee) {
+    const btnQuickAssign = document.createElement("button");
+    btnQuickAssign.type = "button";
+    btnQuickAssign.className = "btn-action-call";
+    btnQuickAssign.style.padding = "4px 8px";
+    btnQuickAssign.style.fontSize = "0.74rem";
+    btnQuickAssign.textContent = "Giao";
+    btnQuickAssign.title = "Phân công nhân viên phụ trách";
+    btnQuickAssign.onclick = () => adminChooseAssignee([lead]);
+    actionWrap.appendChild(btnQuickAssign);
+  }
+  tdAction.appendChild(actionWrap);
   row.appendChild(tdAction);
 
   tbody.appendChild(row);
@@ -360,6 +404,12 @@ function renderKanbanCard(lead) {
 
   const card = document.createElement("div");
   card.className = "kanban-card";
+  const overdue =
+    ["new", "assigned", "contacting"].includes(lead.status) &&
+    lead.sla_due_at &&
+    new Date(lead.sla_due_at) < new Date();
+  if (overdue) card.classList.add("overdue-sla");
+
   card.tabIndex = 0;
   card.setAttribute("role", "link");
   card.onkeydown = (e) => {
@@ -389,6 +439,33 @@ function renderKanbanCard(lead) {
   planEl.className = "kanban-card-plan";
   planEl.textContent = lead.labels?.plan || "Cần tư vấn gói";
   card.appendChild(planEl);
+
+  const footerEl = document.createElement("div");
+  footerEl.className = "kanban-card-footer";
+
+  const assigneeEl = document.createElement("span");
+  assigneeEl.style.display = "inline-flex";
+  assigneeEl.style.alignItems = "center";
+  assigneeEl.style.gap = "4px";
+  if (lead.labels?.assignee) {
+    assigneeEl.textContent = "👤 " + lead.labels.assignee;
+    assigneeEl.style.color = "var(--text-primary)";
+    assigneeEl.style.fontWeight = "600";
+  } else {
+    assigneeEl.textContent = "⚪ Chưa phân công";
+    assigneeEl.style.color = "var(--text-muted)";
+  }
+
+  const regionEl = document.createElement("span");
+  regionEl.textContent = lead.labels?.region || "Cần xác nhận";
+  regionEl.style.maxWidth = "110px";
+  regionEl.style.overflow = "hidden";
+  regionEl.style.textOverflow = "ellipsis";
+  regionEl.style.whiteSpace = "nowrap";
+
+  footerEl.appendChild(assigneeEl);
+  footerEl.appendChild(regionEl);
+  card.appendChild(footerEl);
 
   colEl.appendChild(card);
 

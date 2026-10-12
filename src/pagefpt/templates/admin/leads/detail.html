@@ -34,49 +34,87 @@
     
     <section id="lead-next-action" class="panel-card" aria-label="Bước tiếp theo"></section>
     <!-- Thẻ Đầu Trang: Tóm Tắt Khách Hàng & Nút Thao Tác Nhanh -->
-    <div class="panel-card" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4);">
-      <div>
-        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: 4px;">
-          <h1 style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary);" id="detail-customer-title">Hồ Sơ Khách Hàng</h1>
-          <span class="status-badge" id="detail-lead-status-badge">Đang tải...</span>
+    <div class="panel-card" style="display: flex; flex-direction: column; gap: var(--space-4);">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4);">
+        <div>
+          <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: 4px;">
+            <h1 style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary);" id="detail-customer-title">Hồ Sơ Khách Hàng</h1>
+            <span class="status-badge" id="detail-lead-status-badge">Đang tải...</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span>Mã hồ sơ: <strong style="color: var(--color-primary);" id="detail-id-display">...</strong></span> • 
+            <span>Thời gian tạo: <strong id="detail-created-at">...</strong></span> • 
+            <span>Phiên bản: <strong id="detail-version-display">1</strong></span> • 
+            <span class="detail-header-assignee-pill" style="display: inline-flex; align-items: center; gap: 5px; background: var(--bg-surface-muted); padding: 2px 10px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+              👤 Phụ trách: <strong id="detail-header-assignee" style="color: var(--text-primary);">Chưa phân công</strong>
+            </span>
+          </div>
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">
-          Mã hồ sơ: <strong style="color: var(--color-primary);" id="detail-id-display">...</strong> • 
-          Thời gian tạo: <strong id="detail-created-at">...</strong> • 
-          Phiên bản: <strong id="detail-version-display">1</strong>
+
+        <!-- Nút Hành Động Trực Tiếp (Gọi, Zalo, Reveal, Phân Công, Trạng Thái) -->
+        <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+          <button type="button" id="btn-edit-profile" class="btn-action-detail" hidden>Sửa thông tin & Xác nhận địa chỉ</button>
+          <!-- Reveal PII -->
+          <button type="button" class="btn-reveal-phone" id="btn-reveal-pii" style="padding: 10px 16px; font-size: 0.88rem; font-weight: 700;" onclick="handleRevealAction()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span id="btn-reveal-text">Hiển thị thông tin</span>
+          </button>
+
+          <a href="#" id="btn-call-customer" class="btn-action-call" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Gọi Cho Khách</span>
+          </a>
+
+          <a href="#" id="btn-zalo-customer" target="_blank" class="btn-action-zalo" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>Nhắn Zalo</span>
+          </a>
+
+          <!-- Phân công tự động -->
+          <button type="button" class="btn-action-detail" id="btn-manual-assign" onclick="adminChooseAssignee([currentLead])">Chọn nhân viên</button>
+          <button type="button" class="btn-action-detail" id="btn-assign" style="padding: 10px 16px; font-size: 0.88rem;" onclick="handleAutoAssign()">
+            Phân Công Tự Động
+          </button>
+
+          <!-- Dropdown Chuyển Trạng Thái -->
+          <div>
+            <select aria-label="Chuyển trạng thái hồ sơ" class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
+              <option value="" disabled selected>Chuyển trạng thái...</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Nút Hành Động Trực Tiếp (Gọi, Zalo, Reveal, Phân Công, Trạng Thái) -->
-      <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
-        <button type="button" id="btn-edit-profile" class="btn-action-detail" hidden>Sửa thông tin & Xác nhận địa chỉ</button>
-        <!-- Reveal PII -->
-        <button type="button" class="btn-reveal-phone" id="btn-reveal-pii" style="padding: 10px 16px; font-size: 0.88rem; font-weight: 700;" onclick="handleRevealAction()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span id="btn-reveal-text">Hiển thị thông tin</span>
-        </button>
-
-        <a href="#" id="btn-call-customer" class="btn-action-call" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span>Gọi Cho Khách</span>
-        </a>
-
-        <a href="#" id="btn-zalo-customer" target="_blank" class="btn-action-zalo" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          <span>Nhắn Zalo</span>
-        </a>
-
-        <!-- Phân công tự động -->
-        <button type="button" class="btn-action-detail" id="btn-manual-assign" onclick="adminChooseAssignee([currentLead])">Chọn nhân viên</button>
-        <button type="button" class="btn-action-detail" id="btn-assign" style="padding: 10px 16px; font-size: 0.88rem;" onclick="handleAutoAssign()">
-          Phân Công Tự Động
-        </button>
-
-        <!-- Dropdown Chuyển Trạng Thái -->
-        <div>
-          <select aria-label="Chuyển trạng thái hồ sơ" class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
-            <option value="" disabled selected>Chuyển trạng thái...</option>
-          </select>
+      <!-- Sales Pipeline Stepper: Tiến trình 6 bước chuẩn viễn thông -->
+      <div class="lead-pipeline-stepper" id="lead-pipeline-stepper" aria-label="Tiến độ xử lý hồ sơ">
+        <div class="stepper-step" data-step="new">
+          <div class="stepper-dot">1</div>
+          <div class="stepper-label">Tiếp nhận</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-step="assigned">
+          <div class="stepper-dot">2</div>
+          <div class="stepper-label">Phân công</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-step="contacting">
+          <div class="stepper-dot">3</div>
+          <div class="stepper-label">Tư vấn</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-step="survey">
+          <div class="stepper-dot">4</div>
+          <div class="stepper-label">Khảo sát / Báo giá</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-step="closed">
+          <div class="stepper-dot">5</div>
+          <div class="stepper-label">Chốt hợp đồng</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" data-step="installed">
+          <div class="stepper-dot">6</div>
+          <div class="stepper-label">Đã lắp đặt</div>
         </div>
       </div>
     </div>
@@ -380,6 +418,41 @@ async function initLeadDetail() {
   }
 }
 
+function updatePipelineStepper(status) {
+  const stepsOrder = ['new', 'assigned', 'contacting', 'survey', 'closed', 'installed'];
+  const statusToStep = {
+    new: 'new',
+    assigned: 'assigned',
+    contacting: 'contacting',
+    contacted: 'contacting',
+    survey: 'survey',
+    surveying: 'survey',
+    quoted: 'survey',
+    qualified: 'survey',
+    closed: 'closed',
+    installed: 'installed'
+  };
+  const currentStep = statusToStep[status] || null;
+  const currentIndex = stepsOrder.indexOf(currentStep);
+
+  const container = document.getElementById('lead-pipeline-stepper');
+  if (!container) return;
+
+  const steps = container.querySelectorAll('.stepper-step');
+  steps.forEach(step => {
+    const stepKey = step.dataset.step;
+    const stepIndex = stepsOrder.indexOf(stepKey);
+    step.classList.remove('active', 'completed');
+    if (currentIndex >= 0) {
+      if (stepIndex < currentIndex) {
+        step.classList.add('completed');
+      } else if (stepIndex === currentIndex) {
+        step.classList.add('active');
+      }
+    }
+  });
+}
+
 function renderLeadDetailData(lead) {
   const editProfile = document.getElementById("btn-edit-profile");
   if (editProfile) editProfile.hidden = !adminHasPermission("lead.write") || !adminHasPermission("lead.pii") || window.adminAAL !== "aal2";
@@ -438,7 +511,15 @@ function renderLeadDetailData(lead) {
   if (regVal) regVal.textContent = (lead.payload?.address_confirmation ? lead.payload.address_confirmation.ward_name + ', ' + lead.payload.address_confirmation.province_name : lead.labels?.region) || 'Cần xác nhận địa bàn';
 
   const assVal = document.getElementById('detail-assignee-val');
-  if (assVal) assVal.textContent = lead.assignee_id ? (lead.labels?.assignee || `Nhân sự ${lead.assignee_id.slice(0, 8)}`) : 'Chưa phân công';
+  const assigneeName = lead.assignee_id ? (lead.labels?.assignee || `Nhân sự ${lead.assignee_id.slice(0, 8)}`) : 'Chưa phân công';
+  if (assVal) assVal.textContent = assigneeName;
+
+  const headerAss = document.getElementById('detail-header-assignee');
+  if (headerAss) {
+    headerAss.textContent = assigneeName;
+    headerAss.style.color = lead.assignee_id ? 'var(--color-primary)' : 'var(--text-muted)';
+  }
+  updatePipelineStepper(lead.status);
 
   // Notes
   const notesVal = document.getElementById('detail-notes-val');

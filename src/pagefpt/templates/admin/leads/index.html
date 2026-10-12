@@ -52,6 +52,7 @@
 <div class="crm-quick-status-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px;">
   <button type="button" class="lp-filter-chip active" onclick="onStatusFilterChanged('all'); document.getElementById('filter-status').value='all';">Tất cả</button>
   <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('new'); document.getElementById('filter-status').value='new';">Mới tiếp nhận</button>
+  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('assigned'); document.getElementById('filter-status').value='assigned';">Đã phân công</button>
   <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('contacting'); document.getElementById('filter-status').value='contacting';">Đang liên hệ</button>
   <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('qualified'); document.getElementById('filter-status').value='qualified';">Khách chốt gói</button>
   <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('installed'); document.getElementById('filter-status').value='installed';">Đã lắp đặt</button>
@@ -107,13 +108,14 @@
         <th>Gói Quan Tâm</th>
         <th>Khu Vực</th>
         <th>Trạng Thái</th>
+        <th>Phân Công</th>
         <th>Điểm Nhu Cầu</th>
         <th>Thao Tác</th>
       </tr>
     </thead>
     <tbody id="crm-table-tbody">
       <tr>
-        <td colspan="8" style="text-align: center; padding: 32px; color: var(--text-muted);">
+        <td colspan="9" style="text-align: center; padding: 32px; color: var(--text-muted);">
           Đang tải dữ liệu hồ sơ từ máy chủ...
         </td>
       </tr>

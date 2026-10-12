@@ -550,6 +550,159 @@ body.admin-body {
   color: #B91C1C;
   border: 1px solid #FECACA;
 }
+.status-badge.assigned {
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+}
+
+.status-badge.contacted {
+  background: #FEF9C3;
+  color: #854D0E;
+  border: 1px solid #FEF08A;
+}
+
+.status-badge.survey,
+.status-badge.surveying {
+  background: #F3E8FF;
+  color: #6B21A8;
+  border: 1px solid #E9D5FF;
+}
+
+.status-badge.quoted {
+  background: #ECFEFF;
+  color: #0E7490;
+  border: 1px solid #A5F3FC;
+}
+
+.status-badge.closed {
+  background: #ECFDF5;
+  color: #047857;
+  border: 1px solid #A7F3D0;
+}
+
+.status-badge.unreachable {
+  background: #FFF1F2;
+  color: #BE123C;
+  border: 1px solid #FECDD3;
+}
+
+.status-badge.no_infrastructure {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+
+.status-badge.invalid,
+.status-badge.duplicate {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+}
+
+/* Assignee & SLA Table Badges */
+.crm-assignee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.crm-assignee-badge .assignee-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-surface-muted);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.7rem;
+}
+.crm-assignee-badge .assignee-unassigned {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bg-surface-muted);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+.badge-sla-overdue {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* Sales Pipeline Stepper */
+.lead-pipeline-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-surface-muted);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  gap: 8px;
+  margin-top: 8px;
+}
+.stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  opacity: 0.45;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.stepper-step.active {
+  opacity: 1;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.stepper-step.completed {
+  opacity: 0.85;
+  color: #16A34A;
+}
+.stepper-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.stepper-step.active .stepper-dot {
+  background: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.2);
+}
+.stepper-step.completed .stepper-dot {
+  background: #16A34A;
+}
+.stepper-label {
+  font-size: 0.76rem;
+}
+.stepper-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border-subtle);
+  min-width: 12px;
+}
+
 
 /* Phone Cell & Fast Actions (1-Click Call & Zalo) */
 .phone-cell {
