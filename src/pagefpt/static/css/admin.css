@@ -936,3 +936,28 @@ body.admin-body {
  .score-header {flex-wrap:wrap;gap:8px;}
  .admin-dialog textarea {width:100%;min-height:88px;font-size:16px;}
 }
+
+
+/* CRM Filter Chips */
+.crm-quick-status-chips .lp-filter-chip {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.crm-quick-status-chips .lp-filter-chip:hover {
+  border-color: #f37021;
+  color: #f37021;
+}
+
+.crm-quick-status-chips .lp-filter-chip.active {
+  background: #f37021;
+  color: #ffffff;
+  border-color: #f37021;
+}

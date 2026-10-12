@@ -454,3 +454,23 @@
 .plan-image-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .plan-image-tools input[type=file] { display: block; max-width: 240px; margin-top: 8px; }
 .accessory-admin-preview,.plan-card-admin-preview{border:1px solid #fed7aa;border-radius:16px;background:#fff7ed;padding:16px;margin:12px 0}.plan-card-admin-preview h3{margin:8px 0}.plan-card-admin-preview button{display:block;padding:12px;background:#c2410c;color:#fff;border:0;border-radius:10px;margin:10px 0;width:100%}.plan-card-admin-preview span{font-size:13px;color:#9a3412}
+
+
+/* Pricing table row hover & status badge polish */
+.pricing-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.pricing-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.pricing-panel {
+  border-radius: 16px;
+}
+
+.pricing-table th {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}

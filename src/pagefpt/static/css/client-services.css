@@ -263,3 +263,27 @@
     scroll-margin-top: 105px;
   }
 }
+
+
+/* Service plan card elevation & modern aesthetic */
+.service-plan-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border-radius: 16px;
+}
+
+.service-plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+
+.service-plan-card h3 {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.service-plan-price {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: #f37021 !important;
+}

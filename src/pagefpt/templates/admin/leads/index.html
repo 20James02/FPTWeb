@@ -47,6 +47,16 @@
 
 {% if admin_actor.permits("lead.assign") %}<button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible()">Chọn tất cả đang hiển thị</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible(false)">Bỏ chọn</button>{% endif %}
 <!-- Thanh Bộ Lọc Nhanh -->
+
+<!-- Quick Status Filter Chips for Rapid Triaging -->
+<div class="crm-quick-status-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px;">
+  <button type="button" class="lp-filter-chip active" onclick="onStatusFilterChanged('all'); document.getElementById('filter-status').value='all';">Tất cả</button>
+  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('new'); document.getElementById('filter-status').value='new';">Mới tiếp nhận</button>
+  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('contacting'); document.getElementById('filter-status').value='contacting';">Đang liên hệ</button>
+  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('qualified'); document.getElementById('filter-status').value='qualified';">Khách chốt gói</button>
+  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('installed'); document.getElementById('filter-status').value='installed';">Đã lắp đặt</button>
+</div>
+
 <div class="crm-filters-row">
   <input type="text" class="filter-input" placeholder="Tìm theo mã hồ sơ, gói, địa bàn hoặc số đã che" aria-label="Tìm hồ sơ trên server" id="filter-search" oninput="applyLocalSearch()" style="min-width: 240px; border-radius: 8px;">
 

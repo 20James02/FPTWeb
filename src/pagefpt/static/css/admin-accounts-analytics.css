@@ -289,3 +289,52 @@
     padding: 14px;
   }
 }
+
+
+/* Modern KPI Card Polish & Elevation */
+#analytics-kpis .kpi-card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#analytics-kpis .kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #f37021, #005a9e);
+}
+
+#analytics-kpis .kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08);
+}
+
+#analytics-kpis .kpi-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 6px 0;
+}
+
+#analytics-kpis .kpi-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #64748b);
+}
+
+#analytics-kpis .kpi-sub {
+  font-size: 0.82rem;
+  color: #059669;
+  font-weight: 600;
+}
