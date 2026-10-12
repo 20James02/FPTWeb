@@ -1,0 +1,144 @@
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Landing page — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}Giao diện website / Landing page{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/admin-pricing.css">
+<link rel="stylesheet" href="/static/css/admin-appearance.css">
+<link rel="stylesheet" href="/static/css/admin-landing.css">
+{% endblock %}
+{% block content %}
+<div class="lp-admin-container">
+  <div class="editor-toolbar lp-admin-header-toolbar">
+    <div>
+      <p class="pricing-hint">TRÌNH THIẾT KẾ LANDING THEO MẪU</p>
+      <h1>Landing page</h1>
+      <p>Tạo landing page chuyển đổi cao, nhân bản chạy đồng thời nhiều chiến dịch, tùy biến giao diện trực quan và xem trước đa thiết bị.</p>
+    </div>
+    <div class="lp-admin-header-actions">
+      <button class="pricing-btn" id="lp-admin-refresh" type="button">Làm mới danh sách</button>
+      <button class="pricing-btn btn-action-call" id="lp-admin-new" type="button">+ Tạo landing page</button>
+    </div>
+  </div>
+
+  <section class="panel-card lp-admin-list-card">
+    <div class="editor-toolbar lp-admin-list-toolbar">
+      <div class="lp-admin-list-title">
+        <h2>Các trang đã tạo</h2>
+        <span class="lp-admin-badge" id="lp-admin-count-badge">0 trang</span>
+      </div>
+      <div class="lp-admin-filter-bar">
+        <input type="search" id="lp-admin-list-search" placeholder="Tìm theo tên trang, slug..." aria-label="Tìm kiếm trang landing">
+        <div class="lp-admin-filter-chips" role="radiogroup" aria-label="Lọc theo trạng thái">
+          <button type="button" class="lp-filter-chip active" data-filter="all">Tất cả</button>
+          <button type="button" class="lp-filter-chip" data-filter="published">Đã công bố</button>
+          <button type="button" class="lp-filter-chip" data-filter="draft">Bản nháp</button>
+          <button type="button" class="lp-filter-chip" data-filter="retired">Đã ngừng</button>
+        </div>
+      </div>
+    </div>
+    <div id="lp-admin-list" class="lp-admin-list"></div>
+    <p id="lp-admin-list-status" role="status"></p>
+  </section>
+
+  <section id="lp-admin-editor" class="lp-admin-editor-card" hidden>
+    <!-- Editor Header Toolbar -->
+    <div class="lp-admin-editor-heading">
+      <div class="lp-admin-title-wrap">
+        <h2 id="lp-admin-editor-title">Thiết kế trang</h2>
+        <span id="lp-admin-draft-label" class="lp-status-badge">Bản nháp mới</span>
+        <span id="lp-admin-dirty-badge" class="lp-dirty-badge" hidden>● Thay đổi chưa lưu</span>
+      </div>
+
+      <!-- Presets & Quick Actions Toolbar -->
+      <div class="lp-admin-tools-wrap">
+        <!-- Preset selector: 1-click apply -->
+        <div class="lp-admin-preset-box" title="Chọn mẫu nội dung và giao diện được cấu hình sẵn cho từng chiến dịch">
+          <label for="lp-admin-preset-select" class="sr-only">Mẫu thiết kế 1-Click</label>
+          <select id="lp-admin-preset-select" aria-label="Mẫu thiết kế 1-Click">
+            <option value="">Chọn mẫu</option>
+            <option value="family">Gia đình</option>
+            <option value="sport">Giải trí &amp; thể thao</option>
+            <option value="camera">Camera &amp; an ninh</option>
+            <option value="gamer">Làm việc &amp; chơi game</option>
+            <option value="megasale">Ưu đãi theo chiến dịch</option>
+          </select>
+          <button class="pricing-btn" id="lp-admin-preset-apply" type="button">Áp dụng Preset</button>
+        </div>
+
+        <div class="lp-admin-history-actions">
+          <button class="pricing-btn lp-btn-icon" id="lp-admin-undo" type="button" title="Hoàn tác (Ctrl+Z)" disabled>↶ Hoàn tác</button>
+          <button class="pricing-btn lp-btn-icon" id="lp-admin-redo" type="button" title="Làm lại (Ctrl+Y)" disabled>↷ Làm lại</button>
+        </div>
+
+        <!-- Responsive Segmented Control for tablet/mobile -->
+        <div class="lp-admin-view-toggle" role="tablist" aria-label="Chế độ xem">
+          <button type="button" class="lp-view-btn active" id="lp-tab-edit" role="tab" aria-selected="true" data-view="edit">⚙️ Thiết lập</button>
+          <button type="button" class="lp-view-btn" id="lp-tab-preview" role="tab" aria-selected="false" data-view="preview">👁️ Xem trước Live</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Panel Visual Studio Workspace -->
+    <div class="lp-admin-workspace" data-active-view="edit">
+      <!-- Panel 1: Sidebar Navigator (Khối giao diện) -->
+      <nav class="lp-admin-nav-sidebar" id="lp-admin-nav-sidebar" aria-label="Điều hướng các khối nội dung">
+        <div class="lp-sidebar-header">
+          <h3>Các khối trang</h3>
+          <small>Bật/tắt & di chuyển thứ tự</small>
+        </div>
+        <div class="lp-sidebar-blocks" id="lp-sidebar-blocks">
+          <!-- Dynamically populated and synched with sections -->
+        </div>
+      </nav>
+
+      <!-- Panel 2: Inspector / Form Fields -->
+      <div class="lp-admin-inspector-wrap">
+        <form id="lp-admin-form">
+          <div id="lp-admin-fields"></div>
+          <p id="lp-admin-error" class="workspace-error" role="alert"></p>
+          <div class="lp-admin-save">
+            <button class="btn-action-call" type="submit" id="lp-admin-save">Lưu bản nháp</button>
+            <button class="btn-action-detail" type="button" id="lp-admin-close">Đóng</button>
+            <p id="lp-admin-save-state" role="status"></p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Panel 3: Live Preview Canvas -->
+      <aside class="lp-admin-preview">
+        <div class="editor-toolbar lp-admin-preview-toolbar">
+          <div class="lp-preview-title-wrap">
+            <h2>Xem trước</h2>
+            <div class="lp-preview-device-pills">
+              <button type="button" class="lp-device-pill active" data-width="1440" title="Desktop 1440px">🖥️ 1440</button>
+              <button type="button" class="lp-device-pill" data-width="768" title="Tablet 768px">📱 768</button>
+              <button type="button" class="lp-device-pill" data-width="390" title="Mobile 390px">📱 390</button>
+              <button type="button" class="lp-device-pill" data-width="320" title="Mobile nhỏ 320px">📱 320</button>
+            </div>
+          </div>
+          <div class="lp-preview-actions">
+            <select id="lp-admin-viewport" aria-label="Kích thước xem trước">
+              <option value="1440">Desktop 1440</option>
+              <option value="768">Tablet 768</option>
+              <option value="390">Mobile 390</option>
+              <option value="320">Mobile 320</option>
+            </select>
+            <button class="pricing-btn" id="lp-admin-preview-refresh" type="button" title="Làm mới xem trước">Cập nhật</button>
+            <button class="pricing-btn" id="lp-admin-preview-copy-link" type="button" title="Sao chép liên kết xem trước">📋 Copy Link</button>
+          </div>
+        </div>
+        <p id="lp-admin-preview-state" role="status">Bản đang nhập · Chưa lưu</p>
+        <div class="lp-admin-preview-canvas">
+          <iframe id="lp-admin-preview-frame" title="Xem trước landing page đang nhập" sandbox="allow-scripts allow-same-origin" referrerpolicy="same-origin"></iframe>
+        </div>
+        <p class="pricing-hint">Preview hiển thị bố cục đang nhập và giá danh mục theo địa bàn. Giá riêng có hiệu lực sau khi công bố. Form gửi yêu cầu được tắt trong preview.</p>
+      </aside>
+    </div>
+  </section>
+</div>
+<script type="application/json" id="landing-defaults">{{landing_defaults|tojson}}</script>
+{% endblock %}
+{% block extra_scripts %}
+<script src="/static/js/admin/media_upload.js"></script>
+<script src="/static/js/admin/landing_editor.js"></script>
+{% endblock %}

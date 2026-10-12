@@ -61,10 +61,10 @@ function renderMultitaskState(triggerShine = true) {
     currentMultitaskIndex = 0;
   }
 
-  const isMobile = window.innerWidth <= 768;
+  const isCompact = window.innerWidth < 1100;
 
-  // On Mobile: Strictly 1 Single Focused Card layout (No side slivers or sliced texts)
-  if (isMobile) {
+  // Mobile and tablet show one full-width card; three 330px cards need a wide viewport.
+  if (isCompact) {
     stage.classList.add('slider-active-3d', 'multitask-mode', 'mobile-single-card-mode');
     if (controls) controls.style.display = 'flex';
 

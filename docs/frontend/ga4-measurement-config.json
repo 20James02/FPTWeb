@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "purpose": "Desired GA4 configuration; not an import file or proof of deployment",
+  "status": "prepared_not_applied",
+  "verified_on": "2026-10-10",
+  "target": {
+    "property_id": "558213081",
+    "property_name": "FPT James",
+    "stream_id": "16093213879",
+    "measurement_id": "G-D0J0XLJ891",
+    "hostname": "fpt-vungtau.com"
+  },
+  "custom_dimensions": [
+    {
+      "displayName": "Gói cước",
+      "parameterName": "plan_id",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Kỳ thanh toán",
+      "parameterName": "billing_months",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Phụ kiện",
+      "parameterName": "accessory_id",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Trạng thái chọn phụ kiện",
+      "parameterName": "selected",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Vị trí form",
+      "parameterName": "form_location",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Landing page",
+      "parameterName": "landing_slug",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Biến thể thử nghiệm",
+      "parameterName": "variant",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Vị trí thẻ gói",
+      "parameterName": "placement",
+      "scope": "EVENT"
+    },
+    {
+      "displayName": "Chế độ đo lường",
+      "parameterName": "measurement_mode",
+      "scope": "EVENT"
+    }
+  ],
+  "custom_metrics": [
+    {
+      "displayName": "Số phụ kiện đã chọn",
+      "parameterName": "accessory_count",
+      "scope": "EVENT",
+      "measurementUnit": "STANDARD"
+    }
+  ],
+  "key_event": {
+    "eventName": "generate_lead",
+    "countingMethod": "ONCE_PER_EVENT",
+    "trigger": "backend-confirmed lead receipt; once per receipt in current page",
+    "no_default_revenue": true
+  },
+  "enhanced_measurement": {
+    "scrolls": true,
+    "form_interactions": false,
+    "outbound_clicks": false,
+    "site_search": false,
+    "history_page_changes": false
+  },
+  "data_redaction": {
+    "email": true,
+    "query_parameters": [
+      "phone",
+      "email",
+      "name",
+      "address",
+      "token",
+      "code",
+      "access_token",
+      "refresh_token"
+    ]
+  },
+  "preserve_existing_unrelated_settings": true,
+  "website_code_changed": true,
+  "google_ads_connected_in_windsor": false,
+  "pending": [
+    "Read existing GA4 custom definitions and key events before creating any definition",
+    "Apply desired settings using GA4 Editor or Administrator access",
+    "Verify saved settings and actual event parameters",
+    "Deploy verified common card instrumentation, then verify speed-test CTR with actual GA4 events"
+  ],
+  "website_code_status": "local_verified_not_deployed"
+}

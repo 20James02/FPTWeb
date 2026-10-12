@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from pagefpt.modules.pricing.schemas import Command
 
@@ -14,6 +14,7 @@ class LeadRequest(Command):
         default_factory=list, max_length=5
     )
     plan_id: UUID | None = None
+    accessory_ids: list[UUID] = Field(default_factory=list, max_length=20)
     region_id: UUID | None = None
     installation_address: str = Field(default="", max_length=500)
     notes: str = Field(default="", max_length=2000)
@@ -26,6 +27,14 @@ class LeadRequest(Command):
     attribution_token: str | None = Field(default=None, max_length=8192)
     challenge_token: str | None = Field(default=None, max_length=8192)
     website: str = Field(default="", max_length=200)
+
+    @model_validator(mode="after")
+    def accessories(self):
+        if self.accessory_ids and (
+            not self.plan_id or len(set(self.accessory_ids)) != len(self.accessory_ids)
+        ):
+            raise ValueError("Chọn gói và mỗi phụ kiện một lần")
+        return self
 
     @field_validator("preferred_contact_at")
     @classmethod

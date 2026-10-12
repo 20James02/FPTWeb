@@ -255,7 +255,7 @@ fs.mkdirSync(output, { recursive: true });
           plan.id,
         );
         assert.equal(
-          await page.locator("#form-lead-ward").inputValue(),
+          await page.evaluate(() => currentSelectedProvince.wardId),
           ward.id,
         );
         await page.evaluate(
@@ -293,7 +293,7 @@ fs.mkdirSync(output, { recursive: true });
           .locator('#home-province-select option[value="' + other.id + '"]')
           .waitFor({ state: "attached" });
         await page.locator("#home-province-select").selectOption(other.id);
-        assert.equal(await page.locator("#form-lead-ward").inputValue(), "");
+        assert.equal(await page.evaluate(() => currentSelectedProvince.wardId), "");
         await page.waitForFunction(
           (id) =>
             Array.from(document.querySelectorAll("[data-quote-plan]")).some(

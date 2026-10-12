@@ -1,42 +1,52 @@
-# Khôi phục mật khẩu quản trị — 02/10/2026
+# Khôi phục mật khẩu Admin qua Telegram
 
-Luồng dùng Supabase Auth REST qua FastAPI cùng origin. Browser chỉ gửi email/mã/mật khẩu qua HTTPS và nhận kết quả; access/refresh token của provider ở server. Chưa có SMS recovery hoặc API tự đăng ký MFA. Thay đổi này chưa chạy với tài khoản Supabase, SMTP hoặc deployment cloud thật.
+Ngày cập nhật: 06/10/2026. Thay thế luồng email/link trước đây theo yêu cầu owner.
 
-## Cấu hình môi trường đích
+## Cấu hình
 
-1. Đối chiếu migration history rồi áp dụng `supabase/migrations/20261002014547_password_recovery_session_revoke.sql`. Đây là migration thứ 9, cần đủ 8 bản trước theo thứ tự. Không chạy lại các bản đã áp dụng. Wrapper RPC mới chỉ cấp execute cho `service_role`; không expose schema `private`.
-2. Giữ `PAGEFPT_SUPABASE_URL`, `PAGEFPT_SUPABASE_AUTH_KEY` (publishable/anon) và `PAGEFPT_SUPABASE_SECRET` phía server. Auth cần JWT ký bất đối xứng/JWKS như luồng login hiện tại. Khóa Auth không thay thế quyền membership của admin.
-3. Trong Supabase Dashboard → Authentication → Email Templates → Reset Password/Recovery, dùng template chứa mã `{{ .Token }}` thay vì chỉ có liên kết mặc định. Ví dụ nội dung: `<p>Mã khôi phục: <strong>{{ .Token }}</strong></p>`. Giao diện này nhận mã email 6–8 chữ số; không có trang callback xử lý recovery link. Kiểm tra cấu hình độ dài/expiry tương ứng của project và việc giao email thật.
-4. Cấu hình SMTP/sender đã xác minh, Site URL/origin HTTPS, chính sách mật khẩu và giới hạn Auth theo môi trường. Backend dùng `PAGEFPT_PUBLIC_ORIGIN` cho kiểm tra cùng origin; chỉ bật trusted proxy khi thực sự chạy sau Vercel. Template/SMTP là cấu hình tài khoản ngoài workspace và chưa được thay đổi trong phiên sửa lỗi.
-5. Dùng tài khoản kiểm thử có membership active: nhận mã email → nhập mật khẩu mới + mã authenticator nếu đã bật TOTP → reset → đăng nhập bằng mật khẩu mới; kiểm tra mọi phiên admin cũ bị từ chối. Kiểm tra sai/hết hạn/dùng lại mã, provider rate limit và lỗi mạng. Không dùng fixture password trong tests làm tài khoản thật.
+Giữ Supabase Auth quản lý mật khẩu, JWT và MFA. Backend dùng API Admin generate_link loại recovery để tạo proof **không gửi email**, rồi giữ hashed_token được mã hóa phía server. Mã khách nhập là mã ngẫu nhiên 6 số độc lập với email_otp của Supabase.
 
-Nguồn đối chiếu: [Supabase password recovery](https://supabase.com/docs/guides/auth/passwords), [Email templates](https://supabase.com/docs/guides/auth/auth-email-templates), [Verify OTP](https://supabase.com/docs/reference/javascript/auth-verifyotp), [Auth REST contract](https://github.com/supabase/auth/blob/master/openapi.yaml).
+`PAGEFPT_TELEGRAM_RECOVERY_ACCOUNTS` là JSON server-only ánh xạ email đã chuẩn hóa sang **Chat ID riêng dương**, đã xác minh từ lệnh có marker do owner gửi trong chat riêng. Ví dụ `{"admin@example.com":"123456789"}`. Không chấp nhận Chat ID nhóm âm. Không tự đăng ký liên kết qua API public. Owner cần thêm từng admin đã xác minh vào cấu hình triển khai; admin chưa liên kết không tự khôi phục qua Telegram.
 
-## Hợp đồng frontend
+`PAGEFPT_TELEGRAM_CHAT_ID` vẫn là nhóm nhận thông báo lead. Recovery code gửi đến binding riêng, không dùng nhóm này. Telegram enabled và bot token phải hợp lệ. Khóa Supabase Admin/bot chỉ tồn tại server; API/browser không được nhận action_link, hashed_token, email_otp hoặc provider session.
 
-| Lệnh | Body | Kết quả |
+Áp dụng đầy đủ migration theo thứ tự; migration mới `telegram_recovery_codes` tạo bảng private có RLS và RPC chỉ service_role được gọi. Schema mới tương thích ứng dụng trước; phát hành code và env cùng một deployment rồi promote.
+
+## Contract
+
+| Endpoint | Request | Response |
 |---|---|---|
-| `POST /api/v1/auth/recovery` | `{email}` | `202 {accepted:true}` sau provider accepted; thông báo chung cho tài khoản có/không tồn tại |
-| `POST /api/v1/auth/recovery/reset` | `{email,otp,password,totp:""}` | `200 {changed:true,provider_revoked:boolean}` sau password update và audit hoàn tất |
+| POST /api/v1/auth/recovery | `{email}` | `202 {accepted:true,challenge_id:UUID}` |
+| POST /api/v1/auth/recovery/reset | `{email,challenge_id,otp,password,totp:""}` | `200 {changed:true,provider_revoked:boolean}` |
 
-Email được chuẩn hóa, tối đa 254 ký tự. OTP email 6–8 chữ số; TOTP trống hoặc 6 chữ số; mật khẩu 8–1024 ký tự, còn chịu chính sách Supabase. Chỉ nhận whitelist fields. Bước nhập mã trong UI chỉ kiểm tra định dạng; xác minh diễn ra ở lần gửi cuối. Không báo đổi thành công khi API lỗi. Xóa mã/mật khẩu khỏi các input sau thành công, chuyển về login và yêu cầu đăng nhập lại.
+Chỉ nhận `otp` đúng 6 chữ số ASCII; giữ số 0 đầu. Không nhận recovery_link hoặc mã 7/8 số. Password 8..1024 ký tự, thêm chính sách Supabase. TOTP trống hoặc 6 số. Form bước 2 chỉ kiểm tra định dạng; proof Telegram và MFA được xác minh khi lưu mật khẩu mới. Browser giữ challenge_id/code trong bộ nhớ và input, không lưu localStorage/sessionStorage. Gửi lại cập nhật challenge_id, xóa input mã cũ. Xóa mọi input mã/mật khẩu khi thành công và yêu cầu đăng nhập lại.
 
-| Mã lỗi | Xử lý |
-|---|---|
-| `UNAUTHENTICATED` 401 | Mã không hợp lệ/hết hạn hoặc bằng chứng không hợp lệ; yêu cầu mã email mới |
-| `MFA_REQUIRED` / `MFA_TOTP_REQUIRED` 403 | Nhập mã từ authenticator đã đăng ký; không gửi mã qua SMS; có thể cần email code mới |
-| `PERMISSION_DENIED` 403 | Membership inactive/không được cấp quyền; không tự cấp quyền bằng recovery |
-| `PASSWORD_REJECTED` 422 | Mật khẩu yếu/trùng mật khẩu cũ; yêu cầu mã mới rồi chọn mật khẩu khác |
-| Validation 422 | Sửa định dạng email/code/password; không suy luận đã xác thực |
-| `RATE_LIMITED` 429 | Chờ trước khi thử lại; có cả throttle backend và giới hạn provider |
-| `AUTH_UNCONFIGURED` / `AUTH_UNAVAILABLE` / `DATABASE_UNAVAILABLE` 503 | Chưa xác nhận hoàn tất; yêu cầu mã mới/kiểm tra cấu hình hoặc provider/database |
+Email chưa liên kết nhận cùng hình dạng response 202 với UUID ngẫu nhiên, không phát sinh provider request/job. Response accepted không khẳng định tồn tại tài khoản hay Telegram đã giao thành công. Không công bố recipient hoặc membership. Throttling HMAC email/IP áp dụng mọi email; gate gửi lại tối thiểu 60 giây cũng áp dụng email chưa liên kết.
 
-Provider tiêu thụ email OTP trước các bước MFA/PUT; nếu bước sau thất bại mã email có thể đã hết hiệu lực. Backend không lưu recovery token để retry và không tự retry thao tác reset. UI có nút yêu cầu mã mới. Có thể cần đăng nhập/khôi phục lại nếu password PUT đã commit nhưng response/audit bị mất; hệ thống không giả có distributed transaction giữa Auth và Postgres.
+## Mã và chống lạm dụng
 
-## Thứ tự và thu hồi phiên
+- Mã sinh bằng secrets.randbelow, định dạng 6 số; hết hạn sau 5 phút kể từ reservation server.
+- Chỉ một challenge hiện hành mỗi account HMAC; reservation khóa DB trước provider call để tránh hai lần generate_link chồng nhau.
+- Lưu HMAC challenge_id + code; code transient và provider proof được mã hóa AES-GCM, không plaintext.
+- Tối đa 5 lần nhập sai. DB lock cập nhật số lần thử/tiêu thụ nguyên tử; hai request đồng thời chỉ một request nhận proof.
+- Gửi lại thay challenge_id/proof/code, vô hiệu mã trước. Đổi binding riêng cũng khiến mã trước không sử dụng được.
+- Active membership được kiểm tra lúc tạo, trước gửi, lúc consume và trước đổi mật khẩu. Không tăng quyền qua recovery.
+- Mã hết hạn/blocked/consumed bị xóa ciphertext khi consume/prepare; code ciphertext xóa khi delivery terminal. Mỗi account chỉ giữ một hàng, không tích lũy lịch sử mã.
 
-Sau OTP recovery, kiểm tra chữ ký JWT, subject, membership active và MFA/TOTP nếu đã đăng ký. RPC `auth_recovery_revoke_sessions` thu hồi toàn bộ BFF sessions của subject, ghi `auth.password_recovery_verified` **trước** PUT đổi mật khẩu. Nếu RPC này lỗi, không gọi PUT. Sau provider xác nhận đúng user, gọi logout global best effort rồi RPC `auth_recovery_complete` ghi `auth.password_recovered` và thu hồi lại mọi phiên phát sinh giữa hai bước. Nếu PUT/response/audit sau đó lỗi, phiên BFF cũ đã bị thu hồi. Không ghi password/code/token vào audit.
+## Queue và delivery
 
-`provider_revoked:false` nghĩa là mật khẩu và thu hồi BFF đã hoàn tất, nhưng chưa xác nhận logout global của Supabase. Các phiên đăng nhập trực tiếp provider cần kiểm tra riêng nếu project có ứng dụng khác sử dụng Auth. Quyền admin vẫn do membership và scope server quyết định; recovery không nâng quyền.
+Queue notifications chứa kind telegram_recovery và challenge UUID; không chứa email/mã/provider proof. Worker prepare kiểm tra lease/fence, challenge hiện hành/hạn/membership và đọc code đã mã hóa. Gửi plain text vào chat riêng đã cấu hình, protect_content, không đính link hay nút. Ledger chỉ lưu trạng thái/code lỗi/message_id.
 
-Recovery bị giới hạn theo email và IP proxy tin cậy; key được HMAC, không lưu IP/email thô vào bucket/log. IP không tin cậy không được dùng thay bằng IP proxy chia sẻ; email throttle luôn áp dụng. API kiểm tra Origin trước khi gọi provider.
+Connect/5xx có retry và429 theo retry_after, trong khi challenge còn hiệu lực. Tin lỗi mạng mơ hồ ghi unknown, không tự gửi lại. Deadline code được kiểm tra trước mỗi lần gửi; tin đã bắt đầu gửi có thể đến sau khi người dùng gửi lại nhưng mã cũ đã vô hiệu tại DB. User có thể gửi lại sau cooldown khi Telegram không đến. Worker wake theo DB commit và cron phục hồi hiện có; không dùng background task sau response Vercel.
+
+## Đổi mật khẩu và MFA
+
+Sau consume, backend giải mã proof, POST verify token_hash với Supabase, xác minh JWT và subject khớp challenge, active membership, rồi MFA hiện có. Không dùng Admin update_user để bỏ qua MFA. Nếu bước sau consume lỗi, mã đã dùng; yêu cầu mã mới.
+
+RPC auth_recovery_revoke_sessions xóa BFF sessions **trước** PUT password. PUT phải xác nhận đúng subject; logout global best effort rồi RPC auth_recovery_complete ghi audit và thu hồi phiên mới phát sinh. Không báo changed:true khi bước bắt buộc lỗi. provider_revoked:false nghĩa là logout provider chưa được xác nhận, dù password/BFF đã xử lý. Không có transaction phân tán giữa Auth/Postgres; không tự retry reset nếu response mất.
+
+## Lỗi UI
+
+RECOVERY_EXPIRED 401: sai mã/hết hạn/đã dùng/blocked, gửi lại mã mới. RECOVERY_UNCONFIGURED 503: chưa có cấu hình Telegram recovery. RATE_LIMITED 429: chờ ít nhất 60 giây trước khi gửi lại. MFA_REQUIRED 403: gửi lại mã Telegram và nhập mã ứng dụng xác thực. PASSWORD_REJECTED 422: yêu cầu mã mới và chọn mật khẩu phù hợp. AUTH_UNAVAILABLE 503: không báo thành công, yêu cầu mã mới. PERMISSION_DENIED 403: membership đã bị thu hồi; không tự cấp quyền.
+
+Nguồn: [Supabase generateLink](https://supabase.com/docs/reference/swift/auth-admin-generatelink), [Auth REST contract](https://github.com/supabase/auth/blob/master/openapi.yaml), [Auth SDK response transformation](https://github.com/supabase/auth-js/blob/master/src/lib/fetch.ts), [Telegram sendMessage](https://core.telegram.org/bots/api#sendmessage).

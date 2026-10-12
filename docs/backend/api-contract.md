@@ -4,15 +4,23 @@ Schema đầy đủ, gồm kiểu dữ liệu/bắt buộc/giới hạn: `openap
 
 Đồng bộ tỉnh/thành, xã/phường qua API: xem [hợp đồng geography](../frontend/DANH-MUC-DIA-BAN-API.md), gồm quyền/MFA, nguồn dự phòng và migration11.
 
+Ảnh gói cước: POST/PUT `/api/v1/admin/plans` nhận `image_id` (UUID/null), `image_alt` (tối đa 200 ký tự). Chọn ảnh ready qua GET `/api/v1/admin/workspace/media?limit=100`; tải mới qua POST `/api/v1/admin/media/upload-intents`, PUT URL ký với headers được trả về, POST `/api/v1/admin/media/{id}/finalize`. Chỉ ảnh ready được liên kết; chọn/tải ảnh cần `content.write`, lưu gói cần `catalog.write`. Không gửi `image_url`/width/height trong request; server tạo metadata từ ảnh đã kiểm tra. `image_id=null` bỏ ảnh ở bản nháp; cần Công bố bằng expected_version/MFA để cập nhật cho khách. Catalog công khai trả URL và kích thước từ snapshot đã công bố. Giá/địa bàn không đổi khi thay ảnh.
+
+Các trang khách `/`, `/san-pham/{slug}`, `/khuyen-mai`, `/chinh-sach-bao-mat` được đăng ký trên cả staging/production; các banner quảng cáo demo chỉ hiện ở development/test.
+
 ## HTTP, xác thực và lỗi
 
 Public lead cần `Idempotency-Key` UUID cho mỗi ý định gửi; giữ nguyên key và body khi retry. Request ghi dữ liệu thường tối đa 16 KiB; imports 1 MiB. Response có `X-Request-ID`. Lỗi `{code,message,fields,request_id}` không echo phone/IP/input nhạy cảm. 422 sai schema, 401 chưa xác thực, 403 quyền/MFA/CSRF, 404 không thấy, 409 version/idempotency/price conflict, 429 có Retry-After, 503 dependency/busy/uncertain. Khi 409 cần reload và cho người dùng quyết định, không biến thành success.
 
 Admin hỗ trợ Bearer JWT Supabase đã xác minh hoặc opaque cookie session. POST `/api/v1/auth/session` nhận `{email,password,otp}`; TOTP cần khi tài khoản chưa đạt AAL2. Cookie HttpOnly/SameSite=Strict, Secure trên staging/production; response không trả token Supabase. Mutation bằng cookie phải gửi `X-CSRF-Token` từ cookie CSRF; Bearer không dùng CSRF. DELETE cùng URL thu hồi session bền vững. GET `/api/v1/admin/me` lấy actor/permissions thật từ membership. Các thao tác publish/reveal/export/privacy/quản lý quyền/tích hợp yêu cầu MFA theo route.
 
-Khôi phục admin: POST `/api/v1/auth/recovery` nhận `{email}`; POST `/api/v1/auth/recovery/reset` nhận `{email,otp,password,totp}`. Provider proof/membership/MFA được kiểm tra server, mọi BFF session bị thu hồi trước PUT mật khẩu; chỉ báo `changed:true` sau hoàn tất. Cấu hình OTP email và thứ tự lỗi tại [password-recovery.md](password-recovery.md).
+Khôi phục admin: POST `/api/v1/auth/recovery` nhận `{email}`, trả `202 {accepted:true,challenge_id}`; POST `/api/v1/auth/recovery/reset` nhận `{email,challenge_id,otp,password,totp}`. Chỉ nhận mã Telegram 6 chữ số; không nhận link. Mã gửi chat riêng đã xác minh; nhóm vẫn nhận lead. Hạn 5 phút, tối đa 5 lần sai, gửi lại sau 60 giây vô hiệu mã cũ. Provider proof/membership/MFA kiểm tra server, BFF sessions bị thu hồi trước PUT mật khẩu; chỉ báo changed:true sau hoàn tất. Xem [password-recovery.md](password-recovery.md).
 
 ## Luồng client chính
+
+GET `/api/v1/regions/location-suggestion` là gợi ý chức năng để xem giá, không tạo sự kiện analytics/session hay yêu cầu DB. Kết quả `{status:"estimated"|"unknown",source:"vercel"|"geoip"|null,country,province_name,subdivision_code,city,accuracy_radius_km,ward_id:null,address_confirmed:false}` luôn `Cache-Control: private, no-store`, không trả IP hoặc tọa độ. Chỉ đọc proxy tin cậy khi `PAGEFPT_TRUSTED_VERCEL_PROXY=true` và IP công cộng hợp lệ. Tên ISO từ CLDR 48 là nhãn đối chiếu, không phải mã hành chính Việt Nam và không tự ánh xạ tỉnh sáp nhập. MMDB là dự phòng nếu có cấu hình.
+
+Client đối chiếu duy nhất tên/bí danh trong hierarchy đã công bố, tự chọn tỉnh rồi làm mới báo giá. Khu vực đã lưu/thủ công được ưu tiên; gợi ý không tự chọn xã/phường, không tự hỏi GPS, không áp dụng ở Admin preview. Không khớp hoặc hết thời gian tra 2,5 giây thì giữ thao tác chọn tay. Không lưu gợi ý IP thành địa chỉ xác nhận.
 
 1. GET `/api/v1/catalog` và `/api/v1/regions` lấy items đã publish.
 2. POST `/api/v1/quotes` với plan/region/billing term. Kết quả có snapshot và quote token được ký, revision và hạn hiệu lực. Không thấy giá phù hợp thì không tự tạo giá.

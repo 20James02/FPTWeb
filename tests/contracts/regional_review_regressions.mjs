@@ -15,6 +15,7 @@ test("Refreshing admin prices can resolve the same ward name again", async () =>
   const fields = new Map();
   const context = vm.createContext({
     console,
+    window:{addEventListener(){}},
     Intl,
     Map,
     Set,
@@ -22,7 +23,7 @@ test("Refreshing admin prices can resolve the same ward name again", async () =>
     document: {
       addEventListener() {},
       getElementById(id) {
-        if (!fields.has(id)) fields.set(id, { hidden: false, textContent: "" });
+        if (!fields.has(id)) fields.set(id, { hidden: false, textContent: "", addEventListener() {} });
         return fields.get(id);
       },
     },
@@ -112,6 +113,7 @@ test("Ward loading during landing submission does not permanently disable select
   const button = { disabled: false };
   const context = vm.createContext({
     console,
+    window:{addEventListener(){}},
     Intl,
     AbortSignal,
     Option,

@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
@@ -10,9 +11,19 @@ class Command(BaseModel):
 
 
 class QuoteRequest(Command):
+    landing_slug: str | None = Field(
+        default=None, min_length=1, max_length=100, pattern=r"^[a-z0-9-]+$"
+    )
     plan_id: UUID
     region_id: UUID | None = None
     billing_months: int = Field(default=6, ge=1, le=36)
+    accessory_ids: list[UUID] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode="after")
+    def unique_accessories(self):
+        if len(set(self.accessory_ids)) != len(self.accessory_ids):
+            raise ValueError("Phụ kiện không được trùng")
+        return self
 
 
 class PriceInput(Command):
@@ -21,6 +32,9 @@ class PriceInput(Command):
     scope_kind: Literal["region", "group", "default"]
     billing_months: int = Field(ge=1, le=36)
     monthly_vnd: int = Field(ge=0, le=1000000000)
+    monthly_coefficient: Decimal = Field(
+        default=Decimal("1"), ge=0, le=100, decimal_places=4, allow_inf_nan=False
+    )
     setup_vnd: int = Field(default=0, ge=0, le=1000000000)
     equipment_vnd: int = Field(default=0, ge=0, le=1000000000)
     vat_included: bool = True

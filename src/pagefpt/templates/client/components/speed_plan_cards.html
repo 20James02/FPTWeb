@@ -1,0 +1,21 @@
+{% for plan in speed_plans %}
+{% set labels = plan.card_labels or {} %}
+<article class="speed-plan-card" data-speed-plan="{{ plan.id }}" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="speedtest" {% if loop.index > 3 %}hidden{% endif %}>
+  <div class="speed-plan-artwork">
+    <img src="{{ plan.image_url or '/static/images/device-internet-3d.webp' }}" alt="{{ plan.image_alt or plan.name if plan.image_url else 'Minh họa thiết bị Internet' }}" width="{{ plan.image_width or 800 }}" height="{{ plan.image_height or 800 }}" loading="lazy" decoding="async">
+    <span class="speed-plan-match" hidden><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg> Gợi ý từ kết quả đo</span>
+  </div>
+  <div class="speed-plan-body">
+    <div class="speed-plan-meta"><span class="speed-plan-type">{{ 'Combo Internet' if plan.service == 'combo' else 'Doanh nghiệp' if plan.service == 'business' else 'Internet gia đình' }}</span>{% if labels.get('badge', 'Gói đang cung cấp') %}<span class="speed-plan-badge" title="{{ labels.get('badge', 'Gói đang cung cấp') }}">{{ labels.get('badge', 'Gói đang cung cấp') }}</span>{% endif %}</div>
+    <div class="speed-plan-heading"><h3 title="{{ plan.name }}">{{ plan.name }}</h3><p class="speed-plan-hook">Chọn kết nối theo nhu cầu của bạn</p></div>
+    <div class="speed-plan-facts">
+      <div class="speed-plan-speed"><span>{{ labels.get('speed', 'Tốc độ') }}</span><p class="speed-plan-bandwidth">{{ plan.speed_mbps if plan.speed_mbps else 'Tư vấn' }}{% if plan.speed_mbps %}<small>Mbps</small>{% endif %}</p></div>
+      <div class="speed-plan-pricing"><span class="speed-plan-price-label">Giá theo địa bàn</span><p><strong class="speed-plan-price" aria-live="polite">Cần tư vấn</strong><small class="speed-plan-price-unit"></small></p></div>
+    </div>
+    <p class="speed-plan-quote">Chọn địa bàn để xem giá áp dụng.</p>
+    <p class="speed-plan-reason"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z"/><path d="m8 12 3 3 5-5"/></svg><span>Tham khảo theo nhu cầu và thiết bị đang dùng.</span></p>
+    <div class="speed-plan-equipment" tabindex="0" role="region" aria-label="{{ labels.get('equipment', 'Thiết bị') }} của {{ plan.name }}"><h4>{{ labels.get('equipment', 'Thiết bị') }}</h4><ul>{% for item in (plan.equipment or [])[:3] %}<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg><span>{{ item }}</span></li>{% else %}<li><span>Nhân viên xác nhận theo gói.</span></li>{% endfor %}</ul></div>
+    <div class="speed-plan-actions"><button type="button" class="speed-plan-cta" data-analytics-action="select_plan" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="speedtest" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)"><span>{{ labels.get('register', 'Đăng ký gói') }}</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button><button type="button" class="speed-plan-details" data-plan-detail="{{ plan.id }}" onclick="openPublishedPlanDetails(this)">{{ labels.get('details', 'Chi tiết gói') }}</button></div>
+  </div>
+</article>
+{% endfor %}

@@ -36,6 +36,12 @@ def authorization(endpoint, path):
             "permission": "active membership after provider proof on reset",
             "mfa": "required when enrolled" if path.endswith("/reset") else False,
         }
+    if path.startswith(("/api/v1/auth/account", "/api/v1/auth/mfa")):
+        return {
+            "caller": "opaque_cookie_session",
+            "permission": "own active membership; CSRF for writes",
+            "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed",
+        }
     if path.startswith("/api/v1/auth/"):
         return {"caller": "login_or_cookie_session", "permission": None, "mfa": False}
     if not path.startswith("/api/"):
@@ -44,7 +50,11 @@ def authorization(endpoint, path):
             if path in {"/robots.txt", "/sitemap.xml"}
             else "health_public"
             if path.startswith("/health/")
-            else "preview_html_only",
+            else "public_html"
+            if path in {"/", "/san-pham/{slug}", "/khuyen-mai", "/chinh-sach-bao-mat"}
+            else "public_admin_login"
+            if path == "/admin/login"
+            else "server_guarded_admin_html",
             "permission": None,
             "mfa": False,
         }
@@ -144,7 +154,7 @@ async def main():
     operations.sort(key=lambda item: (item["path"], item["method"]))
     output = {
         "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-        "date": "2026-10-02",
+        "date": "2026-10-07",
         "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
         "operations": operations,
         "schemas": definitions,

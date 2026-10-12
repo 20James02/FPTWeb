@@ -24,6 +24,14 @@ class GeoIP:
                 "source": "geoip",
                 "country": data.get("country", {}).get("iso_code"),
                 "city": data.get("city", {}).get("names", {}).get("en"),
+                "province": next(
+                    (
+                        s.get("names", {}).get("en")
+                        for s in data.get("subdivisions", [])[:1]
+                        if isinstance(s, dict)
+                    ),
+                    None,
+                ),
                 "accuracy_radius": data.get("location", {}).get("accuracy_radius"),
                 "asn": data.get("autonomous_system_number"),
                 "isp": data.get("autonomous_system_organization"),

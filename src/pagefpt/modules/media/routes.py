@@ -29,6 +29,7 @@ async def upload_intent(input: UploadInput, request: Request):
     storage.require()
     key = "quarantine/" + str(uuid4())
     data = {
+        "filename": input.filename,
         "object_key": key,
         "content_type": input.content_type,
         "declared_size": input.size_bytes,
@@ -68,6 +69,7 @@ async def finalize(id: UUID, request: Request):
         id=str(id),
         expected_version=asset["version"],
         payload={
+            "filename": asset["payload"].get("filename", ""),
             "object_key": key,
             "quarantine_key": asset["payload"]["object_key"],
             "state": "ready",

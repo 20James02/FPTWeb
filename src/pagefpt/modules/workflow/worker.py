@@ -7,17 +7,62 @@ from datetime import UTC, datetime
 from pagefpt.core.errors import DomainError
 from pagefpt.modules.intelligence.nlp import extract_needs
 from pagefpt.modules.intelligence.phone import phone_signals
-from pagefpt.modules.intelligence.scoring import score_lead
+from pagefpt.modules.intelligence.scoring import RISK, score_lead
 
 
 class Worker:
-    def __init__(self, db, crypt, geoip=None, storage=None, notifications=None, conversions=None):
+    def __init__(
+        self,
+        db,
+        crypt,
+        geoip=None,
+        storage=None,
+        notifications=None,
+        conversions=None,
+        telegram=None,
+    ):
         self.db, self.crypt, self.geoip = db, crypt, geoip
         self.storage = storage
         self.notifications = notifications
         self.conversions = conversions
+        self.telegram = telegram
 
     async def handle(self, job):
+        if job["kind"] in {"admin_notice", "telegram_recovery"}:
+            from pagefpt.modules.integrations.base import DeliveryResult, DeliveryState
+
+            operation = (
+                "telegram_recovery" if job["kind"] == "telegram_recovery" else "admin_notice"
+            )
+            command = await self.db.rpc(
+                "dispatch",
+                {"command": {"op": operation + "_prepare", "id": job["id"], "fence": job["fence"]}},
+            )
+            if command["status"] != "ready":
+                return {"delivery_status": command["status"]}
+            notice = command["notice"]
+            if operation == "telegram_recovery":
+                notice["code"] = self.crypt.decrypt(notice.pop("code_ciphertext"))
+            result = (
+                await self.telegram.deliver(notice)
+                if self.telegram
+                else DeliveryResult(DeliveryState.DISABLED, "INTEGRATION_DISABLED")
+            )
+            await self.db.rpc(
+                "dispatch",
+                {
+                    "command": {
+                        "op": operation + "_finish",
+                        "id": job["id"],
+                        "fence": job["fence"],
+                        "state": result.state.value,
+                        "result": {"code": result.code, "provider_id": result.provider_id},
+                    }
+                },
+            )
+            if result.state == DeliveryState.RETRY:
+                raise DomainError(result.code, 503, fields={"retry_after": result.retry_after})
+            return {"delivery_status": result.state.value, "code": result.code}
         if job["kind"] == "publish_page":
             return await self.db.rpc(
                 "dispatch",
@@ -36,6 +81,12 @@ class Worker:
             )
             pii = json.loads(self.crypt.decrypt(result["pii_ciphertext"]))
             evidence: dict = {"phone_valid": True, "fit": {}, "events": result.get("events", [])}
+            risk_evidence = result["payload"].get("risk_evidence", {})
+            if isinstance(risk_evidence, dict):
+                evidence.update(
+                    {k: v for k, v in risk_evidence.items() if k in RISK and type(v) is bool}
+                )
+                evidence["risk_source"] = result["payload"].get("risk_source")
             if result["payload"].get("plan_id"):
                 evidence["events"].append({"name": "select_plan", "at": result["created_at"]})
             for observation in result.get("observations", []):
@@ -239,6 +290,8 @@ class Worker:
                 except Exception as exc:
                     transient = not isinstance(exc, DomainError) or exc.status in {429, 503}
                     delay = random.uniform(0, min(300, 2 ** job["attempt"]))
+                    if isinstance(exc, DomainError) and exc.fields.get("retry_after"):
+                        delay = max(delay, min(86400, exc.fields["retry_after"]))
                     if isinstance(exc, DomainError) and exc.code == "SCHEDULE_DEFERRED":
                         delay = max(
                             1,

@@ -1,0 +1,7 @@
+<div class="plan-accessories" data-accessory-plan="{{plan.id}}"><fieldset><legend>{{(plan.card_labels or {}).get('offers', 'Ưu đãi đi kèm')}}</legend><div class="accessory-options">
+{% for accessory in accessories|default([]) if accessory.price_vnd is defined and accessory.price_vnd is not none and accessory.service==plan.service and (not accessory.plan_ids or plan.id in accessory.plan_ids) %}
+<label class="accessory-option"><input type="checkbox" data-accessory-id="{{accessory.id}}" data-plan-id="{{plan.id}}"><span><strong>{{accessory.name}}</strong><small data-accessory-price="{{accessory.id}}">
+{% if accessory.original_price_vnd and accessory.original_price_vnd > accessory.price_vnd %}<del>{{'{:,.0f}'.format(accessory.original_price_vnd).replace(',','.')}}đ</del> → {% endif %}<b>{{'{:,.0f}'.format(accessory.price_vnd).replace(',','.')}}đ</b> / {{'tháng' if accessory.billing_mode=='monthly' else 'một lần'}}{% if accessory.offer_label %}<em>{{accessory.offer_label}}</em>{% endif %}</small></span></label>
+{% else %}<p class="accessory-empty">Chưa có ưu đãi phụ kiện.</p>{% endfor %}
+</div></fieldset></div>
+<p class="accessory-total" data-accessory-total="{{plan.id}}" aria-live="polite"></p>

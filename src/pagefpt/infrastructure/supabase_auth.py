@@ -14,10 +14,19 @@ class SupabaseAuth:
             timeout=3, limits=httpx.Limits(max_connections=10, max_keepalive_connections=5)
         )
 
-    async def call(self, path, data=None, token=None, params=None, method="POST"):
+    async def call(self, path, data=None, token=None, params=None, method="POST", admin=False):
         if not self.settings.supabase_url or not self.settings.supabase_auth_key:
             raise DomainError("AUTH_UNCONFIGURED", 503)
-        headers = {"apikey": self.settings.supabase_auth_key}
+        key = (
+            self.settings.supabase_secret.get_secret_value()
+            if admin
+            else self.settings.supabase_auth_key
+        )
+        if not key:
+            raise DomainError("AUTH_UNCONFIGURED", 503)
+        headers = {"apikey": key}
+        if admin:
+            headers["Authorization"] = "Bearer " + key
         if token:
             headers["Authorization"] = "Bearer " + token
         try:
@@ -33,6 +42,13 @@ class SupabaseAuth:
             if r.status_code >= 500:
                 raise DomainError("AUTH_UNAVAILABLE", 503)
             if not r.is_success:
+                if admin and path == "admin/users" and method == "POST":
+                    rejection = r.json()
+                    if isinstance(rejection, dict) and rejection.get(
+                        "error_code", rejection.get("code")
+                    ) in {"email_exists", "user_already_exists"}:
+                        raise DomainError("ACCOUNT_EXISTS", 409)
+                    raise DomainError("ACCOUNT_CREATE_REJECTED", 422)
                 if path == "user" and method == "PUT":
                     rejection = r.json()
                     if not isinstance(rejection, dict):
@@ -51,13 +67,13 @@ class SupabaseAuth:
         except (httpx.HTTPError, ValueError) as exc:
             raise DomainError("AUTH_UNAVAILABLE", 503) from exc
 
-    async def password(self, email, password, otp):
+    async def password(self, email, password, otp, factor_id=None):
         result = await self.call(
             "token", {"email": email, "password": password}, params={"grant_type": "password"}
         )
-        return await self.assure_mfa(result, otp)
+        return await self.assure_mfa(result, otp, factor_id)
 
-    async def assure_mfa(self, result, otp):
+    async def assure_mfa(self, result, otp, factor_id=None):
         user = result.get("user", {})
         if not isinstance(user, dict):
             raise DomainError("AUTH_UNAVAILABLE", 503)
@@ -66,9 +82,22 @@ class SupabaseAuth:
             raise DomainError("AUTH_UNAVAILABLE", 503)
         factors = [f for f in raw_factors if f.get("status") == "verified"]
         if factors:
-            if not otp:
-                raise DomainError("MFA_REQUIRED", 403)
-            totp = next((f for f in factors if f.get("factor_type") == "totp"), None)
+            totp_factors = [f for f in factors if f.get("factor_type") == "totp"]
+            try:
+                choices = [
+                    {
+                        "id": str(UUID(f["id"])),
+                        "name": str(f.get("friendly_name") or "Thiết bị MFA")[:60],
+                    }
+                    for f in totp_factors
+                ]
+            except (ValueError, KeyError, TypeError, AttributeError) as exc:
+                raise DomainError("AUTH_UNAVAILABLE", 503) from exc
+            if not otp or (len(totp_factors) > 1 and not factor_id):
+                raise DomainError("MFA_REQUIRED", 403, fields={"factors": choices})
+            totp = next(
+                (f for f in totp_factors if not factor_id or f.get("id") == str(factor_id)), None
+            )
             if not totp:
                 raise DomainError("MFA_TOTP_REQUIRED", 403)
             try:

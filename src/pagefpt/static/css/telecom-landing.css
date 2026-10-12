@@ -1,0 +1,499 @@
+.telecom-landing{--lp-blue:#006bff;--lp-navy:#061567;--lp-orange:#ff4b00;--lp-line:#d8e8f8;margin:0;background:#fff;color:var(--lp-navy);font-family:Arial,Helvetica,sans-serif;line-height:1.4}.telecom-landing *{box-sizing:border-box}.telecom-landing h1,.telecom-landing h2,.telecom-landing h3,.telecom-landing p{margin:0}.telecom-landing a{color:inherit;text-decoration:none}.telecom-landing button,.telecom-landing input,.telecom-landing select{font:inherit}.telecom-landing button{cursor:pointer}.telecom-landing button:focus-visible,.telecom-landing a:focus-visible,.telecom-landing select:focus-visible,.telecom-landing input:focus-visible,.telecom-landing summary:focus-visible,.lp-table-scroll:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}.lp-wrap{width:min(1440px,100% - 40px);margin-inline:auto}.lp-icon{width:24px;height:24px;flex:none}.lp-header{position:sticky;top:0;background:#fff;z-index:35;box-shadow:0 2px 12px #003d991a}.lp-header-row{min-height:64px;display:flex;align-items:center;gap:24px}.lp-logo img{width:172px;height:48px;object-fit:contain;display:block}.lp-nav{display:flex;align-items:center;gap:24px;margin-left:auto}.lp-nav a{font-size:13px;font-weight:700;white-space:nowrap;padding:14px 0}.lp-hotline{display:flex;gap:10px;align-items:center}.lp-hotline .lp-icon{color:var(--lp-orange);width:30px;height:30px}.lp-hotline small{display:block;font-size:11px}.lp-hotline b{display:block;color:#ed3000;font-size:21px;white-space:nowrap}.lp-button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:12px 18px;border:0;border-radius:8px;background:linear-gradient(#ff8b00,#ff4c00);color:#fff;font-weight:700;box-shadow:inset 0 1px 0 #fff4;transition:filter .18s}.lp-button:hover{filter:brightness(.94)}.lp-menu-toggle{display:none}.lp-hero{position:relative;isolation:isolate;background:#0054c9;overflow:hidden}.lp-hero-background{position:absolute;inset:0;z-index:-2}.lp-hero-background img{width:100%;height:100%;object-fit:cover;object-position:center}.lp-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#00369899,transparent 74%);z-index:-1}.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:40px;align-items:center;padding-block:24px}.lp-hero-copy{max-width:800px;color:#fff;padding-right:15%}.lp-eyebrow{font-size:13px;letter-spacing:1px;font-weight:700}.lp-hero h1{font-size:clamp(28px,3.4vw,48px);font-weight:900;line-height:1.12;margin-top:12px;text-shadow:0 2px 2px #00174d55}.lp-hero h1 strong{display:block;color:#ffc329}.lp-hero-subtitle{font-size:clamp(16px,1.65vw,23px);margin-top:12px!important}.lp-hero-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;list-style:none;padding:0;margin:24px 0 0}.lp-hero-features li{display:flex;gap:8px;align-items:center;font-size:12px}.lp-hero-features .lp-icon{width:38px;height:38px;padding:7px;border:2px solid #ffc329;border-radius:50%;color:#ffc329}.lp-hero-features b,.lp-hero-features small{display:block}.lp-hero-features small{font-size:11px;margin-top:3px}.lp-consult-form{background:#fff;border-radius:16px;padding:20px;box-shadow:0 8px 28px #00164033;text-align:center;display:flex;flex-direction:column;gap:9px}.lp-consult-form h2{font-size:19px;font-weight:800}.lp-consult-form>p{font-size:12px;color:#49648b}.lp-consult-form label{display:flex;align-items:center;gap:8px;border:1px solid var(--lp-line);border-radius:6px;padding:0 10px;min-height:40px;color:#7385a5}.lp-consult-form label .lp-icon{width:17px;height:17px}.lp-consult-form input,.lp-consult-form select{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#253a60;font-size:13px;min-height:38px}.lp-consult-form label:focus-within{outline:2px solid var(--lp-blue)}.lp-consult-form input::placeholder{color:#66799a}.lp-consult-form>small{font-size:11px;color:#64748b}.lp-consult-form>small a{text-decoration:underline}.lp-privacy{display:flex;gap:5px;align-items:center;justify-content:center}.lp-privacy .lp-icon{width:14px;height:14px}.lp-section{padding-block:22px}.lp-section-heading{text-align:center;margin-bottom:24px}.lp-section-heading h2,.lp-comparison-section>h2{font-size:clamp(20px,2.15vw,30px);line-height:1.15;font-weight:900;margin-top:8px}.lp-section-heading p{font-size:15px;color:#23469c;margin-top:6px}.lp-pill{display:inline-block;border:1px solid #58b4ff;border-radius:24px;padding:4px 16px;font-size:12px;font-weight:700;color:#006bff}.lp-plan-grid{display:grid;grid-template-columns:repeat(var(--lp-columns),minmax(0,1fr));gap:12px;grid-auto-rows:1fr;padding-top:4px}.lp-plan-card{border:1px solid #0fa4ff;border-radius:13px;box-shadow:0 4px 0 #e9eef4;display:flex;flex-direction:column;min-width:0;background:#fff;overflow:visible}.lp-plan-orange{border-color:#ff6900}.lp-plan-heading{position:relative;background:linear-gradient(120deg,#058dff,#0053d8);color:#fff;text-align:center;border-radius:12px 12px 0 0;padding:24px 8px 16px;min-height:94px;display:flex;flex-direction:column;justify-content:center}.lp-plan-heading h3{font-size:clamp(14px,1.5vw,21px);line-height:1.12;font-weight:800;text-transform:uppercase;overflow-wrap:anywhere}.lp-plan-heading p{font-size:12px;line-height:1.2;margin-top:6px}.lp-plan-orange .lp-plan-heading{background:linear-gradient(120deg,#ff8e00,#ff4100)}.lp-plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);border:1px solid #ffcf00;border-radius:8px;white-space:nowrap;padding:5px 12px;background:linear-gradient(#ff6400,#f52800);font-size:11px;font-weight:800;color:white;max-width:95%;overflow:hidden;text-overflow:ellipsis}.lp-plan-body{border-radius:12px;background:#fff;display:flex;flex-direction:column;gap:10px;flex:1;padding:14px 12px 12px;margin-top:-6px;position:relative;min-width:0;backface-visibility:visible}.lp-plan-visual{display:flex;flex-direction:column-reverse;align-items:center;gap:6px}.lp-plan-visual>img{width:100%;height:150px;object-fit:contain}.lp-plan-numbers{text-align:center;width:100%;min-width:0}.lp-speed{display:flex;justify-content:center;align-items:baseline;gap:5px;color:#f33c06;white-space:nowrap}.lp-speed b{font-size:clamp(27px,3.5vw,48px);line-height:1.1;font-weight:900}.lp-speed span{font-size:14px;font-weight:800}.lp-plan-price{display:block;font-size:clamp(16px,1.8vw,24px);line-height:1.2;margin-top:4px;overflow-wrap:anywhere}.lp-plan-numbers>small{font-size:10px;color:#486180;display:block;line-height:1.2;margin-top:4px}.lp-period{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:#486180}.lp-period select{min-width:0;max-width:110px;border:1px solid var(--lp-line);border-radius:6px;padding:6px 4px;background:#fff;color:var(--lp-navy);min-height:36px;font-size:11px}.lp-plan-benefits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:12px}.lp-plan-benefits li{display:flex;gap:6px;line-height:1.35;overflow-wrap:anywhere}.lp-plan-benefits li>span{display:flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#05b438;color:white;font-size:11px;flex:none;margin-top:1px}.lp-plan-card .plan-accessories{height:auto;max-height:150px;overflow:auto;flex:none}.lp-plan-card .plan-accessories legend{font-size:11px}.lp-plan-card .accessory-option{font-size:11px}.lp-plan-card .accessory-empty{font-size:10px}.lp-plan-card .accessory-total{font-size:11px;line-height:1.3;max-height:none}.lp-plan-actions{margin-top:auto;display:flex;flex-direction:column;gap:8px}.lp-plan-actions .lp-button{width:100%;font-size:13px;min-height:42px;padding:10px 6px}.lp-details{background:transparent;border:0;color:#005ccc;font-size:11px;font-weight:700;min-height:32px}.lp-empty{grid-column:1/-1;text-align:center;padding:32px;background:#f2f8ff;border-radius:12px}.lp-comparison-section{padding-block:10px 20px}.lp-comparison-section>h2{text-align:center;font-size:21px;margin:0 0 12px}.lp-table-scroll{overflow:auto;border:1px solid var(--lp-line);border-radius:10px;max-width:100%;overscroll-behavior-inline:contain}.lp-comparison{border-collapse:collapse;width:100%;min-width:600px;table-layout:fixed;font-size:12px}.lp-comparison th,.lp-comparison td{padding:9px 8px;border-bottom:1px solid var(--lp-line);border-right:1px solid var(--lp-line);text-align:center;overflow-wrap:anywhere}.lp-comparison th:first-child{width:160px;text-align:left}.lp-comparison thead{background:#eaf5ff}.lp-comparison thead th:first-child{background:linear-gradient(110deg,#0662c3,#008cff);color:#fff}.lp-comparison tbody tr:nth-child(even){background:#f7faff}.lp-comparison-section>small{display:block;font-size:11px;color:#486180;margin-top:8px}.lp-offer{background:linear-gradient(110deg,#ffaf00,#ff4400,#ff8a00);color:#fff;padding:20px 0}.lp-offer-row{display:flex;align-items:center;gap:20px}.lp-offer-row h2{font-size:27px;font-weight:900;font-style:italic}.lp-offer-row p{font-size:14px;font-weight:700}.lp-offer-image{width:130px;height:90px;object-fit:contain}.lp-offer-items{display:flex;gap:8px;flex:1}.lp-offer-items article{display:flex;align-items:center;gap:10px;padding:12px;background:white;border-radius:10px;color:var(--lp-navy);flex:1;min-width:0}.lp-offer-items b,.lp-offer-items small{display:block}.lp-offer-items b{font-size:12px;color:#f33c06}.lp-offer-items small{font-size:11px}.lp-offer-items .lp-icon{width:30px;height:30px;color:var(--lp-blue)}.lp-yellow{background:#ffdc00;color:var(--lp-navy);flex:none}.lp-benefit-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}.lp-benefit-grid article{display:flex;align-items:center;gap:10px}.lp-icon-circle{display:flex;align-items:center;justify-content:center;background:linear-gradient(#009fff,#0056ff);width:48px;height:48px;color:#fff;border-radius:50%;flex:none}.lp-benefit-grid h3{font-size:14px;font-weight:800}.lp-benefit-grid p{font-size:12px;margin-top:4px;color:#315081}.lp-stats{background:linear-gradient(180deg,#edf8ff,#fff);border-block:1px solid #e9f4ff}.lp-stat-grid{display:flex;justify-content:center}.lp-stat-grid article{flex:1;text-align:center;padding:8px 16px;border-right:1px solid var(--lp-line);min-width:0}.lp-stat-grid article:last-child{border:0}.lp-stat-grid .lp-icon{width:40px;height:40px;color:var(--lp-blue)}.lp-stat-grid article:nth-child(odd) .lp-icon{color:var(--lp-orange)}.lp-stat-grid b{display:block;font-size:28px;font-weight:900;overflow-wrap:anywhere}.lp-stat-grid p{font-size:13px}.lp-reviews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.lp-reviews-grid figure{display:flex;gap:15px;margin:0;padding:18px;border:1px solid var(--lp-line);border-radius:10px;background:#fff}.lp-reviews-grid img,.lp-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;flex:none}.lp-avatar{display:flex;align-items:center;justify-content:center;background:#e6f3ff;color:var(--lp-blue);font-size:30px}.lp-reviews-grid b{font-size:14px}.lp-stars{display:block;color:#ffa000;letter-spacing:1px}.lp-reviews-grid blockquote{margin:5px 0;font-size:13px;color:#36517a}.lp-reviews-grid small{font-size:12px;color:#667b9b}.lp-left{text-align:left}.lp-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lp-faq-grid details{border:1px solid var(--lp-line);border-radius:8px;padding:0 14px;align-self:start;background:#fff}.lp-faq-grid summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;min-height:44px;font-size:13px;font-weight:600}.lp-faq-grid summary::-webkit-details-marker{display:none}.lp-faq-grid summary span{font-size:22px;flex:none}.lp-faq-grid details[open] summary span{transform:rotate(45deg)}.lp-faq-grid details>p{padding:8px 0 15px;font-size:14px;color:#36517a;white-space:pre-line}.lp-closing{position:relative;overflow:hidden;background:linear-gradient(120deg,#0039c4,#008cff);padding:28px 0;color:#fff;text-align:center}.lp-closing h2{font-size:25px;font-weight:900}.lp-closing p{font-size:14px;margin-top:5px}.lp-closing .lp-wrap{position:relative}.lp-closing-image{position:absolute;right:-20px;bottom:-28px;width:220px;height:160px;object-fit:contain;opacity:.45;pointer-events:none}.lp-inline-form{display:flex;gap:10px;margin:20px auto 10px;max-width:920px;position:relative}.lp-inline-form input{width:0;flex:1;border:1px solid #d9e8f8;border-radius:6px;padding:12px;background:#fff;color:var(--lp-navy);min-height:44px;font-size:13px}.lp-closing-privacy{display:flex;gap:8px;align-items:center;justify-content:center;font-size:12px!important}.lp-closing-privacy .lp-icon{width:16px;height:16px}.lp-footer{background:#032b4d;color:#d6e8f5;padding:22px 0}.lp-footer-grid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:30px;font-size:12px}.lp-footer img{width:172px;height:auto}.lp-footer p{margin-top:10px}.lp-footer h3{font-size:13px;margin-bottom:10px}.lp-footer a{display:block;margin-top:6px}.lp-footer button{background:none;border:0;color:inherit;text-align:left;padding:6px 0;font-size:12px}.lp-mobile-cta{display:none}.lp-preview-note{padding:8px;text-align:center;background:#fff1cf;color:#754209;font-size:12px}.telecom-landing .toast-container{z-index:3000}.telecom-landing [hidden]{display:none!important}
+@media(min-width:1100px){.lp-plan-grid[data-plan-count="1"],.lp-plan-grid[data-plan-count="2"]{max-width:820px;margin-inline:auto;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
+@media(max-width:1100px){.lp-header-row{gap:16px}.lp-nav{gap:14px}.lp-nav a{font-size:11px}.lp-logo img{width:145px}.lp-hotline b{font-size:17px}.lp-header-cta{font-size:12px;padding:10px}.lp-hero-grid{grid-template-columns:minmax(0,1fr) 290px;gap:24px}.lp-hero-copy{padding-right:0}.lp-hero-features{grid-template-columns:repeat(2,minmax(0,1fr));max-width:390px}.lp-consult-form{padding:16px}.lp-plan-visual>img{height:110px}.lp-plan-body{padding:12px 9px;gap:8px}.lp-plan-benefits{font-size:11px}.lp-offer-row{gap:12px}.lp-offer-row h2{font-size:22px}.lp-offer-items article{padding:10px 6px}.lp-offer-row>.lp-yellow{font-size:12px;padding:10px}.lp-benefit-grid{gap:14px}.lp-benefit-grid h3{font-size:12px}}
+@media(min-width:768px) and (max-width:900px){.lp-nav{display:none}.lp-header-row{justify-content:space-between}.lp-plan-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lp-plan-visual>img{height:130px}.lp-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lp-offer-row{flex-wrap:wrap}.lp-offer-items{flex-basis:65%}}
+@media(max-width:767px){.lp-wrap{width:calc(100% - 28px)}.lp-header-row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"logo menu" "phone cta";gap:4px 12px;padding-block:6px}.lp-logo{grid-area:logo;justify-self:center;margin-left:40px}.lp-logo img{width:160px;height:42px}.lp-menu-toggle{grid-area:menu;width:44px;height:44px;background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}.lp-menu-toggle span{display:block;width:23px;height:3px;border-radius:2px;background:var(--lp-navy)}.lp-hotline{grid-area:phone;gap:8px}.lp-hotline small{display:none}.lp-hotline b{font-size:22px}.lp-hotline .lp-icon{width:25px;height:25px}.lp-header-cta{grid-area:cta;font-size:14px;padding:8px 14px;min-height:38px;border-radius:16px}.lp-nav{display:none;grid-column:1/-1;margin:0;gap:0;padding:4px 0}.lp-nav.is-open{display:flex;flex-direction:column;align-items:stretch}.lp-nav a{padding:12px;font-size:14px;border-top:1px solid var(--lp-line)}.lp-hero-grid{display:block;padding-top:20px;padding-bottom:20px}.lp-hero-background img{height:540px;object-position:72% center}.lp-hero:after{background:linear-gradient(180deg,#00256e66,transparent 45%,#005eea 65%)}.lp-hero-copy{padding:0;min-height:440px;max-width:none}.lp-eyebrow{font-size:12px}.lp-hero h1{font-size:26px;margin-top:8px;line-height:1.15}.lp-hero h1 strong{font-size:37px;margin-top:6px;color:#ffd029}.lp-hero-subtitle{font-size:18px;max-width:280px;margin-top:12px!important}.lp-hero-features{display:flex;flex-direction:column;gap:15px;margin-top:20px;max-width:165px}.lp-hero-features li{font-size:12px;gap:8px}.lp-hero-features .lp-icon{width:38px;height:38px}.lp-consult-form{border:1px solid #d1e7ff;padding:20px 16px;gap:10px}.lp-consult-form h2{font-size:18px}.lp-consult-form>p{font-size:13px}.lp-consult-form input,.lp-consult-form select{font-size:14px;min-height:42px}.lp-consult-form .lp-button{min-height:48px;font-size:16px}.lp-section{padding-block:24px}.lp-section-heading{margin-bottom:22px}.lp-section-heading h2{font-size:22px}.lp-section-heading p{font-size:14px}.lp-pill{font-size:10px;padding:4px 10px}.lp-plan-grid{grid-template-columns:1fr;gap:22px;grid-auto-rows:1fr;width:min(460px,100%);margin-inline:auto}.lp-plan-heading{padding:20px 12px 16px;min-height:82px}.lp-plan-heading h3{font-size:23px}.lp-plan-heading p{font-size:15px}.lp-plan-body{padding:14px 12px 12px;gap:12px}.lp-plan-visual{flex-direction:row;gap:10px;min-height:128px}.lp-plan-visual>img{width:45%;height:128px}.lp-plan-numbers{width:55%;text-align:center}.lp-speed b{font-size:43px}.lp-speed span{font-size:17px}.lp-plan-price{font-size:21px}.lp-plan-numbers>small{font-size:10px}.lp-period{font-size:12px}.lp-period select{font-size:13px;min-height:40px;max-width:140px}.lp-plan-benefits{font-size:15px;gap:7px}.lp-plan-benefits li>span{width:17px;height:17px;margin-top:2px}.lp-plan-actions .lp-button{min-height:48px;font-size:17px}.lp-details{font-size:13px;min-height:36px}.lp-plan-card .plan-accessories legend,.lp-plan-card .accessory-option{font-size:13px}.lp-plan-card .accessory-empty{font-size:12px}.lp-plan-badge{font-size:12px;padding:5px 14px}.lp-comparison-section{padding-block:0 24px}.lp-comparison-section>h2{font-size:21px}.lp-comparison{min-width:650px;font-size:12px;table-layout:auto}.lp-comparison th:first-child{min-width:115px;position:sticky;left:0;background:#f3f8ff;z-index:1}.lp-comparison thead th:first-child{background:#0461ce}.lp-comparison th,.lp-comparison td{min-width:100px;padding:9px 8px}.lp-offer{padding:22px 0}.lp-offer-row{flex-direction:column;text-align:center;gap:16px}.lp-offer-row h2{font-size:29px}.lp-offer-items{width:100%;gap:7px;flex:none}.lp-offer-items article{flex-direction:column;padding:12px 7px;text-align:center;gap:6px}.lp-offer-items b{font-size:12px}.lp-offer-items .lp-icon{width:32px;height:32px}.lp-offer-row .lp-yellow{width:100%;min-height:46px;font-size:15px}.lp-benefit-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.lp-benefit-grid article{flex-direction:column;text-align:center;padding:18px 10px;border:1px solid var(--lp-line);border-radius:14px;background:#fff;box-shadow:0 4px 16px #0073ef05}.lp-icon-circle{width:54px;height:54px}.lp-benefit-grid h3{font-size:14px}.lp-benefit-grid p{font-size:13px}.lp-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.lp-stat-grid article{border:1px solid var(--lp-line)!important;border-radius:13px;background:#fff;padding:18px 8px}.lp-stat-grid b{font-size:26px}.lp-stat-grid p{font-size:14px}.lp-reviews-grid{grid-template-columns:1fr;gap:12px}.lp-reviews-grid figure{padding:16px 12px;gap:12px;border-radius:14px}.lp-reviews-grid img,.lp-avatar{width:68px;height:68px}.lp-reviews-grid blockquote{font-size:14px}.lp-faq-grid{grid-template-columns:1fr}.lp-faq-grid summary{font-size:14px;min-height:48px}.lp-left{text-align:center}.lp-closing h2{font-size:23px}.lp-closing p{font-size:13px}.lp-inline-form{flex-direction:column;gap:10px;margin-top:18px}.lp-inline-form input{width:100%;flex:none;min-height:46px;font-size:14px}.lp-inline-form button{min-height:46px;font-size:16px}.lp-closing-image{height:190px;opacity:.25}.lp-footer{padding:24px 0 calc(24px + 72px + env(safe-area-inset-bottom))}.lp-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;font-size:12px}.lp-footer-grid>div:first-child{grid-column:1/-1}.lp-mobile-cta{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:fixed;bottom:0;inset-inline:0;z-index:45;background:#fff;box-shadow:0 -3px 15px #005fe02b;padding:8px 10px calc(8px + env(safe-area-inset-bottom))}.lp-mobile-cta>a{display:flex;align-items:center;justify-content:center;gap:9px;border-radius:9px;background:linear-gradient(#21b628,#05851b);color:#fff;font-size:12px}.lp-mobile-cta b{display:block;font-size:16px}.lp-mobile-cta .lp-button{font-size:14px;padding:10px 8px}.lp-mobile-cta .lp-icon{width:25px;height:25px}.lp-section-heading h2:after{content:"";display:block;width:32px;height:3px;background:var(--lp-blue);margin:10px auto 0}}
+@media(max-width:359px){.lp-wrap{width:calc(100% - 20px)}.lp-hotline b{font-size:19px}.lp-header-cta{font-size:13px}.lp-hero h1{font-size:24px}.lp-hero h1 strong{font-size:33px}.lp-speed b{font-size:38px}.lp-speed span{font-size:14px}.lp-plan-price{font-size:18px}.lp-plan-benefits{font-size:14px}.lp-plan-heading h3{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.telecom-landing *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+@media(min-width:768px){.lp-plan-heading{height:112px;flex:none}.lp-plan-heading h3{min-height:2.24em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.lp-plan-heading p{min-height:2.4em}}
+
+@media(min-width:768px){.lp-nav{flex-wrap:wrap;min-width:0;gap:4px 16px}.lp-nav a{white-space:normal;overflow-wrap:anywhere;max-width:150px;padding:8px 0}.lp-logo,.lp-hotline,.lp-header-cta{flex:none}}
+@media(min-width:768px) and (max-width:900px){.lp-header-row{flex-wrap:wrap;gap:8px 16px;padding-block:8px}.lp-nav{display:flex;order:4;width:100%;justify-content:center;margin:0}}
+.telecom-landing section[id]{scroll-margin-top:150px}
+
+/* Shared homepage cards: a single structure, compact campaign presentation. */
+.telecom-landing{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#10243a;background:#f8fafc;font-size:16px}
+.telecom-landing .lp-wrap{width:min(1360px,100% - 32px)}
+.telecom-landing .lp-section-heading h2{font-size:clamp(21px,2.3vw,30px);line-height:1.25;max-width:850px;margin-inline:auto;font-weight:800}
+.telecom-landing .lp-section-heading p{font-size:14px;max-width:760px;margin:8px auto 0;color:#475569}
+.telecom-landing .lp-plan-grid{gap:20px;justify-content:center;align-items:stretch;padding-top:12px;grid-template-columns:repeat(var(--lp-columns),minmax(0,1fr))}
+.telecom-landing .lp-plan-grid[data-plan-count="1"]{grid-template-columns:minmax(0,360px)}
+.telecom-landing .lp-plan-grid[data-plan-count="2"]{grid-template-columns:repeat(2,minmax(0,360px))}
+.telecom-landing .lp-plan-card{width:100%;max-width:none;flex:none;min-width:0;perspective:none;transition:none;opacity:1;transform:none;filter:none;border:0;background:transparent;box-shadow:none;overflow:visible;height:650px!important}
+.telecom-landing .lp-plan-card .plan-card-3d-inner{height:650px!important;transform:none}
+.telecom-landing .lp-plan-card .card-face-front{display:flex;position:relative!important;inset:auto;height:650px!important;min-height:650px!important;padding:0!important;gap:0!important;border:1px solid #dbe4ed;border-radius:18px;background:#fff;box-shadow:0 6px 20px #0f172a08;overflow:hidden!important}
+.telecom-landing .lp-plan-card .card-light-streak{display:none}
+.telecom-landing .lp-plan-card .plan-card-image-wrap{height:190px!important;min-height:190px!important;flex:0 0 190px!important;margin:0!important;border-radius:17px 17px 0 0!important;background:#f1f5f9;overflow:hidden}
+.telecom-landing .lp-plan-card .plan-card-image{display:block;width:100%!important;height:190px!important;max-height:190px!important;object-fit:contain!important}
+.telecom-landing .lp-plan-card .plan-tag-badge{position:absolute;top:12px;left:12px;right:auto;transform:none;max-width:calc(100% - 24px);font-size:12px;white-space:normal;line-height:1.25;padding:6px 10px;background:#fff;color:#9a3412;box-shadow:0 2px 10px #0f172a20;z-index:2;border:1px solid #fed7aa}
+.telecom-landing .lp-plan-card .plan-card-body{padding:16px!important;min-height:0;flex:1;display:flex;flex-direction:column;gap:9px!important;width:100%}
+.telecom-landing .lp-plan-card .plan-header{padding:0!important;margin:0!important;border:0;min-height:68px;flex:0 0 68px}
+.telecom-landing .lp-plan-card .plan-name{color:#10243a;font-size:20px!important;min-height:46px!important;line-height:1.2!important;text-transform:none}
+.telecom-landing .lp-plan-card .plan-speed-line{font-size:13px;line-height:1.5;color:#475569}
+.telecom-landing .lp-plan-card .plan-speed-line strong{color:#0369a1}
+.telecom-landing .lp-plan-card .plan-price-box{padding:0!important;min-height:68px!important;flex:0 0 68px}
+.telecom-landing .lp-plan-card .plan-price-row{display:flex!important;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px!important;min-width:0}
+.telecom-landing .lp-plan-card .plan-price-amount{font-size:clamp(19px,1.7vw,24px)!important;color:#c2410c;line-height:1.2;overflow-wrap:anywhere}
+.telecom-landing .lp-plan-card .billing-choice{min-width:0;flex:0 1 108px}
+.telecom-landing .lp-plan-card .billing-choice select{height:44px!important;min-height:44px!important;width:100%;font-size:14px!important;padding:6px!important;border:1px solid #cbd5e1;border-radius:8px;background:white;color:#1e293b}
+.telecom-landing .lp-plan-card .plan-price-note{font-size:12px!important;line-height:1.4;color:#64748b}
+.telecom-landing .lp-plan-card .plan-accessories{flex:1 1 auto!important;min-height:52px!important;max-height:128px;overflow:auto;font-size:13px;color:#334155}
+.telecom-landing .lp-plan-card .plan-accessories legend{font-size:13px}
+.telecom-landing .lp-plan-card .plan-equipment-block{min-height:42px;max-height:48px;overflow:auto;flex:0 0 48px;font-size:12px;color:#475569}
+.telecom-landing .lp-plan-card .plan-equipment-block h4{font-size:13px;color:#1e293b;margin:0 0 3px}
+.telecom-landing .lp-plan-card .plan-card-actions{display:flex!important;flex-direction:column;gap:7px!important;flex:0 0 94px;margin-top:auto!important;width:100%}
+.telecom-landing .lp-plan-card .btn-select-plan{width:100%;min-height:46px!important;padding:10px!important;font-size:15px!important;background:#ea580c;color:white;box-shadow:none;border:0;border-radius:10px}
+.telecom-landing .lp-plan-card .btn-flip-trigger{width:100%;min-height:40px!important;background:#f8fafc;border:1px solid #e2e8f0;color:#0369a1;padding:7px;font-size:13px!important;text-decoration:none;border-radius:9px}
+.lp-card-controls{display:none}
+.lp-campaign{display:grid;grid-template-columns:1fr auto;gap:20px;padding:22px;margin-top:24px;border:1px solid #fed7aa;border-radius:18px;background:linear-gradient(135deg,#fff7ed,#fff);box-shadow:0 5px 18px #9a341209;align-items:center}
+.lp-campaign-copy h2{font-size:23px;line-height:1.3;margin:10px 0 6px;color:#9a3412}.lp-campaign-copy p{font-size:15px;color:#475569}.lp-campaign-state{display:inline-flex;padding:5px 10px;border-radius:20px;background:#ffedd5;color:#9a3412;font-size:12px;font-weight:700}.lp-campaign-metrics{display:flex;gap:24px;align-items:center}.lp-time-parts{display:flex;gap:6px;margin-top:6px}.lp-time-parts>span{display:flex;flex-direction:column;align-items:center;min-width:45px;background:#9a3412;color:#fff;padding:8px;border-radius:8px}.lp-time-parts b{font-size:22px;font-variant-numeric:tabular-nums}.lp-time-parts small{font-size:11px}.lp-stock{font-size:14px;max-width:200px}.lp-stock>b{font-size:24px;color:#9a3412}.lp-stock small{display:block;font-size:11px;line-height:1.5;color:#64748b;margin-top:5px}.lp-campaign-terms{grid-column:1/-1;border-top:1px solid #fed7aa;padding-top:12px}.lp-campaign-terms summary{cursor:pointer;min-height:32px;font-size:14px;font-weight:600}.lp-campaign-terms p{font-size:14px;line-height:1.6;white-space:pre-line;color:#475569}.lp-campaign [hidden]{display:none!important}
+.lp-contact-float{position:fixed;right:20px;bottom:24px;z-index:40;border:1px solid #fed7aa;border-radius:30px;background:#fff;color:#9a3412;padding:12px 16px;display:flex;gap:8px;align-items:center;min-height:48px;box-shadow:0 4px 20px #0f172a20;font-size:14px;font-weight:700}
+.lp-contact-dialog{position:fixed;inset:0;margin:auto;width:min(380px,calc(100% - 32px));max-height:85dvh;border:1px solid #e2e8f0;border-radius:18px;padding:22px;color:#10243a;background:#fff;box-shadow:0 20px 70px #0004;overflow:auto}.lp-contact-dialog:not([open]){display:none}.lp-contact-dialog::backdrop{background:#0f172a80}.lp-contact-dialog header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.lp-contact-dialog h2{font-size:20px}.lp-contact-dialog header button{width:44px;height:44px;border:0;border-radius:50%;background:#f1f5f9;font-size:24px}.lp-contact-dialog>p{font-size:14px;color:#64748b}.lp-contact-dialog>a{display:flex;align-items:center;min-height:48px;border:1px solid #e2e8f0;border-radius:10px;margin-top:10px;padding:12px;background:#f8fafc;font-size:15px;font-weight:600}.lp-contact-dialog>.lp-button{width:100%;margin-top:12px}
+.telecom-landing .lp-footer-grid{grid-template-columns:1.4fr repeat(3,minmax(0,1fr));gap:24px}.telecom-landing .lp-footer p{font-size:13px;line-height:1.6}.telecom-landing .lp-footer a{min-height:36px;display:block;font-size:13px}.telecom-landing .lp-footer h3{font-size:14px;color:#fff;margin-bottom:8px}
+@media(max-width:1279px){.telecom-landing .lp-plan-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.telecom-landing .lp-footer-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.telecom-landing .lp-footer-grid>div:first-child{grid-column:1/-1}}
+@media(max-width:767px){
+.telecom-landing .lp-wrap{width:calc(100% - 28px)}.telecom-landing .lp-header-row{min-height:60px;gap:12px}.telecom-landing .lp-logo img{width:132px;height:38px}.telecom-landing .lp-hero-grid{padding-top:24px;gap:20px}.telecom-landing .lp-hero h1{font-size:30px;line-height:1.16}.telecom-landing .lp-hero-copy{padding-right:0;max-width:100%}.telecom-landing .lp-hero-subtitle{font-size:16px;line-height:1.5}.telecom-landing .lp-hero-features{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.telecom-landing .lp-hero-features li{font-size:12px;min-width:0}.telecom-landing .lp-hero-features small{font-size:11px}.telecom-landing .lp-consult-form{padding:18px;border-radius:16px;gap:10px}.telecom-landing .lp-consult-form h2{font-size:18px;line-height:1.3}.telecom-landing .lp-consult-form input,.telecom-landing .lp-consult-form select{font-size:16px!important;min-height:44px}.telecom-landing .lp-section{padding-block:24px}.telecom-landing .lp-section-heading{margin-bottom:16px}.telecom-landing .lp-section-heading h2{font-size:21px}.telecom-landing .lp-section-heading p{font-size:13px;line-height:1.5}.telecom-landing .lp-pill{font-size:11px}
+.telecom-landing .lp-plan-grid,.telecom-landing .lp-plan-grid[data-plan-count="1"],.telecom-landing .lp-plan-grid[data-plan-count="2"]{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:6%;padding:8px 6% 16px;justify-content:flex-start;grid-auto-rows:auto;overscroll-behavior-x:contain}.telecom-landing .lp-plan-card{flex:0 0 100%;width:100%;max-width:100%;scroll-snap-align:center;scroll-snap-stop:always}.telecom-landing .lp-plan-grid[data-plan-count="1"]{padding-inline:0}.telecom-landing .lp-plan-card .plan-name{font-size:20px!important}.telecom-landing .lp-plan-card .plan-price-amount{font-size:23px!important}.telecom-landing .lp-plan-card .billing-choice select{font-size:16px!important}.lp-card-controls{display:flex;gap:14px;justify-content:center;align-items:center;margin-top:4px}.lp-card-controls p{font-size:12px;color:#64748b}.lp-card-controls button{min-width:44px;min-height:44px;border:1px solid #cbd5e1;border-radius:50%;color:#0369a1;background:white;font-size:19px}.lp-card-controls button:disabled{opacity:.35}
+.lp-campaign{margin-top:20px;grid-template-columns:minmax(0,1fr);padding:18px;gap:16px}.lp-campaign-copy h2{font-size:21px}.lp-campaign-metrics{justify-content:space-between;gap:16px;flex-wrap:wrap}.lp-stock{max-width:none}.lp-time-parts b{font-size:20px}.lp-contact-float{right:12px;bottom:calc(86px + env(safe-area-inset-bottom));width:48px;height:48px;justify-content:center;padding:10px}.lp-contact-float span{display:none}.telecom-landing .lp-mobile-cta{padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:10px}.telecom-landing .lp-mobile-cta a{min-height:44px;padding:6px 10px;font-size:12px;min-width:0;flex:1}.telecom-landing .lp-mobile-cta a b{font-size:13px;white-space:nowrap}.telecom-landing .lp-mobile-cta>.lp-button{min-height:46px;flex:1;padding:10px;font-size:14px}.telecom-landing .lp-footer{padding:24px 0 110px}.telecom-landing .lp-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.telecom-landing .lp-footer-grid>div:first-child{grid-column:1/-1}.telecom-landing .lp-footer a{font-size:12px;min-height:34px;overflow-wrap:anywhere}.telecom-landing .lp-benefit-grid{gap:12px}.telecom-landing .lp-benefit-grid article{padding:14px;min-width:0}.telecom-landing .lp-benefit-grid h3{font-size:14px}.telecom-landing .lp-benefit-grid p{font-size:12px}.telecom-landing .lp-inline-form input{font-size:16px}.telecom-landing .lp-faq-grid summary{font-size:14px;min-height:44px}.telecom-landing .lp-closing h2{font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){.telecom-landing *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+.telecom-landing .lp-plan-card[data-lp-accent=orange] .card-face-front{border-color:#fdba74;box-shadow:0 5px 18px #ea580c12}.telecom-landing .lp-plan-card .plan-card-body{gap:6px!important;padding:14px!important}.telecom-landing .lp-plan-card .plan-header{min-height:64px!important;flex:0 0 64px!important}.telecom-landing .lp-plan-card .plan-price-box{min-height:64px!important;flex:0 0 64px!important}.telecom-landing .lp-plan-card .plan-card-actions{flex:0 0 86px!important;gap:4px!important}.telecom-landing .lp-plan-card .plan-accessories{min-height:42px!important}.telecom-landing .lp-plan-card .plan-equipment-block{flex:0 0 40px!important;max-height:40px!important;min-height:40px!important}
+
+/* Keep shared mobile badges inside the image, and reserve one caption line. */
+.telecom-landing .lp-plan-card .plan-tag-badge{top:12px!important;left:12px!important;font-size:12px!important}
+.telecom-landing .lp-plan-card .plan-header{min-height:84px!important;flex:0 0 84px!important}
+.telecom-landing .lp-card-subtitle{font-size:12px;line-height:18px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Compact hero at phone and Admin-preview widths; keep form inputs at 16px. */
+@media (max-width: 767px) {
+  .telecom-landing .lp-header-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+  .telecom-landing .lp-logo {
+    margin-left: 0;
+    justify-self: start;
+  }
+  .telecom-landing .lp-hotline {
+    gap: 6px;
+    min-width: 0;
+  }
+  .telecom-landing .lp-hotline b {
+    font-size: clamp(15px, 4.3vw, 18px);
+  }
+  .telecom-landing .lp-hotline .lp-icon {
+    width: 20px;
+    height: 20px;
+  }
+  .telecom-landing .lp-header-cta {
+    font-size: 13px;
+    min-height: 44px;
+    max-width: 144px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+  }
+  .telecom-landing .lp-hero-grid {
+    padding-block: 18px;
+  }
+  .telecom-landing .lp-hero-copy {
+    min-height: clamp(320px, 88vw, 380px);
+  }
+  .telecom-landing .lp-eyebrow {
+    font-size: clamp(10px, 2.8vw, 11px);
+    letter-spacing: .06em;
+  }
+  .telecom-landing .lp-hero h1 {
+    font-size: clamp(23px, 6.8vw, 28px);
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+  .telecom-landing .lp-hero h1 strong {
+    font-size: clamp(25px, 7.3vw, 32px);
+    margin-top: 5px;
+  }
+  .telecom-landing .lp-hero-subtitle {
+    font-size: 14px;
+    line-height: 1.45;
+    max-width: none;
+    margin-top: 10px !important;
+  }
+  .telecom-landing .lp-hero-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+    gap: 12px 10px;
+    margin-top: 16px;
+  }
+  .telecom-landing .lp-hero-features li {
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .telecom-landing .lp-hero-features li > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .telecom-landing .lp-hero-features .lp-icon {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+  }
+  .telecom-landing .lp-hero-background img {
+    height: clamp(400px, 125vw, 540px);
+  }
+  .telecom-landing .lp-hero:after {
+    background: linear-gradient(180deg, #001b52b3, #001b52a6 48%, #005eea 78%);
+  }
+  .telecom-landing .lp-consult-form h2 {
+    font-size: 16px;
+  }
+}
+
+/* A single header row and a short consultation form on phones. */
+.telecom-landing .lp-form-control { display:flex; flex-direction:column; flex:1; min-width:0; text-align:left; }
+.telecom-landing .lp-form-field-label { font-size:11px; font-weight:600; line-height:16px; color:#475569; }
+.telecom-landing .lp-consult-form label { padding:5px 10px; min-height:50px; }
+.telecom-landing .lp-consult-form .lp-form-control input { width:100%; min-height:26px; padding:0; line-height:26px; }
+.telecom-landing .lp-privacy a { color:#0369a1; text-decoration:underline; }
+.telecom-landing .lp-region-picker { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; margin:0 auto 18px; }
+.telecom-landing .lp-region-picker label { color:#475569; font-size:14px; font-weight:600; }
+.telecom-landing .lp-region-picker select { width:min(100%,340px); min-width:0; min-height:44px; padding:8px 12px; font-size:16px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:#10243a; }
+.telecom-landing .lp-region-field { display:flex; flex-direction:column; gap:6px; flex:1 1 220px; max-width:340px; min-width:0; text-align:left; }
+.telecom-landing .lp-region-field select { width:100%; }
+.telecom-landing .lp-region-picker .client-location-hint { flex-basis:100%; margin:0; }
+@media(max-width:767px) {
+  .telecom-landing .lp-header-row { grid-template-columns:minmax(0,1fr) auto 44px; grid-template-areas:"logo cta menu"; gap:8px; min-height:56px; padding-block:6px; }
+  .telecom-landing .lp-hotline { display:none; }
+  .telecom-landing .lp-logo { min-width:0; width:100%; max-width:132px; }
+  .telecom-landing .lp-logo img { width:100%; height:36px; object-fit:contain; }
+  .telecom-landing .lp-header-cta { padding:8px; font-size:12px; }
+  .telecom-landing .lp-consult-form { padding:12px; gap:6px; }
+  .telecom-landing .lp-consult-form > p { display:none; }
+  .telecom-landing .lp-consult-form label { padding-block:3px; }
+  .telecom-landing .lp-consult-form .lp-form-control input { min-height:26px!important; font-size:16px; }
+  .telecom-landing .lp-consult-form .lp-button { min-height:44px; padding:8px 10px; font-size:14px; }
+  .telecom-landing .lp-consult-form .lp-privacy { font-size:10px; line-height:15px; margin:0; align-items:flex-start; }
+}
+
+@media(max-width:767px) {
+ .telecom-landing .lp-mobile-cta { display:grid; grid-template-columns:minmax(0,1fr) 56px 64px; gap:8px; }
+ .telecom-landing .lp-mobile-cta > .lp-button { font-size:13px; padding:8px; }
+ .telecom-landing .lp-mobile-cta a { display:flex; flex-direction:column; justify-content:center; gap:2px; padding:4px; min-height:46px; border-radius:10px; font-size:11px; line-height:14px; }
+ .telecom-landing .lp-mobile-cta .lp-icon { width:20px; height:20px; }
+ .telecom-landing .lp-mobile-cta .lp-mobile-zalo { background:#e8f4ff; color:#0068c8; }
+}
+
+
+/* ==============================================================================
+ * THEME PRESETS & MODERN DESIGN TOKENS
+ * ============================================================================== */
+.telecom-landing[data-theme="fpt_standard"],
+.telecom-landing:not([data-theme]) {
+  --lp-brand-primary: #0066ff;
+  --lp-brand-accent: #ea580c;
+  --lp-brand-gradient: linear-gradient(135deg, #005eea 0%, #003db3 100%);
+  --lp-header-glass: rgba(255, 255, 255, 0.94);
+  --lp-surface-bg: #f8fafc;
+  --lp-card-border: #dbe4ed;
+}
+
+.telecom-landing[data-theme="blue_trust"] {
+  --lp-blue: #0284c7;
+  --lp-navy: #0c4a6e;
+  --lp-orange: #0284c7;
+  --lp-brand-primary: #0284c7;
+  --lp-brand-accent: #0369a1;
+  --lp-brand-gradient: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  --lp-surface-bg: #f0f9ff;
+  --lp-card-border: #bae6fd;
+}
+.telecom-landing[data-theme="blue_trust"] .lp-header-cta,
+.telecom-landing[data-theme="blue_trust"] .lp-button:not(.lp-yellow) {
+  background: #0284c7 !important;
+}
+
+.telecom-landing[data-theme="orange_vibrant"] {
+  --lp-blue: #ea580c;
+  --lp-navy: #431407;
+  --lp-orange: #ea580c;
+  --lp-brand-primary: #ea580c;
+  --lp-brand-accent: #c2410c;
+  --lp-brand-gradient: linear-gradient(135deg, #ea580c 0%, #9a3412 100%);
+  --lp-surface-bg: #fff7ed;
+  --lp-card-border: #fed7aa;
+}
+.telecom-landing[data-theme="orange_vibrant"] .lp-header-cta,
+.telecom-landing[data-theme="orange_vibrant"] .lp-button:not(.lp-yellow) {
+  background: #ea580c !important;
+}
+
+.telecom-landing[data-theme="modern_dark"] {
+  --lp-blue: #38bdf8;
+  --lp-navy: #f8fafc;
+  --lp-orange: #fb923c;
+  --lp-line: #1e293b;
+  --lp-brand-primary: #38bdf8;
+  --lp-brand-accent: #f97316;
+  --lp-brand-gradient: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  --lp-surface-bg: #0b1120;
+  --lp-card-border: #243452;
+  background: #0b1120 !important;
+  color: #f1f5f9 !important;
+}
+.telecom-landing[data-theme="modern_dark"] .card-face-front,
+.telecom-landing[data-theme="modern_dark"] .lp-header,
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form,
+.telecom-landing[data-theme="modern_dark"] .lp-benefit-grid article,
+.telecom-landing[data-theme="modern_dark"] .lp-reviews-grid figure,
+.telecom-landing[data-theme="modern_dark"] .lp-faq-grid details,
+.telecom-landing[data-theme="modern_dark"] .lp-comparison-section {
+  background: #131d33 !important;
+  color: #f1f5f9 !important;
+  border-color: #243452 !important;
+}
+.telecom-landing[data-theme="modern_dark"] .plan-name,
+.telecom-landing[data-theme="modern_dark"] .plan-card-body,
+.telecom-landing[data-theme="modern_dark"] .lp-hero h1,
+.telecom-landing[data-theme="modern_dark"] .lp-section-heading h2,
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form h2,
+.telecom-landing[data-theme="modern_dark"] .lp-benefit-grid h3,
+.telecom-landing[data-theme="modern_dark"] .lp-reviews-grid b,
+.telecom-landing[data-theme="modern_dark"] .lp-stat-grid b {
+  color: #f8fafc !important;
+}
+.telecom-landing[data-theme="modern_dark"] .lp-section-heading p,
+.telecom-landing[data-theme="modern_dark"] .lp-benefit-grid p,
+.telecom-landing[data-theme="modern_dark"] .lp-reviews-grid small,
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form > p,
+.telecom-landing[data-theme="modern_dark"] .plan-speed-line,
+.telecom-landing[data-theme="modern_dark"] .plan-price-note {
+  color: #94a3b8 !important;
+}
+.telecom-landing[data-theme="modern_dark"] .lp-header {
+  border-bottom: 1px solid #1e293b !important;
+}
+
+.telecom-landing[data-theme="emerald_fresh"] {
+  --lp-blue: #059669;
+  --lp-navy: #064e3b;
+  --lp-orange: #d97706;
+  --lp-brand-primary: #059669;
+  --lp-brand-accent: #047857;
+  --lp-brand-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+  --lp-surface-bg: #f0fdf4;
+  --lp-card-border: #bbf7d0;
+}
+.telecom-landing[data-theme="emerald_fresh"] .lp-header-cta,
+.telecom-landing[data-theme="emerald_fresh"] .lp-button:not(.lp-yellow) {
+  background: #059669 !important;
+}
+
+/* Radius Presets */
+.telecom-landing[data-radius="soft"] .card-face-front,
+.telecom-landing[data-radius="soft"] .lp-consult-form,
+.telecom-landing[data-radius="soft"] .lp-benefit-grid article,
+.telecom-landing[data-radius="soft"] .lp-reviews-grid figure,
+.telecom-landing[data-radius="soft"] .lp-campaign {
+  border-radius: 22px !important;
+}
+
+.telecom-landing[data-radius="pill"] .card-face-front,
+.telecom-landing[data-radius="pill"] .lp-consult-form,
+.telecom-landing[data-radius="pill"] .lp-campaign {
+  border-radius: 28px !important;
+}
+.telecom-landing[data-radius="pill"] .lp-button,
+.telecom-landing[data-radius="pill"] .lp-consult-form .lp-button,
+.telecom-landing[data-radius="pill"] .lp-header-cta {
+  border-radius: 9999px !important;
+}
+
+/* Polished Aesthetics & Modern Elevation */
+.telecom-landing .lp-header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.2s ease;
+}
+.telecom-landing .lp-plan-card .card-face-front {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.telecom-landing .lp-plan-card:hover .card-face-front {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09) !important;
+  border-color: #cbd5e1;
+}
+.telecom-landing .lp-button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.telecom-landing .lp-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+.telecom-landing .lp-button:active {
+  transform: translateY(0);
+}
+
+
+/* Hero Trust Guarantees Bar & CRO Enhancements */
+.lp-hero-trust-bar {
+  max-width: 1240px;
+  margin: -24px auto 28px;
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: var(--radius-base, 14px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+}
+
+.lp-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.lp-trust-item svg {
+  width: 20px;
+  height: 20px;
+  color: #f37021;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .lp-hero-trust-bar {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 0 16px 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-hero-trust-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 0 12px 18px;
+    padding: 12px 16px;
+  }
+  .lp-trust-item {
+    font-size: 0.85rem;
+  }
+}
+
+.lp-form-reassurance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.lp-reassure-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+@keyframes lpPulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(243, 112, 33, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(243, 112, 33, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(243, 112, 33, 0); }
+}
+
+.telecom-landing .lp-hero .lp-button[type="submit"],
+.telecom-landing .lp-mobile-cta .lp-button {
+  animation: lpPulseGlow 2.5s infinite;
+}
+
+/* Keep dark form fields and comparison rows readable independently of light defaults. */
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form input,
+.telecom-landing[data-theme="modern_dark"] .lp-inline-form input,
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form select {
+  color: #f1f5f9;
+  background: #131d33;
+}
+.telecom-landing[data-theme="modern_dark"] .lp-consult-form input::placeholder,
+.telecom-landing[data-theme="modern_dark"] .lp-inline-form input::placeholder {
+  color: #cbd5e1;
+}
+.telecom-landing[data-theme="modern_dark"] .lp-comparison {
+  color: #f1f5f9;
+  background: #131d33;
+}
+.telecom-landing[data-theme="modern_dark"] .lp-comparison thead,
+.telecom-landing[data-theme="modern_dark"] .lp-comparison tbody tr:nth-child(even) {
+  background: #1e293b;
+}
+/* Typed layout settings shared by live pages and the Admin preview. */
+.telecom-landing[data-hero-layout="centered"] .lp-hero-grid,
+.telecom-landing[data-hero-layout="minimal"] .lp-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 24px;
+}
+.telecom-landing[data-hero-layout="centered"] .lp-hero-copy,
+.telecom-landing[data-hero-layout="minimal"] .lp-hero-copy {
+  width: 100%;
+  max-width: 760px;
+  padding-right: 0;
+  text-align: center;
+}
+.telecom-landing[data-hero-layout="centered"] .lp-consult-form,
+.telecom-landing[data-hero-layout="minimal"] .lp-consult-form {
+  width: min(460px, 100%);
+}
+.telecom-landing[data-hero-layout="minimal"] .lp-hero-features { display: none; }
+.telecom-landing[data-plans-layout="carousel"] .lp-plan-grid {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  padding: 12px 16px 20px;
+  gap: 16px;
+}
+.telecom-landing[data-plans-layout="carousel"] .lp-plan-card {
+  flex: 0 0 min(320px, 88%);
+  width: min(320px, 88%);
+  scroll-snap-align: center;
+}
+.telecom-landing[data-plans-layout="carousel"] .lp-card-controls {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+.telecom-landing[data-plans-layout="carousel"] .lp-card-controls button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #0369a1;
+}
+.telecom-landing[data-plans-layout="list"] .lp-plan-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: min(460px, 100%);
+  max-width: 460px;
+  padding-inline: 0;
+  margin-inline: auto;
+  overflow: visible;
+}
+.telecom-landing[data-plans-layout="list"] .lp-plan-card { width: 100%; }
+.telecom-landing[data-plans-layout="list"] .lp-card-controls { display: none; }

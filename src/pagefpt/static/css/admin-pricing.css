@@ -448,3 +448,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.plan-image-preview { display: block; width: 100%; max-height: 240px; object-fit: contain; margin-top: 12px; border: 1px solid #d9e2ed; border-radius: 12px; background: #f8fafc; }
+.plan-image-preview[hidden] { display: none; }
+.plan-image-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.plan-image-tools input[type=file] { display: block; max-width: 240px; margin-top: 8px; }
+.accessory-admin-preview,.plan-card-admin-preview{border:1px solid #fed7aa;border-radius:16px;background:#fff7ed;padding:16px;margin:12px 0}.plan-card-admin-preview h3{margin:8px 0}.plan-card-admin-preview button{display:block;padding:12px;background:#c2410c;color:#fff;border:0;border-radius:10px;margin:10px 0;width:100%}.plan-card-admin-preview span{font-size:13px;color:#9a3412}

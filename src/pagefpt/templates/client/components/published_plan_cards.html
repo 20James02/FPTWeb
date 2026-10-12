@@ -1,37 +1,35 @@
 {% for plan in plans %}
-<div class="plan-card-3d-wrapper {{ 'is-center' if loop.first else 'is-hidden' }}" data-category="{{ 'combo' if plan.service in ['combo', 'camera', 'play'] else plan.service }}">
+{% set labels = plan.card_labels or {} %}
+<div class="{% if landing_card_mode|default(false) %}lp-plan-card {% endif %}plan-card-3d-wrapper plan-card--reference {{ 'is-center' if loop.first else 'is-hidden' }}" data-lp-accent="{{plan.presentation.accent|default('blue') if landing_card_mode|default(false) else 'blue'}}" data-analytics-plan-id="{{plan.id}}" data-analytics-placement="{{ 'landing' if landing_card_mode|default(false) else 'home' }}" data-lp-plan="{{plan.id}}" data-plan-id="{{plan.id}}" data-service="{{plan.service}}" data-category="{{ 'combo' if plan.service in ['combo', 'camera', 'play'] else plan.service }}">
   <div class="plan-card-3d-inner" id="card-3d-{{ plan.id }}">
-    <div class="card-face card-face-front">
-      <div class="card-light-streak" aria-hidden="true"></div>
-      <span class="plan-tag-badge badge-basic">Gói đang cung cấp</span>
-      <div class="plan-header">
-        <div class="plan-title-row"><h3 class="plan-name">{{ plan.name }}</h3>
-          {% if plan.speed_mbps %}<span class="plan-speed-badge">{{ plan.speed_mbps }} Mbps</span>{% endif %}
+    <div class="card-face card-face-front"><div class="card-light-streak" aria-hidden="true"></div>
+      {% if labels.get('badge', 'Gói đang cung cấp') %}<span class="plan-tag-badge badge-basic">{{ labels.get('badge', 'Gói đang cung cấp') }}</span>{% endif %}
+      <div class="plan-card-image-wrap {{ 'plan-card-image-placeholder' if not plan.image_url }}">
+      {% if plan.image_url %}<img class="plan-card-image" src="{{ plan.image_url }}" alt="{{ plan.image_alt or plan.name }}" width="{{ plan.image_width }}" height="{{ plan.image_height }}" loading="lazy" decoding="async">{% else %}<img class="plan-card-image" src="/static/images/device-internet-3d.webp" alt="Minh họa thiết bị Internet" width="800" height="800" loading="lazy" decoding="async">{% endif %}
+      </div>
+      <div class="plan-card-body">
+        <div class="plan-header"><h3 class="plan-name" title="{{plan.name}}">{{ plan.name }}</h3>
+          {% if landing_card_mode|default(false) and plan.presentation.subtitle %}<p class="lp-card-subtitle" title="{{plan.presentation.subtitle}}">{{plan.presentation.subtitle}}</p>{% endif %}
         </div>
-        <p class="plan-target">{{ plan.description or 'Nhận tư vấn điều kiện lắp đặt và gói phù hợp.' }}</p>
+        <div class="plan-price-box"><div class="plan-price-row">
+          <button type="button" class="plan-price-info" data-plan-id="{{plan.id}}" onclick="openPublishedPlanDetails(this)" aria-label="Xem giá và điều kiện của {{plan.name}}"><span class="plan-price-amount" data-quote-plan="{{plan.id}}" aria-live="polite">Cần tư vấn</span><span class="plan-info-icon" aria-hidden="true">i</span></button>
+          <label class="billing-choice"><span class="sr-only">Kỳ thanh toán của {{plan.name}}</span><select data-billing-months="{{plan.id}}" aria-label="Kỳ thanh toán của {{plan.name}}">{% set period=landing.billing_months if landing_card_mode|default(false) else 6 %}{% for n in [1,6,12] %}<option value="{{n}}" {{"selected" if n==period}}>{{"Hàng tháng" if n==1 else n|string+" tháng"}}</option>{% endfor %}</select></label>
+        </div><div class="plan-price-note sr-only" data-quote-note="{{plan.id}}">Chọn khu vực để xem giá.</div></div>
+        <div class="plan-speed-panel">
+          <div class="plan-speed-data"><p>{{labels.get('speed', 'Tốc độ')}} (Download/Upload)</p><div class="plan-speed-values"><span><span class="plan-direction" aria-hidden="true">↓</span><span class="sr-only">Download: </span><strong>{{ (plan.speed_mbps ~ ' Mbps') if plan.speed_mbps else 'Chưa cập nhật' }}</strong></span><span><span class="plan-direction" aria-hidden="true">↑</span><span class="sr-only">Upload: </span><strong>{{ (plan.upload_speed_mbps ~ ' Mbps') if plan.upload_speed_mbps else 'Chưa cập nhật' }}</strong></span></div></div>
+          <svg class="plan-speed-gauge" viewBox="0 0 64 44" aria-hidden="true"><path d="M7 35a25 25 0 0 1 50 0" fill="none" stroke="#d1d1d1" stroke-width="6" stroke-linecap="round"/><path d="M7 35a25 25 0 0 1 11-21" fill="none" stroke="#ff7614" stroke-width="6" stroke-linecap="round"/><path d="M30 36 21 20 37 30a6 6 0 0 1-7 6" fill="#aaa"/></svg>
+        </div>
+        <div class="plan-benefits-scroll" tabindex="0" role="region" aria-label="Thiết bị và ưu đãi của {{plan.name}}">
+          <div class="plan-equipment-block"><h4 class="{{'sr-only' if labels.get('equipment', 'Thiết bị') == 'Thiết bị'}}">{{labels.get('equipment', 'Thiết bị')}}</h4><ul class="plan-features">{% for equipment in plan.equipment or [] %}<li class="plan-feature-item">{{equipment}}</li>{% else %}<li class="plan-feature-item">Nhân viên xác nhận thiết bị theo gói.</li>{% endfor %}</ul></div>
+          {% set available = namespace(found=false) %}{% for accessory in accessories|default([]) if accessory.price_vnd is defined and accessory.price_vnd is not none and accessory.service==plan.service and (not accessory.plan_ids or plan.id in accessory.plan_ids) %}{% set available.found=true %}{% endfor %}
+          {% if available.found %}{% include 'client/components/accessory_choices.html' %}{% else %}<p class="accessory-total" data-accessory-total="{{plan.id}}" aria-live="polite"></p>{% endif %}
+        </div>
+        <div class="plan-card-actions">
+          <button type="button" class="btn-select-plan primary" data-analytics-action="select_plan" data-analytics-plan-id="{{plan.id}}" data-analytics-placement="{{ 'landing' if landing_card_mode|default(false) else 'home' }}" data-plan-id="{{plan.id}}" data-plan-name="{{plan.name}}" onclick="selectPublishedPlan(this)">{{labels.get('register', 'Đăng ký gói')}}</button>
+          <button type="button" class="btn-flip-trigger" data-plan-detail="{{plan.id}}" onclick="openPublishedPlanDetails(this)"><span class="flip-text-desktop">{{labels.get('details', 'Chi tiết gói')}}</span><span class="flip-text-mobile">{{labels.get('details', 'Chi tiết gói')}}</span></button>
+        </div>
       </div>
-      <div class="plan-price-box">
-        <div class="plan-price-row"><span class="plan-price-amount" data-quote-plan="{{ plan.id }}">Cần tư vấn</span></div>
-        <div class="plan-price-note" data-quote-note="{{ plan.id }}">Chọn khu vực để xem báo giá được xác nhận.</div>
-      </div>
-      <ul class="plan-features">
-        {% for equipment in plan.equipment or [] %}<li class="plan-feature-item">{{ equipment }}</li>{% endfor %}
-      </ul>
-      <div class="plan-card-actions">
-        <button type="button" class="btn-select-plan primary" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận Tư Vấn Gói Này</button>
-        <button type="button" class="btn-flip-trigger" data-card="card-3d-{{ plan.id }}" onclick="flipPlanCard(this.dataset.card)"><span class="flip-text-desktop">Xem Chi Tiết</span><span class="flip-text-mobile">Chi Tiết</span></button>
-        <button type="button" class="btn-compare-toggle" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" data-speed="{{ plan.speed_mbps or 'Cần tư vấn' }}" data-equipment="{{ (plan.equipment or []) | join(', ') }}" onclick="comparePublishedPlan(this)"><span class="compare-text-desktop">So Sánh Gói Này</span><span class="compare-text-mobile">So Sánh</span></button>
-      </div>
-    </div>
-    <div class="card-face card-face-back">
-      <h3 class="plan-name">{{ plan.name }}</h3>
-      <p>{{ plan.description or 'Nhân viên sẽ tư vấn chi tiết theo nhu cầu và địa chỉ lắp đặt.' }}</p>
-      <div class="plan-price-note">Chi phí ban đầu, VAT và kỳ thanh toán được xác nhận trong báo giá.</div>
-      <button type="button" class="btn-select-plan primary" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận Tư Vấn Gói Này</button>
-      <button type="button" class="btn-flip-back-trigger" data-card="card-3d-{{ plan.id }}" onclick="flipPlanCard(this.dataset.card)">Quay Lại</button>
     </div>
   </div>
 </div>
-{% else %}
-<p class="catalog-empty">Chưa có gói được công bố. Để lại thông tin để được tư vấn.</p>
-{% endfor %}
+{% else %}<p class="catalog-empty">Chưa có gói được công bố. Để lại thông tin để được tư vấn.</p>{% endfor %}

@@ -62,7 +62,7 @@ async function openGeographyDialog() {
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name, "vi"));
     $p("geography-provenance").textContent =
-      `Province Open API v2 · bản dự phòng tải ${new Date(geographyPreview.fetched_at).toLocaleString("vi-VN")} · ${provinces.length} tỉnh/thành.`;
+      `Province Open API v2 · bản dự phòng tải ${PageFPTDates.format(geographyPreview.fetched_at)} · ${provinces.length} tỉnh/thành.`;
     const branches = new Set(
       (identity?.memberships || [])
         .filter(
@@ -101,7 +101,7 @@ async function openGeographyDialog() {
     geographySelectAll(true);
     const last = geographyPreview.syncs[0];
     $p("geography-result").textContent = last
-      ? `Lần đồng bộ gần nhất: ${new Date(last.synced_at).toLocaleString("vi-VN")}.`
+      ? `Lần đồng bộ gần nhất: ${PageFPTDates.format(last.synced_at)}.`
       : "";
   } catch (error) {
     if (
@@ -144,7 +144,7 @@ async function syncGeography(event) {
         bundled: "Bản dự phòng",
       }[result.source.mode] || "Bản đã lưu";
     $p("geography-result").textContent =
-      `${mode} (${new Date(result.source.fetched_at).toLocaleString("vi-VN")}): thêm ${result.created}, cập nhật ${result.updated}, giữ nguyên ${result.skipped} địa bàn có chỉnh sửa hoặc đã ngừng. ${result.source.warning || ""} Bạn có thể chọn địa bàn khi thiết lập gói và giá.`;
+      `${mode} (${PageFPTDates.format(result.source.fetched_at)}): thêm ${result.created}, cập nhật ${result.updated}, giữ nguyên ${result.skipped} địa bàn có chỉnh sửa hoặc đã ngừng. ${result.source.warning || ""} Bạn có thể chọn địa bàn khi thiết lập gói và giá.`;
     await loadPricesList();
   } catch (error) {
     $p("geography-result").textContent = "";

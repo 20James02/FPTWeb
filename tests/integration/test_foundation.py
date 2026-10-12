@@ -13,7 +13,7 @@ async def test_health_and_error_contract():
     from pagefpt.application import create_app
     from pagefpt.core.config import Settings
 
-    app = create_app(Settings(environment="test"))
+    app = create_app(Settings(environment="test", _env_file=None))
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -30,4 +30,4 @@ def test_production_requires_keys():
     from pagefpt.core.config import Settings
 
     with pytest.raises(ValueError):
-        Settings(environment="production")
+        Settings(environment="production", _env_file=None)

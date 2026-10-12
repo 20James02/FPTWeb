@@ -1,0 +1,71 @@
+{% extends "layouts/client_base.html" %}
+{% block title %}Đo Tốc Độ Mạng — Download, Upload, Ping &amp; Jitter{% endblock %}
+{% block meta_desc %}Kiểm tra tốc độ Internet trên thiết bị của bạn: download, upload, ping và jitter. Tham khảo gói FPT theo địa bàn lắp đặt.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/client-speedtest.css">{% endblock %}
+{% block content %}
+<div class="speed-page container">
+  <div class="speed-intro"><h1>Đo tốc độ mạng</h1></div>
+
+  <section class="speed-console" id="speedtest-console" aria-label="Đo tốc độ Internet" data-state="idle">
+    <div class="speed-console-top"><span class="speed-brand"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18a9 9 0 1 1 16 0M12 13l4-4"/><circle cx="12" cy="13" r="2"/></svg> TỐC ĐỘ MẠNG</span><span id="speedtest-badge" class="speed-state-badge">Sẵn sàng đo</span></div>
+    <dl class="speed-primary-metrics">
+      <div data-speed-metric="download"><dt><span aria-hidden="true">↓</span> Download <small>Mbps</small></dt><dd id="speed-download">—</dd></div>
+      <div data-speed-metric="upload"><dt><span aria-hidden="true">↑</span> Upload <small>Mbps</small></dt><dd id="speed-upload">—</dd></div>
+      <div data-speed-metric="latency"><dt>Ping <small>ms</small></dt><dd id="speed-latency">—</dd></div>
+      <div data-speed-metric="jitter"><dt>Jitter <small>ms</small></dt><dd id="speed-jitter">—</dd></div>
+    </dl>
+
+    <div class="speed-measure-layout">
+      <div class="speed-gauge-block">
+        <div class="speed-gauge" aria-hidden="true">
+          <svg viewBox="0 0 400 340" class="speed-dial">
+            <defs><linearGradient id="speed-arc-gradient"><stop stop-color="#21d9f3"/><stop offset="1" stop-color="#71f2c8"/></linearGradient></defs>
+            <circle class="speed-dial-halo" cx="200" cy="200" r="148"/>
+            <circle class="speed-dial-track" cx="200" cy="200" r="148" pathLength="100" stroke-dasharray="75 25" transform="rotate(135 200 200)"/>
+            <circle id="speedtest-arc" class="speed-dial-fill" cx="200" cy="200" r="148" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 200 200)"/>
+            <g id="speedtest-needle" transform="rotate(-135 200 200)"><path class="speed-dial-needle" d="M196 204 L200 72 L204 204 Z"/><circle cx="200" cy="200" r="7" fill="#e9fcff"/></g>
+            <g id="speedtest-ticks" visibility="hidden"><text data-speed-tick="0">0</text><text data-speed-tick="10">10</text><text data-speed-tick="50">50</text><text data-speed-tick="200">200</text><text data-speed-tick="500">500</text><text data-speed-tick="1000">1000+</text></g>
+          </svg>
+          <div class="speed-dial-readout"><span id="speedtest-dial-value">—</span><small id="speedtest-dial-unit">Mbps</small></div>
+          <div class="speed-scan-ring"></div>
+        </div>
+        <p id="speedtest-status" class="speed-status" role="status" aria-live="polite" aria-atomic="true">Bấm bắt đầu để đo.</p>
+        <ol class="speed-steps" aria-label="Các bước đo"><li data-phase="latency">1. Ping</li><li data-phase="download">2. Download</li><li data-phase="upload">3. Upload</li></ol>
+        <div class="speed-actions"><button type="button" id="speedtest-start" class="speed-start" aria-describedby="speedtest-data-note">Bắt đầu đo <span aria-hidden="true">↗</span></button><button type="button" id="speedtest-cancel" class="speed-secondary" hidden>Dừng đo</button></div>
+        <p id="speedtest-data-note" class="speed-small-note">Khoảng 60 MB mỗi lượt. Đo qua Cloudflare; tra IP, ASN và vị trí ước tính qua RIPEstat.</p>
+        <details class="speed-privacy-details"><summary>Dữ liệu &amp; quyền vị trí</summary><p class="speed-small-note">Cloudflare và RIPEstat nhận IP khi bạn bấm bắt đầu. IP, nhà mạng và vị trí chỉ hiển thị trong lượt đo, không gửi Google Analytics hay lưu cùng form. Nhà mạng là tổ chức đăng ký ASN; VPN có thể làm thay đổi kết quả nhận diện.</p><p class="speed-small-note">Nếu bạn cấp quyền vị trí, tọa độ được gửi tới <a href="https://www.bigdatacloud.com/privacy-and-cookie-policy" target="_blank" rel="noopener noreferrer">BigDataCloud</a> để gợi ý địa bàn. Từ chối vẫn đo bình thường; website không lưu tọa độ.</p></details>
+        <noscript><p class="speed-error">Hãy bật JavaScript để đo tốc độ. Bạn vẫn có thể tham khảo các gói bên dưới.</p></noscript>
+      </div>
+
+      <aside class="speed-connection" aria-labelledby="speed-connection-heading">
+        <h2 id="speed-connection-heading">Thông tin kết nối</h2>
+        <dl class="speed-connection-list"><div class="speed-ip-row"><dt>IP công khai</dt><dd id="speed-meta-ip">Xác định khi bắt đầu</dd></div><div class="speed-isp-row"><dt>Nhà mạng / tổ chức ASN</dt><dd id="speed-meta-isp">Xác định khi bắt đầu</dd></div><div class="speed-location-row"><dt>Vị trí theo IP <small>(ước tính)</small></dt><dd id="speed-meta-location">Xác định khi bắt đầu</dd></div><div><dt>ASN</dt><dd id="speed-meta-asn">—</dd></div><div><dt>Điểm đo Cloudflare</dt><dd id="speed-meta-colo">—</dd></div><div><dt>Kiểu kết nối</dt><dd id="speed-meta-connection">Không xác định</dd></div></dl>
+
+      </aside>
+    </div>
+
+    <div class="speed-chart-header"><h2>Mẫu tốc độ</h2><div><span class="speed-chart-key">↓ Download</span><span class="speed-chart-key upload">↑ Upload</span></div></div>
+    <div class="speed-chart-wrap"><svg class="speed-chart" viewBox="0 0 800 120" preserveAspectRatio="none" role="img" aria-label="Đồ thị các mẫu download và upload đo được"><path class="speed-chart-grid" d="M0 20H800 M0 60H800 M0 100H800"/><path id="speed-chart-down" class="speed-chart-down"/><path id="speed-chart-up" class="speed-chart-up"/></svg><p id="speed-chart-note">Chưa có mẫu đo.</p></div>
+
+    <details class="speed-details"><summary>Chỉ số chi tiết</summary>
+      <dl class="speed-detail-grid"><div><dt>Ping khi download</dt><dd><span id="speed-downLoadedLatency">—</span> ms</dd></div><div><dt>Ping khi upload</dt><dd><span id="speed-upLoadedLatency">—</span> ms</dd></div><div><dt>Jitter khi download</dt><dd><span id="speed-downLoadedJitter">—</span> ms</dd></div><div><dt>Jitter khi upload</dt><dd><span id="speed-upLoadedJitter">—</span> ms</dd></div><div><dt>Ping thấp / cao nhất</dt><dd id="speed-ping-range">—</dd></div><div><dt>Số mẫu ping</dt><dd id="speed-ping-samples">—</dd></div><div><dt>Thời gian đo</dt><dd id="speed-duration">—</dd></div><div><dt>Dữ liệu thử hoàn tất</dt><dd id="speed-transfer">—</dd></div><div><dt>Thời điểm đo</dt><dd id="speed-timestamp">—</dd></div></dl>
+      <p class="speed-small-note">Mbps là megabit/giây; download là tải về, upload là tải lên. Ping là độ trễ HTTP khi rảnh, jitter là mức dao động giữa các mẫu. Ping/jitter thấp thường thuận lợi cho cuộc gọi và chơi game. Dấu “—” là chưa đủ mẫu hợp lệ; không có nghĩa bằng 0. Mẫu tải ngắn có thể chưa đủ để đo độ trễ khi tải.</p>
+      <p class="speed-small-note">Engine và phương pháp: <a href="https://github.com/cloudflare/speedtest" target="_blank" rel="noopener noreferrer">Cloudflare Speedtest</a> · <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Chính sách Cloudflare</a>. Công cụ này dùng hạ tầng Cloudflare và giao diện riêng của website.</p>
+    </details>
+    <div class="speed-result-footer"><p id="speed-result-summary">Chưa có kết quả.</p><button type="button" id="speedtest-copy" class="speed-secondary" hidden>Sao chép kết quả</button></div>
+  </section>
+
+  <section id="speedtest-recommendations" class="speed-recommendations" aria-labelledby="speed-recommend-heading">
+    <div class="speed-recommend-header"><div><span class="speed-recommend-eyebrow">KẾT NỐI CHO NHU CẦU CỦA BẠN</span><h2 id="speed-recommend-heading">Chọn gói phù hợp với nhu cầu</h2><p id="speed-recommend-note">Chọn địa bàn để xem giá. Gửi yêu cầu để được tư vấn gói phù hợp.</p><p id="speed-recommend-result" class="speed-recommend-result" hidden></p></div><a href="/#plans-section" class="speed-all-plans">Xem tất cả gói <span aria-hidden="true">↗</span></a></div>
+    <div class="speed-region" id="cascading-region-box"><span>Địa bàn lắp đặt</span><div><label for="home-zone-select">Vùng miền</label><select id="home-zone-select"><option value="">Đang tải…</option></select></div><div><label for="home-province-select">Tỉnh / thành phố</label><select id="home-province-select"><option value="">Đang tải…</option></select></div><div><label for="home-ward-select">Xã / phường</label><select id="home-ward-select" disabled><option value="">Chọn tỉnh/thành trước</option></select></div></div>
+    <p id="client-location-status" class="client-location-hint" role="status" hidden></p>
+    <div class="speed-location-suggestion"><p id="speed-location-status" role="status" aria-live="polite">Chọn địa bàn hoặc dùng gợi ý vị trí.</p><button id="speed-location-apply" type="button" class="speed-plan-cta" hidden>Dùng địa bàn gợi ý</button></div>
+    <div class="speed-plan-grid" id="speedtest-plan-grid" data-card-count="{{ [speed_plans|length, 3]|min }}">
+      {% include 'client/components/speed_plan_cards.html' %}
+    </div>
+    <p id="speedtest-plans-empty" {% if speed_plans %}hidden{% endif %}>Chưa có gói phù hợp được công bố cho địa bàn này. <button type="button" class="speed-text-button" onclick="openBottomSheet('Tư vấn kết nối Internet', '', null, 'internet')">Nhận tư vấn</button></p>
+    <details class="speed-recommend-disclaimer"><summary>Lưu ý kết quả &amp; gợi ý gói</summary><p>Tốc độ đo là kết nối từ thiết bị tới Cloudflare tại thời điểm đo. Gợi ý theo băng thông và địa bàn; cần khảo sát nhu cầu để xác nhận gói.</p></details>
+  </section>
+</div>
+{% endblock %}
+{% block extra_scripts %}<script src="/static/js/client/speed_model.js"></script><script src="/static/js/client/speed_cards.js"></script><script src="/static/js/client/speed_recommendations.js"></script><script src="/static/js/client/speed_location.js"></script><script src="/static/js/client/speedtest.js"></script>{% endblock %}

@@ -214,7 +214,6 @@ async def test_locations_pagination_and_draft_visibility(admin):
 @pytest.mark.asyncio
 async def test_location_controls_present_in_client_and_admin(admin):
     assert 'id="home-ward-select"' in (await admin.get("/")).text
-    assert 'id="form-lead-ward"' in (await admin.get("/")).text
     assert 'id="lp-ward"' in (await admin.get("/khuyen-mai")).text
     text = (await admin.get("/admin/pricing")).text
     assert 'id="plan-dialog"' in text and 'id="price-location-picker"' in text

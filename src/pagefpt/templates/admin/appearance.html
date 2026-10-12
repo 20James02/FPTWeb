@@ -1,0 +1,31 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Slide & giao diện — Admin{% endblock %}{% block breadcrumbs %}Giao diện website / Slide & giao diện{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-pricing.css"><link rel="stylesheet" href="/static/css/admin-appearance.css">{% endblock %}
+{% block content %}<header class="pricing-heading"><div><span class="pricing-eyebrow">TRÌNH THIẾT LẬP WEBSITE</span><h1>Slide & giao diện</h1><p>Thêm ưu đãi, tải ảnh trực tiếp và xem trước trước khi lưu.</p></div><a class="pricing-btn" href="/" target="_blank" rel="noopener">Mở website</a></header><div class="appearance-workspace"><div>
+<section class="panel-card" id="home-merchandising"><h2>Trang chủ: ưu đãi & danh mục</h2><p>Ảnh chọn từ thư viện đã kiểm tra. Chỉ slide được bật và còn hiệu lực xuất hiện trên trang chủ. Gói nháp vẫn chưa hiển thị cho khách.</p>
+<form id="home-merchandising-form"><h3>Ba danh mục bảng giá</h3><p>Tên trên mobile tối đa 12 ký tự. Chọn gói cụ thể hoặc tự lấy các gói theo loại dịch vụ.</p><div id="home-category-editor" class="workspace-list"></div>
+<label>Thử nghiệm nhãn nút tư vấn<select id="home-hero-experiment"><option value="">Không thử nghiệm</option></select></label><p class="pricing-hint">Chỉ phân nhóm khi khách đồng ý phân tích. Tạo và công bố biến thể tại Marketing; báo cáo dựa trên số phiên có đồng ý.</p>
+<h3>Slide ưu đãi</h3><div id="home-slide-editor" class="workspace-list"></div><div class="workspace-item-actions"><button id="home-add-slide" type="button" class="btn-action-detail">Thêm slide</button><a class="btn-action-detail" href="/admin/content">Tải ảnh vào thư viện</a></div>
+<p id="home-merchandising-state" role="status" aria-live="polite">Đang tải thư viện…</p><button id="home-save-merchandising" class="btn-action-call" type="submit" disabled>Lưu ưu đãi & danh mục</button></form></section>
+<section class="panel-card"><h2>Hiển thị website</h2>
+<form id="display-settings-form">
+<div class="admin-form-grid">
+<label for="setting-contact-phone">Số điện thoại tư vấn<input id="setting-contact-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="32" value="{{display_settings.contact_phone_display}}" required aria-describedby="setting-contact-phone-help"><small id="setting-contact-phone-help">Áp dụng cho nút gọi và liên hệ trên toàn bộ website khách hàng.</small></label>
+<label class="admin-check"><input id="setting-fpt-anim" type="checkbox" {% if display_settings.fpt_anim %}checked{% endif %}>Hiệu ứng logo</label>
+<label>Kiểu hiệu ứng<select id="setting-fpt-anim-style">{% for v,label in [('wave','Chuyển động nhẹ'),('bounce','Nhịp nhẹ'),('glow','Ánh sáng nhẹ')] %}<option value="{{v}}" {% if display_settings.fpt_anim_style==v %}selected{% endif %}>{{label}}</option>{% endfor %}</select></label>
+<label class="admin-check"><input id="setting-runline-enabled" type="checkbox" {% if display_settings.runline_enabled %}checked{% endif %}>Dòng thông báo</label>
+<label>Tốc độ<select id="setting-runline-speed">{% for v,label in [('slow','Chậm'),('normal','Vừa phải'),('fast','Nhanh')] %}<option value="{{v}}" {% if display_settings.runline_speed==v %}selected{% endif %}>{{label}}</option>{% endfor %}</select></label>
+<label>Nội dung thông báo<textarea id="setting-runline-text" maxlength="2000">{{display_settings.runline_text}}</textarea></label>
+<label class="admin-check"><input id="setting-lenis-scroll" type="checkbox" {% if display_settings.lenis_scroll %}checked{% endif %}>Cuộn mượt</label>
+<label class="admin-check"><input id="setting-tilt-parallax" type="checkbox" {% if display_settings.tilt_parallax %}checked{% endif %}>Hiệu ứng thẻ</label>
+</div>
+<fieldset><legend>Các vùng hiển thị</legend><div class="admin-form-grid">
+{% for key,label in [('hero_slider','Banner đầu trang'),('showcase_posters','Ảnh giới thiệu'),('ribbon_banner','Dải thông báo'),('promo_grid','Các thẻ ưu đãi'),('app_banner','Banner ứng dụng'),('floating_promo','Ưu đãi nổi')] %}
+<label class="admin-check"><input class="banner-zone-toggle" type="checkbox" data-zone="{{key}}" {% if display_settings.banner_zones[key] %}checked{% endif %}>{{label}}</label>
+{% endfor %}</div></fieldset>
+<p id="display-settings-state" role="status" aria-live="polite"></p>
+<button type="submit" id="btn-save-display-settings" class="btn-action-call">Lưu cài đặt giao diện</button>
+<a class="btn-action-detail" href="/admin/content">Quản lý landing page, media và lịch công bố</a>
+</form></section>
+</div><aside class="appearance-preview"><div class="preview-heading"><h2>Xem trước</h2><span>Bản đang nhập</span></div><div class="preview-viewport"><div id="appearance-slide-preview" class="appearance-slide-preview"></div><nav id="appearance-category-preview" class="appearance-category-preview" aria-label="Xem trước danh mục"></nav></div><p class="pricing-hint">Dữ liệu chỉ xuất hiện trên website sau khi lưu. Slide chỉ hiện ảnh/video; bấm trực tiếp để mở liên kết. Video dùng URL MP4/WebM và ảnh chờ từ thư viện. Slide tắt hoặc hết hạn sẽ không hiển thị.</p><a href="/admin/pricing" class="pricing-btn">Thiết lập thẻ & nhãn gói cước</a></aside></div>{% endblock %}
+{% block extra_scripts %}<script>let adminDisplayVersion={{display_settings.version}};</script><script src="/static/js/admin/media_upload.js"></script><script src="/static/js/admin/settings.js"></script><script src="/static/js/admin/home_merchandising.js"></script>{% endblock %}

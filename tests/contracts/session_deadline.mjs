@@ -4,7 +4,7 @@ import vm from 'node:vm';
 let deadline;
 let payload;
 const nodes={
- 'lead-phone':{value:'0916009998',classList:{remove(){}}},
+ 'lead-phone':{value:'0916009998',classList:{remove(){}},removeAttribute(){}},
  'lead-consent':{checked:true},'btn-submit-lead':{disabled:false}
 };
 const context=vm.createContext({document:{addEventListener(){},getElementById:id=>nodes[id],body:{style:{}}},window:{addEventListener(){}},AbortSignal:{timeout(ms){deadline=ms;return AbortSignal.abort();}},fetch:async(path,options)=>{assert.equal(options.signal?.aborted,true,'Auxiliary session request must have a deadline');throw new Error('Session timeout');},submitLeadToBackend:async data=>{payload=data;return {receipt:'committed'};},setTimeout(){}});

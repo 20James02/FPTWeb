@@ -8,7 +8,7 @@ const fs = require('node:fs');
   const consoleLines=[];
   page.on('console',message=>consoleLines.push(message.text()));
   await page.goto(process.env.PAGEFPT_TEST_ORIGIN || 'http://127.0.0.1:8091/');
-  await page.waitForFunction(()=>/^[0-9a-f-]{36}$/i.test(document.getElementById('form-lead-province').value));
+  await page.waitForFunction(()=>/^[0-9a-f-]{36}$/i.test(getSelectedRegionId()));
   await page.evaluate(()=>openBottomSheet('Gói kiểm thử','Cần xác nhận'));
   await page.locator('#lead-phone').fill('0901234567');
   await page.locator('#lead-consent').check();

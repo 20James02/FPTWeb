@@ -1,0 +1,16 @@
+<div>
+        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-cam')" aria-expanded="false" aria-controls="acc-cam">
+          <span>{{item.label}}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mobile-accordion-content" id="acc-cam" inert><a href="{{item.href}}" class="mobile-sublink" onclick="toggleMobileNav()">Xem {{item.label}}</a>
+          <div class="mobile-consult-card">
+            <img src="/static/images/device-camera-3d.webp" class="consult-device-image" alt="Minh họa thiết bị dịch vụ" width="100" height="100" loading="lazy" decoding="async">
+            <div><strong>Camera cho gia đình</strong><small>Hình minh họa. Thiết bị tùy gói.</small>
+            <button type="button" class="btn-select-plan primary" onclick="toggleMobileNav(); openBottomSheet('Tư vấn dịch vụ theo khu vực', '', null, 'camera')">Nhận tư vấn</button></div>
+          </div>
+          <a href="/san-pham/camera-fpt#trong-nha" class="mobile-sublink" onclick="toggleMobileNav()">Camera Trong Nhà</a>
+          <a href="/san-pham/camera-fpt#ngoai-troi" class="mobile-sublink" onclick="toggleMobileNav()">Camera Ngoài Trời</a>
+          <a href="/san-pham/camera-fpt#luu-tru" class="mobile-sublink" onclick="toggleMobileNav()">Gói Lưu Trữ FPT Cloud</a>
+        </div>
+      </div>

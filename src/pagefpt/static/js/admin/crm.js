@@ -40,9 +40,22 @@ async function crmRequest(path, method = "GET", body = null) {
       STORAGE_UNCONFIGURED: "Chưa cấu hình kho lưu trữ trên máy chủ.",
       ASSIGNEE_UNAVAILABLE:
         "Nhân viên đã hết sức chứa, ngoài ca hoặc không có quyền tại chi nhánh này.",
+      ASSIGNMENT_NOT_ALLOWED:
+        "Hồ sơ đã kết thúc nên không thể phân công lại. Không cần nhập thông tin nghiệm thu cho thao tác này.",
       LAST_OWNER_REQUIRED: "Cần giữ ít nhất một chủ hệ thống đang hoạt động.",
       PRIVILEGE_ESCALATION: "Không thể cấp quyền vượt quá quyền của bạn.",
       IMMUTABLE_SCOPE: "Không thể đổi chi nhánh của bản ghi đã tạo.",
+      PAYMENT_DATE_EXISTS:
+        "Ngày này đã có một khoản thanh toán. Hãy sửa lịch hiện có hoặc chọn ngày khác.",
+      INVALID_BILLING_PLAN:
+        "Chọn gói đang được công bố và kỳ thanh toán 1, 6 hoặc 12 tháng.",
+      BILLING_REQUIRED:
+        "Chọn gói khách đã chốt trước khi thêm lịch thanh toán.",
+      BILLING_NOT_ALLOWED:
+        "Hồ sơ đã hủy hoặc không hợp lệ; không thể ghi thêm thanh toán.",
+      INVALID_PAYMENT_STATE: "Khoản đã thu hoặc đã hủy không thể sửa tiếp.",
+      IDEMPOTENCY_CONFLICT:
+        "Lần lưu này có dữ liệu khác với lần trước. Tải lại để kiểm tra lịch đã lưu.",
     };
     if (messages[value.code]) err.message = messages[value.code];
     throw err;
@@ -206,17 +219,15 @@ function renderMobileLead(container, lead) {
       "p",
       overdue
         ? "Quá thời gian liên hệ"
-        : `SLA: ${lead.sla_due_at ? new Date(lead.sla_due_at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "Chưa có"}`,
+        : `SLA: ${lead.sla_due_at ? PageFPTDates.format(lead.sla_due_at) : "Chưa có"}`,
       overdue ? "sla-overdue" : "",
     ),
   );
-  if (
-    adminHasPermission("lead.assign") &&
-    ["new", "assigned"].includes(lead.status)
-  ) {
+  if (adminHasPermission("lead.assign") && adminCanAssignLead(lead)) {
     const label = adminNode("label", "Chọn hồ sơ này", "admin-check");
     const selected = document.createElement("input");
     selected.type = "checkbox";
+    selected.dataset.crmSelect = "true";
     selected.checked = crmSelectedLeads.has(lead.id);
     selected.onchange = () => {
       if (selected.checked) crmSelectedLeads.set(lead.id, lead);
@@ -241,13 +252,11 @@ function renderLeadTableRow(tbody, lead) {
   linkId.style.color = "var(--color-primary)";
   linkId.style.textDecoration = "none";
   linkId.textContent = lead.id.slice(0, 8).toUpperCase();
-  if (
-    adminHasPermission("lead.assign") &&
-    ["new", "assigned"].includes(lead.status)
-  ) {
+  if (adminHasPermission("lead.assign") && adminCanAssignLead(lead)) {
     const label = adminNode("label", "", "admin-check");
     const selected = document.createElement("input");
     selected.type = "checkbox";
+    selected.dataset.crmSelect = "true";
     selected.checked = crmSelectedLeads.has(lead.id);
     selected.setAttribute("aria-label", "Chọn hồ sơ " + lead.id.slice(0, 8));
     selected.onchange = () => {
@@ -265,7 +274,7 @@ function renderLeadTableRow(tbody, lead) {
   const dateObj = new Date(lead.created_at);
   tdTime.textContent = isNaN(dateObj)
     ? "Vừa xong"
-    : dateObj.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+    : PageFPTDates.format(dateObj);
   tdTime.style.fontSize = "0.8rem";
   tdTime.style.color = "var(--text-muted)";
   row.appendChild(tdTime);
@@ -395,13 +404,14 @@ function renderKanbanCard(lead) {
  */
 async function revealLeadPhone(id, element) {
   try {
-    if (!uuidPattern.test(id)) throw new Error("Mã hồ sơ chưa thể giải mã.");
+    if (!uuidPattern.test(id))
+      throw new Error("Mã hồ sơ chưa hợp lệ để hiển thị thông tin.");
     const result = await crmRequest("/leads/" + id + "/reveal", "POST", {});
     if (element && result.phone) {
       element.textContent = result.phone;
       element.style.color = "#16A34A";
     }
-    showToast("Đã giải mã thông tin liên hệ thành công.", "success");
+    showToast("Đã hiển thị thông tin liên hệ.", "success");
     return result;
   } catch (error) {
     showToast(error.message, "error");
@@ -491,6 +501,26 @@ async function createLeadAppointment(
 // Initial Lead List Loader
 document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname === "/admin/leads") {
-    loadCrmLeads();
+    const params = new URLSearchParams(window.location.search);
+    const filter = document.getElementById("filter-status");
+    const status = params.get("status");
+    if (
+      filter &&
+      Array.from(filter.options).some((option) => option.value === status)
+    )
+      filter.value = status;
+    const overdue = document.getElementById("filter-overdue");
+    if (overdue) overdue.checked = params.get("overdue") === "true";
+    loadCrmLeads(filter?.value === "all" ? null : filter?.value || null);
   }
 });
+
+function crmSelectVisible(checked = true) {
+  if (!checked) crmSelectedLeads.clear();
+  document.querySelectorAll("[data-crm-select]").forEach((input) => {
+    if (input.getClientRects().length && !input.disabled) {
+      input.checked = checked;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+}

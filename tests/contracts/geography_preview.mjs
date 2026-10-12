@@ -28,6 +28,7 @@ function field(id) {
 }
 const context = vm.createContext({
   console,
+  window: {},
   Set,
   Array,
   Number,
@@ -37,6 +38,7 @@ const context = vm.createContext({
     this.value = value;
   },
   document: {
+    addEventListener(){},
     getElementById: field,
     createElement: () => ({ append() {} }),
     createTextNode: (text) => text,
@@ -51,6 +53,8 @@ const context = vm.createContext({
   pricingNode: () => ({ append() {} }),
   pricingApi: () => new Promise((resolve) => pending.push(resolve)),
 });
+vm.runInContext(fs.readFileSync("src/pagefpt/static/js/dates_vn.js","utf8"),context);
+context.PageFPTDates=context.window.PageFPTDates;
 vm.runInContext(
   fs.readFileSync("src/pagefpt/static/js/admin/geography.js", "utf8"),
   context,

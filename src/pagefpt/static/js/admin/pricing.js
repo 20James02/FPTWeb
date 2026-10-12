@@ -44,7 +44,25 @@ function pricingError(id, error) {
   const box = $p(id);
   box.hidden = false;
   box.textContent = error.message || String(error);
+  if (error.code === "INVALID_PLAN")
+    box.append(
+      pricingButton("Mở mục Gói cước", () => {
+        const dialog = box.closest("dialog");
+        if (dialog?.open) dialog.close();
+        pricingShowPlan();
+      }),
+    );
   box.focus?.();
+}
+function pricingShowPlan(id) {
+  $p("pricing-status").value = "";
+  $p("pricing-search").value = "";
+  pricingTab("plans");
+  const row = id && $p("plans-list").querySelector(`[data-plan-id="${id}"]`);
+  if (row) {
+    row.scrollIntoView({ block: "center", behavior: "instant" });
+    row.querySelector("button")?.focus();
+  }
 }
 function pricingClearError(id) {
   $p(id).hidden = true;
@@ -78,20 +96,25 @@ async function pricingApi(path, method = "GET", body, timeout = 12000) {
       REGION_HAS_CHILDREN:
         "Cần ngừng các xã/phường trực thuộc trước khi ngừng tỉnh.",
       INVALID_REGION: "Địa bàn chưa được công bố, đã ngừng hoặc không tồn tại.",
-      INVALID_PLAN: "Gói cước chưa được công bố hoặc đã ngừng.",
+      INVALID_PLAN:
+        "Cần công bố gói cước trước khi công bố bảng giá. Mở mục Gói cước, chọn Công bố, rồi quay lại Bảng giá. Gói đã ngừng cần chọn gói khác.",
+      INVALID_PLAN_IMAGE:
+        "Ảnh chưa xử lý xong hoặc đã ngừng sử dụng. Hãy chọn ảnh khác.",
       INVALID_REPLACEMENT_START:
         "Ngày bắt đầu giá mới phải nằm trong khoảng hiệu lực giá đang sửa.",
       PUBLISHED_PRICE_IMMUTABLE: "Giá đã công bố cần tạo phiên bản thay thế.",
       IMMUTABLE_SCOPE:
         "Cấp địa bàn, tỉnh trực thuộc hoặc phạm vi giá không được thay đổi.",
     }[data.code];
-    throw new Error(
+    const error = new Error(
       message ||
         (data.code === "VALIDATION_ERROR"
           ? "Thông tin chưa hợp lệ: " +
             Object.keys(data.fields || {}).join(", ")
           : "Không thể lưu dữ liệu (" + (data.code || response.status) + ")."),
     );
+    error.code = data.code;
+    throw error;
   }
   return data;
 }
@@ -176,9 +199,10 @@ function pricingAdd() {
   else openCreatePriceModal();
 }
 function pricingFilter(row, text) {
+  const status = $p("pricing-status").value;
   return (
-    (!$p("pricing-status").value ||
-      row.status === $p("pricing-status").value) &&
+    (status === "all" ||
+      (status ? row.status === status : row.status !== "retired")) &&
     text
       .toLocaleLowerCase("vi")
       .includes($p("pricing-search").value.trim().toLocaleLowerCase("vi"))
@@ -221,13 +245,30 @@ function pricingStatus(row) {
 }
 function renderPricing() {
   const body = $p("prices-tbody");
+  body.dataset.bulkContainer = "prices";
   body.replaceChildren();
-  const filtered = pricingRows.filter((p) =>
-    pricingFilter(p, pricingPlanName(p.plan_id) + " " + pricingScopeName(p)),
+  const retiredPlans = new Set(
+    availablePlans.filter((p) => p.status === "retired").map((p) => p.id),
   );
+  const filtered = pricingRows.filter((p) => {
+    const effectiveStatus = retiredPlans.has(p.plan_id) ? "retired" : p.status;
+    return pricingFilter(
+      { ...p, status: effectiveStatus },
+      pricingPlanName(p.plan_id) + " " + pricingScopeName(p),
+    );
+  });
   for (const row of filtered) {
     const tr = document.createElement("tr");
     tr.dataset.priceId = row.id;
+    window.PageFPTAdminLists?.bindRow(tr, {
+      id: row.id,
+      version: row.version,
+      kind: "prices",
+      status: row.status,
+      planStopped: retiredPlans.has(row.plan_id),
+      group: "prices",
+    });
+    body.dataset.bulkContainer = "prices";
     const name = pricingNode("td");
     name.append(
       pricingNode("strong", pricingPlanName(row.plan_id)),
@@ -235,7 +276,16 @@ function renderPricing() {
     );
     const monthly = pricingNode(
       "td",
-      moneyFormat.format(row.monthly_vnd) + " ₫",
+      moneyFormat.format(
+        Math.round(row.monthly_vnd * Number(row.monthly_coefficient ?? 1)),
+      ) + " ₫",
+    );
+    monthly.append(
+      pricingNode(
+        "span",
+        `Giá gốc ${moneyFormat.format(row.monthly_vnd)}đ × ${row.monthly_coefficient ?? 1}`,
+        "pricing-sub",
+      ),
     );
     monthly.append(
       pricingNode(
@@ -258,17 +308,15 @@ function renderPricing() {
         "pricing-sub",
       ),
     );
-    const window = pricingNode(
+    const effectiveDates = pricingNode(
       "td",
-      new Date(row.start || parseEffective(row.effective)[0]).toLocaleString(
-        "vi-VN",
-      ),
+      PageFPTDates.format(row.start || parseEffective(row.effective)[0]),
     );
-    window.append(
+    effectiveDates.append(
       pricingNode(
         "span",
         row.end
-          ? "Đến " + new Date(row.end).toLocaleString("vi-VN")
+          ? "Đến " + PageFPTDates.format(row.end)
           : "Chưa có ngày kết thúc",
         "pricing-sub",
       ),
@@ -278,9 +326,13 @@ function renderPricing() {
       pricingStatus(row),
       pricingNode("span", "Phiên bản " + row.version, "pricing-sub"),
     );
+    if (retiredPlans.has(row.plan_id))
+      status.append(
+        pricingNode("span", "Gói đã ngừng cung cấp", "pricing-sub"),
+      );
     const actions = pricingNode("td");
     const group = pricingNode("div", "", "pricing-actions");
-    if (row.status !== "retired") {
+    if (row.status !== "retired" && !retiredPlans.has(row.plan_id)) {
       group.append(
         pricingButton("Nhân bản", () => openCreatePriceModal(row, true)),
       );
@@ -292,16 +344,20 @@ function renderPricing() {
       );
       if (row.status === "draft")
         group.append(
-          pricingButton("Công bố", () =>
-            publishPriceRecord(row.id, row.version),
-          ),
+          availablePlans.find((p) => p.id === row.plan_id)?.status === "draft"
+            ? pricingButton("Công bố gói trước", () =>
+                pricingShowPlan(row.plan_id),
+              )
+            : pricingButton("Công bố", () =>
+                publishPriceRecord(row.id, row.version),
+              ),
         );
       group.append(
         pricingButton("Ngừng", () => confirmPricingRetire("prices", row)),
       );
     }
     actions.append(group);
-    tr.append(name, monthly, term, window, status, actions);
+    tr.append(name, monthly, term, effectiveDates, status, actions);
     body.append(tr);
   }
   if (!filtered.length) {
@@ -310,7 +366,7 @@ function renderPricing() {
       "Chưa có bản ghi phù hợp. Thêm giá mới hoặc đổi bộ lọc.",
       "pricing-empty",
     );
-    td.colSpan = 6;
+    td.colSpan = body.closest("table").tHead?.rows[0]?.cells.length || 6;
     const tr = pricingNode("tr");
     tr.append(td);
     body.append(tr);
@@ -318,6 +374,7 @@ function renderPricing() {
   $p("prices-count-badge").textContent = filtered.length + " bản ghi";
   $p("pricing-load-more").hidden = !pricingCursor;
   const plans = $p("plans-list");
+  plans.dataset.bulkContainer = "plans";
   plans.replaceChildren();
   for (const row of availablePlans.filter((p) =>
     pricingFilter(p, p.payload.name),
@@ -352,6 +409,16 @@ function renderPricing() {
       );
     }
     const item = pricingNode("div", "", "pricing-list-row");
+    item.dataset.planId = row.id;
+    window.PageFPTAdminLists?.bindRow(item, {
+      id: row.id,
+      version: row.version,
+      kind: "plans",
+      status: row.status,
+      group: "plans",
+      publishedVersion: row.published_version,
+    });
+    plans.dataset.bulkContainer = "plans";
     item.append(info, buttons);
     plans.append(item);
   }
@@ -360,6 +427,17 @@ function renderPricing() {
       pricingNode("p", "Chưa có gói cước phù hợp.", "pricing-empty"),
     );
   renderLocations();
+  window.PageFPTAdminLists?.retainSelection(
+    "prices",
+    filtered.map((row) => row.id),
+  );
+  window.PageFPTAdminLists?.retainSelection(
+    "plans",
+    [...plans.querySelectorAll("[data-plan-id]")].map(
+      (row) => row.dataset.planId,
+    ),
+  );
+  window.PageFPTAdminLists?.enhance();
   // Resolve scoped names lazily only for prices actually in the loaded page.
   const unresolved = new Set(
     pricingRows
@@ -428,11 +506,19 @@ async function loadLocationWards() {
 function renderLocations() {
   const root = $p("locations-list");
   root.replaceChildren();
+  root.dataset.bulkContainer = "regions";
   const parent = $p("location-province-filter").value;
   const rows = parent ? pricingWards.get(parent) || [] : pricingProvinces;
   for (const row of rows.filter((r) => pricingFilter(r, r.payload.name))) {
     const item = pricingNode("div", "", "pricing-list-row"),
       info = pricingNode("div");
+    window.PageFPTAdminLists?.bindRow(item, {
+      id: row.id,
+      version: row.version,
+      kind: "regions",
+      status: row.status,
+      group: "regions",
+    });
     info.append(
       pricingNode("strong", row.payload.name),
       pricingNode(
@@ -688,6 +774,7 @@ function openCreatePriceModal(row = null, clone = false) {
       ["inp-source", "source"],
     ])
       $p(id).value = row[key];
+    $p("inp-monthly-coefficient").value = row.monthly_coefficient ?? 1;
     $p("inp-vat-bps").value = row.vat_bps / 100;
     $p("inp-vat-included").checked = row.vat_included;
     $p("inp-start").value = pricingLocalDate(
@@ -752,6 +839,7 @@ async function handleCreatePriceSubmit(event) {
       scope_kind: $p("inp-scope-kind").value,
       billing_months: Number($p("inp-billing-months").value),
       monthly_vnd: pricingMoney("inp-monthly-vnd"),
+      monthly_coefficient: $p("inp-monthly-coefficient").value,
       setup_vnd: pricingMoney("inp-setup-vnd"),
       equipment_vnd: pricingMoney("inp-equipment-vnd"),
       vat_included: $p("inp-vat-included").checked,
@@ -811,9 +899,24 @@ async function publishPriceRecord(id, version) {
     pricingError("pricing-page-error", e);
   }
 }
+let planImageAssets = new Map(),
+  planImageGeneration = 0,
+  planImageUploading = false;
 function openPlanDialog(row = null) {
   editingPlan = row;
+  const generation = ++planImageGeneration;
+  planImageUploading = false;
+  setPlanImageBusy(false);
   $p("plan-form").reset();
+  $p("plan-submit").disabled = false;
+  $p("plan-image-alt").value = row?.payload.image_alt || "";
+  planImageAssets.clear();
+  $p("plan-image-id").replaceChildren(new Option("Không sử dụng ảnh", ""));
+  if (row?.payload.image_id)
+    addPlanImage({ id: row.payload.image_id, payload: row.payload });
+  $p("plan-image-id").value = row?.payload.image_id || "";
+  previewPlanImage();
+  loadPlanImages(generation);
   pricingClearError("plan-error");
   $p("plan-dialog-title").textContent = row ? "Sửa gói cước" : "Thêm gói cước";
   if (row) {
@@ -822,11 +925,22 @@ function openPlanDialog(row = null) {
       ["plan-code", "code"],
       ["plan-service", "service"],
       ["plan-speed", "speed_mbps"],
+      ["plan-upload-speed", "upload_speed_mbps"],
       ["plan-description", "description"],
     ])
       $p(id).value = row.payload[key] ?? "";
     $p("plan-equipment").value = (row.payload.equipment || []).join("\n");
   }
+  for (const [key, value] of Object.entries({
+    badge: "Gói đang cung cấp",
+    speed: "Tốc độ",
+    offers: "Ưu đãi đi kèm",
+    equipment: "Thiết bị",
+    register: "Đăng ký gói",
+    details: "Chi tiết gói",
+  }))
+    $p("plan-label-" + key).value = row?.payload.card_labels?.[key] ?? value;
+  previewPlanCard();
   $p("plan-all-locations").checked =
     !row?.payload.applicable_region_ids?.length;
   $p("plan-location-picker").hidden = $p("plan-all-locations").checked;
@@ -836,12 +950,139 @@ function openPlanDialog(row = null) {
   );
   openPricingDialog("plan-dialog");
 }
+function addPlanImage(row) {
+  const payload = row.payload;
+  if (!planImageAssets.has(row.id)) {
+    $p("plan-image-id").append(
+      new Option(
+        payload.filename ||
+          payload.image_alt ||
+          "Ảnh " +
+            (payload.width || payload.image_width || "") +
+            " × " +
+            (payload.height || payload.image_height || "") +
+            " · " +
+            row.id.slice(0, 8),
+        row.id,
+      ),
+    );
+  }
+  planImageAssets.set(row.id, payload);
+}
+async function loadPlanImages(generation) {
+  $p("plan-image-status").textContent = "Đang tải thư viện ảnh…";
+  try {
+    const data = await pricingApi("/api/v1/admin/workspace/media?limit=100");
+    if (generation !== planImageGeneration) return;
+    for (const row of data.items)
+      if (row.status !== "retired" && row.payload.state === "ready")
+        addPlanImage(row);
+    $p("plan-image-status").textContent =
+      "Chọn trong 100 ảnh gần nhất hoặc tải ảnh mới (JPEG, PNG, WebP ≤10 MB).";
+  } catch (e) {
+    if (generation === planImageGeneration)
+      $p("plan-image-status").textContent =
+        "Chưa tải được thư viện ảnh: " + e.message;
+  }
+}
+function previewPlanImage() {
+  const payload = planImageAssets.get($p("plan-image-id").value);
+  const preview = $p("plan-image-preview");
+  const url = payload?.image_url || payload?.url;
+  preview.hidden = !url;
+  if (url) preview.src = url;
+  else preview.removeAttribute("src");
+}
+function setPlanImageBusy(busy) {
+  for (const id of [
+    "plan-image-id",
+    "plan-image-file",
+    "plan-image-clear",
+    "plan-submit",
+  ])
+    $p(id).disabled = busy;
+}
+function clearPlanImage() {
+  if (planImageUploading) return;
+  $p("plan-image-id").value = "";
+  $p("plan-image-file").value = "";
+  previewPlanImage();
+}
+async function uploadPlanImage(input) {
+  const file = input.files[0];
+  if (!file || planImageUploading) return;
+  const generation = planImageGeneration;
+  if (
+    !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+    file.size > 10 * 1024 * 1024 ||
+    !file.size
+  ) {
+    pricingError(
+      "plan-error",
+      new Error("Chọn ảnh JPEG, PNG hoặc WebP có dung lượng tối đa 10 MB."),
+    );
+    input.value = "";
+    return;
+  }
+  planImageUploading = true;
+  setPlanImageBusy(true);
+  $p("plan-image-status").textContent = "Đang tải và xử lý ảnh…";
+  try {
+    const intent = await pricingApi(
+      "/api/v1/admin/media/upload-intents",
+      "POST",
+      {
+        filename: file.name,
+        content_type: file.type,
+        size_bytes: file.size,
+      },
+    );
+    const response = await fetch(intent.upload_url, {
+      method: "PUT",
+      headers: intent.headers,
+      body: file,
+      credentials: "omit",
+      signal: AbortSignal.timeout(60000),
+    });
+    if (!response.ok)
+      throw new Error("Không thể tải ảnh lên kho lưu trữ. Vui lòng thử lại.");
+    const result = await pricingApi(
+      "/api/v1/admin/media/" + intent.id + "/finalize",
+      "POST",
+      {},
+      30000,
+    );
+    if (generation !== planImageGeneration) return;
+    addPlanImage({
+      id: result.id,
+      payload: { url: result.url, filename: file.name },
+    });
+    $p("plan-image-id").value = result.id;
+    previewPlanImage();
+    $p("plan-image-status").textContent =
+      "Ảnh đã sẵn sàng. Lưu gói rồi Công bố để khách nhìn thấy.";
+  } catch (e) {
+    if (generation === planImageGeneration) {
+      pricingError("plan-error", e);
+      $p("plan-image-status").textContent =
+        "Tải ảnh chưa thành công; ảnh đang dùng được giữ nguyên.";
+    }
+  } finally {
+    if (generation === planImageGeneration) {
+      planImageUploading = false;
+      setPlanImageBusy(false);
+      input.value = "";
+    }
+  }
+}
 async function savePlan(event) {
   event.preventDefault();
   pricingClearError("plan-error");
   const button = event.target.querySelector("[type=submit]");
   button.disabled = true;
   try {
+    if (planImageUploading)
+      throw new Error("Chờ ảnh xử lý xong trước khi lưu gói.");
     const scopes = $p("plan-all-locations").checked
       ? []
       : Array.from(planPicker.selected);
@@ -854,12 +1095,22 @@ async function savePlan(event) {
       speed_mbps: $p("plan-speed").value
         ? Number($p("plan-speed").value)
         : null,
+      upload_speed_mbps: $p("plan-upload-speed").value
+        ? Number($p("plan-upload-speed").value)
+        : null,
       description: $p("plan-description").value,
       equipment: $p("plan-equipment")
         .value.split("\n")
         .map((s) => s.trim())
         .filter(Boolean),
+      card_labels: Object.fromEntries(
+        ["badge", "speed", "offers", "equipment", "register", "details"].map(
+          (k) => [k, $p("plan-label-" + k).value.trim()],
+        ),
+      ),
       applicable_region_ids: scopes,
+      image_id: $p("plan-image-id").value || null,
+      image_alt: $p("plan-image-alt").value.trim(),
     };
     await pricingApi(
       "/api/v1/admin/plans" +
@@ -1133,6 +1384,7 @@ function previewDraftPrice() {
   try {
     const price = {
       monthly_vnd: pricingMoney("inp-monthly-vnd"),
+      monthly_coefficient: $p("inp-monthly-coefficient").value,
       billing_months: Number($p("inp-billing-months").value),
       setup_vnd: pricingMoney("inp-setup-vnd"),
       equipment_vnd: pricingMoney("inp-equipment-vnd"),
@@ -1151,3 +1403,32 @@ function previewDraftPrice() {
 document.addEventListener("DOMContentLoaded", () => {
   $p("create-price-form")?.addEventListener("input", previewDraftPrice);
 });
+
+window.addEventListener("pagefpt-admin-bulk-complete", () => loadPricesList());
+
+function previewPlanCard() {
+  const value = (k) => $p("plan-label-" + k).value;
+  $p("plan-preview-name").textContent = $p("plan-name").value || "Tên gói cước";
+  $p("plan-preview-badge").textContent = value("badge");
+  $p("plan-preview-speed").textContent =
+    value("speed") +
+    " · " +
+    "↓ " +
+    ($p("plan-speed").value
+      ? $p("plan-speed").value + " Mbps"
+      : "Chưa cập nhật") +
+    " / ↑ " +
+    ($p("plan-upload-speed").value
+      ? $p("plan-upload-speed").value + " Mbps"
+      : "Chưa cập nhật");
+  $p("plan-preview-offers").textContent = value("offers");
+  $p("plan-preview-equipment").textContent =
+    value("equipment") +
+    " · " +
+    ($p("plan-equipment").value || "Xác nhận theo gói");
+  $p("plan-preview-register").textContent = value("register");
+  $p("plan-preview-details").textContent = value("details");
+}
+document
+  .getElementById("plan-form")
+  ?.addEventListener("input", previewPlanCard);

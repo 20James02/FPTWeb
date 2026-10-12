@@ -1,0 +1,16 @@
+<div>
+        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-tv')" aria-expanded="false" aria-controls="acc-tv">
+          <span>{{item.label}}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mobile-accordion-content" id="acc-tv" inert><a href="{{item.href}}" class="mobile-sublink" onclick="toggleMobileNav()">Xem {{item.label}}</a>
+          <div class="mobile-consult-card">
+            <img src="/static/images/device-play-3d.webp" class="consult-device-image" alt="Minh họa thiết bị dịch vụ" width="100" height="100" loading="lazy" decoding="async">
+            <div><strong>Internet &amp; FPT Play</strong><small>Hình minh họa. Thiết bị tùy gói.</small>
+            <button type="button" class="btn-select-plan primary" onclick="toggleMobileNav(); openBottomSheet('Tư vấn dịch vụ theo khu vực', '', null, 'combo')">Nhận tư vấn</button></div>
+          </div>
+          <a href="/san-pham/combo-fpt-play" class="mobile-sublink" onclick="toggleMobileNav()">Combo Net + Truyền Hình 4K</a>
+          <a href="/san-pham/fpt-play#the-thao" class="mobile-sublink" onclick="toggleMobileNav()">Tư vấn nội dung thể thao</a>
+          <a href="/san-pham/fpt-play#thiet-bi" class="mobile-sublink" onclick="toggleMobileNav()">Đầu Thu FPT Play Box 4K</a>
+        </div>
+      </div>

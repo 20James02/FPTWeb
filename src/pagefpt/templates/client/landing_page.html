@@ -27,7 +27,7 @@
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">Để lại thông tin để được tư vấn gói và kiểm tra hạ tầng</p>
     </div>
 
-    <form onsubmit="handleDirectLeadSubmit(event)" style="display: flex; flex-direction: column; gap: var(--space-3);">
+    <form id="direct-lead-form" onsubmit="handleDirectLeadSubmit(event)" style="display: flex; flex-direction: column; gap: var(--space-3);">
       <div>
         <label class="form-label" for="lp-phone">Số điện thoại của bạn <span class="req">*</span></label>
         <input type="tel" id="lp-phone" class="form-input" inputmode="tel" placeholder="Ví dụ: 0981 234 567" required autocomplete="tel" style="font-size: 1.1rem; padding: 14px;">

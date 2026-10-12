@@ -1,0 +1,9 @@
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Việc cần xử lý — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}Khách hàng / Việc cần xử lý{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-accounts-analytics.css">{% endblock %}
+{% block content %}
+<div class="account-heading"><div><h1>Bàn làm việc</h1><p class="analytics-note">Mở hồ sơ, xác nhận thông tin và ghi nhận bước xử lý tiếp theo.</p></div><a href="/admin/leads" class="btn-action-detail">Danh sách khách hàng</a></div>
+{% include 'admin/components/workbench.html' %}
+{% endblock %}
+{% block extra_scripts %}<script src="/static/js/admin/workbench.js"></script>{% endblock %}

@@ -1,0 +1,274 @@
+{
+  "review_date": "2026-10-10",
+  "scope": "local current workspace; no production writes; synthetic data only",
+  "python_tests": {
+    "passed": 386,
+    "seconds": 104.64
+  },
+  "javascript_contracts": {
+    "files": 22,
+    "passed": 22,
+    "results": [
+      {
+        "file": "tests/contracts/accessory_quote_snapshot.mjs",
+        "exit_code": 0,
+        "output": "Accessory authoritative snapshot and revision ordering PASS\nAuthoritative availability and orphan preview invalidation PASS\n"
+      },
+      {
+        "file": "tests/contracts/admin_list_tools.mjs",
+        "exit_code": 0,
+        "output": "Admin typed sorting contract passed\n"
+      },
+      {
+        "file": "tests/contracts/admin_login.mjs",
+        "exit_code": 0,
+        "output": "Password and MFA login enter authenticated role-aware landing.\n"
+      },
+      {
+        "file": "tests/contracts/admin_quality.mjs",
+        "exit_code": 0,
+        "output": "Admin status coverage, score provenance and Vietnam calendar PASS\nDraft cost reconciles billing/fees/VAT without counting gift months PASS\nMonthly coefficient: integer rounding matches server PASS\n"
+      },
+      {
+        "file": "tests/contracts/analytics_session.mjs",
+        "exit_code": 0,
+        "output": "✔ one session creation restores saved consent only after server acknowledgement (3.825268ms)\n✔ failed choice is not persisted and preview cannot restore analytics (1.481699ms)\n✔ withdrawal restricts locally even when the consent API fails (1.425724ms)\n✔ a late session acknowledgement cannot restore consent after withdrawal (0.998516ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13.432611\n"
+      },
+      {
+        "file": "tests/contracts/browser_api.mjs",
+        "exit_code": 0,
+        "output": "Browser API contracts: lost-response retry, conflict, malformed receipt, auth failure, MFA, CSRF passed.\nAnalytics contract: no tracking or network requests before consent passed.\nAdmin navigation: logout/401 race navigates once.\nManual retry: refreshed quote/session preserve body and key; edited phone creates a new request.\nUncertain retry: later 4xx does not discard an unresolved original key.\n"
+      },
+      {
+        "file": "tests/contracts/comparison_prices.mjs",
+        "exit_code": 0,
+        "output": "Comparison prices: region invalidation and quote refresh passed.\nCatalog stops quote queue on pagehide PASS\n"
+      },
+      {
+        "file": "tests/contracts/consent_preferences.mjs",
+        "exit_code": 0,
+        "output": "✔ consent records only explicit booleans, expires and handles blocked storage (4.082128ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 8.969491\n"
+      },
+      {
+        "file": "tests/contracts/dates_vn.mjs",
+        "exit_code": 0,
+        "output": "Vietnamese date conversion/validation/timezone passed\n"
+      },
+      {
+        "file": "tests/contracts/geography_preview.mjs",
+        "exit_code": 0,
+        "output": "Geography preview: late responses do not overwrite reopened dialog\n"
+      },
+      {
+        "file": "tests/contracts/google_analytics.mjs",
+        "exit_code": 0,
+        "output": "GA4: advanced denied/granted/withdrawn, basic fallback, preview, single initialization, URL/PII filtering, attribution, lead deduplication passed.\n"
+      },
+      {
+        "file": "tests/contracts/mobile_catalog.mjs",
+        "exit_code": 0,
+        "output": "Mobile catalog: navigation, category exclusion and desktop resize passed.\n"
+      },
+      {
+        "file": "tests/contracts/quiz_catalog.mjs",
+        "exit_code": 0,
+        "output": "Quiz catalog: published UUID and empty-catalog consultation passed.\n"
+      },
+      {
+        "file": "tests/contracts/quote_selection.mjs",
+        "exit_code": 0,
+        "output": "Quote selection: stale responses fenced; generic CTA clears package and quote.\nQuote selection: region changes fenced; timeout falls back to consultation.\nConsultation retains requested term without quote; preview cannot submit.\n"
+      },
+      {
+        "file": "tests/contracts/recovery_link.mjs",
+        "exit_code": 0,
+        "output": "Recovery requires six Telegram digits and a server challenge; no links.\n"
+      },
+      {
+        "file": "tests/contracts/regional_review_regressions.mjs",
+        "exit_code": 0,
+        "output": "✔ Refreshing admin prices can resolve the same ward name again (14.876961ms)\n✔ Ward loading during landing submission does not permanently disable selection (1.499462ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 21.179318\n"
+      },
+      {
+        "file": "tests/contracts/regional_selection.mjs",
+        "exit_code": 0,
+        "output": "Regional selection: late ward responses fenced; province fallback clears ward; cached lazy lookup.\n"
+      },
+      {
+        "file": "tests/contracts/session_deadline.mjs",
+        "exit_code": 0,
+        "output": "Session deadline: auxiliary timeout falls back to null token and lead submission succeeds.\n"
+      },
+      {
+        "file": "tests/contracts/speed_cards.mjs",
+        "exit_code": 0,
+        "output": "✔ price separates monthly cost and prepaid total without inventing prices (12.12625ms)\n✔ recommendation highlights only the first measured option and keeps claims tied to published speed (0.282438ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 20.942656\n"
+      },
+      {
+        "file": "tests/contracts/speed_cards_details.mjs",
+        "exit_code": 0,
+        "output": "✔ prepaid-only package detail never presents an unknown monthly rate as zero (13.62973ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 18.705184\n"
+      },
+      {
+        "file": "tests/contracts/speed_location.mjs",
+        "exit_code": 0,
+        "output": "✔ Late permission for current run remains useful after the waiting message (4.925074ms)\n✔ Cancel and restart fence delayed positions and reverse responses (1.162873ms)\n✔ Malformed provider response keeps manual fallback without showing a false suggestion (0.887479ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 10.975741\n"
+      },
+      {
+        "file": "tests/contracts/speedtest.mjs",
+        "exit_code": 0,
+        "output": "✔ location suggestions only match unique published names in Vietnam and scoped wards (3.052734ms)\n✔ actual SDK empty latency buckets are unavailable; sampled zero remains valid (9.933202ms)\n✔ manual measurement config limits payload and disables logging/unsupported packet loss (0.879654ms)\n✔ metrics use real units, preserve missing data, and do not coerce strings or negative samples (0.688306ms)\n✔ recommendations respect published catalog types and province/ward applicability with stable ranking (6.877432ms)\n✔ gauge scale is monotonic and safely handles higher than dial maximum (0.74377ms)\n✔ public metadata does not invent ISP/location and truncates untrusted headers (0.941389ms)\n✔ RIPE metadata distinguishes ASN holder and approximate location, with ambiguous data left unknown (1.464267ms)\nℹ tests 8\nℹ suites 0\nℹ pass 8\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 29.985594\n"
+      }
+    ]
+  },
+  "static_checks": {
+    "ruff_check_src_tests": "passed",
+    "mypy_src": "passed; 101 files",
+    "architecture_check": "passed; 101 Python files"
+  },
+  "browser": {
+    "engine": "Chromium, reduced motion; SQL local and mocked Auth; external requests blocked",
+    "pages": 15,
+    "viewports_css_px": [
+      360,
+      390,
+      768,
+      1440
+    ],
+    "views": 60,
+    "horizontal_overflow": 0,
+    "unlabelled_visible_fields": 0,
+    "underlined_sidebar_links": 0,
+    "runtime_errors": [],
+    "path_h1": [
+      {
+        "path": "/",
+        "h1": "Internet phù hợp với bạn"
+      },
+      {
+        "path": "/do-toc-do",
+        "h1": "Đo tốc độ mạng"
+      },
+      {
+        "path": "/admin/dashboard",
+        "h1": "Tổng quan kinh doanh"
+      },
+      {
+        "path": "/admin/leads",
+        "h1": "Danh Sách Đơn Tư Vấn"
+      },
+      {
+        "path": "/admin/pricing",
+        "h1": "Gói cước & bảng giá"
+      },
+      {
+        "path": "/admin/reports",
+        "h1": "Phân tích hiệu quả"
+      },
+      {
+        "path": "/admin/accessories",
+        "h1": "Sản phẩm & phụ kiện"
+      },
+      {
+        "path": "/admin/account",
+        "h1": "Tài khoản & bảo mật"
+      },
+      {
+        "path": "/admin/appearance",
+        "h1": "Slide & giao diện"
+      },
+      {
+        "path": "/admin/navigation",
+        "h1": "Menu điều hướng"
+      },
+      {
+        "path": "/admin/landing-pages",
+        "h1": "Landing page"
+      },
+      {
+        "path": "/admin/settings",
+        "h1": "Cài đặt & Trạng thái"
+      },
+      {
+        "path": "/admin/marketing",
+        "h1": "Marketing & Quảng cáo"
+      },
+      {
+        "path": "/admin/content",
+        "h1": "Nội dung & Ưu đãi"
+      },
+      {
+        "path": "/admin/operations",
+        "h1": "Vận hành & Nhân sự"
+      }
+    ]
+  },
+  "sql_probe": {
+    "synthetic_only": true,
+    "rows": 100000,
+    "scoped_rpc": {
+      "samples_ms": [
+        4733.691,
+        4810.694,
+        4846.007,
+        4807.687,
+        4782.822
+      ],
+      "median_ms": 4807.687
+    },
+    "analytics_rpc": {
+      "elapsed_ms": 652.869,
+      "totals": {
+        "leads": 10000,
+        "overdue": 10000,
+        "awaiting": 10000,
+        "contacted": 0,
+        "installed": 0,
+        "qualified": 0
+      },
+      "error": null
+    },
+    "overdue_audit_after_ticks": [
+      50,
+      50,
+      50
+    ],
+    "overdue_leads": 100000
+  },
+  "simple_query_explain_note": "Not the full RPC plan; cannot attribute all RPC latency to this simple query",
+  "simple_query_explain": {
+    "index_name": "lead_created",
+    "rows_removed_by_filter": 90000,
+    "execution_ms": 7.046
+  },
+  "nlp_probes": {
+    "text": "Không cần camera, chỉ cần internet",
+    "actual_service_values": [
+      "camera",
+      "internet"
+    ],
+    "expected": "camera must be negated/not a positive need",
+    "quantity_text": "Nhà không có 3 tầng",
+    "actual_floors": 3
+  },
+  "inventory": {
+    "route_decorators": 149,
+    "files_with_route_decorators": 32
+  },
+  "source_hashes": {
+    "supabase/migrations/20261002080000_admin_quality.sql": "f87aeb9fefc1ed2430de60167500d72e7cf234d64a03db8adddbd005aea8c05a",
+    "supabase/migrations/20261001014824_sessions_and_crm_completion.sql": "06aad166536badc7e198177ffb30f95dda85d1169dcd2743d9568a83cfd7ce89",
+    "src/pagefpt/modules/intelligence/scoring.py": "496e7f658ded56bbd06853a77bba1988c13f8c99c456f2d5695a453cdddf2cf1",
+    "src/pagefpt/modules/intelligence/nlp.py": "5651dde0301fd777b74462463998d6be1276f091e426de70b9dcd371ec2c3a5c",
+    "src/pagefpt/modules/workflow/worker.py": "0fe6db3e2ab3f1e24eb51656b9c81060f935b3d2e6f3f14fed13d85ef122c1e9",
+    "src/pagefpt/static/js/client/google_analytics.js": "2304a303f06754a50ba5f2be06f666573f8e19a0f29ccdf7ce2ea1edd9d40ad5",
+    ".github/workflows/backend.yml": "40c79a9c1cacd9028c83534535a5efc12162409077570f8ac55ee22ebb6d19c5"
+  },
+  "not_verified": [
+    "all dialogs and every endpoint manually",
+    "WebKit in this run",
+    "real external speedtest",
+    "hosted auth/R2/Telegram/Ads",
+    "production load, cold start, quotas and restore drill"
+  ]
+}

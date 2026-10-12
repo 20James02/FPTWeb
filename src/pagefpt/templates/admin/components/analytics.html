@@ -1,0 +1,16 @@
+<section id="analytics-dashboard" aria-label="Phân tích theo kỳ">
+<div class="account-heading"><div><h2>Phân tích theo kỳ tiếp nhận</h2><p class="analytics-note">Kết quả hiện tại của các hồ sơ được nhận trong kỳ, theo giờ Việt Nam. Các biểu đồ dùng chung bộ lọc và chỉ phản ánh dữ liệu bạn được phép xem.</p></div><span id="analytics-asof" class="account-badge">Đang tải…</span></div>
+<form id="analytics-filter" class="analytics-filter panel-card"><label for="analytics-start">Từ ngày<input id="analytics-start" type="date" required></label><label for="analytics-end">Đến ngày<input id="analytics-end" type="date" required></label><label for="analytics-branch">Chi nhánh<select id="analytics-branch"><option value="">Tất cả chi nhánh được cấp quyền</option></select></label><label for="analytics-campaign">UTM campaign<input id="analytics-campaign" maxlength="100" placeholder="Tất cả chiến dịch"></label><button class="btn-action-call" type="submit">Áp dụng bộ lọc</button><label for="analytics-period">Chọn nhanh<select id="analytics-period"><option value="7">7 ngày</option><option value="30" selected>30 ngày</option><option value="90">90 ngày</option></select></label></form>
+<p id="analytics-state" role="status" aria-live="polite"></p>
+<div class="kpi-grid" id="analytics-kpis"></div>
+<div class="analytics-grid">
+<section class="panel-card analytics-full"><h2>Xu hướng tiếp nhận và kết quả theo ngày</h2><p class="analytics-note">Ngày là ngày nhận hồ sơ; kết quả được cập nhật đến thời điểm xem báo cáo.</p><div id="analytics-trend"></div></section>
+<section class="panel-card"><h2>Tiếp nhận → Liên hệ → Đủ điều kiện → Lắp đặt</h2><div id="analytics-funnel"></div><p class="analytics-note">Tỷ lệ tính trên tổng hồ sơ của kỳ. “Đủ điều kiện” chưa đồng nghĩa đã ký hợp đồng.</p></section>
+<section class="panel-card"><h2>SLA phản hồi đang chờ</h2><div id="analytics-sla"></div><p class="analytics-note">Quá hạn: còn ở trạng thái mới, đã phân công hoặc đang liên hệ và đã vượt hạn gọi lại. Đây là số tồn của cohort đã chọn, không phải tỷ lệ cuộc gọi đúng hạn trong lịch sử.</p></section>
+<section class="panel-card"><h2>Nguồn khách hàng</h2><div id="analytics-sources"></div></section>
+<section class="panel-card"><h2>Trạng thái xử lý hiện tại</h2><div id="analytics-statuses"></div></section>
+<section class="panel-card"><h2>Nhu cầu theo gói</h2><div id="analytics-plans"></div></section>
+<section class="panel-card"><h2>Hiệu quả theo chi nhánh</h2><div id="analytics-branches"></div></section>
+<section class="panel-card analytics-full"><h2>Chiến dịch & chi phí</h2><p class="analytics-note">Chi phí dựa trên các khoản đã nhập trong kỳ; chưa bao gồm dữ liệu chưa được nhập hoặc chưa đồng bộ. Thiếu chi phí hiển thị “Chưa có dữ liệu”.</p><div id="analytics-campaigns"></div></section>
+</div>
+</section>

@@ -4,11 +4,11 @@ import vm from 'node:vm';
 const planA='11111111-1111-4111-8111-111111111111', planB='22222222-2222-4222-8222-222222222222';
 const nodes={
  'form-plan-name':{textContent:''},'form-plan-fee':{textContent:''},
- 'form-lead-province':{value:'33333333-3333-4333-8333-333333333333'},
  'bottom-sheet-backdrop':{classList:{add(){}}}
 };
+let selectedRegion='33333333-3333-4333-8333-333333333333';
 const pending=[];
-const context=vm.createContext({window:{innerWidth:390},document:{getElementById:id=>nodes[id],body:{style:{}},addEventListener(){}},Intl,AbortController,AbortSignal,setTimeout(){},fetch:(path,options)=>new Promise(resolve=>pending.push({path,options,resolve}))});
+const context=vm.createContext({getSelectedRegionId:()=>selectedRegion,window:{innerWidth:390},document:{querySelector:()=>null,getElementById:id=>nodes[id],body:{style:{}},addEventListener(){}},Intl,AbortController,AbortSignal,setTimeout(){},fetch:(path,options)=>new Promise(resolve=>pending.push({path,options,resolve}))});
 vm.runInContext(fs.readFileSync('src/pagefpt/static/js/client/bottom_sheet.js','utf8'),context);
 const read=name=>vm.runInContext(name,context);
 context.openBottomSheet('Plan A','',planA);
@@ -27,7 +27,7 @@ console.log('Quote selection: stale responses fenced; generic CTA clears package
 // A quote response for a previous region must never attach to the new region.
 context.openBottomSheet('Plan A','',planA);
 const oldRegion=pending.at(-1);
-nodes['form-lead-province'].value='44444444-4444-4444-8444-444444444444';
+selectedRegion='44444444-4444-4444-8444-444444444444';
 context.refreshActiveQuote();
 const newRegion=pending.at(-1);
 assert.notEqual(JSON.parse(oldRegion.options.body).region_id,JSON.parse(newRegion.options.body).region_id);
@@ -44,3 +44,22 @@ context.refreshActiveQuote();await read('quoteRequest');
 assert.equal(deadline,3000);assert.equal(read('activeQuoteToken'),null);
 assert.match(nodes['form-plan-fee'].textContent,/Chưa xác nhận giá/);
 console.log('Quote selection: region changes fenced; timeout falls back to consultation.');
+// When pricing is unavailable, consultation still retains the selected term.
+nodes['lead-phone']={value:'0981234567',classList:{remove(){}},removeAttribute(){}};
+nodes['lead-name']={value:'QA'};
+nodes['lead-address']={value:'QA address'};
+nodes['lead-consent']={checked:true};
+nodes['bottom-sheet-backdrop'].classList.remove=()=>{};
+context.window.PageFPTAccessories={term:()=>12,ids:()=>[]};
+let submitted;
+context.submitLeadToBackend=async payload=>{submitted=payload;return {receipt:'QA'};};
+context.openConfirmationModal=()=>{};
+await context.handleLeadSubmit({preventDefault(){}});
+assert.equal(submitted.plan_id,planA);
+assert.equal(submitted.quote_token,null);
+assert.match(submitted.notes,/Kỳ thanh toán quan tâm: 12 tháng/);
+context.window.PageFPTLanding={preview:true};
+submitted=null;
+await context.handleLeadSubmit({preventDefault(){}});
+assert.equal(submitted,null,'Unsaved preview cannot submit a lead');
+console.log('Consultation retains requested term without quote; preview cannot submit.');

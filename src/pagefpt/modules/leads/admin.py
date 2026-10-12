@@ -166,6 +166,13 @@ async def changes(request: Request, after: int = Query(default=0, ge=0)):
     return await dispatch(request, "changes", actor=actor.user_id, after=after)
 
 
+@router.get("/workbench")
+async def workbench(request: Request, limit: int = Query(default=6, ge=1, le=20)):
+    actor = await current_actor(request)
+    check(actor, "lead.read")
+    return await dispatch(request, "lead_workbench", actor=actor.user_id, limit=limit)
+
+
 @router.get("/leads/{id}")
 async def detail(id: UUID, request: Request):
     actor = await current_actor(request)

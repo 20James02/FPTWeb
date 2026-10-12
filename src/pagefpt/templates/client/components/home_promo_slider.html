@@ -1,0 +1,22 @@
+<section class="home-promo" id="home-promo-slider" aria-roledescription="băng chuyền" aria-label="Ưu đãi đang áp dụng">
+  <h1 class="sr-only">Tư vấn lắp mạng FPT theo khu vực</h1>
+  <div class="home-promo-track">
+  {% for slide in promo_slides %}
+    <article class="home-promo-slide" aria-roledescription="trang chiếu" aria-label="{{loop.index}} / {{loop.length}}" {% if not loop.first %}hidden{% endif %}>
+      <a class="home-promo-media" href="{{slide.href or '/#plans-section'}}" aria-label="{{slide.title}}" {% if not slide.href and slide.plan_id %}data-promo-plan="{{slide.plan_id}}" data-promo-title="{{slide.title}}"{% endif %}>
+        {% if slide.video_url %}
+        <video muted playsinline loop preload="none" aria-label="{{slide.image_alt or slide.title}}" {% if slide.image_url %}poster="{{slide.image_url}}"{% endif %} width="{{slide.image_width or 1600}}" height="{{slide.image_height or 900}}" data-promo-video-media data-video-url="{{slide.video_url}}"></video>
+        {% elif slide.image_url %}
+        <img src="{{slide.image_url}}" alt="{{slide.image_alt or slide.title}}" width="{{slide.image_width}}" height="{{slide.image_height}}" {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+        {% else %}
+        <img class="home-promo-fallback" src="/static/images/device-internet-3d.webp" alt="{{slide.image_alt or slide.title}}" width="320" height="240">
+        {% endif %}
+      </a>
+    </article>
+  {% endfor %}
+  </div>
+  {% if promo_slides|length>1 or promo_slides|selectattr('video_url')|list %}<div class="home-promo-controls">
+    {% if promo_slides|length>1 %}<button type="button" data-promo-prev aria-label="Ưu đãi trước">‹</button><div class="home-promo-dots">{% for slide in promo_slides %}<button type="button" data-promo-index="{{loop.index0}}" aria-label="Xem ưu đãi {{loop.index}}" aria-pressed="{{ 'true' if loop.first else 'false'}}"></button>{% endfor %}</div><button type="button" data-promo-next aria-label="Ưu đãi tiếp theo">›</button><button type="button" data-promo-pause aria-label="Bật tự chuyển ưu đãi" aria-pressed="true">Tự chuyển: tắt</button>{% endif %}
+    {% if promo_slides|selectattr('video_url')|list %}<button type="button" data-promo-video aria-pressed="false">Phát video</button><span data-promo-video-status class="sr-only" role="status"></span>{% endif %}
+  </div>{% endif %}
+</section>

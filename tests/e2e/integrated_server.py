@@ -26,6 +26,11 @@ _jwk = json.loads(jwt.algorithms.ECAlgorithm.to_jwk(_key.public_key()))
 _jwk.update(kid="browser-test", alg="ES256")
 app.state.settings.supabase_url = "https://offline.supabase.test"
 app.state.settings.supabase_auth_key = "sb_publishable_offline_fixture"
+app.state.settings.supabase_secret = __import__("pydantic").SecretStr("sb_secret_offline_fixture")
+app.state.settings.telegram_enabled = True
+app.state.settings.telegram_bot_token = __import__("pydantic").SecretStr("123456789:" + "a" * 35)
+app.state.settings.telegram_chat_id = "-999999"
+app.state.settings.telegram_recovery_accounts = {"qa-admin@example.test": "123456789"}
 app.state.verifier.url = app.state.settings.supabase_url
 app.state.verifier.keys = {"browser-test": _jwk}
 app.state.verifier.expires = time.monotonic() + 3600
@@ -50,10 +55,21 @@ def token(aal):
 def auth_http(request):
     data = json.loads(request.content or b"{}")
     path = request.url.path
+    if path.endswith("/admin/generate_link"):
+        return httpx.Response(
+            200,
+            json={
+                "id": SUBJECT,
+                "email": "qa-admin@example.test",
+                "hashed_token": "a" * 64,
+            },
+        )
     if path.endswith("/recover"):
         return httpx.Response(200, json={})
     if path.endswith("/verify") and "/factors/" not in path:
-        if data.get("type") != "recovery" or data.get("token") != "654321":
+        if data.get("type") != "recovery" or not (
+            data.get("token") == "654321" or data.get("token_hash") == "a" * 64
+        ):
             return httpx.Response(400, json={"error_code": "otp_expired"})
         return httpx.Response(
             200,

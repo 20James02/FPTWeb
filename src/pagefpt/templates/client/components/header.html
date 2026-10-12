@@ -2,24 +2,24 @@
 <div class="top-utility-bar">
   <div class="container top-utility-inner">
     <div class="utility-segment-tabs">
-      <a href="/" class="utility-tab active">Khách Hàng Cá Nhân</a>
-      <a href="/san-pham/internet-gia-dinh" class="utility-tab">Khách Hàng Doanh Nghiệp</a>
+      <a href="/" class="utility-tab {% if request.url.path != '/san-pham/internet-doanh-nghiep' %}active{% endif %}">Khách Hàng Cá Nhân</a>
+      <a href="/san-pham/internet-doanh-nghiep" class="utility-tab {% if request.url.path == '/san-pham/internet-doanh-nghiep' %}active{% endif %}">Khách Hàng Doanh Nghiệp</a>
     </div>
 
     <div class="utility-right-links">
-      <a href="https://fpt.vn/vi/khach-hang-ca-nhan/ho-tro/huong-dan-su-dung/ung-dung-hi-fpt" target="_blank" rel="noopener" class="utility-link">
+      <a href="https://hi.fpt.vn/support/tai-khoan/tai-hi-fpt-o-dau" target="_blank" rel="noopener" class="utility-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
         <span>Tải ứng dụng Hi FPT</span>
       </a>
 
       <a href="/#faq-section" class="utility-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>Điểm giao dịch FPT</span>
+        <span>Hỗ trợ &amp; câu hỏi</span>
       </a>
 
-      <a href="tel:19006600" class="utility-link" style="color: #fff; font-weight: bold;">
+      <a href="tel:{{ contact_phone }}" class="utility-link" style="color: #fff; font-weight: bold;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <span>Tổng Đài 24/7: 1900 6600</span>
+        <span>Liên hệ tư vấn: {{ contact_phone_display }}</span>
       </a>
     </div>
   </div>
@@ -28,244 +28,39 @@
 <!-- Main Site Header -->
 <header class="site-header">
   <div class="container header-inner">
-    <!-- Brand Logo with Animated 3-Color F-P-T Letters -->
+    <!-- Official FPT Telecom artwork, served locally. -->
     <a href="/" class="logo-group" aria-label="Trang chủ FPT Telecom">
-      <div class="fpt-animated-badge {% if display_settings and not display_settings.fpt_anim %}fpt-anim-disabled{% elif display_settings %}fpt-anim-{{ display_settings.fpt_anim_style }}{% endif %}" id="main-fpt-badge">
-        <span class="fpt-letter fpt-letter-f">F</span>
-        <span class="fpt-letter fpt-letter-p">P</span>
-        <span class="fpt-letter fpt-letter-t">T</span>
-        <span class="telecom-sub">TELECOM</span>
+      <div class="fpt-brand-mark fpt-animated-badge {% if display_settings and not display_settings.fpt_anim %}fpt-anim-disabled{% elif display_settings %}fpt-anim-{{ display_settings.fpt_anim_style }}{% endif %}" id="main-fpt-badge">
+        <img src="/static/images/fpt-telecom-logo.svg" class="official-fpt-logo" alt="FPT Telecom" width="148" height="49">
       </div>
       <span class="portal-title">Tư Vấn Viễn Thông &amp; Dịch Vụ Số</span>
     </a>
 
     <!-- Desktop Navigation with Mega Menus (fpt.vn style) -->
-    <nav class="main-nav-desktop" aria-label="Menu chính">
-      <!-- Item 1: Internet FPT -->
-      <div class="nav-item">
-        <button type="button" class="nav-link-btn">
-          <span>Internet FPT</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mega-menu">
-          <div class="mega-grid">
-            <div>
-              <div class="mega-col-title">Internet Cá Nhân & Gia Đình</div>
-              <div class="mega-links-list">
-                <a href="/#plans-section" class="mega-link-item">
-                  <span class="mega-link-title">Gói Giga (150 Mbps)</span>
-                  <span class="mega-link-desc">Phù hợp 1-4 thiết bị, chi phí tiết kiệm</span>
-                </a>
-                <a href="/#plans-section" class="mega-link-item">
-                  <span class="mega-link-title" style="color: var(--color-primary);">Gói Sky (1 Gbps Wi-Fi 6) ★</span>
-                  <span class="mega-link-desc">Bán chạy nhất cho gia đình 2-3 tầng</span>
-                </a>
-                <a href="/#plans-section" class="mega-link-item">
-                  <span class="mega-link-title">Gói Meta (1 Gbps Đối Xứng)</span>
-                  <span class="mega-link-desc">Cho streamer, gamer, nhà nhiều phòng</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Internet Doanh Nghiệp & Quán</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/internet-gia-dinh" class="mega-link-item">
-                  <span class="mega-link-title">Gói Super 250 & Super 400</span>
-                  <span class="mega-link-desc">Băng thông quốc tế lớn, cân bằng tải</span>
-                </a>
-                <a href="/san-pham/internet-gia-dinh" class="mega-link-item">
-                  <span class="mega-link-title">Gói Lux 500 & Lux 800 Wi-Fi 6</span>
-                  <span class="mega-link-desc">Đường truyền VIP, chăm sóc đặc quyền</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Thiết Bị & Công Nghệ</div>
-              <div class="mega-links-list">
-                <a href="/#plans-section" class="mega-link-item">
-                  <span class="mega-link-title">Modem Wi-Fi 6 Chuẩn AX</span>
-                  <span class="mega-link-desc">Tốc độ cao gấp 4 lần Wi-Fi 5</span>
-                </a>
-                <a href="/#plans-section" class="mega-link-item">
-                  <span class="mega-link-title">Wi-Fi Mesh Phủ Sóng Đa Điểm</span>
-                  <span class="mega-link-desc">Chuyển vùng thông minh, không góc chết</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Promo card inside mega menu -->
-            <div class="mega-promo-box">
-              <div>
-                <span class="mega-promo-badge">MIỄN PHÍ 100%</span>
-                <div class="mega-promo-title">Trang Bị Modem Wi-Fi 6</div>
-                <div class="mega-promo-desc">Tặng ngay Modem Wi-Fi 6 2 băng tần khi đăng ký lắp mới trả trước.</div>
-              </div>
-              <button type="button" class="btn-select-plan primary" style="padding: 8px 12px; font-size: 0.8rem;" onclick="openBottomSheet('Tư vấn gói và ưu đãi theo khu vực', '', null, 'internet')">
-                Đăng Ký Ngay
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Item 2: FPT Play (Truyền hình) -->
-      <div class="nav-item">
-        <button type="button" class="nav-link-btn">
-          <span>FPT Play</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mega-menu" style="left: -180px;">
-          <div class="mega-grid">
-            <div>
-              <div class="mega-col-title">Gói Dịch Vụ Truyền Hình</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/combo-fpt-play" class="mega-link-item">
-                  <span class="mega-link-title">Gói MAX FPT Play</span>
-                  <span class="mega-link-desc">Đăng nhập 3 thiết bị đồng thời</span>
-                </a>
-                <a href="/san-pham/combo-fpt-play" class="mega-link-item">
-                  <span class="mega-link-title">Gói VIP FPT Play</span>
-                  <span class="mega-link-desc">Không quảng cáo, kho phim HBO GO</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Bản Quyền Thể Thao</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/combo-fpt-play" class="mega-link-item">
-                  <span class="mega-link-title">Cúp C1 UEFA Champions League</span>
-                  <span class="mega-link-desc">Trực tiếp độc quyền trọn vẹn mùa giải</span>
-                </a>
-                <a href="/san-pham/combo-fpt-play" class="mega-link-item">
-                  <span class="mega-link-title">Giải Ngoại Hạng Anh & FA Cup</span>
-                  <span class="mega-link-desc">Các trận cầu đỉnh cao cuối tuần</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Thiết Bị Box 4K</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/combo-fpt-play" class="mega-link-item">
-                  <span class="mega-link-title">FPT Play Box 4K</span>
-                  <span class="mega-link-desc">Điều khiển giọng nói tiếng Việt mượt mà</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="mega-promo-box" style="background: linear-gradient(135deg, #1E1B4B, #4338CA);">
-              <div>
-                <span class="mega-promo-badge" style="background: #F59E0B;">COMBO HOT</span>
-                <div class="mega-promo-title">Combo Net + FPT Play</div>
-                <div class="mega-promo-desc">Nhận tư vấn giá combo và thiết bị theo khu vực.</div>
-              </div>
-              <button type="button" class="btn-select-plan primary" style="padding: 8px 12px; font-size: 0.8rem;" onclick="openBottomSheet('Tư vấn Internet và FPT Play', '', null, 'combo')">
-                Nhận Tư Vấn Combo
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Item 3: FPT Camera -->
-      <div class="nav-item">
-        <button type="button" class="nav-link-btn">
-          <span>FPT Camera</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mega-menu" style="left: -260px;">
-          <div class="mega-grid">
-            <div>
-              <div class="mega-col-title">Dòng Sản Phẩm Camera AI</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">Camera Trong Nhà IQ 3S</span>
-                  <span class="mega-link-desc">Đàm thoại 2 chiều, góc rộng 107 độ</span>
-                </a>
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">Camera Ngoài Trời IQ 3</span>
-                  <span class="mega-link-desc">Chống nước chống bụi chuẩn IP67</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Công Nghệ Lưu Trữ Cloud</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">Lưu Trữ FPT Cloud An Toàn</span>
-                  <span class="mega-link-desc">Máy chủ đặt tại Việt Nam, bảo mật tuyệt đối</span>
-                </a>
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">AI Nhận Diện Chuyển Động</span>
-                  <span class="mega-link-desc">Phân biệt người và vật thể, tránh báo ảo</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <div class="mega-col-title">Chính Sách Hậu Mãi</div>
-              <div class="mega-links-list">
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">Bảo Hành 24 Tháng</span>
-                  <span class="mega-link-desc">1 đổi 1 chính hãng trên toàn quốc</span>
-                </a>
-                <a href="/san-pham/camera-fpt" class="mega-link-item">
-                  <span class="mega-link-title">Hỗ Trợ Kỹ Thuật Trọn Đời</span>
-                  <span class="mega-link-desc">Bảo trì miễn phí khi dùng kèm mạng FPT</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="mega-promo-box" style="background: linear-gradient(135deg, #064E3B, #047857);">
-              <div>
-                <span class="mega-promo-badge" style="background: #10B981;">AN NINH AI</span>
-                <div class="mega-promo-title">Combo Net + Camera</div>
-                <div class="mega-promo-desc">Nhận tư vấn Camera và chi phí theo nhu cầu.</div>
-              </div>
-              <button type="button" class="btn-select-plan primary" style="padding: 8px 12px; font-size: 0.8rem;" onclick="openBottomSheet('Tư vấn Camera', '', null, 'camera')">
-                Tư Vấn Camera
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Item 4: FPT Smart Home -->
-      <div class="nav-item">
-        <a href="/#ecosystem-section" class="nav-link-btn">
-          <span>Smart Home</span>
-        </a>
-      </div>
-
-      <!-- Item 5: Khuyến Mãi & Hỗ Trợ -->
-      <div class="nav-item">
-        <a href="/khuyen-mai" class="nav-link-btn">
-          <span>Khuyến Mãi</span>
-        </a>
-      </div>
+    <nav class="main-nav-desktop" aria-label="Menu chính">{% for item in display_settings.navigation_items if item.enabled and item.preset != "speedtest" and item.href.split("?")[0].split("#")[0].rstrip("/") != "/do-toc-do" %}
+{% if item.preset in ['internet','play','camera'] and not item.children %}{% include 'client/components/nav_' ~ item.preset ~ '.html' %}
+{% elif item.children %}<div class="nav-item"><button type="button" class="nav-link-btn" aria-expanded="false" aria-controls="mega-custom-{{item.id}}"><span>{{item.label}}</span><span aria-hidden="true">⌄</span></button><div class="mega-menu custom-mega-menu" id="mega-custom-{{item.id}}"><a class="mega-link-item" href="{{item.href}}">{{item.label}}</a>{% for link in item.children if link.href.split("?")[0].split("#")[0].rstrip("/") != "/do-toc-do" %}<a class="mega-link-item" href="{{link.href}}">{{link.label}}</a>{% endfor %}</div></div>
+{% else %}<div class="nav-item"><a class="nav-link-btn" href="{{item.href}}"><span>{{item.label}}</span></a></div>{% endif %}
+{% endfor %}
     </nav>
 
     <!-- Header Actions (Right) -->
     <div class="header-actions">
       <!-- Region Selector Trigger -->
-      <button type="button" class="region-pill" id="header-region-btn" onclick="const el = document.getElementById('region-selector-bar') || document.getElementById('cascading-region-box'); if(el) el.scrollIntoView({behavior: 'smooth'})" aria-label="Chọn khu vực">
+      <button type="button" class="region-pill" id="header-region-btn" onclick="const el = document.getElementById('region-selector-bar') || document.getElementById('cascading-region-box'); if(el) el.scrollIntoView({behavior: 'smooth'}); else { const region = document.getElementById('lp-region'); if(region) { region.scrollIntoView({behavior: 'smooth'}); region.focus(); } else window.location.href = '/#cascading-region-box'; }" aria-label="Chọn khu vực">
         <span class="region-dot"></span>
-        <span id="current-region-label">Hà Nội (Miền Bắc)</span>
+        <span id="current-region-label">Chọn khu vực</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
       </button>
 
       <!-- Direct Hotline Action -->
-      <a href="tel:19006600" class="btn-header-call" aria-label="Gọi tổng đài tư vấn">
+      <a href="tel:{{ contact_phone }}" class="btn-header-call" aria-label="Gọi tổng đài tư vấn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <span>1900 6600</span>
+        <span>{{ contact_phone_display }}</span>
       </a>
 
       <!-- Mobile Hamburger Button -->
-      <button type="button" class="btn-mobile-menu-toggle" onclick="toggleMobileNav()" aria-label="Mở menu di động">
+      <button type="button" class="btn-mobile-menu-toggle" onclick="toggleMobileNav()" aria-label="Mở menu di động" aria-expanded="false" aria-controls="mobile-nav-drawer">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -298,7 +93,7 @@
           <span class="marquee-divider">•</span>
           <span class="marquee-item">📺 <strong>Combo Internet + FPT Play 4K</strong> — tư vấn giá theo khu vực - Độc quyền trọn vẹn Cúp C1 UEFA.</span>
           <span class="marquee-divider">•</span>
-          <span class="marquee-item">📞 Lắp đặt siêu tốc 12 - 24 giờ. Hotline hỗ trợ 24/7: <strong>1900 6600</strong></span>
+          <span class="marquee-item">📞 Lắp đặt siêu tốc 12 - 24 giờ. Hotline hỗ trợ 24/7: <strong>{{ contact_phone_display }}</strong></span>
         {% endif %}
       </div>
     </div>
@@ -314,102 +109,32 @@
 {% endif %}
 
 <!-- Mobile Navigation Drawer -->
-<div class="mobile-nav-drawer" id="mobile-nav-drawer" onclick="handleMobileDrawerBackdrop(event)">
-  <div class="mobile-nav-panel">
+<div class="mobile-nav-drawer" id="mobile-nav-drawer" aria-hidden="true" inert onclick="handleMobileDrawerBackdrop(event)">
+  <div class="mobile-nav-panel" role="dialog" aria-modal="true" aria-label="Menu dịch vụ">
     <div class="mobile-nav-header">
-      <div class="fpt-animated-badge {% if display_settings and not display_settings.fpt_anim %}fpt-anim-disabled{% elif display_settings %}fpt-anim-{{ display_settings.fpt_anim_style }}{% endif %}" style="font-size: 1rem;">
-        <span class="fpt-letter fpt-letter-f">F</span>
-        <span class="fpt-letter fpt-letter-p">P</span>
-        <span class="fpt-letter fpt-letter-t">T</span>
-        <span class="telecom-sub">TELECOM</span>
+      <div class="fpt-brand-mark fpt-animated-badge {% if display_settings and not display_settings.fpt_anim %}fpt-anim-disabled{% elif display_settings %}fpt-anim-{{ display_settings.fpt_anim_style }}{% endif %}" style="font-size: 1rem;">
+        <img src="/static/images/fpt-telecom-logo.svg" class="official-fpt-logo" alt="FPT Telecom" width="148" height="49">
       </div>
       <button type="button" class="btn-close-sheet" onclick="toggleMobileNav()" aria-label="Đóng menu">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
-    <div class="mobile-nav-body">
-      <!-- Accordion 1: Internet -->
-      <div>
-        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-net')">
-          <span>Internet Cáp Quang</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mobile-accordion-content" id="acc-net">
-          <a href="/#plans-section" class="mobile-sublink" onclick="toggleMobileNav()">Gói Giga (150 Mbps)</a>
-          <a href="/#plans-section" class="mobile-sublink" onclick="toggleMobileNav()">Gói Sky (1 Gbps Wi-Fi 6)</a>
-          <a href="/#plans-section" class="mobile-sublink" onclick="toggleMobileNav()">Gói Meta (1 Gbps Đối Xứng)</a>
-          <a href="/san-pham/internet-gia-dinh" class="mobile-sublink" onclick="toggleMobileNav()">Internet Doanh Nghiệp</a>
-        </div>
-      </div>
-
-      <!-- Accordion 2: FPT Play -->
-      <div>
-        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-tv')">
-          <span>FPT Play (Truyền Hình)</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mobile-accordion-content" id="acc-tv">
-          <a href="/san-pham/combo-fpt-play" class="mobile-sublink" onclick="toggleMobileNav()">Combo Net + Truyền Hình 4K</a>
-          <a href="/san-pham/combo-fpt-play" class="mobile-sublink" onclick="toggleMobileNav()">Gói Thể Thao Cúp C1 UEFA</a>
-          <a href="/san-pham/combo-fpt-play" class="mobile-sublink" onclick="toggleMobileNav()">Đầu Thu FPT Play Box 4K</a>
-        </div>
-      </div>
-
-      <!-- Accordion 3: FPT Camera -->
-      <div>
-        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-cam')">
-          <span>FPT Camera AI</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="mobile-accordion-content" id="acc-cam">
-          <a href="/san-pham/camera-fpt" class="mobile-sublink" onclick="toggleMobileNav()">Camera Trong Nhà IQ 3S</a>
-          <a href="/san-pham/camera-fpt" class="mobile-sublink" onclick="toggleMobileNav()">Camera Ngoài Trời IQ 3</a>
-          <a href="/san-pham/camera-fpt" class="mobile-sublink" onclick="toggleMobileNav()">Gói Lưu Trữ FPT Cloud</a>
-        </div>
-      </div>
-
-      <a href="/khuyen-mai" class="mobile-accordion-btn" style="text-decoration: none;" onclick="toggleMobileNav()">
-        <span>Khuyến Mãi Tháng Này</span>
-      </a>
-
-      <a href="/#faq-section" class="mobile-accordion-btn" style="text-decoration: none;" onclick="toggleMobileNav()">
-        <span>Câu Hỏi Thường Gặp</span>
-      </a>
-
+    <div class="mobile-nav-body">{% for item in display_settings.navigation_items if item.enabled and item.preset != "speedtest" and item.href.split("?")[0].split("#")[0].rstrip("/") != "/do-toc-do" %}
+{% if item.preset in ['internet','play','camera'] and not item.children %}{% include 'client/components/mobile_nav_' ~ item.preset ~ '.html' %}
+{% elif item.children %}<div><button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-custom-{{item.id}}')" aria-expanded="false" aria-controls="acc-custom-{{item.id}}"><span>{{item.label}}</span><span aria-hidden="true">⌄</span></button><div class="mobile-accordion-content" id="acc-custom-{{item.id}}" inert><a href="{{item.href}}" class="mobile-sublink" onclick="toggleMobileNav()">{{item.label}}</a>{% for link in item.children if link.href.split("?")[0].split("#")[0].rstrip("/") != "/do-toc-do" %}<a href="{{link.href}}" class="mobile-sublink" onclick="toggleMobileNav()">{{link.label}}</a>{% endfor %}</div></div>
+{% else %}<a href="{{item.href}}" class="mobile-accordion-btn" onclick="toggleMobileNav()"><span>{{item.label}}</span></a>{% endif %}{% endfor %}
+<a href="/#faq-section" class="mobile-accordion-btn" onclick="toggleMobileNav()"><span>Câu Hỏi Thường Gặp</span></a>
       <!-- Quick Action Inside Mobile Menu -->
       <div style="margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2);">
-        <button type="button" class="btn-primary-hero" style="width: 100%; padding: 12px;" onclick="toggleMobileNav(); openBottomSheet('Tư vấn gói và ưu đãi theo khu vực', '', null, 'internet')">
+        <button type="button" class="btn-primary-hero" style="width: 100%; padding: 12px;" onclick="toggleMobileNav(); openBottomSheet('Tư vấn gói và ưu đãi theo khu vực', '')">
           Đăng Ký Tư Vấn Ngay
         </button>
 
-        <a href="tel:19006600" class="btn-secondary-hero" style="width: 100%; padding: 12px; font-size: 0.9rem;">
-          Tổng Đài Hỗ Trợ: 1900 6600
+        <a href="tel:{{ contact_phone }}" class="btn-secondary-hero" style="width: 100%; padding: 12px; font-size: 0.9rem;">
+          Liên hệ tư vấn: {{ contact_phone_display }}
         </a>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-function toggleMobileNav() {
-  const drawer = document.getElementById('mobile-nav-drawer');
-  if (drawer) {
-    const isActive = drawer.classList.toggle('active');
-    document.body.style.overflow = isActive ? 'hidden' : '';
-  }
-}
-
-function handleMobileDrawerBackdrop(e) {
-  if (e.target.id === 'mobile-nav-drawer') {
-    toggleMobileNav();
-  }
-}
-
-function toggleMobileAccordion(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.toggle('open');
-  }
-}
-</script>

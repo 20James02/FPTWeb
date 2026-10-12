@@ -23,6 +23,8 @@ UI và API dùng cùng origin. `POST /api/v1/auth/session` nhận `{email,passwo
 
 Trạng thái hợp lệ: new, assigned, contacting, contacted, qualified, survey, quoted, closed, installed, unreachable, no_infrastructure, invalid, duplicate, rejected. Transition vẫn dùng expected_version và kiểm tra quy tắc server; thao tác xác nhận lắp đặt cần reference hợp lệ.
 
+Cập nhật phân công 07/10/2026: khi chọn cụ thể nhân viên, cho phép `new`, `assigned`, `contacting`, `contacted`, `qualified`, `survey`, `quoted`, `closed`, `unreachable`, `no_infrastructure`. Chỉ `new` chuyển sang `assigned`; các trạng thái khác giữ nguyên tiến độ, hạn phản hồi và dữ liệu hồ sơ. `closed` là chốt bán, chưa nghiệm thu, vẫn có thể bàn giao. Hồ sơ `installed`, `invalid`, `duplicate`, `rejected` trả `409 ASSIGNMENT_NOT_ALLOWED`; frontend vô hiệu hóa chọn nhân viên và hiển thị hồ sơ đã kết thúc. Phân công tự động vẫn chỉ dành cho `new`/`assigned`. Backend tiếp tục kiểm tra quyền ghi/phân công, chi nhánh, ca làm việc, sức chứa và version. Phân công hàng loạt áp dụng cùng quy tắc; một hồ sơ không hợp lệ làm rollback cả nhóm. Chọn lại đúng người đang phụ trách không cộng thêm hồ sơ vào sức chứa.
+
 PII chỉ đọc qua reveal theo lead.pii/AAL2 và scope; dữ liệu trả về không lưu browser storage. Activities trả timeline đã che nội dung ghi chú; đọc ghi chú plaintext chưa có API. Score là điểm0..100, completeness0..1; reasons là object(signal/kind/weight/age_days), hiển thị nguồn, ngày tính và ruleset. IP/GeoIP/đầu số là ước tính, không chứng minh danh tính hay nhà mạng hiện tại.
 
 ## Cài đặt và báo cáo

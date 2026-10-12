@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import Response
 
 from pagefpt.api.dependencies import dispatch
+from pagefpt.modules.content.schemas import RESERVED_SLUGS
 
 router = APIRouter()
 
@@ -22,7 +23,11 @@ async def sitemap(request: Request):
     origin = request.app.state.settings.public_origin or origin
     urls = "".join(
         "<url><loc>" + escape(origin + "/" + x["payload"]["slug"]) + "</loc></url>"
-        for x in data["items"]
+        for x in {
+            x["payload"]["slug"]: x
+            for x in data["items"]
+            if x["payload"]["slug"] not in RESERVED_SLUGS
+        }.values()
     )
     return Response(
         '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'

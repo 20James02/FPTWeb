@@ -1,69 +1,62 @@
 {% extends "layouts/client_base.html" %}
-
-{% block title %}{{ product.title }} — Lắp Mạng FPT Telecom{% endblock %}
+{% block title %}{{ product.name }} — Tư Vấn FPT Telecom{% endblock %}
 {% block meta_desc %}{{ product.summary }}{% endblock %}
-
+{% block extra_head %}<link rel="stylesheet" href="/static/css/client-services.css">{% endblock %}
 {% block content %}
-<section class="container" style="padding: var(--space-8) var(--space-4);">
-  <!-- Breadcrumb -->
-  <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-4);">
-    <a href="/" style="color: var(--color-primary);">Trang chủ</a> / <span>Sản phẩm & Dịch vụ</span> / <span style="color: var(--text-primary); font-weight: bold;">{{ product.name }}</span>
-  </div>
-
-  <div style="display: grid; grid-template-columns: 1fr; gap: var(--space-8); align-items: start;">
-    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm);">
-      <div style="display: inline-block; background: var(--color-primary-subtle); color: var(--color-primary); font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: var(--radius-full); text-transform: uppercase; margin-bottom: var(--space-2);">
-        {{ product.badge or 'Dịch Vụ Cao Cấp' }}
-      </div>
-
-      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-primary); margin-bottom: var(--space-2);">
-        {{ product.title }}
-      </h1>
-
-      <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-6);">
-        {{ product.description }}
-      </p>
-
-      <!-- Key Specifications -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6);">
-        <div style="background: var(--bg-surface-muted); padding: var(--space-3); border-radius: var(--radius-md); text-align: center;">
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Băng thông</div>
-          <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-primary);">{{ product.speed }}</div>
+<div class="service-page" data-page-service="{{ product.service }}">
+  <section class="container service-intro">
+    <nav class="service-breadcrumb" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span aria-current="page">{{ product.name }}</span></nav>
+    <div class="service-hero">
+      <div>
+        <p class="service-eyebrow">Tư vấn dịch vụ theo địa bàn</p>
+        <h1>{{ product.name }}</h1>
+        <p class="service-summary">{{ product.summary }}</p>
+        <div class="service-actions">
+          <button type="button" class="btn-primary-hero" data-consult-service="{{ product.service }}" data-consult-name="{{ product.name }}" onclick="openBottomSheet(this.dataset.consultName, '', null, this.dataset.consultService)">Nhận tư vấn {{ product.name }}</button>
+          <a class="btn-secondary-hero" href="#service-plans">Xem gói đang cung cấp</a>
         </div>
-        <div style="background: var(--bg-surface-muted); padding: var(--space-3); border-radius: var(--radius-md); text-align: center;">
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Thiết bị Modem</div>
-          <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">{{ product.modem }}</div>
-        </div>
-        <div style="background: var(--bg-surface-muted); padding: var(--space-3); border-radius: var(--radius-md); text-align: center;">
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Cước tham khảo</div>
-          <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-primary);" {% if product.plan_id %}data-quote-plan="{{ product.plan_id }}"{% endif %}>Cần tư vấn</div>
-          <div {% if product.plan_id %}data-quote-note="{{ product.plan_id }}"{% endif %}>Giá theo khu vực và kỳ thanh toán.</div>
-        </div>
+        <p class="service-hint">Chỉ cần tên, số điện thoại và địa chỉ lắp đặt. Giá và điều kiện dịch vụ sẽ được xác nhận khi tư vấn.</p>
       </div>
-
-      <!-- Feature Bullets -->
-      <h3 style="font-size: 1.1rem; font-weight: bold; margin-bottom: var(--space-3);">Quyền lợi và trang bị đi kèm:</h3>
-      <ul style="list-style: none; display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-8);">
-        {% for feature in product.features %}
-        <li style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--text-secondary);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>{{ feature }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-
-      <!-- Primary Conversion Action -->
-      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-        <button type="button" class="btn-primary-hero" {% if product.plan_id %}data-plan-id="{{ product.plan_id }}" data-plan-name="{{ product.plan_name }}" onclick="selectPublishedPlan(this)"{% else %}onclick="openBottomSheet()"{% endif %}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          <span>Đăng Ký Tư Vấn Gói Này</span>
-        </button>
-
-        <a href="tel:19006600" class="btn-secondary-hero">
-          <span>Tổng Đài Tư Vấn 24/7: 1900 6600</span>
-        </a>
-      </div>
+      <figure class="service-illustration">
+        <img src="/static/images/device-{{ product.image }}-3d.webp" alt="Minh họa thiết bị cho {{ product.name }}" width="240" height="240" decoding="async">
+        <figcaption>Hình minh họa. Thiết bị tùy gói đăng ký.</figcaption>
+      </figure>
     </div>
-  </div>
-</section>
+    <nav class="service-topic-nav" aria-label="Nội dung {{ product.name }}">
+      {% for id, title, description in product.topics %}<a href="#{{ id }}">{{ title }}</a>{% endfor %}
+    </nav>
+  </section>
+
+  {% include "client/components/cascading_regions.html" %}
+
+  <section class="container service-catalog" id="service-plans" aria-labelledby="service-plans-title">
+    <div class="service-section-heading"><p class="service-eyebrow">Giá theo địa bàn</p><h2 id="service-plans-title">Gói {{ product.name }} đang cung cấp</h2><p>Chọn tỉnh/thành và xã/phường phía trên để xem báo giá. Giá, VAT và kỳ thanh toán hiển thị theo từng gói.</p></div>
+    <div class="service-plan-grid">
+      {% for plan in service_plans %}
+      <article class="service-plan-card" data-service-plan="{{ plan.id }}">
+        {% if plan.image_url %}<img class="service-plan-image" src="{{ plan.image_url }}" alt="{{ plan.image_alt or plan.name }}" width="{{ plan.image_width }}" height="{{ plan.image_height }}" loading="lazy" decoding="async">{% endif %}
+        <h3>{{ plan.name }}</h3>
+        {% if plan.speed_mbps %}<p class="service-bandwidth">Băng thông gói: {{ plan.speed_mbps }} Mbps</p>{% endif %}
+        <p>{{ plan.description or 'Nhận tư vấn cấu hình và điều kiện cung cấp tại địa chỉ lắp đặt.' }}</p>
+        <p class="service-plan-price" data-quote-plan="{{ plan.id }}">Cần tư vấn</p>
+        <p class="service-plan-note" data-quote-note="{{ plan.id }}">Chọn khu vực để xác nhận giá.</p>
+        {% if plan.equipment %}<ul>{% for equipment in plan.equipment %}<li>{{ equipment }}</li>{% endfor %}</ul>{% endif %}
+        <button type="button" class="btn-select-plan primary" data-analytics-action="select_plan" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="product" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận tư vấn gói này</button>
+      </article>
+      {% else %}
+      <div class="service-empty"><h3>Chưa có gói được công bố</h3><p>Nhân viên sẽ kiểm tra gói và chi phí phù hợp với nhu cầu, địa chỉ của bạn.</p><button type="button" class="btn-select-plan primary" data-consult-service="{{ product.service }}" data-consult-name="{{ product.name }}" onclick="openBottomSheet(this.dataset.consultName, '', null, this.dataset.consultService)">Nhận tư vấn dịch vụ</button></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="container service-topics" aria-labelledby="service-topics-title">
+    <h2 id="service-topics-title">Thông tin cần trao đổi khi tư vấn</h2>
+    <div class="service-topic-grid">
+      {% for id, title, description in product.topics %}
+      <article class="service-topic" id="{{ id }}"><h3>{{ title }}</h3><p>{{ description }}</p><button type="button" class="service-text-button" data-consult-service="{{ product.service }}" data-consult-name="{{ title }}" onclick="openBottomSheet(this.dataset.consultName, '', null, this.dataset.consultService)">Tư vấn nhu cầu này <span aria-hidden="true">→</span></button></article>
+      {% endfor %}
+    </div>
+    <p class="service-contact">Cần trao đổi ngay? <a href="tel:{{ contact_phone }}">{{ contact_phone_display }}</a></p>
+  </section>
+</div>
 {% endblock %}

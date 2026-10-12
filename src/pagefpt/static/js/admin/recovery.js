@@ -1,5 +1,6 @@
-/** Recovery tokens stay server-side; email/MFA proof is consumed on final submit. */
+/** Six-digit Telegram code and MFA proof are consumed on final submit. */
 let recoveryBusy = false;
+let currentRecoveryChallenge = "";
 async function handleForgotStep1(e) {
   if (e) e.preventDefault();
   if (recoveryBusy) return;
@@ -12,11 +13,14 @@ async function handleForgotStep1(e) {
   const button = document.getElementById("btn-forgot-step1-submit");
   button.disabled = true;
   try {
-    await recoveryRequest("", { email: account });
+    const result = await recoveryRequest("", { email: account });
+    if (!result.accepted || !result.challenge_id)
+      throw new Error("Chưa xác nhận yêu cầu khôi phục.");
+    currentRecoveryChallenge = result.challenge_id;
     currentForgotAccount = account;
     document.getElementById("forgot-otp-code").value = "";
     showToast(
-      "Nếu email có tài khoản, bạn sẽ nhận mã khôi phục. Vui lòng kiểm tra hộp thư.",
+      "Nếu tài khoản đã liên kết Telegram, mã 6 số sẽ gửi vào chat riêng với bot. Mã có hiệu lực 5 phút.",
       "info",
     );
     goToForgotStep(2);
@@ -30,8 +34,8 @@ async function handleForgotStep1(e) {
 function handleForgotStep2(e) {
   if (e) e.preventDefault();
   const otp = document.getElementById("forgot-otp-code").value.trim();
-  if (!/^[0-9]{6,8}$/.test(otp)) {
-    showToast("Vui lòng nhập mã gồm 6–8 chữ số trong email.", "error");
+  if (!/^[0-9]{6}$/.test(otp) || !currentRecoveryChallenge) {
+    showToast("Nhập đúng mã Telegram gồm 6 chữ số.", "error");
     return;
   }
   goToForgotStep(3);
@@ -54,11 +58,15 @@ async function handleForgotStep3(e) {
   const button = document.getElementById("btn-forgot-step3-submit");
   button.disabled = true;
   try {
+    const proof = document.getElementById("forgot-otp-code").value.trim();
     const result = await recoveryRequest("/reset", {
       email: currentForgotAccount,
-      otp: document.getElementById("forgot-otp-code").value.trim(),
+      otp: proof,
+      challenge_id: currentRecoveryChallenge,
       password,
       totp: document.getElementById("recovery-totp").value.trim(),
+      totp_factor_id:
+        document.getElementById("recovery-factor")?.value || undefined,
     });
     if (!result.changed) throw new Error("Chưa xác nhận đổi mật khẩu.");
     document.getElementById("login-email").value = currentForgotAccount;
@@ -70,6 +78,7 @@ async function handleForgotStep3(e) {
       "login-password",
     ])
       document.getElementById(id).value = "";
+    currentRecoveryChallenge = "";
     switchLoginMode("login");
     showToast("Mật khẩu đã được cập nhật. Vui lòng đăng nhập lại.", "success");
   } catch (err) {
@@ -83,8 +92,15 @@ async function resendForgotOtp() {
   if (recoveryBusy) return;
   recoveryBusy = true;
   try {
-    await recoveryRequest("", { email: currentForgotAccount });
-    showToast("Nếu email có tài khoản, mã khôi phục mới sẽ được gửi.", "info");
+    const result = await recoveryRequest("", { email: currentForgotAccount });
+    if (!result.accepted || !result.challenge_id)
+      throw new Error("Chưa xác nhận gửi mã mới.");
+    currentRecoveryChallenge = result.challenge_id;
+    document.getElementById("forgot-otp-code").value = "";
+    showToast(
+      "Mã 6 số mới sẽ được gửi vào chat riêng Telegram nếu tài khoản đã liên kết. Mã cũ hết hiệu lực.",
+      "info",
+    );
     startForgotOtpCountdown();
   } catch (err) {
     showToast(err.message || "Chưa gửi được mã mới.", "error");

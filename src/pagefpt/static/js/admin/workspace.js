@@ -285,10 +285,29 @@ function renderWorkspaceRows() {
     );
     return;
   }
-  for (const row of workspaceRows) {
+  const query =
+    document
+      .getElementById("workspace-search")
+      ?.value.trim()
+      .toLocaleLowerCase("vi") || "";
+  for (const row of workspaceRows.filter((row) =>
+    JSON.stringify(row).toLocaleLowerCase("vi").includes(query),
+  )) {
     const def = workspaceDefinition(),
       payload = row.payload || {},
       card = adminNode("article", "", "workspace-item");
+    container.dataset.bulkContainer = "workspace-" + workspaceTab;
+    window.PageFPTAdminLists?.bindRow(card, {
+      id: row.id || row.user_id,
+      version: row.version,
+      kind:
+        def.readonly ||
+        ["media", "exports", "privacy", "memberships"].includes(workspaceTab)
+          ? "readonly"
+          : def.path?.replace(/^\//, "") || workspaceTab,
+      status: row.status || row.state,
+      group: "workspace-" + workspaceTab,
+    });
     card.append(
       adminNode(
         "h2",
@@ -304,7 +323,7 @@ function renderWorkspaceRows() {
     card.append(
       adminNode(
         "p",
-        `ID: ${row.id || row.user_id} · ${adminStatusLabel(row.state || row.status || "")} ${row.version ? "· v" + row.version : ""}`,
+        `${adminStatusLabel(row.state || row.status || "")} ${row.version ? "· Bản " + row.version : ""}`,
       ),
     );
     const details =
@@ -345,14 +364,40 @@ function renderWorkspaceRows() {
                     ].includes(key),
                 ),
               );
+    const technical = adminNode("details"),
+      summary = adminNode("summary", "Thông tin chi tiết");
+    technical.append(summary);
+    const labels = {
+      description: "Mô tả",
+      slug: "Đường dẫn",
+      platform: "Nền tảng",
+      budget_vnd: "Ngân sách",
+      discount_vnd: "Giảm giá",
+      source: "Nguồn",
+      amount_vnd: "Số tiền",
+      next_attempt_at: "Lần thử tiếp",
+      attempts: "Số lần thử",
+      error: "Lỗi cuối",
+      queue: "Hàng đợi",
+      created_at: "Thời gian",
+      capacity: "Sức chứa",
+      active_leads: "Hồ sơ đang xử lý",
+      active: "Đang hoạt động",
+      permissions: "Quyền",
+      shift: "Ca làm",
+    };
+    technical.append(
+      adminNode("p", "Mã bản ghi: " + (row.id || row.user_id || "")),
+    );
     for (const [key, value] of Object.entries(details))
       if (value != null)
-        card.append(
+        (labels[key] && typeof value !== "object" ? card : technical).append(
           adminNode(
             "p",
-            `${key}: ${typeof value === "object" ? JSON.stringify(value) : value}`,
+            `${labels[key] || key}: ${typeof value === "object" ? JSON.stringify(value) : /^(start|end|created_at|updated_at|due_at|next_attempt_at|expires_at)$/.test(key) ? PageFPTDates.format(value) : value}`,
           ),
         );
+    card.append(technical);
     const actions = adminNode("div", "", "workspace-item-actions");
     if (
       !def.readonly &&
@@ -382,6 +427,42 @@ function renderWorkspaceRows() {
     if (workspaceTab === "pages" && adminHasPermission("content.publish"))
       actions.append(
         workspaceButton("Hẹn giờ công bố", () => workspaceSchedule(row)),
+      );
+    if (workspaceTab === "pages") {
+      const link = adminNode("a", "Xem trước", "btn-action-detail");
+      link.href = "/admin/pages/" + row.id + "/preview";
+      link.target = "_blank";
+      link.rel = "noopener";
+      actions.append(link);
+    }
+    if (workspaceTab === "experiments")
+      actions.append(
+        workspaceButton("Kết quả A/B", async () => {
+          try {
+            const r = await adminFetch(
+              "/api/v1/admin/experiments/" + row.id + "/results",
+            );
+            const d = await r.json();
+            if (!r.ok) throw Error(d.error || "Chưa tải được kết quả");
+            let result = card.querySelector("[data-experiment-results]");
+            if (!result) {
+              result = adminNode("section");
+              result.dataset.experimentResults = "";
+              card.append(result);
+            }
+            result.replaceChildren();
+            for (const v of d.variants)
+              result.append(
+                adminNode(
+                  "p",
+                  `${v.name}: ${v.exposures} phiên · ${v.leads} yêu cầu tư vấn`,
+                ),
+              );
+            result.append(adminNode("p", d.note));
+          } catch (e) {
+            document.getElementById("workspace-state").textContent = e.message;
+          }
+        }),
       );
     if (workspaceTab === "campaigns")
       actions.append(
@@ -432,7 +513,7 @@ async function workspaceMutation(action) {
   }
 }
 async function workspaceRetire(row) {
-  if (!confirm("Ngừng sử dụng bản ghi này?")) return;
+  if (!(await adminConfirm("Ngừng sử dụng bản ghi này?"))) return;
   await workspaceMutation(() =>
     crmRequest(workspaceDefinition().path + "/" + row.id + "/retire", "POST", {
       expected_version: row.version,
@@ -440,7 +521,7 @@ async function workspaceRetire(row) {
   );
 }
 async function workspacePublish(row) {
-  if (!confirm("Công bố phiên bản này?")) return;
+  if (!(await adminConfirm("Công bố phiên bản này?"))) return;
   await workspaceMutation(() =>
     crmRequest(workspaceDefinition().path + "/" + row.id + "/publish", "POST", {
       expected_version: row.version,
@@ -448,16 +529,17 @@ async function workspacePublish(row) {
   );
 }
 async function workspaceReplay(row) {
-  if (!confirm("Xếp hàng chạy lại công việc thất bại?")) return;
+  if (!(await adminConfirm("Xếp hàng chạy lại công việc thất bại?"))) return;
   await workspaceMutation(() =>
     crmRequest("/jobs/" + row.id + "/replay", "POST", {}),
   );
 }
 async function workspacePrivacy(row) {
   if (
-    !confirm(
+    !(await adminConfirm(
       "Thực thi yêu cầu dữ liệu này? Thao tác xóa sẽ không thể hoàn tác.",
-    )
+      true,
+    ))
   )
     return;
   await workspaceMutation(() =>
@@ -515,7 +597,7 @@ async function workspaceLoadLookup(kind) {
 }
 function workspaceField(field, value) {
   const [key, title, type, required, options] = field;
-  const label = adminNode("label", title),
+  const label = adminNode("label", title + (required ? " *" : "")),
     id = "ws-" + key;
   let input;
   if (["select", "branch", "campaign"].includes(type)) {
@@ -529,11 +611,12 @@ function workspaceField(field, value) {
               name: row.payload.name,
             }))
           : options.map((option) => ({ id: option, name: option }));
-    if (!required) {
-      const option = adminNode("option", "Không chỉ định");
-      option.value = "";
-      input.append(option);
-    }
+    const placeholder = adminNode(
+      "option",
+      required ? "Chọn " + title.toLocaleLowerCase("vi") : "Không chỉ định",
+    );
+    placeholder.value = "";
+    input.append(placeholder);
     for (const v of values) {
       const option = adminNode("option", v.name);
       option.value = v.id;
@@ -608,6 +691,7 @@ function workspaceRepeatRow(type, value = {}) {
     for (const field of [
       ["name", "Tên biến thể", "text", true],
       ["weight", "Trọng số BPS", "number", true],
+      ["cta_label", "Nhãn nút tư vấn (tối đa 24 ký tự)", "text", false],
     ]) {
       const label = workspaceField(field, value[field[0]]);
       label.querySelector("input").id = "";
@@ -641,6 +725,7 @@ function workspaceRepeatRow(type, value = {}) {
   return container;
 }
 async function openWorkspaceEditor(row = null) {
+  if (workspaceTab === "pages" && row?.payload.template === "telecom") { location.href = "/admin/landing-pages?id=" + encodeURIComponent(row.id); return; }
   workspaceEditing = row;
   const def = workspaceDefinition(),
     payload = workspaceTab === "memberships" ? row || {} : row?.payload || {};
@@ -823,6 +908,8 @@ function workspacePayload() {
       },
     );
   if (def.special === "permissions") {
+    if (workspaceEditing?.version)
+      data.expected_version = workspaceEditing.version;
     data.permissions = Array.from(
       document.querySelectorAll("[name=permissions]:checked"),
       (input) => input.value,
@@ -1058,3 +1145,9 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("admin:data-changed", () => {
   if (!document.getElementById("workspace-editor").open) loadWorkspace();
 });
+
+document
+  .getElementById("workspace-search")
+  ?.addEventListener("input", renderWorkspaceRows);
+
+window.addEventListener("pagefpt-admin-bulk-complete", () => loadWorkspace());

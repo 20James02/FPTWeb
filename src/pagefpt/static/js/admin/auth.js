@@ -25,19 +25,25 @@ async function adminFetch(path, options = {}) {
     redirectAdminLogin();
   return response;
 }
-async function loginWithCredentials(email, password, otp = "") {
+async function loginWithCredentials(email, password, otp = "", factorId = "") {
   try {
     const response = await fetch("/api/v1/auth/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "same-origin",
-      body: JSON.stringify({ email, password, otp }),
+      body: JSON.stringify({
+        email,
+        password,
+        otp,
+        ...(factorId ? { factor_id: factorId } : {}),
+      }),
     });
     const data = await response.json();
     if (response.ok) return { success: true };
     return {
       success: false,
       requiresMFA: data.code === "MFA_REQUIRED",
+      factors: data.fields?.factors || [],
       message:
         data.code === "AUTH_UNCONFIGURED"
           ? "Máy chủ chưa được cấu hình xác thực."
@@ -72,22 +78,41 @@ async function recoveryRequest(path, payload) {
   });
   const data = await response.json();
   if (!response.ok) {
+    if (data.code === "MFA_REQUIRED")
+      adminMfaChoices("recovery-factor", data.fields?.factors || []);
     const messages = {
+      RECOVERY_EXPIRED:
+        "Mã Telegram sai, hết hạn hoặc đã dùng. Hãy gửi lại mã mới.",
+      RECOVERY_UNCONFIGURED:
+        "Chưa cấu hình khôi phục qua Telegram. Liên hệ quản trị hệ thống.",
       AUTH_UNCONFIGURED: "Chưa cấu hình khôi phục mật khẩu trên máy chủ.",
       AUTH_UNAVAILABLE:
-        "Không thể xác nhận với máy chủ. Vui lòng yêu cầu mã mới và thử lại.",
-      RATE_LIMITED: "Đã có nhiều yêu cầu. Vui lòng chờ trước khi thử lại.",
+        "Không thể xác nhận với máy chủ. Hãy gửi lại mã và thử lại.",
+      RATE_LIMITED: "Vui lòng chờ ít nhất 60 giây trước khi gửi lại mã.",
       MFA_REQUIRED:
-        "Cần mã từ ứng dụng xác thực MFA. Hãy yêu cầu mã email mới và nhập cả hai mã.",
+        "Cần mã từ ứng dụng xác thực MFA. Hãy gửi lại mã Telegram và nhập thêm mã MFA.",
       PASSWORD_REJECTED:
-        "Mật khẩu chưa đáp ứng chính sách. Hãy yêu cầu mã mới và chọn mật khẩu khác.",
+        "Mật khẩu chưa đáp ứng chính sách. Hãy gửi lại mã và chọn mật khẩu khác.",
     };
     throw new Error(
       messages[data.code] ||
-        "Mã không hợp lệ, hết hạn hoặc tài khoản không được phép. Hãy yêu cầu mã mới.",
+        "Mã Telegram/MFA sai, hết hạn hoặc đã dùng, hoặc tài khoản không được phép. Hãy gửi lại mã.",
     );
   }
   return data;
+}
+function adminMfaChoices(id, factors) {
+  const select = document.getElementById?.(id);
+  if (!select) return;
+  select.replaceChildren();
+  for (const factor of factors) {
+    const option = document.createElement("option");
+    option.value = factor.id;
+    option.textContent = factor.name || factor.friendly_name || "Thiết bị MFA";
+    select.append(option);
+  }
+  const wrapper = select.closest("[data-mfa-choices]");
+  if (wrapper) wrapper.hidden = factors.length < 2;
 }
 document.addEventListener("DOMContentLoaded", async () => {
   localStorage.removeItem("pagefpt_admin_token");

@@ -32,6 +32,7 @@
   <!-- Main Lead Container (Shown after hydration) -->
   <div id="lead-content-panel" style="display: none; flex-direction: column; gap: var(--space-6);">
     
+    <section id="lead-next-action" class="panel-card" aria-label="Bước tiếp theo"></section>
     <!-- Thẻ Đầu Trang: Tóm Tắt Khách Hàng & Nút Thao Tác Nhanh -->
     <div class="panel-card" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4);">
       <div>
@@ -48,10 +49,11 @@
 
       <!-- Nút Hành Động Trực Tiếp (Gọi, Zalo, Reveal, Phân Công, Trạng Thái) -->
       <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+        <button type="button" id="btn-edit-profile" class="btn-action-detail" hidden>Sửa thông tin & Xác nhận địa chỉ</button>
         <!-- Reveal PII -->
         <button type="button" class="btn-reveal-phone" id="btn-reveal-pii" style="padding: 10px 16px; font-size: 0.88rem; font-weight: 700;" onclick="handleRevealAction()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span id="btn-reveal-text">Giải Mã PII (Xem Số Thật)</span>
+          <span id="btn-reveal-text">Hiển thị thông tin</span>
         </button>
 
         <a href="#" id="btn-call-customer" class="btn-action-call" style="padding: 10px 18px; font-size: 0.88rem; opacity: 0.6; pointer-events: none;">
@@ -65,14 +67,14 @@
         </a>
 
         <!-- Phân công tự động -->
-        <button type="button" class="btn-action-detail" onclick="adminChooseAssignee([currentLead])">Chọn nhân viên</button>
+        <button type="button" class="btn-action-detail" id="btn-manual-assign" onclick="adminChooseAssignee([currentLead])">Chọn nhân viên</button>
         <button type="button" class="btn-action-detail" id="btn-assign" style="padding: 10px 16px; font-size: 0.88rem;" onclick="handleAutoAssign()">
           Phân Công Tự Động
         </button>
 
         <!-- Dropdown Chuyển Trạng Thái -->
         <div>
-          <select class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
+          <select aria-label="Chuyển trạng thái hồ sơ" class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
             <option value="" disabled selected>Chuyển trạng thái...</option>
           </select>
         </div>
@@ -102,21 +104,21 @@
 
             <div>
               <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Họ và tên:</span>
-              <strong style="margin-top: 3px; display: block; font-size: 0.9rem;" id="detail-name-val">Bảo vệ thông tin (Cần giải mã)</strong>
+              <strong style="margin-top: 3px; display: block; font-size: 0.9rem;" id="detail-name-val">Bấm Hiển thị thông tin để xem</strong>
             </div>
 
             <div style="grid-column: span 2;">
               <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Địa chỉ lắp đặt:</span>
-              <span style="margin-top: 3px; display: block; font-weight: 600;" id="detail-address-val">Bảo vệ thông tin (Cần giải mã)</span>
+              <span style="margin-top: 3px; display: block; font-weight: 600;" id="detail-address-val">Bấm Hiển thị thông tin để xem</span>
             </div>
 
             <div>
-              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Khu vực đăng ký (ID):</span>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Khu vực đăng ký:</span>
               <span style="color: var(--text-primary); font-weight: 700; margin-top: 3px; display: block;" id="detail-region-val">Cần xác nhận</span>
             </div>
 
             <div>
-              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Nhân viên tiếp nhận (Assignee):</span>
+              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Nhân viên phụ trách:</span>
               <span style="margin-top: 3px; display: block; font-weight: 700; color: var(--text-primary);" id="detail-assignee-val">Chưa phân công</span>
             </div>
           </div>
@@ -132,7 +134,7 @@
         <!-- Thẻ Báo Giá Hồ Sơ -->
         <div class="panel-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2);">
-            <h2 style="font-size: 1.05rem; font-weight: 800;">Báo Giá & Gói Cước Hồ Sơ</h2>
+            <h2 style="font-size: 1.05rem; font-weight: 800;">Gói khách quan tâm & Báo giá</h2>
             <span style="font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; font-weight: 800;" id="detail-quote-badge">
               Chờ xác nhận
             </span>
@@ -140,7 +142,7 @@
 
           <div style="font-size: 0.88rem; display: flex; flex-direction: column; gap: var(--space-3);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="color: var(--text-muted);">Gói cước (Plan ID):</span>
+              <span style="color: var(--text-muted);">Gói khách quan tâm:</span>
               <strong style="font-size: 1rem; color: var(--color-primary);" id="detail-plan-val">Chưa chọn gói</strong>
             </div>
             <div style="display: flex; justify-content: space-between;">
@@ -156,7 +158,10 @@
               <strong style="font-size: 1.15rem; color: var(--color-primary);" id="detail-quote-total-val">Nhân viên sẽ xác nhận</strong>
             </div>
           </div>
+          <details style="margin-top:16px;"><summary>Chi tiết báo giá ban đầu</summary><div id="lead-quote-details" class="admin-evidence"></div></details>
         </div>
+
+        {% include "admin/leads/billing_panel.html" %}
 
         <!-- Thẻ Lịch Hẹn Tư Vấn & Khảo Sát (Appointments) -->
         <div class="panel-card">
@@ -169,8 +174,9 @@
 
           <!-- Form tạo lịch hẹn mới -->
           <div id="appointment-create-box" style="display: none; background: var(--bg-surface-muted); padding: var(--space-3); border-radius: 8px; margin-bottom: var(--space-3);">
-            <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">Thời gian hẹn:</div>
+            <label class="field-label" for="new-appointment-time">Thời gian hẹn</label>
             <input type="datetime-local" id="new-appointment-time" class="form-input" style="font-size: 0.82rem; margin-bottom: 6px;">
+            <label class="field-label" for="new-appointment-notes">Ghi chú lịch hẹn</label>
             <input type="text" id="new-appointment-notes" class="form-input" placeholder="Ghi chú nội dung lịch hẹn..." style="font-size: 0.82rem; margin-bottom: 8px;">
             <div style="display: flex; gap: 8px;">
               <button type="button" class="btn-action-call" style="padding: 6px 14px; font-size: 0.8rem;" onclick="submitNewAppointment()">Lưu Lịch Hẹn</button>
@@ -188,70 +194,14 @@
       <!-- CỘT PHẢI: Đánh Giá Khách Hàng & Nhật Ký Cuộc Gọi -->
       <div style="display: flex; flex-direction: column; gap: var(--space-6);">
         
-        <!-- Thẻ Đánh Giá Mức Độ Sẵn Sàng (Nhu cầu mua (điểm)) -->
         <div class="intel-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-2); margin-bottom: var(--space-3);">
-            <h2 style="font-size: 1.05rem; font-weight: 800;">
-              Đánh giá chất lượng yêu cầu
-            </h2>
-            <button type="button" class="btn-action-detail" style="font-size: 0.72rem; padding: 4px 8px;" onclick="handleRecomputeScores()">
-              Tính Lại Điểm
-            </button>
+          <h2 style="font-size:1.05rem;font-weight:800;">Đánh giá yêu cầu</h2>
+          <div class="intel-summary">
+            <p><strong>Liên hệ:</strong> <span id="intel-contact-summary">Đang tải…</span></p>
+            <p><strong>Nhu cầu:</strong> <span id="intel-need-summary">Đang tải…</span></p>
+            <p id="intel-score-summary"></p>
           </div>
-
-          <div class="intel-grid">
-            <!-- 1. Độ Chính Xác Số ĐT -->
-            <div class="score-box">
-              <div class="score-header">
-                <span class="score-title">Tin cậy liên hệ (điểm /100)</span>
-                <span class="score-number" id="score-contact-conf" style="color: #16A34A;">--</span>
-              </div>
-              <div class="score-progress-bar">
-                <div class="score-progress-fill" id="score-contact-bar" style="width: 0%; background: #16A34A;"></div>
-              </div>
-            </div>
-
-            <!-- 2. Mức Độ Sẵn Sàng Mua -->
-            <div class="score-box">
-              <div class="score-header">
-                <span class="score-title">Nhu cầu đăng ký (điểm /100)</span>
-                <span class="score-number" id="score-intent" style="color: var(--color-primary);">--</span>
-              </div>
-              <div class="score-progress-bar">
-                <div class="score-progress-fill" id="score-intent-bar" style="width: 0%;"></div>
-              </div>
-            </div>
-
-            <!-- 3. Mức Độ Đầy Đủ Dữ Liệu -->
-            <div class="score-box">
-              <div class="score-header">
-                <span class="score-title">Mức Độ Đầy Đủ Hồ Sơ (Completeness)</span>
-                <span class="score-number" id="score-completeness" style="color: #2563EB;">--</span>
-              </div>
-              <div class="score-progress-bar">
-                <div class="score-progress-fill" id="score-completeness-bar" style="width: 0%; background: #2563EB;"></div>
-              </div>
-            </div>
-
-            <!-- 4. Rủi Ro Tự Động Hóa -->
-            <div class="score-box">
-              <div class="score-header">
-                <span class="score-title">Rủi Ro Tự Động (Automation Risk)</span>
-                <span class="score-number" id="score-risk" style="color: #DC2626;">--</span>
-              </div>
-              <div class="score-progress-bar">
-                <div class="score-progress-fill" id="score-risk-bar" style="width: 0%; background: #DC2626;"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Danh sách lý do đánh giá từ backend -->
-          <div style="margin-top: var(--space-3); background: var(--bg-surface-muted); padding: var(--space-3) var(--space-4); border-radius: 10px; font-size: 0.8rem; line-height: 1.5;">
-            <strong>Cơ sở chấm điểm từ hệ thống:</strong>
-            <p id="lead-sla-summary"></p><div id="lead-evidence-summary" class="admin-evidence"></div><div id="lead-quote-details" class="admin-evidence"></div><div id="score-reasons-container" style="margin-top: 4px; color: var(--text-secondary);">
-              Chưa có dữ liệu phân tích từ worker.
-            </div>
-          </div>
+          <button type="button" id="score-detail-button" class="btn-action-detail" onclick="showLeadIntelligence()">Xem cơ sở đánh giá</button>
         </div>
 
         <!-- Nhật Ký Chăm Sóc & Thao Tác Ghi Chú Nhanh -->
@@ -272,6 +222,7 @@
           </div>
 
           <!-- Ô Nhập Ghi Chú Tùy Chọn -->
+          <label class="field-label" for="new-call-note">Nội dung trao đổi</label>
           <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4);">
             <input type="text" id="new-call-note" class="form-input" placeholder="Nhập nội dung trao đổi với khách..." style="font-size: 0.85rem; border-radius: 8px;">
             <button type="button" class="btn-action-call" style="padding: 8px 16px; font-size: 0.85rem; white-space: nowrap;" onclick="addCallNote()">
@@ -288,6 +239,68 @@
     </div>
   </div>
 </div>
+
+<dialog id="lead-intelligence-dialog" class="admin-dialog admin-billing-dialog" aria-labelledby="intel-dialog-title">
+  <h2 id="intel-dialog-title">Cơ sở đánh giá yêu cầu</h2>
+  <div class="intel-popup-content">
+    <p class="billing-help">Điểm hỗ trợ ưu tiên chăm sóc. Điểm liên hệ cao cần có thêm xác nhận; điểm gửi tự động cao cần kiểm tra kỹ. Đây không phải tỷ lệ chính xác hay kết luận về khách.</p>
+          <div class="intel-grid">
+            <!-- 1. Độ Chính Xác Số ĐT -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Mức xác nhận liên hệ</span>
+                <span class="score-number" id="score-contact-conf" style="color: #16A34A;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-contact-bar" style="width: 0%; background: #16A34A;"></div>
+              </div>
+            </div>
+
+            <!-- 2. Mức Độ Sẵn Sàng Mua -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Mức quan tâm đăng ký</span>
+                <span class="score-number" id="score-intent" style="color: var(--color-primary);">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-intent-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- 3. Mức Độ Đầy Đủ Dữ Liệu -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Thông tin đã xác nhận</span>
+                <span class="score-number" id="score-completeness" style="color: #2563EB;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-completeness-bar" style="width: 0%; background: #2563EB;"></div>
+              </div>
+            </div>
+
+            <!-- 4. Rủi Ro Tự Động Hóa -->
+            <div class="score-box">
+              <div class="score-header">
+                <span class="score-title">Dấu hiệu gửi tự động</span>
+                <span class="score-number" id="score-risk" style="color: #DC2626;">--</span>
+              </div>
+              <div class="score-progress-bar">
+                <div class="score-progress-fill" id="score-risk-bar" style="width: 0%; background: #DC2626;"></div>
+              </div>
+            </div>
+          </div>
+
+
+    <section class="admin-evidence"><h3>Thông tin đã ghi nhận</h3><div id="lead-evidence-summary"></div></section>
+    <details><summary>Tín hiệu và cách tính điểm</summary><div id="score-reasons-container"></div><p id="intel-rule-summary" class="billing-help"></p></details>
+    <p id="lead-sla-summary" class="billing-help"></p>
+    <p class="billing-help">Vị trí truy cập và thông tin từ đầu số chỉ mang tính tham khảo, cần xác nhận trực tiếp với khách.</p>
+  </div>
+  <div class="admin-dialog-actions">
+    <button type="button" class="btn-action-detail" onclick="handleRecomputeScores()">Cập nhật đánh giá</button>
+    <button type="button" class="btn-action-call" onclick="document.getElementById('lead-intelligence-dialog').close()">Đóng</button>
+  </div>
+</dialog>
 
 <script>
 let currentLead = null;
@@ -317,11 +330,11 @@ const STATUS_LABELS = {
   'assigned': 'Đã phân công',
   'contacting': 'Đang liên hệ tư vấn',
   'contacted': 'Đã liên hệ',
-  'qualified': 'Khách chốt gói',
+  'qualified': 'Đủ điều kiện',
   'survey': 'Khảo sát hạ tầng',
   'surveying': 'Khảo sát hạ tầng',
   'quoted': 'Đã báo giá',
-  'closed': 'Đã ký hợp đồng',
+  'closed': 'Khách đồng ý',
   'installed': 'Đã lắp đặt xong',
   'unreachable': 'Chưa liên lạc được',
   'no_infrastructure': 'Chưa có hạ tầng',
@@ -331,6 +344,7 @@ const STATUS_LABELS = {
 };
 
 async function initLeadDetail() {
+  if (document.querySelector('dialog[data-preserve-draft][open]')) return false;
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
@@ -349,7 +363,7 @@ async function initLeadDetail() {
     const data = await crmRequest('/leads/' + id);
     currentLead = data;
     renderLeadDetailData(data);
-    await loadAppointmentsList(id);
+    await Promise.all([loadAppointmentsList(id), loadLeadBilling(id)]);
 
     if (loadingPanel) loadingPanel.style.display = 'none';
     if (invalidPanel) invalidPanel.style.display = 'none';
@@ -367,6 +381,26 @@ async function initLeadDetail() {
 }
 
 function renderLeadDetailData(lead) {
+  const editProfile = document.getElementById("btn-edit-profile");
+  if (editProfile) editProfile.hidden = !adminHasPermission("lead.write") || !adminHasPermission("lead.pii") || window.adminAAL !== "aal2";
+  let deviceBox=document.getElementById('lead-accessory-summary');
+  if(!deviceBox){deviceBox=document.createElement('section');deviceBox.id='lead-accessory-summary';deviceBox.className='admin-surface';document.querySelector('.main-content,main,.content-wrapper')?.append(deviceBox);}
+  deviceBox.replaceChildren();
+  const devices=lead.payload?.accessory_snapshot||[];
+  if(devices.length){const heading=document.createElement('h3');heading.textContent='Thiết bị khách đã chọn';deviceBox.append(heading);for(const item of devices){const p=document.createElement('p');p.textContent=`${item.name}: ${new Intl.NumberFormat('vi-VN').format(item.price_vnd)}đ / ${item.billing_mode==='monthly'?'tháng':'một lần'}`;deviceBox.append(p);}}
+
+  const manualAssign = document.getElementById('btn-manual-assign');
+  if (manualAssign) {
+    manualAssign.hidden = !adminHasPermission('lead.assign');
+    manualAssign.disabled = !adminCanAssignLead(lead);
+    manualAssign.title = manualAssign.disabled ? 'Hồ sơ đã kết thúc, không thể phân công lại.' : 'Chọn nhân viên; giữ nguyên tiến độ xử lý.';
+  }
+  const autoAssign = document.getElementById('btn-assign');
+  if (autoAssign) {
+    autoAssign.hidden = !adminHasPermission('lead.assign');
+    autoAssign.disabled = !['new', 'assigned'].includes(lead.status);
+    autoAssign.title = autoAssign.disabled ? 'Lead đang xử lý: dùng Chọn nhân viên để bàn giao.' : 'Tự chọn nhân viên phù hợp ca làm và sức chứa.';
+  }
   // Breadcrumbs & Header
   const bcId = document.getElementById('breadcrumb-lead-id');
   if (bcId) bcId.textContent = 'Hồ sơ ' + lead.id.slice(0, 8).toUpperCase();
@@ -380,7 +414,7 @@ function renderLeadDetailData(lead) {
   const createdAt = document.getElementById('detail-created-at');
   if (createdAt) {
     const d = new Date(lead.created_at);
-    createdAt.textContent = isNaN(d) ? 'Gần đây' : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    createdAt.textContent = isNaN(d) ? 'Gần đây' : PageFPTDates.format(d);
   }
 
   // Status Badge
@@ -401,7 +435,7 @@ function renderLeadDetailData(lead) {
   if (planVal) planVal.textContent = lead.labels?.plan || 'Chưa chọn gói';
 
   const regVal = document.getElementById('detail-region-val');
-  if (regVal) regVal.textContent = lead.labels?.region || 'Cần xác nhận địa bàn';
+  if (regVal) regVal.textContent = (lead.payload?.address_confirmation ? lead.payload.address_confirmation.ward_name + ', ' + lead.payload.address_confirmation.province_name : lead.labels?.region) || 'Cần xác nhận địa bàn';
 
   const assVal = document.getElementById('detail-assignee-val');
   if (assVal) assVal.textContent = lead.assignee_id ? (lead.labels?.assignee || `Nhân sự ${lead.assignee_id.slice(0, 8)}`) : 'Chưa phân công';
@@ -409,7 +443,7 @@ function renderLeadDetailData(lead) {
   // Notes
   const notesVal = document.getElementById('detail-notes-val');
   if (notesVal) {
-    notesVal.textContent = lead.payload?.notes || 'Bảo vệ thông tin (Cần bấm Giải mã PII).';
+    notesVal.textContent = lead.payload?.notes || 'Bấm Hiển thị thông tin để xem ghi chú.';
   }
 
   // Quote info
@@ -429,64 +463,13 @@ function renderLeadDetailData(lead) {
     }
   }
 
-  // Intelligence Scores
-  const scores = lead.scores || {};
-  const contactConfEl = document.getElementById('score-contact-conf');
-  const contactConfBar = document.getElementById('score-contact-bar');
-  if (contactConfEl && contactConfBar) {
-    const val = scores.contact_confidence != null ? scores.contact_confidence : '--';
-    contactConfEl.textContent = val !== '--' ? `${val}/100` : '--';
-    contactConfBar.style.width = val !== '--' ? `${val}%` : '0%';
-  }
-
-  const intentEl = document.getElementById('score-intent');
-  const intentBar = document.getElementById('score-intent-bar');
-  if (intentEl && intentBar) {
-    const val = scores.intent != null ? scores.intent : '--';
-    intentEl.textContent = val !== '--' ? `${val}/100` : '--';
-    intentBar.style.width = val !== '--' ? `${val}%` : '0%';
-  }
-
-  const compEl = document.getElementById('score-completeness');
-  const compBar = document.getElementById('score-completeness-bar');
-  if (compEl && compBar) {
-    const val = scores.completeness != null ? Math.round(scores.completeness * 100) : '--';
-    compEl.textContent = val !== '--' ? `${val}/100` : '--';
-    compBar.style.width = val !== '--' ? `${val}%` : '0%';
-  }
-
-  const riskEl = document.getElementById('score-risk');
-  const riskBar = document.getElementById('score-risk-bar');
-  if (riskEl && riskBar) {
-    const val = scores.automation_risk != null ? scores.automation_risk : '--';
-    riskEl.textContent = val !== '--' ? `${val}/100` : '--';
-    riskBar.style.width = val !== '--' ? `${val}%` : '0%';
-  }
-
-  const reasonsCont = document.getElementById('score-reasons-container');
-  if (reasonsCont) {
-    if (scores.reasons && scores.reasons.length > 0) {
-      reasonsCont.replaceChildren(...scores.reasons.map(reason=>{
-        const node=document.createElement('div');node.textContent=adminScoreReason(reason);return node;
-      }));
-    } else {
-      reasonsCont.textContent = 'Chưa có phân tích hành vi bổ sung.';
-    }
-  }
-
-  const sla=document.getElementById('lead-sla-summary');
-  if(sla) sla.textContent='SLA: '+(lead.sla_due_at?new Date(lead.sla_due_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'Chưa có')+' · Cập nhật '+new Date(lead.updated_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'});
-  const facts=document.getElementById('lead-evidence-summary');
-  if(facts) {
-    facts.replaceChildren(adminNode('p',`Quy tắc: ${scores.ruleset_version||'Chưa tính'} · ${scores.computed_at?new Date(scores.computed_at).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'Chưa có thời điểm tính'}`));
-    facts.append(adminNode('p','IP, GeoIP và đầu số là ước tính; không xác định danh tính, vị trí chính xác hoặc nhà mạng hiện tại.'));
-    for(const observation of lead.observations||[]) facts.append(adminNode('p',`${observation.field}: ${typeof observation.value==='object'?JSON.stringify(observation.value):observation.value} · ${observation.source} · ${observation.status}`));
-  }
+  renderLeadIntelligence(lead);
+  renderLeadNextAction(lead);
   const quoteDetails=document.getElementById('lead-quote-details');
   if(quoteDetails) {
     quoteDetails.replaceChildren(adminNode('h3','Chi phí đã xác nhận tại lúc gửi hồ sơ'));
     const quote=lead.quote||{};
-    if(lead.quote_status!=='confirmed') quoteDetails.append(adminNode('p','Chưa có snapshot giá hợp lệ. Cần tư vấn và xác nhận lại.'));
+    if(lead.quote_status!=='confirmed') quoteDetails.append(adminNode('p','Chưa có báo giá được xác nhận. Nhân viên cần tư vấn giá.'));
     else {
       quoteDetails.append(adminNode('p',`Cước / tháng: ${adminMoney(quote.monthly_vnd)} · Kỳ thanh toán: ${quote.billing_months} tháng · Dịch vụ: ${quote.service_months} tháng`));
       const names={term_vnd:'Cước kỳ thanh toán',setup_vnd:'Hòa mạng',equipment_vnd:'Thiết bị',vat_added_vnd:'VAT cộng thêm',discount_vnd:'Giảm giá'};
@@ -548,7 +531,7 @@ function renderActivitiesTimeline(activities) {
     textWrap.appendChild(boldTitle);
 
     const desc = document.createElement('span');
-    desc.textContent = act.notes || (act.kind==='transition'?adminStatusLabel(act.payload?.to):'Nội dung ghi chú được bảo vệ; giải mã theo quyền PII.');
+    desc.textContent = act.notes || (act.kind==='transition'?adminStatusLabel(act.payload?.to):'Nội dung ghi chú được bảo vệ theo quyền tài khoản.');
     textWrap.appendChild(desc);
 
     const timeDiv = document.createElement('div');
@@ -556,7 +539,7 @@ function renderActivitiesTimeline(activities) {
     timeDiv.style.color = 'var(--text-muted)';
     timeDiv.style.marginTop = '2px';
     const d = new Date(act.created_at);
-    timeDiv.textContent = isNaN(d) ? 'Gần đây' : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    timeDiv.textContent = isNaN(d) ? 'Gần đây' : PageFPTDates.format(d);
     textWrap.appendChild(timeDiv);
 
     item.appendChild(dot);
@@ -573,13 +556,13 @@ async function handleRevealAction() {
   const btn = document.getElementById('btn-reveal-pii');
   const btnText = document.getElementById('btn-reveal-text');
   if (btn) btn.disabled = true;
-  if (btnText) btnText.textContent = 'Đang giải mã...';
+  if (btnText) btnText.textContent = 'Đang hiển thị…';
 
   try {
     const pii = await revealLeadPhone(currentLead.id, document.getElementById('detail-phone-val'));
     if (pii) {
       revealedPii = pii;
-      if (btnText) btnText.textContent = 'Đã Giải Mã PII';
+      if (btnText) btnText.textContent = 'Đã hiển thị thông tin';
 
       if (pii.name) {
         const nameEl = document.getElementById('detail-name-val');
@@ -658,18 +641,20 @@ async function handleStatusTransition(newStatus) {
  * Auto Assign Lead
  */
 async function handleAutoAssign() {
-  if (!currentLead) return;
+  if (!currentLead || !['new', 'assigned'].includes(currentLead.status)) return;
   const btn = document.getElementById('btn-assign');
   if (btn) btn.disabled = true;
   try {
     const res = await assignLead(currentLead.id, currentLead.version);
-    currentLead = res;
-    renderLeadDetailData(res);
+    if (res.status !== 'unassigned') {
+      currentLead = res;
+      renderLeadDetailData(res);
+    }
     showToast(res.status === 'unassigned' ? 'Chưa tìm được nhân sự trống trong ca.' : 'Đã phân công chuyên viên xử lý.', 'success');
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn) btn.disabled = !['new', 'assigned'].includes(currentLead.status);
   }
 }
 
@@ -723,7 +708,7 @@ async function loadAppointmentsList(leadId) {
       const left = document.createElement('div');
       const timeSpan = document.createElement('strong');
       const d = new Date(apt.due_at);
-      timeSpan.textContent = isNaN(d) ? apt.due_at : d.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+      timeSpan.textContent = isNaN(d) ? apt.due_at : PageFPTDates.format(d);
       left.appendChild(timeSpan);
 
       if (apt.notes) {
@@ -801,10 +786,17 @@ function copyDetailPhone() {
     navigator.clipboard.writeText(val);
     showToast('Đã sao chép số điện thoại: ' + val, 'success');
   } else {
-    showToast('Vui lòng giải mã số điện thoại trước khi sao chép.', 'info');
+    showToast('Bấm Hiển thị thông tin trước khi sao chép số điện thoại.', 'info');
   }
 }
 
 document.addEventListener('DOMContentLoaded', initLeadDetail);
 </script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/admin/lead_intelligence.js"></script>
+<script src="/static/js/admin/lead_next_action.js"></script>
+<script src="/static/js/admin/billing.js"></script>
+<script src="/static/js/admin/profile.js"></script>
 {% endblock %}

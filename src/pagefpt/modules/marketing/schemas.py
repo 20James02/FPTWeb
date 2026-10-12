@@ -30,11 +30,16 @@ class EventInput(Command):
         "click_zalo",
         "return_visit",
         "experiment_exposure",
+        "view_landing",
     ]
     plan_id: UUID | None = None
     region_id: UUID | None = None
     experiment_id: UUID | None = None
     variant: str | None = Field(default=None, max_length=50)
+    experiment_version: int | None = Field(default=None, ge=1)
+    landing_slug: str | None = Field(
+        default=None, min_length=1, max_length=100, pattern=r"^[a-z0-9-]+$"
+    )
 
 
 class EventBatch(Command):
@@ -52,6 +57,7 @@ class CampaignInput(Command):
 class Variant(Command):
     name: str = Field(min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
     weight: int = Field(ge=0, le=10000)
+    cta_label: str | None = Field(default=None, min_length=1, max_length=24)
 
 
 class ExperimentInput(Command):

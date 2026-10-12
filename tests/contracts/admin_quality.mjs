@@ -19,3 +19,12 @@ console.log('Admin status coverage, score provenance and Vietnam calendar PASS')
 assert.equal(context.adminDraftCost({monthly_vnd:200000,billing_months:6,setup_vnd:100000,equipment_vnd:50000,vat_included:false,vat_bps:1000}),1485000);
 assert.equal(context.adminDraftCost({monthly_vnd:200000,billing_months:6,setup_vnd:100000,equipment_vnd:50000,vat_included:true,vat_bps:1000}),1350000);
 console.log('Draft cost reconciles billing/fees/VAT without counting gift months PASS');
+for(const status of statuses){
+ assert.equal(context.adminCanAssignLead({status}),!['installed','invalid','duplicate','rejected'].includes(status),status+' assignment eligibility');
+}
+assert.equal(context.adminCanAssignLead(null),false);
+assert.equal(context.adminCanAssignLead({status:'unrecognized'}),false);
+
+assert.equal(context.adminDraftCost({monthly_vnd:220000,monthly_coefficient:'0.95',billing_months:12,setup_vnd:0,equipment_vnd:0,vat_included:true,vat_bps:0}),2508000);
+assert.equal(context.adminDraftCost({monthly_vnd:5,monthly_coefficient:'0.1',billing_months:6,setup_vnd:0,equipment_vnd:0,vat_included:true,vat_bps:0}),6);
+console.log('Monthly coefficient: integer rounding matches server PASS');

@@ -1,3 +1,5 @@
+import re
+
 from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -34,6 +36,11 @@ class Settings(BaseSettings):
     incoming_webhook_secret: SecretStr = SecretStr("")
     notification_url: str = ""
     notification_secret: SecretStr = SecretStr("")
+    telegram_enabled: bool = False
+    telegram_bot_token: SecretStr = SecretStr("")
+    telegram_chat_id: str = ""
+    telegram_admin_origin: str = ""
+    telegram_recovery_accounts: dict[str, str] = {}
 
     @model_validator(mode="after")
     def validate_production(self):
@@ -65,6 +72,28 @@ class Settings(BaseSettings):
                 raise ValueError("Keys must be independent")
         if self.supabase_auth_key.startswith("sb_secret_"):
             raise ValueError("Auth requires a publishable/anon key")
+        if self.telegram_enabled and (
+            not re.fullmatch(
+                r"[0-9]{5,20}:[A-Za-z0-9_-]{30,100}", self.telegram_bot_token.get_secret_value()
+            )
+            or not re.fullmatch(r"-?[1-9][0-9]{0,19}", self.telegram_chat_id)
+            or not (self.telegram_admin_origin or self.public_origin).startswith("https://")
+        ):
+            raise ValueError("Telegram requires bot token, numeric chat ID and HTTPS origin")
+        normalized = {}
+        for email, chat_id in self.telegram_recovery_accounts.items():
+            email_key = email.strip().lower()
+            if (
+                not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email_key)
+                or len(email_key) > 254
+                or not re.fullmatch(r"[1-9][0-9]{0,19}", chat_id)
+                or email_key in normalized
+            ):
+                raise ValueError("Recovery requires unique emails bound to private Telegram IDs")
+            normalized[email_key] = chat_id
+        self.telegram_recovery_accounts = normalized
+        if normalized and not self.telegram_enabled:
+            raise ValueError("Telegram recovery requires Telegram enabled")
         if self.notification_url and (
             not self.notification_url.startswith("https://")
             or len(self.notification_secret.get_secret_value()) < 32

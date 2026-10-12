@@ -52,6 +52,12 @@ async function submitLeadToBackend(leadData) {
         throw Object.assign(new Error('Phản hồi tiếp nhận không hợp lệ.'), {retryable:false});
       }
       if (pendingLead === submission) pendingLead = null;
+      // Only a committed receipt can become a conversion. Never pass contact fields.
+      window.dispatchEvent?.(new CustomEvent('pagefpt:lead-accepted', {detail:{
+        event_id:result.event_id, plan_id:leadData.plan_id,
+        billing_months:leadData.billing_months || Number((leadData.notes || '').match(/Kỳ thanh toán quan tâm: (1|6|12) tháng/)?.[1]),
+        accessory_count:Array.isArray(leadData.accessory_ids) ? leadData.accessory_ids.length : 0
+      }}));
       return {...result, success:true};
     } catch (error) {
       if(!error.code && error.retryable!==false) submission.uncertain=true;

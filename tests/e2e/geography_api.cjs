@@ -158,10 +158,10 @@ fs.mkdirSync(out, { recursive: true });
     await page.locator("#home-ward-select").selectOption(ward.id);
     assert.equal(await page.evaluate(() => getSelectedRegionId()), ward.id);
     assert.equal(
-      await page.locator("#form-lead-province").inputValue(),
+      await page.evaluate(() => currentSelectedProvince.code),
       hanoi.id,
     );
-    assert.equal(await page.locator("#form-lead-ward").inputValue(), ward.id);
+    assert.equal(await page.evaluate(() => getSelectedRegionId()), ward.id);
     await page.reload();
     await page.waitForFunction((id) => getSelectedRegionId() === id, ward.id);
     const overflow = await page.evaluate(

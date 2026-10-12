@@ -2,7 +2,7 @@ import hmac
 import json
 import secrets
 from datetime import UTC, datetime, timedelta
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -22,6 +22,7 @@ class Login(Command):
     email: str = Field(min_length=3, max_length=254)
     password: str = Field(min_length=1, max_length=1024)
     otp: str = Field(default="", pattern=r"^([0-9]{6})?$")
+    factor_id: UUID | None = None
 
     @field_validator("email")
     @classmethod
@@ -44,7 +45,15 @@ def same_origin(request):
             expected,
         }:
             return
-    if (origin and origin != expected) or request.headers.get("sec-fetch-site") == "cross-site":
+    # Domain migration may keep explicit project aliases live. Trust only the
+    # configured exact origins; cross-site browser requests stay rejected.
+    trusted_origins = {
+        expected,
+        *(value.rstrip("/") for value in request.app.state.settings.allowed_origins),
+    }
+    if (origin and origin not in trusted_origins) or request.headers.get(
+        "sec-fetch-site"
+    ) == "cross-site":
         raise DomainError("CSRF_FAILED", 403)
 
 
@@ -115,8 +124,10 @@ async def login(input: Login, request: Request):
     same_origin(request)
 
     crypt = crypto(request)
-    await dispatch(request, "auth_throttle", key=crypt.match(input.email, "auth-email"))
-    pair = await request.app.state.auth.password(input.email, input.password, input.otp)
+    gate = await dispatch(request, "auth_throttle", key=crypt.match(input.email, "auth-email"))
+    pair = await request.app.state.auth.password(
+        input.email, input.password, input.otp, input.factor_id
+    )
     claims = await request.app.state.verifier.verify(pair["access_token"])
     actor = await IdentityService(request.app.state.db).actor_for_subject(
         claims["sub"], claims.get("aal", "aal1")
@@ -130,6 +141,7 @@ async def login(input: Login, request: Request):
         "admin_session_create",
         key=crypt.match(opaque, "session"),
         subject=actor.user_id,
+        login_started_at=gate["login_started_at"],
         csrf_hash=crypt.match(csrf_token, "csrf"),
         tokens_ciphertext=crypt.encrypt(
             json.dumps(

@@ -1007,11 +1007,15 @@ img, svg {
   display: flex;
   justify-content: center;
   gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .plans-dot {
   width: 8px;
   height: 8px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--border-strong);
   cursor: pointer;
@@ -3189,6 +3193,14 @@ img, svg {
 
 .btn-region-inquiry:active {
   transform: translateY(0);
+}
+
+.client-location-hint {
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
 }
 
 .region-card-footer {
@@ -6256,3 +6268,108 @@ img, svg {
 .region-combobox-grid{grid-template-columns:repeat(3,minmax(0,1fr)) auto}
 @media(max-width:1000px){.region-combobox-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.region-combobox-grid{grid-template-columns:minmax(0,1fr)}#home-ward-select,#form-lead-ward,#lp-ward{font-size:16px;min-height:44px}}
+
+/* Published package artwork retains its full banner on every screen width. */
+.public-consultation-hero { padding-top: 48px; padding-bottom: 32px; }
+.public-consultation-hero h1 { font-size: clamp(28px,5vw,44px); margin-bottom: 16px; }
+.public-consultation-hero p { max-width: 660px; margin-bottom: 24px; }
+.plan-card-image-wrap { width: 100%; margin: 12px 0 16px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: var(--bg-surface-muted); }
+.plan-card-image { display: block; width: 100%; height: auto; max-height: 240px; object-fit: contain; }
+@media(max-width:600px) { .plan-card-image { max-height: 200px; } }
+
+/* Compact consultation form: three contact fields, no repeated geographic inputs. */
+.selected-plan-summary[hidden] { display: none; }
+#bottom-sheet .form-input { font-size: 16px; min-height: 46px; }
+#bottom-sheet .btn-close-sheet { width: 44px; height: 44px; }
+#bottom-sheet .bottom-sheet-body { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+
+/* Official brand artwork and accessible service consultation navigation. */
+.skip-link { position: fixed; top: 8px; left: 12px; z-index: 3000; padding: 12px 18px; background: #fff; color: #0f172a; border-radius: 10px; transform: translateY(-150%); }
+.skip-link:focus { transform: translateY(0); outline: 3px solid #2563eb; }
+.fpt-brand-mark.fpt-animated-badge { padding: 0; background: none; border: 0; box-shadow: none; font-size: inherit; display: block; flex-shrink: 0; }
+.official-fpt-logo { display: block; width: 148px; height: auto; max-width: 100%; object-fit: contain; }
+.footer-official-logo { background: white; padding: 8px 10px; border-radius: 10px; width: 168px; }
+.header-inner { position: relative; }
+.site-header .portal-title { display: none; }
+.main-nav-desktop .nav-item { position: static; }
+.main-nav-desktop .mega-menu { left: 0; right: 0; width: 100%; max-height: calc(100dvh - 150px); overflow-y: auto; }
+.nav-item:hover .mega-menu { visibility: hidden; opacity: 0; pointer-events: none; }
+.nav-item.is-open .mega-menu { visibility: visible; opacity: 1; transform: translateY(0); pointer-events: auto; }
+.nav-item.is-open .nav-link-btn { color: #c2410c; border-bottom-color: #c2410c; }
+.nav-item.is-open .chevron { transform: rotate(180deg); }
+.mega-col-title { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+.mega-link-desc { font-size: 12px; line-height: 1.65; }
+.mega-link-item { min-height: 56px; }
+.mega-promo-box { padding: 20px; gap: 16px; }
+.mega-promo-title { line-height: 1.4; }
+.mega-promo-box .consult-device-image { display: block; width: 100%; height: 155px; object-fit: contain; margin: 10px auto; }
+.device-illustration-note { display: block; color: #e2e8f0; font-size: 11px; margin-top: 8px; }
+.mega-promo-box .btn-select-plan { min-height: 44px; font-size: 14px !important; background: #fff; color: #9a3412; box-shadow: none; }
+.mobile-consult-card { display: flex; align-items: center; gap: 12px; padding: 14px; margin: 8px 0; border-radius: 14px; border: 1px solid var(--border-subtle); background: var(--bg-surface-muted); }
+.mobile-consult-card .consult-device-image { flex: 0 0 85px; width: 85px; height: 110px; object-fit: contain; }
+.mobile-consult-card strong { display: block; font-size: 14px; line-height: 1.5; }
+.mobile-consult-card small { display: block; font-size: 11px; color: var(--text-secondary); margin: 4px 0 10px; }
+.mobile-consult-card button { min-height: 44px; padding: 10px 14px; font-size: 14px; }
+.mobile-accordion-content.open { max-height: none; }
+.mobile-nav-panel { overflow-y: auto; height: 100dvh; }
+.nav-link-btn:focus-visible, .mega-menu :focus-visible, .mobile-nav-drawer :focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .portal-title { display: none; }
+  .main-nav-desktop { gap: 0; }
+  .nav-link-btn { padding-left: 8px; padding-right: 8px; font-size: 13px; }
+  .mega-grid { grid-template-columns: repeat(3,minmax(0,1fr)) 235px; }
+  .region-pill { display: none; }
+}
+@media (max-width: 767px) {
+  .official-fpt-logo { width: 114px; }
+  .footer-official-logo { width: 150px; }
+  .portal-title { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-drawer, .mobile-nav-panel, .mega-menu, .mobile-accordion-content { transition: none; }
+}
+.mobile-nav-drawer * { transition-property: background-color, color, border-color, box-shadow, transform; }
+.mobile-nav-drawer .btn-close-sheet, .mobile-accordion-btn, .mobile-sublink { min-height: 44px; }
+.mobile-nav-drawer .btn-close-sheet { width: 44px; height: 44px; }
+.utility-item, .utility-text { min-width: 0; }
+.utility-title, .utility-subtitle { overflow-wrap: anywhere; }
+@media (min-width: 1024px) {
+  .quick-utilities-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .utility-item { gap: 10px; padding: 10px; }
+}
+@media (max-width: 540px) {
+  .site-header .btn-header-call, .site-header .btn-mobile-menu-toggle { width: 44px !important; height: 44px !important; }
+  .header-actions .region-pill { max-width: 100px !important; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-aos] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .mobile-nav-drawer * { transition: none; }
+}
+.data-notice { padding-top: 36px; padding-bottom: 64px; color: var(--text-primary); line-height: 1.75; }
+.data-notice-back { display: inline-block; padding: 10px 0; margin-bottom: 16px; color: #9a3412; font-weight: 600; }
+.data-notice-eyebrow { font-size: 12px; letter-spacing: .08em; font-weight: 700; color: #9a3412; }
+.data-notice h1 { font-size: clamp(26px,4vw,36px); line-height: 1.3; margin: 10px 0 16px; }
+.data-notice section { border-top: 1px solid var(--border-subtle); padding-top: 24px; margin-top: 24px; }
+.data-notice h2 { font-size: 20px; line-height: 1.5; margin-bottom: 10px; }
+.data-notice p { color: var(--text-secondary); margin-bottom: 12px; }
+.data-notice-contact .btn-primary-hero { display: inline-flex; background: #c2410c; margin-top: 8px; }
+body { --text-muted: #64748b; }
+.bottom-sheet .btn-close-sheet { width: 44px; height: 44px; }
+.bottom-sheet :focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .bottom-sheet-backdrop, .bottom-sheet-backdrop * { transition: none; } }
+.btn-primary-hero, .btn-submit-lead, .btn-select-plan.primary { background: #c2410c; color: white; }
+.btn-primary-hero:hover, .btn-submit-lead:hover, .btn-select-plan.primary:hover { background: #9a3412; }
+.mega-promo-box .btn-select-plan.primary { background: white; color: #9a3412; }
+.mega-promo-box .btn-select-plan.primary:hover { background: #fff7ed; }
+#compare-modal .bottom-sheet-body button { min-height: 44px; padding: 10px 14px; border-radius: 10px; font-weight: 600; }
+#compare-modal .bottom-sheet-body button + button { margin-top: 10px; border: 1px solid var(--border-strong); color: var(--text-secondary); background: var(--bg-surface); }
+.mega-menu * { transition-property: color, background-color, border-color, box-shadow, transform; }
+.main-nav-desktop .mega-menu { transition-property: opacity, transform; }
+/* Existing Admin motion controls now apply to the complete official artwork. */
+.fpt-brand-mark.fpt-anim-wave .official-fpt-logo { animation: fptBrandFloat 4s ease-in-out infinite; }
+.fpt-brand-mark.fpt-anim-bounce .official-fpt-logo { animation: fptBrandBounce 3s ease-in-out infinite; }
+.fpt-brand-mark.fpt-anim-glow .official-fpt-logo { animation: fptBrandGlow 4s ease-in-out infinite; }
+@keyframes fptBrandFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+@keyframes fptBrandBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes fptBrandGlow { 0%, 100% { filter: none; } 50% { filter: drop-shadow(0 1px 3px rgb(242 111 33 / .18)); } }
+@media (prefers-reduced-motion: reduce) { .fpt-brand-mark .official-fpt-logo { animation: none !important; } }

@@ -1,6 +1,6 @@
 {
   "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-  "date": "2026-10-02",
+  "date": "2026-10-07",
   "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
   "operations": [
     {
@@ -8,9 +8,9 @@
       "path": "/",
       "operation_id": "home__get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 26,
+      "source_line": 27,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "public_html",
         "permission": null,
         "mfa": false
       },
@@ -36,9 +36,93 @@
       "path": "/admin",
       "operation_id": "admin_root_admin_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 57,
+      "source_line": 59,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/accessories",
+      "operation_id": "admin_accessories_admin_accessories_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 163,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/account",
+      "operation_id": "admin_account_admin_account_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 81,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/appearance",
+      "operation_id": "admin_appearance_admin_appearance_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 168,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -64,9 +148,9 @@
       "path": "/admin/content",
       "operation_id": "admin_content_admin_content_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 120,
+      "source_line": 140,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -92,9 +176,37 @@
       "path": "/admin/dashboard",
       "operation_id": "admin_dashboard_admin_dashboard_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 79,
+      "source_line": 94,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/landing-pages",
+      "operation_id": "admin_landing_pages_admin_landing_pages_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 178,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -120,9 +232,9 @@
       "path": "/admin/leads",
       "operation_id": "admin_leads_admin_leads_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 84,
+      "source_line": 104,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -148,9 +260,9 @@
       "path": "/admin/leads/detail",
       "operation_id": "admin_lead_detail_admin_leads_detail_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 89,
+      "source_line": 109,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -197,9 +309,9 @@
       "path": "/admin/login",
       "operation_id": "admin_login_admin_login_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 74,
+      "source_line": 76,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "public_admin_login",
         "permission": null,
         "mfa": false
       },
@@ -225,9 +337,37 @@
       "path": "/admin/marketing",
       "operation_id": "admin_marketing_admin_marketing_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 115,
+      "source_line": 135,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/navigation",
+      "operation_id": "admin_navigation_admin_navigation_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 173,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -253,9 +393,9 @@
       "path": "/admin/operations",
       "operation_id": "admin_operations_admin_operations_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 127,
+      "source_line": 147,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -281,9 +421,9 @@
       "path": "/admin/pricing",
       "operation_id": "admin_pricing_admin_pricing_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 96,
+      "source_line": 116,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -309,9 +449,9 @@
       "path": "/admin/reports",
       "operation_id": "admin_reports_admin_reports_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 103,
+      "source_line": 123,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -337,9 +477,9 @@
       "path": "/admin/settings",
       "operation_id": "admin_settings_admin_settings_get",
       "source": "src/pagefpt/web/admin_routes.py",
-      "source_line": 108,
+      "source_line": 128,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -352,6 +492,122 @@
             "text/html": {
               "schema": {
                 "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/workbench",
+      "operation_id": "admin_workbench_admin_workbench_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 99,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accessories",
+      "operation_id": "accessories_api_v1_accessories_get",
+      "source": "src/pagefpt/modules/catalog/routes.py",
+      "source_line": 48,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/address-options",
+      "operation_id": "address_options_api_v1_admin_address_options_get",
+      "source": "src/pagefpt/modules/leads/profile.py",
+      "source_line": 47,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "province_code",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 999999,
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province Code"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
               }
             }
           }
@@ -427,7 +683,7 @@
       "path": "/api/v1/admin/assignees",
       "operation_id": "assignees_api_v1_admin_assignees_get",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 233,
+      "source_line": 240,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -459,7 +715,7 @@
       "path": "/api/v1/admin/audit",
       "operation_id": "audit_api_v1_admin_audit_get",
       "source": "src/pagefpt/modules/reporting/routes.py",
-      "source_line": 33,
+      "source_line": 69,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -513,7 +769,7 @@
       "path": "/api/v1/admin/campaigns",
       "operation_id": "list_campaign_api_v1_admin_campaigns_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -568,7 +824,7 @@
       "path": "/api/v1/admin/campaigns",
       "operation_id": "create_campaign_api_v1_admin_campaigns_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -619,7 +875,7 @@
       "path": "/api/v1/admin/campaigns/{id}",
       "operation_id": "get_campaign_api_v1_admin_campaigns__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -672,7 +928,7 @@
       "path": "/api/v1/admin/campaigns/{id}",
       "operation_id": "update_campaign_api_v1_admin_campaigns__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -744,7 +1000,7 @@
       "path": "/api/v1/admin/campaigns/{id}/retire",
       "operation_id": "retire_campaign_api_v1_admin_campaigns__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -860,7 +1116,7 @@
       "path": "/api/v1/admin/costs",
       "operation_id": "list_cost_api_v1_admin_costs_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -966,7 +1222,7 @@
       "path": "/api/v1/admin/costs/{id}",
       "operation_id": "get_cost_api_v1_admin_costs__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1019,7 +1275,7 @@
       "path": "/api/v1/admin/costs/{id}",
       "operation_id": "update_cost_api_v1_admin_costs__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1091,7 +1347,7 @@
       "path": "/api/v1/admin/costs/{id}/retire",
       "operation_id": "retire_cost_api_v1_admin_costs__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1153,7 +1409,7 @@
       "path": "/api/v1/admin/deliveries",
       "operation_id": "deliveries_api_v1_admin_deliveries_get",
       "source": "src/pagefpt/modules/integrations/routes.py",
-      "source_line": 28,
+      "source_line": 29,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1185,7 +1441,7 @@
       "path": "/api/v1/admin/deliveries/{id}/reconcile",
       "operation_id": "reconcile_api_v1_admin_deliveries__id__reconcile_post",
       "source": "src/pagefpt/modules/integrations/routes.py",
-      "source_line": 40,
+      "source_line": 41,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1247,7 +1503,7 @@
       "path": "/api/v1/admin/experiments",
       "operation_id": "list_experiment_api_v1_admin_experiments_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1302,7 +1558,7 @@
       "path": "/api/v1/admin/experiments",
       "operation_id": "create_experiment_api_v1_admin_experiments_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1353,7 +1609,7 @@
       "path": "/api/v1/admin/experiments/{id}",
       "operation_id": "get_experiment_api_v1_admin_experiments__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1406,7 +1662,7 @@
       "path": "/api/v1/admin/experiments/{id}",
       "operation_id": "update_experiment_api_v1_admin_experiments__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1474,11 +1730,64 @@
       "in_openapi": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/admin/experiments/{id}/results",
+      "operation_id": "experiment_results_api_v1_admin_experiments__id__results_get",
+      "source": "src/pagefpt/modules/marketing/routes.py",
+      "source_line": 133,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "POST",
       "path": "/api/v1/admin/experiments/{id}/retire",
       "operation_id": "retire_experiment_api_v1_admin_experiments__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1821,7 +2130,7 @@
       "path": "/api/v1/admin/integrations",
       "operation_id": "list_integration_api_v1_admin_integrations_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1876,7 +2185,7 @@
       "path": "/api/v1/admin/integrations",
       "operation_id": "create_integration_api_v1_admin_integrations_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1927,7 +2236,7 @@
       "path": "/api/v1/admin/integrations/{id}",
       "operation_id": "get_integration_api_v1_admin_integrations__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -1980,7 +2289,7 @@
       "path": "/api/v1/admin/integrations/{id}",
       "operation_id": "update_integration_api_v1_admin_integrations__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2052,7 +2361,7 @@
       "path": "/api/v1/admin/integrations/{id}/retire",
       "operation_id": "retire_integration_api_v1_admin_integrations__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2114,7 +2423,7 @@
       "path": "/api/v1/admin/jobs",
       "operation_id": "jobs_api_v1_admin_jobs_get",
       "source": "src/pagefpt/modules/reporting/routes.py",
-      "source_line": 40,
+      "source_line": 76,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2146,7 +2455,7 @@
       "path": "/api/v1/admin/jobs/{id}/replay",
       "operation_id": "replay_api_v1_admin_jobs__id__replay_post",
       "source": "src/pagefpt/modules/reporting/routes.py",
-      "source_line": 47,
+      "source_line": 83,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2196,10 +2505,42 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/admin/landing-preview",
+      "operation_id": null,
+      "source": "src/pagefpt/web/cms_pages.py",
+      "source_line": 85,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "content.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PageInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {},
+      "response_model_present": false,
+      "in_openapi": false
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/admin/lead-assignments",
       "operation_id": "bulk_assign_api_v1_admin_lead_assignments_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 240,
+      "source_line": 247,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2690,7 +3031,7 @@
       "path": "/api/v1/admin/leads/{id}",
       "operation_id": "detail_api_v1_admin_leads__id__get",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 169,
+      "source_line": 176,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2743,7 +3084,7 @@
       "path": "/api/v1/admin/leads/{id}/activities",
       "operation_id": "activity_api_v1_admin_leads__id__activities_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 224,
+      "source_line": 231,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2920,7 +3261,7 @@
       "path": "/api/v1/admin/leads/{id}/assignments",
       "operation_id": "assign_api_v1_admin_leads__id__assignments_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 184,
+      "source_line": 191,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -2950,6 +3291,121 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/AssignmentCommand"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/leads/{id}/billing",
+      "operation_id": "billing_read_api_v1_admin_leads__id__billing_get",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 101,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/leads/{id}/billing",
+      "operation_id": "billing_save_api_v1_admin_leads__id__billing_put",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 109,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DealSave"
             }
           }
         }
@@ -3088,7 +3544,7 @@
       "path": "/api/v1/admin/leads/{id}/observations",
       "operation_id": "observation_api_v1_admin_leads__id__observations_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 211,
+      "source_line": 218,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3146,6 +3602,150 @@
       "in_openapi": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/admin/leads/{id}/payments",
+      "operation_id": "payment_list_api_v1_admin_leads__id__payments_get",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 123,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 30,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "before",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/{id}/payments",
+      "operation_id": "payment_create_api_v1_admin_leads__id__payments_post",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 146,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PaymentCreate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "PUT",
       "path": "/api/v1/admin/leads/{id}/preferences",
       "operation_id": "preferences_api_v1_admin_leads__id__preferences_put",
@@ -3180,6 +3780,111 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PreferencesInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/leads/{id}/profile",
+      "operation_id": "read_profile_api_v1_admin_leads__id__profile_get",
+      "source": "src/pagefpt/modules/leads/profile.py",
+      "source_line": 68,
+      "authorization": {
+        "caller": "admin",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/leads/{id}/profile",
+      "operation_id": "update_profile_api_v1_admin_leads__id__profile_put",
+      "source": "src/pagefpt/modules/leads/profile.py",
+      "source_line": 77,
+      "authorization": {
+        "caller": "admin",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProfileInput"
             }
           }
         }
@@ -3327,7 +4032,7 @@
       "path": "/api/v1/admin/leads/{id}/reveal",
       "operation_id": "reveal_api_v1_admin_leads__id__reveal_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 176,
+      "source_line": 183,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3380,7 +4085,7 @@
       "path": "/api/v1/admin/leads/{id}/transitions",
       "operation_id": "transition_api_v1_admin_leads__id__transitions_post",
       "source": "src/pagefpt/modules/leads/admin.py",
-      "source_line": 202,
+      "source_line": 209,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3442,7 +4147,7 @@
       "path": "/api/v1/admin/locations",
       "operation_id": "locations_api_v1_admin_locations_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 86,
+      "source_line": 105,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3545,7 +4250,7 @@
       "path": "/api/v1/admin/locations/source",
       "operation_id": "source_preview_api_v1_admin_locations_source_get",
       "source": "src/pagefpt/modules/catalog/geography_routes.py",
-      "source_line": 22,
+      "source_line": 29,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3577,7 +4282,7 @@
       "path": "/api/v1/admin/locations/sync",
       "operation_id": "sync_locations_api_v1_admin_locations_sync_post",
       "source": "src/pagefpt/modules/catalog/geography_routes.py",
-      "source_line": 37,
+      "source_line": 44,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3706,7 +4411,7 @@
       "path": "/api/v1/admin/media/{id}/finalize",
       "operation_id": "finalize_api_v1_admin_media__id__finalize_post",
       "source": "src/pagefpt/modules/media/routes.py",
-      "source_line": 49,
+      "source_line": 50,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3814,6 +4519,114 @@
         },
         "required": true
       },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/notifications",
+      "operation_id": "notifications_api_v1_admin_notifications_get",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 188,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 30,
+            "title": "Limit"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/notifications/{id}/read",
+      "operation_id": "notice_read_api_v1_admin_notifications__id__read_post",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 195,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
       "declared_responses": {
         "200": {
           "description": "Successful Response",
@@ -3957,7 +4770,7 @@
       "path": "/api/v1/admin/pages",
       "operation_id": "list_page_api_v1_admin_pages_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4012,7 +4825,7 @@
       "path": "/api/v1/admin/pages",
       "operation_id": "create_page_api_v1_admin_pages_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4063,7 +4876,7 @@
       "path": "/api/v1/admin/pages/{id}",
       "operation_id": "get_page_api_v1_admin_pages__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4116,7 +4929,7 @@
       "path": "/api/v1/admin/pages/{id}",
       "operation_id": "update_page_api_v1_admin_pages__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4188,7 +5001,7 @@
       "path": "/api/v1/admin/pages/{id}/retire",
       "operation_id": "retire_page_api_v1_admin_pages__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4308,11 +5121,135 @@
       "in_openapi": true
     },
     {
+      "method": "PATCH",
+      "path": "/api/v1/admin/payments/{id}",
+      "operation_id": "payment_update_api_v1_admin_payments__id__patch",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 160,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PaymentUpdate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/payments/{id}/collect",
+      "operation_id": "payment_collect_api_v1_admin_payments__id__collect_post",
+      "source": "src/pagefpt/modules/leads/billing.py",
+      "source_line": 174,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PaymentCollect"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "GET",
       "path": "/api/v1/admin/plans",
       "operation_id": "list_plan_api_v1_admin_plans_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 43,
+      "source_line": 88,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4384,7 +5321,7 @@
       "path": "/api/v1/admin/plans",
       "operation_id": "create_plan_api_v1_admin_plans_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 112,
+      "source_line": 131,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4435,7 +5372,7 @@
       "path": "/api/v1/admin/plans/{id}",
       "operation_id": "get_plan_api_v1_admin_plans__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4488,7 +5425,7 @@
       "path": "/api/v1/admin/plans/{id}",
       "operation_id": "update_plan_api_v1_admin_plans__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4560,7 +5497,7 @@
       "path": "/api/v1/admin/plans/{id}/retire",
       "operation_id": "retire_plan_api_v1_admin_plans__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4694,7 +5631,7 @@
       "path": "/api/v1/admin/prices",
       "operation_id": "create_price_api_v1_admin_prices_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 165,
+      "source_line": 188,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5269,7 +6206,7 @@
       "path": "/api/v1/admin/products",
       "operation_id": "list_product_api_v1_admin_products_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 88,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5292,6 +6229,23 @@
             "minimum": 1,
             "default": 30,
             "title": "Limit"
+          }
+        },
+        {
+          "name": "before",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
           }
         }
       ],
@@ -5324,7 +6278,7 @@
       "path": "/api/v1/admin/products",
       "operation_id": "create_product_api_v1_admin_products_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5375,7 +6329,7 @@
       "path": "/api/v1/admin/products/{id}",
       "operation_id": "get_product_api_v1_admin_products__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5428,7 +6382,7 @@
       "path": "/api/v1/admin/products/{id}",
       "operation_id": "update_product_api_v1_admin_products__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5500,7 +6454,7 @@
       "path": "/api/v1/admin/products/{id}/retire",
       "operation_id": "retire_product_api_v1_admin_products__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5562,7 +6516,7 @@
       "path": "/api/v1/admin/promotions",
       "operation_id": "list_promotion_api_v1_admin_promotions_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 57,
+      "source_line": 102,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5617,7 +6571,7 @@
       "path": "/api/v1/admin/promotions",
       "operation_id": "create_promotion_api_v1_admin_promotions_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 17,
+      "source_line": 49,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5668,7 +6622,7 @@
       "path": "/api/v1/admin/promotions/{id}",
       "operation_id": "get_promotion_api_v1_admin_promotions__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5721,7 +6675,7 @@
       "path": "/api/v1/admin/promotions/{id}",
       "operation_id": "update_promotion_api_v1_admin_promotions__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -5793,7 +6747,7 @@
       "path": "/api/v1/admin/promotions/{id}/retire",
       "operation_id": "retire_promotion_api_v1_admin_promotions__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6051,7 +7005,7 @@
       "path": "/api/v1/admin/regions",
       "operation_id": "list_region_api_v1_admin_regions_get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 43,
+      "source_line": 88,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6123,7 +7077,7 @@
       "path": "/api/v1/admin/regions",
       "operation_id": "create_region_api_v1_admin_regions_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 117,
+      "source_line": 136,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6174,7 +7128,7 @@
       "path": "/api/v1/admin/regions/{id}",
       "operation_id": "get_region_api_v1_admin_regions__id__get",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 62,
+      "source_line": 107,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6227,7 +7181,7 @@
       "path": "/api/v1/admin/regions/{id}",
       "operation_id": "update_region_api_v1_admin_regions__id__put",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 30,
+      "source_line": 68,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6299,7 +7253,7 @@
       "path": "/api/v1/admin/regions/{id}/retire",
       "operation_id": "retire_region_api_v1_admin_regions__id__retire_post",
       "source": "src/pagefpt/api/v1/resources.py",
-      "source_line": 67,
+      "source_line": 112,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6390,10 +7344,153 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/admin/reports/analytics",
+      "operation_id": "analytics_api_v1_admin_reports_analytics_get",
+      "source": "src/pagefpt/modules/reporting/routes.py",
+      "source_line": 28,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "report.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "start",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          }
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          }
+        },
+        {
+          "name": "branch_id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branch Id"
+          }
+        },
+        {
+          "name": "campaign",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Campaign"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/reports/branches",
+      "operation_id": "report_branches_api_v1_admin_reports_branches_get",
+      "source": "src/pagefpt/modules/reporting/routes.py",
+      "source_line": 19,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "report.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/admin/reports/daily",
       "operation_id": "daily_api_v1_admin_reports_daily_get",
       "source": "src/pagefpt/modules/reporting/routes.py",
-      "source_line": 26,
+      "source_line": 62,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6425,7 +7522,7 @@
       "path": "/api/v1/admin/reports/rebuild",
       "operation_id": "rebuild_api_v1_admin_reports_rebuild_post",
       "source": "src/pagefpt/modules/reporting/routes.py",
-      "source_line": 17,
+      "source_line": 53,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6584,6 +7681,246 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/admin/staff",
+      "operation_id": "staff_list_api_v1_admin_staff_get",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 295,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "identity.manage",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 100,
+            "default": "",
+            "title": "Q"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 0,
+            "default": 0,
+            "title": "Offset"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/staff",
+      "operation_id": "create_staff_api_v1_admin_staff_post",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 321,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "identity.manage",
+            "mfa": true
+          },
+          {
+            "permission": "permission",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StaffCreate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/staff/branches",
+      "operation_id": "staff_branches_api_v1_admin_staff_branches_get",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 312,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "identity.manage",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/staff/roles",
+      "operation_id": "roles_api_v1_admin_staff_roles_get",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 288,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "identity.manage",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/workbench",
+      "operation_id": "workbench_api_v1_admin_workbench_get",
+      "source": "src/pagefpt/modules/leads/admin.py",
+      "source_line": 169,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 20,
+            "minimum": 1,
+            "default": 6,
+            "title": "Limit"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/admin/workspace/{kind}",
       "operation_id": "workspace_api_v1_admin_workspace__kind__get",
       "source": "src/pagefpt/modules/administration/routes.py",
@@ -6679,7 +8016,7 @@
       "path": "/api/v1/admin/{kind}/{id}/publish",
       "operation_id": "publish_api_v1_admin__kind___id__publish_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 122,
+      "source_line": 141,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6746,11 +8083,230 @@
       "in_openapi": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/auth/account",
+      "operation_id": "account_api_v1_auth_account_get",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 98,
+      "authorization": {
+        "caller": "opaque_cookie_session",
+        "permission": "own active membership; CSRF for writes",
+        "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed"
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/account/password",
+      "operation_id": "password_api_v1_auth_account_password_post",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 221,
+      "authorization": {
+        "caller": "opaque_cookie_session",
+        "permission": "own active membership; CSRF for writes",
+        "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed"
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PasswordChange"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enroll",
+      "operation_id": "enroll_api_v1_auth_mfa_enroll_post",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 116,
+      "authorization": {
+        "caller": "opaque_cookie_session",
+        "permission": "own active membership; CSRF for writes",
+        "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed"
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Enroll"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/auth/mfa/{id}",
+      "operation_id": "unenroll_api_v1_auth_mfa__id__delete",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 185,
+      "authorization": {
+        "caller": "opaque_cookie_session",
+        "permission": "own active membership; CSRF for writes",
+        "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed"
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/{id}/verify",
+      "operation_id": "verify_api_v1_auth_mfa__id__verify_post",
+      "source": "src/pagefpt/modules/identity/accounts.py",
+      "source_line": 131,
+      "authorization": {
+        "caller": "opaque_cookie_session",
+        "permission": "own active membership; CSRF for writes",
+        "mfa": "existing verified factors require AAL2 to enroll; last verified factor cannot be removed"
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Code"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "POST",
       "path": "/api/v1/auth/recovery",
       "operation_id": "request_recovery_api_v1_auth_recovery_post",
       "source": "src/pagefpt/modules/identity/recovery.py",
-      "source_line": 41,
+      "source_line": 46,
       "authorization": {
         "caller": "public_same_origin_recovery",
         "permission": "active membership after provider proof on reset",
@@ -6795,7 +8351,7 @@
       "path": "/api/v1/auth/recovery/reset",
       "operation_id": "reset_password_api_v1_auth_recovery_reset_post",
       "source": "src/pagefpt/modules/identity/recovery.py",
-      "source_line": 50,
+      "source_line": 95,
       "authorization": {
         "caller": "public_same_origin_recovery",
         "permission": "active membership after provider proof on reset",
@@ -6840,7 +8396,7 @@
       "path": "/api/v1/auth/session",
       "operation_id": "logout_api_v1_auth_session_delete",
       "source": "src/pagefpt/modules/identity/sessions.py",
-      "source_line": 165,
+      "source_line": 177,
       "authorization": {
         "caller": "login_or_cookie_session",
         "permission": null,
@@ -6866,7 +8422,7 @@
       "path": "/api/v1/auth/session",
       "operation_id": "login_api_v1_auth_session_post",
       "source": "src/pagefpt/modules/identity/sessions.py",
-      "source_line": 113,
+      "source_line": 122,
       "authorization": {
         "caller": "login_or_cookie_session",
         "permission": null,
@@ -6911,7 +8467,7 @@
       "path": "/api/v1/catalog",
       "operation_id": "catalog_api_v1_catalog_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 33,
+      "source_line": 43,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -6938,7 +8494,7 @@
       "path": "/api/v1/consent",
       "operation_id": "consent_api_v1_consent_put",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 27,
+      "source_line": 29,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -6984,7 +8540,7 @@
       "path": "/api/v1/events/batch",
       "operation_id": "events_api_v1_events_batch_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 38,
+      "source_line": 40,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7030,7 +8586,7 @@
       "path": "/api/v1/experiments/{id}/variant",
       "operation_id": "variant_api_v1_experiments__id__variant_get",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 86,
+      "source_line": 101,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7091,6 +8647,63 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/experiments/{id}/variant",
+      "operation_id": "variant_post_api_v1_experiments__id__variant_post",
+      "source": "src/pagefpt/modules/marketing/routes.py",
+      "source_line": 128,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VariantRequest"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/feedback",
       "operation_id": "feedback_api_v1_feedback_post",
       "source": "src/pagefpt/modules/care/routes.py",
@@ -7112,6 +8725,53 @@
         },
         "required": true
       },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/landing/{slug}/activity",
+      "operation_id": "activity_api_v1_landing__slug__activity_get",
+      "source": "src/pagefpt/web/cms_pages.py",
+      "source_line": 24,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Slug"
+          }
+        }
+      ],
+      "request_body": null,
       "declared_responses": {
         "200": {
           "description": "Successful Response",
@@ -7243,7 +8903,7 @@
       "path": "/api/v1/pages/{slug}",
       "operation_id": "page_api_v1_pages__slug__get",
       "source": "src/pagefpt/modules/content/routes.py",
-      "source_line": 11,
+      "source_line": 12,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7290,7 +8950,7 @@
       "path": "/api/v1/quotes",
       "operation_id": "quote_api_v1_quotes_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 174,
+      "source_line": 197,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7384,7 +9044,7 @@
       "path": "/api/v1/regions",
       "operation_id": "regions_api_v1_regions_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 107,
+      "source_line": 126,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7411,7 +9071,7 @@
       "path": "/api/v1/regions/hierarchy",
       "operation_id": "regions_hierarchy_api_v1_regions_hierarchy_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 38,
+      "source_line": 56,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7435,10 +9095,39 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/regions/location-suggestion",
+      "operation_id": "pricing_location_api_v1_regions_location_suggestion_get",
+      "source": "src/pagefpt/modules/catalog/geography_routes.py",
+      "source_line": 17,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationHint"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": true,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/regions/{id}/wards",
       "operation_id": "wards_api_v1_regions__id__wards_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 68,
+      "source_line": 87,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7515,7 +9204,7 @@
       "path": "/api/v1/sessions",
       "operation_id": "session_api_v1_sessions_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 15,
+      "source_line": 17,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7561,7 +9250,7 @@
       "path": "/api/v1/system/display-settings",
       "operation_id": "read_api_v1_system_display_settings_get",
       "source": "src/pagefpt/modules/content/display_settings.py",
-      "source_line": 75,
+      "source_line": 229,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7588,7 +9277,7 @@
       "path": "/api/v1/system/display-settings",
       "operation_id": "save_api_v1_system_display_settings_post",
       "source": "src/pagefpt/modules/content/display_settings.py",
-      "source_line": 80,
+      "source_line": 234,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -7639,7 +9328,7 @@
       "path": "/api/v1/touches",
       "operation_id": "touch_api_v1_touches_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 60,
+      "source_line": 75,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -7792,9 +9481,37 @@
       "path": "/chinh-sach-bao-mat",
       "operation_id": "privacy_policy_chinh_sach_bao_mat_get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 95,
+      "source_line": 85,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "public_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/do-toc-do",
+      "operation_id": "speedtest_do_toc_do_get",
+      "source": "src/pagefpt/web/client_routes.py",
+      "source_line": 99,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
         "permission": null,
         "mfa": false
       },
@@ -7898,7 +9615,7 @@
       "path": "/internal/jobs/recover",
       "operation_id": null,
       "source": "src/pagefpt/modules/workflow/routes.py",
-      "source_line": 43,
+      "source_line": 44,
       "authorization": {
         "caller": "worker_only",
         "permission": "server worker secret",
@@ -7915,9 +9632,9 @@
       "path": "/khuyen-mai",
       "operation_id": "landing_page_khuyen_mai_get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 74,
+      "source_line": 63,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "public_html",
         "permission": null,
         "mfa": false
       },
@@ -7943,7 +9660,7 @@
       "path": "/robots.txt",
       "operation_id": null,
       "source": "src/pagefpt/modules/content/routes.py",
-      "source_line": 35,
+      "source_line": 40,
       "authorization": {
         "caller": "seo_public",
         "permission": null,
@@ -7960,9 +9677,9 @@
       "path": "/san-pham/{slug}",
       "operation_id": "product_detail_san_pham__slug__get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 39,
+      "source_line": 43,
       "authorization": {
-        "caller": "preview_html_only",
+        "caller": "public_html",
         "permission": null,
         "mfa": false
       },
@@ -8008,7 +9725,7 @@
       "path": "/sitemap.xml",
       "operation_id": null,
       "source": "src/pagefpt/modules/content/routes.py",
-      "source_line": 17,
+      "source_line": 18,
       "authorization": {
         "caller": "seo_public",
         "permission": null,
@@ -8403,6 +10120,80 @@
       ],
       "title": "CampaignInput"
     },
+    "CampaignPrice": {
+      "properties": {
+        "billing_months": {
+          "type": "integer",
+          "enum": [
+            1,
+            6,
+            12
+          ],
+          "title": "Billing Months"
+        },
+        "monthly_vnd": {
+          "type": "integer",
+          "maximum": 1000000000.0,
+          "minimum": 0.0,
+          "title": "Monthly Vnd"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "billing_months",
+        "monthly_vnd"
+      ],
+      "title": "CampaignPrice"
+    },
+    "CardLabels": {
+      "properties": {
+        "badge": {
+          "type": "string",
+          "maxLength": 40,
+          "title": "Badge",
+          "default": "Gói đang cung cấp"
+        },
+        "speed": {
+          "type": "string",
+          "maxLength": 24,
+          "minLength": 1,
+          "title": "Speed",
+          "default": "Tốc độ"
+        },
+        "offers": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Offers",
+          "default": "Ưu đãi đi kèm"
+        },
+        "equipment": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Equipment",
+          "default": "Thiết bị"
+        },
+        "register": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Register",
+          "default": "Đăng ký gói"
+        },
+        "details": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Details",
+          "default": "Chi tiết gói"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "CardLabels"
+    },
     "ChallengeInput": {
       "properties": {
         "session_token": {
@@ -8430,6 +10221,21 @@
         "provider_token"
       ],
       "title": "ChallengeInput"
+    },
+    "Code": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$",
+          "title": "Code"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "title": "Code"
     },
     "ConfirmQuote": {
       "properties": {
@@ -8539,12 +10345,77 @@
       ],
       "title": "CostInput"
     },
-    "DisplayPatch": {
+    "DealSave": {
       "properties": {
         "expected_version": {
           "type": "integer",
           "minimum": 0.0,
           "title": "Expected Version"
+        },
+        "plan_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Plan Id"
+        },
+        "billing_months": {
+          "type": "integer",
+          "title": "Billing Months"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Notes"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "plan_id",
+        "billing_months"
+      ],
+      "title": "DealSave"
+    },
+    "DisplayPatch": {
+      "properties": {
+        "navigation_items": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/components/schemas/NavigationItem"
+              },
+              "type": "array",
+              "maxItems": 12
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Navigation Items"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0.0,
+          "title": "Expected Version"
+        },
+        "contact_phone": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 32
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Contact Phone"
         },
         "fpt_anim": {
           "anyOf": [
@@ -8647,6 +10518,49 @@
             }
           ],
           "title": "Tilt Parallax"
+        },
+        "hero_experiment_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hero Experiment Id"
+        },
+        "promo_slides": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/components/schemas/PromoSlideInput"
+              },
+              "type": "array",
+              "maxItems": 12
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Promo Slides"
+        },
+        "plan_categories": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/components/schemas/PlanCategory"
+              },
+              "type": "array",
+              "maxItems": 3,
+              "minItems": 3
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Plan Categories"
         }
       },
       "additionalProperties": false,
@@ -8655,6 +10569,22 @@
         "expected_version"
       ],
       "title": "DisplayPatch"
+    },
+    "Enroll": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1,
+          "title": "Name"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "title": "Enroll"
     },
     "EventBatch": {
       "properties": {
@@ -8699,7 +10629,8 @@
             "click_call",
             "click_zalo",
             "return_visit",
-            "experiment_exposure"
+            "experiment_exposure",
+            "view_landing"
           ],
           "title": "Name"
         },
@@ -8750,6 +10681,32 @@
             }
           ],
           "title": "Variant"
+        },
+        "experiment_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Experiment Version"
+        },
+        "landing_slug": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Landing Slug"
         }
       },
       "additionalProperties": false,
@@ -8888,6 +10845,30 @@
       ],
       "title": "FollowupInput"
     },
+    "FooterGroup": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1,
+          "title": "Title"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/components/schemas/NavigationLink"
+          },
+          "type": "array",
+          "maxItems": 12,
+          "title": "Links"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "title": "FooterGroup"
+    },
     "GeographySyncInput": {
       "properties": {
         "branch_id": {
@@ -8986,6 +10967,698 @@
       ],
       "title": "IntegrationInput"
     },
+    "LandingCampaign": {
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "default": false
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Title",
+          "default": "Ưu đãi đăng ký"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Start"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "End"
+        },
+        "gift_label": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Gift Label",
+          "default": ""
+        },
+        "conditions": {
+          "type": "string",
+          "maxLength": 1200,
+          "title": "Conditions",
+          "default": ""
+        },
+        "stock_total": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stock Total"
+        },
+        "stock_remaining": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stock Remaining"
+        },
+        "show_countdown": {
+          "type": "boolean",
+          "title": "Show Countdown",
+          "default": true
+        },
+        "show_activity": {
+          "type": "boolean",
+          "title": "Show Activity",
+          "default": false
+        },
+        "inherit_promotions": {
+          "type": "boolean",
+          "title": "Inherit Promotions",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "LandingCampaign"
+    },
+    "LandingFAQ": {
+      "properties": {
+        "question": {
+          "type": "string",
+          "maxLength": 180,
+          "minLength": 1,
+          "title": "Question"
+        },
+        "answer": {
+          "type": "string",
+          "maxLength": 1200,
+          "minLength": 1,
+          "title": "Answer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "question",
+        "answer"
+      ],
+      "title": "LandingFAQ"
+    },
+    "LandingFeature": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Title"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 240,
+          "title": "Text",
+          "default": ""
+        },
+        "icon": {
+          "type": "string",
+          "enum": [
+            "speed",
+            "wifi",
+            "support",
+            "install",
+            "play",
+            "camera",
+            "users",
+            "building",
+            "award",
+            "shield"
+          ],
+          "title": "Icon",
+          "default": "wifi"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "title": "LandingFeature"
+    },
+    "LandingReview": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Location",
+          "default": ""
+        },
+        "quote": {
+          "type": "string",
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Quote"
+        },
+        "rating": {
+          "type": "integer",
+          "maximum": 5.0,
+          "minimum": 1.0,
+          "title": "Rating",
+          "default": 5
+        },
+        "avatar_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Avatar Image Id"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "quote"
+      ],
+      "title": "LandingReview"
+    },
+    "LandingSettings": {
+      "properties": {
+        "campaign": {
+          "$ref": "#/components/schemas/LandingCampaign"
+        },
+        "contact_phone": {
+          "type": "string",
+          "maxLength": 24,
+          "title": "Contact Phone",
+          "default": ""
+        },
+        "zalo_url": {
+          "type": "string",
+          "maxLength": 300,
+          "title": "Zalo Url",
+          "default": ""
+        },
+        "messenger_url": {
+          "type": "string",
+          "maxLength": 300,
+          "title": "Messenger Url",
+          "default": ""
+        },
+        "contact_label": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Contact Label",
+          "default": "Liên hệ tư vấn"
+        },
+        "contact_icon": {
+          "type": "string",
+          "enum": [
+            "support",
+            "phone",
+            "message"
+          ],
+          "title": "Contact Icon",
+          "default": "support"
+        },
+        "show_contact_popup": {
+          "type": "boolean",
+          "title": "Show Contact Popup",
+          "default": true
+        },
+        "footer_groups": {
+          "items": {
+            "$ref": "#/components/schemas/FooterGroup"
+          },
+          "type": "array",
+          "maxItems": 6,
+          "title": "Footer Groups"
+        },
+        "hero_eyebrow": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Hero Eyebrow",
+          "default": "INTERNET CÁP QUANG FPT TELECOM"
+        },
+        "hero_title": {
+          "type": "string",
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Hero Title",
+          "default": "Đăng Ký Lắp Đặt Internet"
+        },
+        "hero_highlight": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Hero Highlight",
+          "default": "Tốc Độ Cao FPT"
+        },
+        "hero_subtitle": {
+          "type": "string",
+          "maxLength": 240,
+          "title": "Hero Subtitle",
+          "default": "Kết nối theo nhu cầu – Tư vấn gói phù hợp"
+        },
+        "hero_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hero Image Id"
+        },
+        "hero_mobile_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hero Mobile Image Id"
+        },
+        "promo_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Promo Image Id"
+        },
+        "closing_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Closing Image Id"
+        },
+        "logo_image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Logo Image Id"
+        },
+        "form_title": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Form Title",
+          "default": "NHẬN TƯ VẤN GÓI INTERNET FPT"
+        },
+        "form_subtitle": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Form Subtitle",
+          "default": "Miễn phí tư vấn – Gói phù hợp – Giá rõ ràng"
+        },
+        "form_cta": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 1,
+          "title": "Form Cta",
+          "default": "Nhận tư vấn ngay"
+        },
+        "form_privacy": {
+          "type": "string",
+          "maxLength": 180,
+          "title": "Form Privacy",
+          "default": "Thông tin được dùng để liên hệ tư vấn"
+        },
+        "cta_label": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 1,
+          "title": "Cta Label",
+          "default": "Đăng ký ngay"
+        },
+        "plans_title": {
+          "type": "string",
+          "maxLength": 180,
+          "title": "Plans Title",
+          "default": "ĐA DẠNG GÓI CƯỚC – PHÙ HỢP MỌI NHU CẦU"
+        },
+        "plans_subtitle": {
+          "type": "string",
+          "maxLength": 240,
+          "title": "Plans Subtitle",
+          "default": "Internet, truyền hình và camera – Chọn khu vực để xem giá áp dụng"
+        },
+        "compare_title": {
+          "type": "string",
+          "maxLength": 120,
+          "title": "Compare Title",
+          "default": "SO SÁNH NHANH CÁC GÓI CƯỚC"
+        },
+        "promo_title": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Promo Title",
+          "default": "ƯU ĐÃI ĐĂNG KÝ"
+        },
+        "promo_subtitle": {
+          "type": "string",
+          "maxLength": 180,
+          "title": "Promo Subtitle",
+          "default": "Được xác nhận theo gói, khu vực và thời gian"
+        },
+        "benefits_title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Benefits Title",
+          "default": "VÌ SAO NÊN CHỌN INTERNET FPT TELECOM?"
+        },
+        "stats_title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Stats Title",
+          "default": "ĐỒNG HÀNH CÙNG KHÁCH HÀNG"
+        },
+        "reviews_title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Reviews Title",
+          "default": "KHÁCH HÀNG NÓI GÌ VỀ DỊCH VỤ?"
+        },
+        "faq_title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Faq Title",
+          "default": "CÂU HỎI THƯỜNG GẶP"
+        },
+        "closing_title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Closing Title",
+          "default": "ĐĂNG KÝ ĐỂ ĐƯỢC TƯ VẤN GÓI PHÙ HỢP"
+        },
+        "closing_subtitle": {
+          "type": "string",
+          "maxLength": 240,
+          "title": "Closing Subtitle",
+          "default": "Chọn gói, kiểm tra địa bàn và xác nhận lịch lắp đặt"
+        },
+        "footer_text": {
+          "type": "string",
+          "maxLength": 800,
+          "title": "Footer Text",
+          "default": "Tư vấn Internet, truyền hình và camera theo nhu cầu và địa bàn lắp đặt."
+        },
+        "plan_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 24,
+          "title": "Plan Ids"
+        },
+        "plan_presentations": {
+          "items": {
+            "$ref": "#/components/schemas/PlanPresentation"
+          },
+          "type": "array",
+          "maxItems": 24,
+          "title": "Plan Presentations"
+        },
+        "billing_months": {
+          "type": "integer",
+          "enum": [
+            1,
+            6,
+            12
+          ],
+          "title": "Billing Months",
+          "default": 6
+        },
+        "desktop_columns": {
+          "type": "integer",
+          "enum": [
+            0,
+            3,
+            4,
+            5,
+            6
+          ],
+          "title": "Desktop Columns",
+          "default": 0
+        },
+        "hero_features": {
+          "items": {
+            "$ref": "#/components/schemas/LandingFeature"
+          },
+          "type": "array",
+          "maxItems": 6,
+          "title": "Hero Features"
+        },
+        "benefits": {
+          "items": {
+            "$ref": "#/components/schemas/LandingFeature"
+          },
+          "type": "array",
+          "maxItems": 8,
+          "title": "Benefits"
+        },
+        "promo_items": {
+          "items": {
+            "$ref": "#/components/schemas/LandingFeature"
+          },
+          "type": "array",
+          "maxItems": 4,
+          "title": "Promo Items"
+        },
+        "stats": {
+          "items": {
+            "$ref": "#/components/schemas/LandingStat"
+          },
+          "type": "array",
+          "maxItems": 6,
+          "title": "Stats"
+        },
+        "reviews": {
+          "items": {
+            "$ref": "#/components/schemas/LandingReview"
+          },
+          "type": "array",
+          "maxItems": 12,
+          "title": "Reviews"
+        },
+        "faqs": {
+          "items": {
+            "$ref": "#/components/schemas/LandingFAQ"
+          },
+          "type": "array",
+          "maxItems": 16,
+          "title": "Faqs"
+        },
+        "nav_items": {
+          "items": {
+            "$ref": "#/components/schemas/NavigationLink"
+          },
+          "type": "array",
+          "maxItems": 8,
+          "title": "Nav Items"
+        },
+        "footer_links": {
+          "items": {
+            "$ref": "#/components/schemas/NavigationLink"
+          },
+          "type": "array",
+          "maxItems": 12,
+          "title": "Footer Links"
+        },
+        "show_comparison": {
+          "type": "boolean",
+          "title": "Show Comparison",
+          "default": true
+        },
+        "show_promo": {
+          "type": "boolean",
+          "title": "Show Promo",
+          "default": true
+        },
+        "show_benefits": {
+          "type": "boolean",
+          "title": "Show Benefits",
+          "default": true
+        },
+        "show_stats": {
+          "type": "boolean",
+          "title": "Show Stats",
+          "default": true
+        },
+        "show_reviews": {
+          "type": "boolean",
+          "title": "Show Reviews",
+          "default": true
+        },
+        "show_faq": {
+          "type": "boolean",
+          "title": "Show Faq",
+          "default": true
+        },
+        "show_closing": {
+          "type": "boolean",
+          "title": "Show Closing",
+          "default": true
+        },
+        "theme_preset": {
+          "type": "string",
+          "enum": [
+            "fpt_standard",
+            "blue_trust",
+            "orange_vibrant",
+            "modern_dark",
+            "emerald_fresh"
+          ],
+          "title": "Theme Preset",
+          "default": "fpt_standard"
+        },
+        "theme_radius": {
+          "type": "string",
+          "enum": [
+            "rounded",
+            "soft",
+            "pill"
+          ],
+          "title": "Theme Radius",
+          "default": "rounded"
+        },
+        "hero_layout": {
+          "type": "string",
+          "enum": [
+            "split",
+            "centered",
+            "minimal"
+          ],
+          "title": "Hero Layout",
+          "default": "split"
+        },
+        "plans_layout": {
+          "type": "string",
+          "enum": [
+            "grid",
+            "carousel",
+            "list"
+          ],
+          "title": "Plans Layout",
+          "default": "grid"
+        },
+        "section_order": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "plans",
+              "campaign",
+              "compare",
+              "promo",
+              "benefits",
+              "stats",
+              "reviews",
+              "faq",
+              "closing"
+            ]
+          },
+          "type": "array",
+          "maxItems": 10,
+          "title": "Section Order"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "LandingSettings"
+    },
+    "LandingStat": {
+      "properties": {
+        "value": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Value"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label"
+        },
+        "icon": {
+          "type": "string",
+          "enum": [
+            "speed",
+            "wifi",
+            "support",
+            "install",
+            "play",
+            "camera",
+            "users",
+            "building",
+            "award",
+            "shield"
+          ],
+          "title": "Icon",
+          "default": "users"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "value",
+        "label"
+      ],
+      "title": "LandingStat"
+    },
     "LeadRequest": {
       "properties": {
         "phone": {
@@ -9026,6 +11699,15 @@
             }
           ],
           "title": "Plan Id"
+        },
+        "accessory_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 20,
+          "title": "Accessory Ids"
         },
         "region_id": {
           "anyOf": [
@@ -9285,6 +11967,101 @@
       ],
       "title": "LeadWebhook"
     },
+    "LocationHint": {
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "estimated"
+          ],
+          "title": "Status",
+          "default": "unknown"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "vercel",
+                "geoip"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Country"
+        },
+        "province_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Province Name"
+        },
+        "subdivision_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Subdivision Code"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "City"
+        },
+        "accuracy_radius_km": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accuracy Radius Km"
+        },
+        "ward_id": {
+          "type": "null",
+          "title": "Ward Id"
+        },
+        "address_confirmed": {
+          "type": "boolean",
+          "const": false,
+          "title": "Address Confirmed",
+          "default": false
+        }
+      },
+      "type": "object",
+      "title": "LocationHint"
+    },
     "Login": {
       "properties": {
         "email": {
@@ -9304,6 +12081,18 @@
           "pattern": "^([0-9]{6})?$",
           "title": "Otp",
           "default": ""
+        },
+        "factor_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Factor Id"
         }
       },
       "additionalProperties": false,
@@ -9316,6 +12105,18 @@
     },
     "MembershipInput": {
       "properties": {
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Version"
+        },
         "display_name": {
           "type": "string",
           "maxLength": 100,
@@ -9388,6 +12189,87 @@
         "permissions"
       ],
       "title": "MembershipInput"
+    },
+    "NavigationItem": {
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Label"
+        },
+        "href": {
+          "type": "string",
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Href"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$",
+          "title": "Id"
+        },
+        "preset": {
+          "type": "string",
+          "enum": [
+            "internet",
+            "play",
+            "camera",
+            "smart-home",
+            "speedtest",
+            "promotions",
+            "custom"
+          ],
+          "title": "Preset",
+          "default": "custom"
+        },
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "default": true
+        },
+        "children": {
+          "items": {
+            "$ref": "#/components/schemas/NavigationLink"
+          },
+          "type": "array",
+          "maxItems": 12,
+          "title": "Children"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "label",
+        "href",
+        "id"
+      ],
+      "title": "NavigationItem"
+    },
+    "NavigationLink": {
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Label"
+        },
+        "href": {
+          "type": "string",
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Href"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "label",
+        "href"
+      ],
+      "title": "NavigationLink"
     },
     "ObservationCommand": {
       "properties": {
@@ -9485,56 +12367,1191 @@
       "title": "OperationalSettings"
     },
     "PageInput": {
+      "$defs": {
+        "Block": {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "text",
+                "heading",
+                "cta",
+                "image",
+                "pricing",
+                "faq"
+              ],
+              "title": "Type",
+              "type": "string"
+            },
+            "text": {
+              "default": "",
+              "maxLength": 5000,
+              "title": "Text",
+              "type": "string"
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "maxLength": 1000,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Url"
+            },
+            "media_id": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Media Id"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "title": "Block",
+          "type": "object"
+        },
+        "CampaignPrice": {
+          "additionalProperties": false,
+          "properties": {
+            "billing_months": {
+              "enum": [
+                1,
+                6,
+                12
+              ],
+              "title": "Billing Months",
+              "type": "integer"
+            },
+            "monthly_vnd": {
+              "maximum": 1000000000,
+              "minimum": 0,
+              "title": "Monthly Vnd",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "billing_months",
+            "monthly_vnd"
+          ],
+          "title": "CampaignPrice",
+          "type": "object"
+        },
+        "FooterGroup": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "maxLength": 60,
+              "minLength": 1,
+              "title": "Title",
+              "type": "string"
+            },
+            "links": {
+              "items": {
+                "$ref": "#/$defs/NavigationLink"
+              },
+              "maxItems": 12,
+              "title": "Links",
+              "type": "array"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "title": "FooterGroup",
+          "type": "object"
+        },
+        "LandingCampaign": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "title": {
+              "default": "Ưu đãi đăng ký",
+              "maxLength": 100,
+              "title": "Title",
+              "type": "string"
+            },
+            "start": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Start"
+            },
+            "end": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "End"
+            },
+            "gift_label": {
+              "default": "",
+              "maxLength": 160,
+              "title": "Gift Label",
+              "type": "string"
+            },
+            "conditions": {
+              "default": "",
+              "maxLength": 1200,
+              "title": "Conditions",
+              "type": "string"
+            },
+            "stock_total": {
+              "anyOf": [
+                {
+                  "maximum": 1000000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Stock Total"
+            },
+            "stock_remaining": {
+              "anyOf": [
+                {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Stock Remaining"
+            },
+            "show_countdown": {
+              "default": true,
+              "title": "Show Countdown",
+              "type": "boolean"
+            },
+            "show_activity": {
+              "default": false,
+              "title": "Show Activity",
+              "type": "boolean"
+            },
+            "inherit_promotions": {
+              "default": false,
+              "title": "Inherit Promotions",
+              "type": "boolean"
+            }
+          },
+          "title": "LandingCampaign",
+          "type": "object"
+        },
+        "LandingFAQ": {
+          "additionalProperties": false,
+          "properties": {
+            "question": {
+              "maxLength": 180,
+              "minLength": 1,
+              "title": "Question",
+              "type": "string"
+            },
+            "answer": {
+              "maxLength": 1200,
+              "minLength": 1,
+              "title": "Answer",
+              "type": "string"
+            }
+          },
+          "required": [
+            "question",
+            "answer"
+          ],
+          "title": "LandingFAQ",
+          "type": "object"
+        },
+        "LandingFeature": {
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "maxLength": 80,
+              "minLength": 1,
+              "title": "Title",
+              "type": "string"
+            },
+            "text": {
+              "default": "",
+              "maxLength": 240,
+              "title": "Text",
+              "type": "string"
+            },
+            "icon": {
+              "default": "wifi",
+              "enum": [
+                "speed",
+                "wifi",
+                "support",
+                "install",
+                "play",
+                "camera",
+                "users",
+                "building",
+                "award",
+                "shield"
+              ],
+              "title": "Icon",
+              "type": "string"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "title": "LandingFeature",
+          "type": "object"
+        },
+        "LandingReview": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "maxLength": 80,
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "location": {
+              "default": "",
+              "maxLength": 100,
+              "title": "Location",
+              "type": "string"
+            },
+            "quote": {
+              "maxLength": 500,
+              "minLength": 1,
+              "title": "Quote",
+              "type": "string"
+            },
+            "rating": {
+              "default": 5,
+              "maximum": 5,
+              "minimum": 1,
+              "title": "Rating",
+              "type": "integer"
+            },
+            "avatar_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Avatar Image Id"
+            }
+          },
+          "required": [
+            "name",
+            "quote"
+          ],
+          "title": "LandingReview",
+          "type": "object"
+        },
+        "LandingSettings": {
+          "additionalProperties": false,
+          "properties": {
+            "campaign": {
+              "$ref": "#/$defs/LandingCampaign"
+            },
+            "contact_phone": {
+              "default": "",
+              "maxLength": 24,
+              "title": "Contact Phone",
+              "type": "string"
+            },
+            "zalo_url": {
+              "default": "",
+              "maxLength": 300,
+              "title": "Zalo Url",
+              "type": "string"
+            },
+            "messenger_url": {
+              "default": "",
+              "maxLength": 300,
+              "title": "Messenger Url",
+              "type": "string"
+            },
+            "contact_label": {
+              "default": "Liên hệ tư vấn",
+              "maxLength": 40,
+              "minLength": 1,
+              "title": "Contact Label",
+              "type": "string"
+            },
+            "contact_icon": {
+              "default": "support",
+              "enum": [
+                "support",
+                "phone",
+                "message"
+              ],
+              "title": "Contact Icon",
+              "type": "string"
+            },
+            "show_contact_popup": {
+              "default": true,
+              "title": "Show Contact Popup",
+              "type": "boolean"
+            },
+            "footer_groups": {
+              "items": {
+                "$ref": "#/$defs/FooterGroup"
+              },
+              "maxItems": 6,
+              "title": "Footer Groups",
+              "type": "array"
+            },
+            "hero_eyebrow": {
+              "default": "INTERNET CÁP QUANG FPT TELECOM",
+              "maxLength": 100,
+              "title": "Hero Eyebrow",
+              "type": "string"
+            },
+            "hero_title": {
+              "default": "Đăng Ký Lắp Đặt Internet",
+              "maxLength": 160,
+              "minLength": 1,
+              "title": "Hero Title",
+              "type": "string"
+            },
+            "hero_highlight": {
+              "default": "Tốc Độ Cao FPT",
+              "maxLength": 100,
+              "title": "Hero Highlight",
+              "type": "string"
+            },
+            "hero_subtitle": {
+              "default": "Kết nối theo nhu cầu – Tư vấn gói phù hợp",
+              "maxLength": 240,
+              "title": "Hero Subtitle",
+              "type": "string"
+            },
+            "hero_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Hero Image Id"
+            },
+            "hero_mobile_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Hero Mobile Image Id"
+            },
+            "promo_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Promo Image Id"
+            },
+            "closing_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Closing Image Id"
+            },
+            "logo_image_id": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Logo Image Id"
+            },
+            "form_title": {
+              "default": "NHẬN TƯ VẤN GÓI INTERNET FPT",
+              "maxLength": 100,
+              "title": "Form Title",
+              "type": "string"
+            },
+            "form_subtitle": {
+              "default": "Miễn phí tư vấn – Gói phù hợp – Giá rõ ràng",
+              "maxLength": 160,
+              "title": "Form Subtitle",
+              "type": "string"
+            },
+            "form_cta": {
+              "default": "Nhận tư vấn ngay",
+              "maxLength": 48,
+              "minLength": 1,
+              "title": "Form Cta",
+              "type": "string"
+            },
+            "form_privacy": {
+              "default": "Thông tin được dùng để liên hệ tư vấn",
+              "maxLength": 180,
+              "title": "Form Privacy",
+              "type": "string"
+            },
+            "cta_label": {
+              "default": "Đăng ký ngay",
+              "maxLength": 48,
+              "minLength": 1,
+              "title": "Cta Label",
+              "type": "string"
+            },
+            "plans_title": {
+              "default": "ĐA DẠNG GÓI CƯỚC – PHÙ HỢP MỌI NHU CẦU",
+              "maxLength": 180,
+              "title": "Plans Title",
+              "type": "string"
+            },
+            "plans_subtitle": {
+              "default": "Internet, truyền hình và camera – Chọn khu vực để xem giá áp dụng",
+              "maxLength": 240,
+              "title": "Plans Subtitle",
+              "type": "string"
+            },
+            "compare_title": {
+              "default": "SO SÁNH NHANH CÁC GÓI CƯỚC",
+              "maxLength": 120,
+              "title": "Compare Title",
+              "type": "string"
+            },
+            "promo_title": {
+              "default": "ƯU ĐÃI ĐĂNG KÝ",
+              "maxLength": 100,
+              "title": "Promo Title",
+              "type": "string"
+            },
+            "promo_subtitle": {
+              "default": "Được xác nhận theo gói, khu vực và thời gian",
+              "maxLength": 180,
+              "title": "Promo Subtitle",
+              "type": "string"
+            },
+            "benefits_title": {
+              "default": "VÌ SAO NÊN CHỌN INTERNET FPT TELECOM?",
+              "maxLength": 160,
+              "title": "Benefits Title",
+              "type": "string"
+            },
+            "stats_title": {
+              "default": "ĐỒNG HÀNH CÙNG KHÁCH HÀNG",
+              "maxLength": 160,
+              "title": "Stats Title",
+              "type": "string"
+            },
+            "reviews_title": {
+              "default": "KHÁCH HÀNG NÓI GÌ VỀ DỊCH VỤ?",
+              "maxLength": 160,
+              "title": "Reviews Title",
+              "type": "string"
+            },
+            "faq_title": {
+              "default": "CÂU HỎI THƯỜNG GẶP",
+              "maxLength": 160,
+              "title": "Faq Title",
+              "type": "string"
+            },
+            "closing_title": {
+              "default": "ĐĂNG KÝ ĐỂ ĐƯỢC TƯ VẤN GÓI PHÙ HỢP",
+              "maxLength": 160,
+              "title": "Closing Title",
+              "type": "string"
+            },
+            "closing_subtitle": {
+              "default": "Chọn gói, kiểm tra địa bàn và xác nhận lịch lắp đặt",
+              "maxLength": 240,
+              "title": "Closing Subtitle",
+              "type": "string"
+            },
+            "footer_text": {
+              "default": "Tư vấn Internet, truyền hình và camera theo nhu cầu và địa bàn lắp đặt.",
+              "maxLength": 800,
+              "title": "Footer Text",
+              "type": "string"
+            },
+            "plan_ids": {
+              "items": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "maxItems": 24,
+              "title": "Plan Ids",
+              "type": "array"
+            },
+            "plan_presentations": {
+              "items": {
+                "$ref": "#/$defs/PlanPresentation"
+              },
+              "maxItems": 24,
+              "title": "Plan Presentations",
+              "type": "array"
+            },
+            "billing_months": {
+              "default": 6,
+              "enum": [
+                1,
+                6,
+                12
+              ],
+              "title": "Billing Months",
+              "type": "integer"
+            },
+            "desktop_columns": {
+              "default": 0,
+              "enum": [
+                0,
+                3,
+                4,
+                5,
+                6
+              ],
+              "title": "Desktop Columns",
+              "type": "integer"
+            },
+            "hero_features": {
+              "items": {
+                "$ref": "#/$defs/LandingFeature"
+              },
+              "maxItems": 6,
+              "title": "Hero Features",
+              "type": "array"
+            },
+            "benefits": {
+              "items": {
+                "$ref": "#/$defs/LandingFeature"
+              },
+              "maxItems": 8,
+              "title": "Benefits",
+              "type": "array"
+            },
+            "promo_items": {
+              "items": {
+                "$ref": "#/$defs/LandingFeature"
+              },
+              "maxItems": 4,
+              "title": "Promo Items",
+              "type": "array"
+            },
+            "stats": {
+              "items": {
+                "$ref": "#/$defs/LandingStat"
+              },
+              "maxItems": 6,
+              "title": "Stats",
+              "type": "array"
+            },
+            "reviews": {
+              "items": {
+                "$ref": "#/$defs/LandingReview"
+              },
+              "maxItems": 12,
+              "title": "Reviews",
+              "type": "array"
+            },
+            "faqs": {
+              "items": {
+                "$ref": "#/$defs/LandingFAQ"
+              },
+              "maxItems": 16,
+              "title": "Faqs",
+              "type": "array"
+            },
+            "nav_items": {
+              "items": {
+                "$ref": "#/$defs/NavigationLink"
+              },
+              "maxItems": 8,
+              "title": "Nav Items",
+              "type": "array"
+            },
+            "footer_links": {
+              "items": {
+                "$ref": "#/$defs/NavigationLink"
+              },
+              "maxItems": 12,
+              "title": "Footer Links",
+              "type": "array"
+            },
+            "show_comparison": {
+              "default": true,
+              "title": "Show Comparison",
+              "type": "boolean"
+            },
+            "show_promo": {
+              "default": true,
+              "title": "Show Promo",
+              "type": "boolean"
+            },
+            "show_benefits": {
+              "default": true,
+              "title": "Show Benefits",
+              "type": "boolean"
+            },
+            "show_stats": {
+              "default": true,
+              "title": "Show Stats",
+              "type": "boolean"
+            },
+            "show_reviews": {
+              "default": true,
+              "title": "Show Reviews",
+              "type": "boolean"
+            },
+            "show_faq": {
+              "default": true,
+              "title": "Show Faq",
+              "type": "boolean"
+            },
+            "show_closing": {
+              "default": true,
+              "title": "Show Closing",
+              "type": "boolean"
+            },
+            "theme_preset": {
+              "default": "fpt_standard",
+              "enum": [
+                "fpt_standard",
+                "blue_trust",
+                "orange_vibrant",
+                "modern_dark",
+                "emerald_fresh"
+              ],
+              "title": "Theme Preset",
+              "type": "string"
+            },
+            "theme_radius": {
+              "default": "rounded",
+              "enum": [
+                "rounded",
+                "soft",
+                "pill"
+              ],
+              "title": "Theme Radius",
+              "type": "string"
+            },
+            "hero_layout": {
+              "default": "split",
+              "enum": [
+                "split",
+                "centered",
+                "minimal"
+              ],
+              "title": "Hero Layout",
+              "type": "string"
+            },
+            "plans_layout": {
+              "default": "grid",
+              "enum": [
+                "grid",
+                "carousel",
+                "list"
+              ],
+              "title": "Plans Layout",
+              "type": "string"
+            },
+            "section_order": {
+              "items": {
+                "enum": [
+                  "hero",
+                  "plans",
+                  "campaign",
+                  "compare",
+                  "promo",
+                  "benefits",
+                  "stats",
+                  "reviews",
+                  "faq",
+                  "closing"
+                ],
+                "type": "string"
+              },
+              "maxItems": 10,
+              "title": "Section Order",
+              "type": "array"
+            }
+          },
+          "title": "LandingSettings",
+          "type": "object"
+        },
+        "LandingStat": {
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "maxLength": 32,
+              "minLength": 1,
+              "title": "Value",
+              "type": "string"
+            },
+            "label": {
+              "maxLength": 100,
+              "minLength": 1,
+              "title": "Label",
+              "type": "string"
+            },
+            "icon": {
+              "default": "users",
+              "enum": [
+                "speed",
+                "wifi",
+                "support",
+                "install",
+                "play",
+                "camera",
+                "users",
+                "building",
+                "award",
+                "shield"
+              ],
+              "title": "Icon",
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "label"
+          ],
+          "title": "LandingStat",
+          "type": "object"
+        },
+        "NavigationLink": {
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "maxLength": 40,
+              "minLength": 1,
+              "title": "Label",
+              "type": "string"
+            },
+            "href": {
+              "maxLength": 300,
+              "minLength": 1,
+              "title": "Href",
+              "type": "string"
+            }
+          },
+          "required": [
+            "label",
+            "href"
+          ],
+          "title": "NavigationLink",
+          "type": "object"
+        },
+        "PlanPresentation": {
+          "additionalProperties": false,
+          "properties": {
+            "plan_id": {
+              "format": "uuid",
+              "title": "Plan Id",
+              "type": "string"
+            },
+            "subtitle": {
+              "default": "",
+              "maxLength": 100,
+              "title": "Subtitle",
+              "type": "string"
+            },
+            "badge": {
+              "default": "",
+              "maxLength": 40,
+              "title": "Badge",
+              "type": "string"
+            },
+            "accent": {
+              "default": "blue",
+              "enum": [
+                "blue",
+                "orange"
+              ],
+              "title": "Accent",
+              "type": "string"
+            },
+            "features": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 8,
+              "title": "Features",
+              "type": "array"
+            },
+            "card_labels": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "propertyNames": {
+                "enum": [
+                  "badge",
+                  "speed",
+                  "offers",
+                  "equipment",
+                  "register",
+                  "details"
+                ]
+              },
+              "title": "Card Labels",
+              "type": "object"
+            },
+            "campaign_prices": {
+              "items": {
+                "$ref": "#/$defs/CampaignPrice"
+              },
+              "maxItems": 3,
+              "title": "Campaign Prices",
+              "type": "array"
+            }
+          },
+          "required": [
+            "plan_id"
+          ],
+          "title": "PlanPresentation",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
       "properties": {
         "title": {
-          "type": "string",
           "maxLength": 200,
           "minLength": 1,
-          "title": "Title"
+          "title": "Title",
+          "type": "string"
         },
         "slug": {
-          "type": "string",
           "maxLength": 100,
           "minLength": 1,
           "pattern": "^[a-z0-9-]+$",
-          "title": "Slug"
+          "title": "Slug",
+          "type": "string"
         },
         "blocks": {
           "items": {
-            "$ref": "#/components/schemas/Block"
+            "$ref": "#/$defs/Block"
           },
-          "type": "array",
           "maxItems": 100,
-          "title": "Blocks"
+          "title": "Blocks",
+          "type": "array"
         },
         "description": {
-          "type": "string",
+          "default": "",
           "maxLength": 300,
           "title": "Description",
-          "default": ""
+          "type": "string"
         },
         "canonical_path": {
           "anyOf": [
             {
-              "type": "string",
               "maxLength": 200,
-              "pattern": "^/[a-z0-9/-]*$"
+              "pattern": "^/[a-z0-9/-]*$",
+              "type": "string"
             },
             {
               "type": "null"
             }
           ],
+          "default": null,
           "title": "Canonical Path"
+        },
+        "template": {
+          "default": "blocks",
+          "enum": [
+            "blocks",
+            "telecom"
+          ],
+          "title": "Template",
+          "type": "string"
+        },
+        "landing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LandingSettings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
-      "additionalProperties": false,
-      "type": "object",
       "required": [
         "title",
         "slug",
         "blocks"
       ],
-      "title": "PageInput"
+      "title": "PageInput",
+      "type": "object"
+    },
+    "PasswordChange": {
+      "properties": {
+        "current_password": {
+          "type": "string",
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Current Password"
+        },
+        "password": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 12,
+          "title": "Password"
+        },
+        "otp": {
+          "type": "string",
+          "pattern": "^([0-9]{6})?$",
+          "title": "Otp",
+          "default": ""
+        },
+        "factor_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Factor Id"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "current_password",
+        "password"
+      ],
+      "title": "PasswordChange"
+    },
+    "PaymentCollect": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "create_next": {
+          "type": "boolean",
+          "title": "Create Next",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version"
+      ],
+      "title": "PaymentCollect"
+    },
+    "PaymentCreate": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Payment Id"
+        },
+        "due_date": {
+          "type": "string",
+          "format": "date",
+          "title": "Due Date"
+        },
+        "amount_vnd": {
+          "type": "integer",
+          "maximum": 1000000000.0,
+          "minimum": 1.0,
+          "title": "Amount Vnd"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000,
+          "title": "Notes",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "payment_id",
+        "due_date",
+        "amount_vnd"
+      ],
+      "title": "PaymentCreate"
+    },
+    "PaymentUpdate": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "cancelled"
+          ],
+          "title": "Status",
+          "default": "pending"
+        },
+        "due_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Due Date"
+        },
+        "amount_vnd": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount Vnd"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2000
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Notes"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version"
+      ],
+      "title": "PaymentUpdate"
+    },
+    "PlanCategory": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "short_name": {
+          "type": "string",
+          "maxLength": 12,
+          "minLength": 1,
+          "title": "Short Name"
+        },
+        "plan_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 100,
+          "title": "Plan Ids"
+        },
+        "services": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "business",
+              "combo",
+              "play",
+              "camera"
+            ]
+          },
+          "type": "array",
+          "maxItems": 5,
+          "title": "Services"
+        },
+        "all_plans": {
+          "type": "boolean",
+          "title": "All Plans",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "short_name"
+      ],
+      "title": "PlanCategory"
     },
     "PlanInput": {
       "properties": {
@@ -9568,6 +13585,9 @@
           "title": "Description",
           "default": ""
         },
+        "card_labels": {
+          "$ref": "#/components/schemas/CardLabels"
+        },
         "speed_mbps": {
           "anyOf": [
             {
@@ -9580,6 +13600,19 @@
             }
           ],
           "title": "Speed Mbps"
+        },
+        "upload_speed_mbps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 100000.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upload Speed Mbps"
         },
         "equipment": {
           "items": {
@@ -9597,6 +13630,24 @@
           "type": "array",
           "maxItems": 500,
           "title": "Applicable Region Ids"
+        },
+        "image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Image Id"
+        },
+        "image_alt": {
+          "type": "string",
+          "maxLength": 200,
+          "title": "Image Alt",
+          "default": ""
         }
       },
       "additionalProperties": false,
@@ -9607,6 +13658,75 @@
         "code"
       ],
       "title": "PlanInput"
+    },
+    "PlanPresentation": {
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Plan Id"
+        },
+        "subtitle": {
+          "type": "string",
+          "maxLength": 100,
+          "title": "Subtitle",
+          "default": ""
+        },
+        "badge": {
+          "type": "string",
+          "maxLength": 40,
+          "title": "Badge",
+          "default": ""
+        },
+        "accent": {
+          "type": "string",
+          "enum": [
+            "blue",
+            "orange"
+          ],
+          "title": "Accent",
+          "default": "blue"
+        },
+        "features": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "maxItems": 8,
+          "title": "Features"
+        },
+        "card_labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "badge",
+              "speed",
+              "offers",
+              "equipment",
+              "register",
+              "details"
+            ]
+          },
+          "type": "object",
+          "title": "Card Labels"
+        },
+        "campaign_prices": {
+          "items": {
+            "$ref": "#/components/schemas/CampaignPrice"
+          },
+          "type": "array",
+          "maxItems": 3,
+          "title": "Campaign Prices"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "plan_id"
+      ],
+      "title": "PlanPresentation"
     },
     "PreferencesInput": {
       "properties": {
@@ -9662,6 +13782,21 @@
           "maximum": 1000000000.0,
           "minimum": 0.0,
           "title": "Monthly Vnd"
+        },
+        "monthly_coefficient": {
+          "anyOf": [
+            {
+              "type": "number",
+              "maximum": 100.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,4}0*$"
+            }
+          ],
+          "title": "Monthly Coefficient",
+          "default": "1"
         },
         "setup_vnd": {
           "type": "integer",
@@ -9804,6 +13939,65 @@
           "type": "array",
           "maxItems": 50,
           "title": "Plan Ids"
+        },
+        "price_vnd": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Price Vnd"
+        },
+        "original_price_vnd": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Original Price Vnd"
+        },
+        "offer_label": {
+          "type": "string",
+          "maxLength": 200,
+          "title": "Offer Label",
+          "default": ""
+        },
+        "billing_mode": {
+          "type": "string",
+          "enum": [
+            "one_time",
+            "monthly"
+          ],
+          "title": "Billing Mode",
+          "default": "one_time"
+        },
+        "image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Image Id"
+        },
+        "image_alt": {
+          "type": "string",
+          "maxLength": 200,
+          "title": "Image Alt",
+          "default": ""
         }
       },
       "additionalProperties": false,
@@ -9814,6 +14008,169 @@
         "service"
       ],
       "title": "ProductInput"
+    },
+    "ProfileInput": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 150,
+          "title": "Name",
+          "default": ""
+        },
+        "installation_address": {
+          "type": "string",
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Installation Address"
+        },
+        "province_code": {
+          "type": "integer",
+          "maximum": 999999.0,
+          "minimum": 1.0,
+          "title": "Province Code"
+        },
+        "ward_code": {
+          "type": "integer",
+          "maximum": 999999.0,
+          "minimum": 1.0,
+          "title": "Ward Code"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Plan Id"
+        },
+        "accessory_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 20,
+          "title": "Accessory Ids"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "installation_address",
+        "province_code",
+        "ward_code"
+      ],
+      "title": "ProfileInput"
+    },
+    "PromoSlideInput": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Title"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Description",
+          "default": ""
+        },
+        "image_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Image Id"
+        },
+        "image_alt": {
+          "type": "string",
+          "maxLength": 120,
+          "title": "Image Alt",
+          "default": ""
+        },
+        "cta_label": {
+          "type": "string",
+          "maxLength": 24,
+          "minLength": 1,
+          "title": "Cta Label",
+          "default": "Nhận tư vấn"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Plan Id"
+        },
+        "href": {
+          "type": "string",
+          "maxLength": 300,
+          "title": "Href",
+          "default": ""
+        },
+        "video_url": {
+          "type": "string",
+          "maxLength": 300,
+          "title": "Video Url",
+          "default": ""
+        },
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "default": true
+        },
+        "start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Start"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "End"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "title": "PromoSlideInput"
     },
     "PromotionInput": {
       "properties": {
@@ -9883,6 +14240,20 @@
     },
     "QuoteRequest": {
       "properties": {
+        "landing_slug": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Landing Slug"
+        },
         "plan_id": {
           "type": "string",
           "format": "uuid",
@@ -9906,6 +14277,15 @@
           "minimum": 1.0,
           "title": "Billing Months",
           "default": 6
+        },
+        "accessory_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 20,
+          "title": "Accessory Ids"
         }
       },
       "additionalProperties": false,
@@ -10157,14 +14537,31 @@
         },
         "otp": {
           "type": "string",
-          "pattern": "^[0-9]{6,8}$",
+          "pattern": "^[0-9]{6}$",
           "title": "Otp"
+        },
+        "challenge_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Challenge Id"
         },
         "totp": {
           "type": "string",
           "pattern": "^([0-9]{6})?$",
           "title": "Totp",
           "default": ""
+        },
+        "totp_factor_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Totp Factor Id"
         }
       },
       "additionalProperties": false,
@@ -10172,7 +14569,8 @@
       "required": [
         "email",
         "password",
-        "otp"
+        "otp",
+        "challenge_id"
       ],
       "title": "ResetPassword"
     },
@@ -10231,6 +14629,54 @@
       "additionalProperties": false,
       "type": "object",
       "title": "Shift"
+    },
+    "StaffCreate": {
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 254,
+          "minLength": 3,
+          "title": "Email"
+        },
+        "password": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 12,
+          "title": "Password"
+        },
+        "display_name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Display Name"
+        },
+        "branch_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Branch Id"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "sales",
+            "support",
+            "marketing",
+            "editor",
+            "manager"
+          ],
+          "title": "Role"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "email",
+        "password",
+        "display_name",
+        "branch_id",
+        "role"
+      ],
+      "title": "StaffCreate"
     },
     "TransitionCommand": {
       "properties": {
@@ -10373,6 +14819,19 @@
           "maximum": 10000.0,
           "minimum": 0.0,
           "title": "Weight"
+        },
+        "cta_label": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 24,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cta Label"
         }
       },
       "additionalProperties": false,
@@ -10382,6 +14841,25 @@
         "weight"
       ],
       "title": "Variant"
+    },
+    "VariantRequest": {
+      "properties": {
+        "session_token": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 8192
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Session Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "VariantRequest"
     },
     "VersionCommand": {
       "properties": {

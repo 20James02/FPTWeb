@@ -93,7 +93,7 @@ async function loadSystemStatus() {
     container.append(
       adminNode(
         "p",
-        `Kiểm tra: ${new Date(data.checked_at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} · ${data.environment}`,
+        `Kiểm tra: ${PageFPTDates.format(data.checked_at)} · ${data.environment}`,
       ),
     );
   } catch (e) {
@@ -103,13 +103,21 @@ async function loadSystemStatus() {
 async function saveAdminDisplaySettings(event) {
   event?.preventDefault();
   const button = document.getElementById("btn-save-display-settings");
+  const state = document.getElementById("display-settings-state");
   button.disabled = true;
+  if (state) state.textContent = "Đang lưu cấu hình…";
   try {
     const banner_zones = {};
     document
       .querySelectorAll(".banner-zone-toggle")
       .forEach((node) => (banner_zones[node.dataset.zone] = node.checked));
-    const payload = { expected_version: adminDisplayVersion, banner_zones };
+    const payload = {
+      expected_version: adminDisplayVersion,
+      banner_zones,
+      contact_phone: document
+        .getElementById("setting-contact-phone")
+        .value.trim(),
+    };
     for (const key of [
       "fpt_anim",
       "runline_enabled",
@@ -136,8 +144,13 @@ async function saveAdminDisplaySettings(event) {
           : data.message || "Chưa thể lưu.",
       );
     adminDisplayVersion = data.settings.version;
+    document.getElementById("setting-contact-phone").value =
+      data.settings.contact_phone_display;
+    if (state)
+      state.textContent = "Đã lưu. Thông tin liên hệ đã cập nhật trên website.";
     showToast("Đã lưu cấu hình hiển thị.", "success");
   } catch (e) {
+    if (state) state.textContent = e.message;
     showToast(e.message, "error");
   } finally {
     button.disabled = false;

@@ -1,0 +1,33 @@
+# Credentials and local operator tools never belong in a deployment upload.
+.env
+.env.*
+.local
+.venv
+node_modules
+.git
+.github
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.hypothesis
+__pycache__
+**/__pycache__
+*.pyc
+*.pem
+*.key
+*.p12
+*.sqlite
+*.sqlite3
+*.db
+
+# Runtime code/templates/static assets and Python lockfiles remain included.
+tests
+tools
+docs
+supabase
+audit-mangfpt
+dist
+build
+htmlcov
+.coverage
+*.md

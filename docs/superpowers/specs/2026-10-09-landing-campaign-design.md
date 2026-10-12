@@ -1,0 +1,12 @@
+# Landing bán hàng dễ cấu hình
+
+Mục tiêu: landing chiến dịch có thẻ cùng cấu trúc trang chủ, bố cục 320–1440px, giá riêng được xác nhận server và giữ trong quote snapshot. Giữ Python/FastAPI/Jinja2, không thêm frontend framework.
+
+1. Dùng chung `published_plan_cards.html`: ảnh full viền, tên/tốc độ, giá mỗi tháng và kỳ, phụ kiện, thiết bị, đăng ký/chi tiết. Landing ghi đè nhãn theo từng gói; desktop grid 3–6 cột, mobile thẻ cuộn ngang có nút/dots, không kéo giãn ảnh/chữ hay tràn viewport. Chỉ có 1–2 gói thì căn giữa.
+2. `PlanPresentation` thêm card_labels và campaign_prices 1/6/12 tháng (giá mỗi tháng số nguyên). QuoteRequest thêm landing_slug; server chỉ đọc bản công bố, kiểm tra gói được chọn, thời gian chiến dịch, phạm vi bảng giá gốc. Ghi đè giá qua calculate_quote, không nhận giá từ client. Phụ kiện và VAT dùng quy tắc hiện hành. Snapshot ghi ID/version landing; không đổi giá trang chủ. Preview chưa lưu chỉ xem nhãn/bố cục; giá chiến dịch cần lưu và công bố để báo giá có hiệu lực.
+3. Campaign: bật/tắt, tên, ngày bắt đầu/kết thúc có timezone, quà/điều kiện, số suất tổng/còn (Admin cập nhật, không tự trừ khi chỉ gửi form), countdown dựa giờ server, trạng thái chưa bắt đầu/đang chạy/hết hạn/hết suất. Không tự reset thời hạn. Số phiên gần đây chỉ lấy analytics có đồng ý, không bịa; bật tùy chọn, TTL 60 giây, ẩn khi không có dữ liệu.
+4. Liên hệ riêng: số hotline, Zalo, Messenger, kiểu icon support/phone/message, nhãn; popup không tự bật. Footer danh mục thêm/sửa/xóa/sắp xếp và link HTTPS/internal an toàn; kế thừa global nếu hotline trống.
+5. Admin: thanh bước nhanh, accordion tùy chỉnh, preset chiến dịch camera không tự điền giá/số lượng/claims; hướng dẫn trường gần input, nút reset từng ghi đè, trạng thái lưu/MFA/công bố/preview. Không mất dữ liệu khi preview/upload/save async.
+6. Sale: hero một lợi ích, CTA nhận tư vấn rõ, giá/ưu đãi/địa bàn minh bạch, FAQ rào cản camera/thiết bị/phí/lắp đặt, form giữ name/phone/address + consent; đo view/select/start/lead và chất lượng lead. Báo cáo chấm điểm chẩn đoán có bằng chứng, không hứa tỷ lệ chuyển đổi.
+
+Kiểm chứng: RED/GREEN giá chiến dịch không ảnh hưởng giá thường, trước/sau deadline, unpublished/invalid plan, kỳ/phụ kiện/VAT/snapshot; browser Chromium/WebKit 320/390/768/1440, card consistency, edit/preview/publish/contact/FAQ; deployment asset hashes và read-only health/auth checks. Không tạo lead/dữ liệu mẫu trên production; không commit/push tự động.

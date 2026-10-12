@@ -27,29 +27,6 @@
 </section>
 <section class="panel-card"><h2>Kết nối dịch vụ</h2><p>Độ trễ là một lần kiểm tra DB, không phải giá trị trung bình. Cấu hình cloud cần được kiểm chứng trên môi trường triển khai.</p><div id="system-status-list" class="workspace-list" aria-live="polite">Đang kiểm tra…</div><button type="button" class="btn-action-detail" onclick="loadSystemStatus()">Kiểm tra lại</button></section>
 {% endif %}
-<section class="panel-card"><h2>Phiên đăng nhập</h2><p>Mức xác thực: <strong>{{admin_actor.aal}}</strong></p><p>Thông tin thay đổi mật khẩu được quản lý bởi nhà cung cấp xác thực.</p><a class="btn-action-detail" href="/admin/login">Mở đăng nhập / Khôi phục mật khẩu</a><a class="btn-action-detail" href="/admin/operations?tab=memberships">Quản lý nhân sự, ca làm và quyền</a></section>
-{% if admin_actor.permits('content.publish') %}
-<section class="panel-card"><h2>Hiển thị website</h2>
-<form id="display-settings-form">
-<div class="admin-form-grid">
-<label class="admin-check"><input id="setting-fpt-anim" type="checkbox" {% if display_settings.fpt_anim %}checked{% endif %}>Hiệu ứng logo</label>
-<label>Kiểu hiệu ứng<select id="setting-fpt-anim-style">{% for v in ['wave','bounce','glow'] %}<option value="{{v}}" {% if display_settings.fpt_anim_style==v %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
-<label class="admin-check"><input id="setting-runline-enabled" type="checkbox" {% if display_settings.runline_enabled %}checked{% endif %}>Dòng thông báo</label>
-<label>Tốc độ<select id="setting-runline-speed">{% for v in ['slow','normal','fast'] %}<option value="{{v}}" {% if display_settings.runline_speed==v %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
-<label>Nội dung thông báo<textarea id="setting-runline-text" maxlength="2000">{{display_settings.runline_text}}</textarea></label>
-<label class="admin-check"><input id="setting-lenis-scroll" type="checkbox" {% if display_settings.lenis_scroll %}checked{% endif %}>Cuộn mượt</label>
-<label class="admin-check"><input id="setting-tilt-parallax" type="checkbox" {% if display_settings.tilt_parallax %}checked{% endif %}>Hiệu ứng thẻ</label>
-</div>
-<fieldset><legend>Các vùng hiển thị</legend><div class="admin-form-grid">
-{% for key,label in [('hero_slider','Banner đầu trang'),('showcase_posters','Ảnh giới thiệu'),('ribbon_banner','Dải thông báo'),('promo_grid','Các thẻ ưu đãi'),('app_banner','Banner ứng dụng'),('floating_promo','Ưu đãi nổi')] %}
-<label class="admin-check"><input class="banner-zone-toggle" type="checkbox" data-zone="{{key}}" {% if display_settings.banner_zones[key] %}checked{% endif %}>{{label}}</label>
-{% endfor %}</div></fieldset>
-<button type="submit" id="btn-save-display-settings" class="btn-action-call">Lưu cài đặt giao diện</button>
-<a class="btn-action-detail" href="/admin/content">Quản lý landing page, media và lịch công bố</a>
-</form></section>
-{% endif %}
-{% endblock %}
-{% block extra_scripts %}
-<script>let adminDisplayVersion={{display_settings.version}};</script>
-<script src="/static/js/admin/settings.js"></script>
-{% endblock %}
+<section class="panel-card"><h2>Phiên đăng nhập</h2><p>Mức xác thực: <strong>{{admin_actor.aal}}</strong></p><a class="btn-action-detail" href="/admin/account">Thiết lập MFA / Đổi mật khẩu / Nhân viên</a><a class="btn-action-detail" href="/admin/login">Khôi phục mật khẩu</a></section>
+{% if admin_actor.permits('content.publish') %}<section class="panel-card"><h2>Giao diện khách hàng</h2><p>Quản lý slide, vùng hiển thị và danh mục tại mục riêng.</p><a class="btn-action-detail" href="/admin/appearance">Slide & giao diện</a><a class="btn-action-detail" href="/admin/navigation">Menu điều hướng</a></section>{% endif %}
+{% endblock %}{% block extra_scripts %}<script src="/static/js/admin/settings.js"></script>{% endblock %}

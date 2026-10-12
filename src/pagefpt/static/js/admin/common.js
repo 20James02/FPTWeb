@@ -103,10 +103,45 @@ function adminNode(tag, text, className = "") {
 }
 
 /** Native dialogs supply focus trapping, keyboard dismissal and accessible form labels. */
+async function adminConfirm(message, danger = false) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.className = "admin-dialog";
+    dialog.setAttribute("aria-label", "Xác nhận thao tác");
+    const title = adminNode("h2", "Xác nhận thao tác"),
+      description = adminNode("p", message),
+      actions = adminNode("div", "", "admin-dialog-actions"),
+      cancel = adminNode("button", "Hủy", "btn-action-detail"),
+      confirm = adminNode(
+        "button",
+        "Xác nhận",
+        "btn-action-call" + (danger ? " danger" : ""),
+      );
+    cancel.type = confirm.type = "button";
+    cancel.onclick = () => dialog.close();
+    confirm.onclick = () => dialog.close("confirmed");
+    actions.append(cancel, confirm);
+    dialog.append(title, description, actions);
+    dialog.addEventListener(
+      "close",
+      () => {
+        const accepted = dialog.returnValue === "confirmed";
+        dialog.remove();
+        resolve(accepted);
+      },
+      { once: true },
+    );
+    document.body.append(dialog);
+    dialog.showModal();
+    cancel.focus();
+  });
+}
+
 async function adminAskText(title, maxLength = 500) {
   return new Promise((resolve) => {
     const dialog = document.createElement("dialog");
     dialog.className = "admin-dialog";
+    dialog.setAttribute("aria-label", title);
     const form = document.createElement("form"),
       label = adminNode("label", title),
       input = document.createElement("textarea");
@@ -143,15 +178,40 @@ async function adminAskText(title, maxLength = 500) {
     input.focus();
   });
 }
+function adminCanAssignLead(lead) {
+  return (
+    !!lead &&
+    [
+      "new",
+      "assigned",
+      "contacting",
+      "contacted",
+      "qualified",
+      "survey",
+      "quoted",
+      "closed",
+      "unreachable",
+      "no_infrastructure",
+    ].includes(lead.status)
+  );
+}
 async function adminChooseAssignee(leads) {
   if (!leads.length) {
-    showToast("Chọn ít nhất một hồ sơ mới / đã phân công.", "error");
+    showToast("Chọn ít nhất một hồ sơ còn đang xử lý.", "error");
+    return;
+  }
+  if (leads.some((lead) => !adminCanAssignLead(lead))) {
+    showToast(
+      "Hồ sơ đã kết thúc hoặc trạng thái không hỗ trợ phân công. Tải lại hồ sơ để kiểm tra.",
+      "error",
+    );
     return;
   }
   try {
     const data = await crmRequest("/assignees");
     const dialog = document.createElement("dialog");
     dialog.className = "admin-dialog";
+    dialog.setAttribute("aria-label", "Phân công hồ sơ cho nhân viên");
     const form = document.createElement("form"),
       heading = adminNode("h2", `Phân công ${leads.length} hồ sơ`),
       label = adminNode("label", "Nhân viên"),
@@ -177,7 +237,16 @@ async function adminChooseAssignee(leads) {
     save.type = "submit";
     save.disabled = !select.options.length;
     actions.append(cancel, save);
-    form.append(heading, label, error, actions);
+    form.append(
+      heading,
+      adminNode(
+        "p",
+        "Đổi nhân viên phụ trách giữ nguyên tiến độ xử lý và hạn phản hồi của hồ sơ.",
+      ),
+      label,
+      error,
+      actions,
+    );
     dialog.append(form);
     document.body.append(dialog);
     cancel.onclick = () => dialog.close();
@@ -258,8 +327,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function adminDraftCost(price) {
+  const coefficient = String(price.monthly_coefficient ?? 1);
+  if (!/^\d+(?:\.\d{1,4})?$/.test(coefficient) || Number(coefficient) > 100)
+    throw Error("Hệ số không hợp lệ");
+  const [whole, fraction = ""] = coefficient.split(".");
+  const scaled = BigInt(whole) * 10000n + BigInt(fraction.padEnd(4, "0"));
+  const monthly = (BigInt(price.monthly_vnd) * scaled + 5000n) / 10000n;
   const beforeVat =
-    BigInt(price.monthly_vnd) * BigInt(price.billing_months) +
+    monthly * BigInt(price.billing_months) +
     BigInt(price.setup_vnd) +
     BigInt(price.equipment_vnd);
   const added = price.vat_included

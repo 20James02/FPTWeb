@@ -1,5 +1,5 @@
 <!-- Receipt / Confirmation Success Modal -->
-<div class="bottom-sheet-backdrop" id="confirmation-backdrop">
+<div class="bottom-sheet-backdrop" id="confirmation-backdrop" aria-hidden="true" inert>
   <div class="bottom-sheet" id="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title" style="max-height: 85vh;">
     <div class="bottom-sheet-drag-handle"></div>
 
@@ -32,12 +32,12 @@
 
         <!-- Urgent Actions -->
         <div class="receipt-actions">
-          <a href="tel:19006600" class="btn-primary-hero" style="padding: 12px; font-size: 0.95rem;">
+          <a href="tel:{{ contact_phone }}" class="btn-primary-hero" style="padding: 12px; font-size: 0.95rem;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Tổng Đài Hỗ Trợ 24/7: 1900 6600</span>
+            <span>Liên hệ tư vấn: {{ contact_phone_display }}</span>
           </a>
 
-          <a href="https://zalo.me/19006600" target="_blank" rel="noopener noreferrer" class="btn-secondary-hero" style="padding: 12px; font-size: 0.95rem;">
+          <a href="{{ zalo_url|default('https://zalo.me/' ~ contact_phone) }}" target="_blank" rel="noopener noreferrer" class="btn-secondary-hero" style="padding: 12px; font-size: 0.95rem;">
             <span>Nhắn Tin Trực Tiếp Qua Zalo</span>
           </a>
 

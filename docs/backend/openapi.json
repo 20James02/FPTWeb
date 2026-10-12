@@ -130,6 +130,24 @@
         }
       }
     },
+    "/do-toc-do": {
+      "get": {
+        "summary": "Speedtest",
+        "operationId": "speedtest_do_toc_do_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin": {
       "get": {
         "summary": "Admin Root",
@@ -166,10 +184,46 @@
         }
       }
     },
+    "/admin/account": {
+      "get": {
+        "summary": "Admin Account",
+        "operationId": "admin_account_admin_account_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/dashboard": {
       "get": {
         "summary": "Admin Dashboard",
         "operationId": "admin_dashboard_admin_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/workbench": {
+      "get": {
+        "summary": "Admin Workbench",
+        "operationId": "admin_workbench_admin_workbench_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -350,6 +404,78 @@
         }
       }
     },
+    "/admin/accessories": {
+      "get": {
+        "summary": "Admin Accessories",
+        "operationId": "admin_accessories_admin_accessories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/appearance": {
+      "get": {
+        "summary": "Admin Appearance",
+        "operationId": "admin_appearance_admin_appearance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/navigation": {
+      "get": {
+        "summary": "Admin Navigation",
+        "operationId": "admin_navigation_admin_navigation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/landing-pages": {
+      "get": {
+        "summary": "Admin Landing Pages",
+        "operationId": "admin_landing_pages_admin_landing_pages_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/me": {
       "get": {
         "summary": "Me",
@@ -416,6 +542,315 @@
         }
       }
     },
+    "/api/v1/auth/account": {
+      "get": {
+        "summary": "Account",
+        "operationId": "account_api_v1_auth_account_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/enroll": {
+      "post": {
+        "summary": "Enroll",
+        "operationId": "enroll_api_v1_auth_mfa_enroll_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Enroll"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/{id}/verify": {
+      "post": {
+        "summary": "Verify",
+        "operationId": "verify_api_v1_auth_mfa__id__verify_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Code"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/{id}": {
+      "delete": {
+        "summary": "Unenroll",
+        "operationId": "unenroll_api_v1_auth_mfa__id__delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/account/password": {
+      "post": {
+        "summary": "Password",
+        "operationId": "password_api_v1_auth_account_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/roles": {
+      "get": {
+        "summary": "Roles",
+        "operationId": "roles_api_v1_admin_staff_roles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "summary": "Staff List",
+        "operationId": "staff_list_api_v1_admin_staff_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Staff",
+        "operationId": "create_staff_api_v1_admin_staff_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/branches": {
+      "get": {
+        "summary": "Staff Branches",
+        "operationId": "staff_branches_api_v1_admin_staff_branches_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regions/location-suggestion": {
+      "get": {
+        "summary": "Pricing Location",
+        "operationId": "pricing_location_api_v1_regions_location_suggestion_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationHint"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/locations/source": {
       "get": {
         "summary": "Source Preview",
@@ -472,6 +907,22 @@
       "get": {
         "summary": "Catalog",
         "operationId": "catalog_api_v1_catalog_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accessories": {
+      "get": {
+        "summary": "Accessories",
+        "operationId": "accessories_api_v1_accessories_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1085,6 +1536,136 @@
         }
       }
     },
+    "/api/v1/admin/address-options": {
+      "get": {
+        "summary": "Address Options",
+        "operationId": "address_options_api_v1_admin_address_options_get",
+        "parameters": [
+          {
+            "name": "province_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 999999,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Province Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/leads/{id}/profile": {
+      "get": {
+        "summary": "Read Profile",
+        "operationId": "read_profile_api_v1_admin_leads__id__profile_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Profile",
+        "operationId": "update_profile_api_v1_admin_leads__id__profile_put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/leads": {
       "get": {
         "summary": "Leads",
@@ -1284,6 +1865,46 @@
               "minimum": 0,
               "default": 0,
               "title": "After"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/workbench": {
+      "get": {
+        "summary": "Workbench",
+        "operationId": "workbench_api_v1_admin_workbench_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 6,
+              "title": "Limit"
             }
           }
         ],
@@ -1802,6 +2423,90 @@
                 }
               ],
               "title": "Session Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Variant Post",
+        "operationId": "variant_post_api_v1_experiments__id__variant_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VariantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/experiments/{id}/results": {
+      "get": {
+        "summary": "Experiment Results",
+        "operationId": "experiment_results_api_v1_admin_experiments__id__results_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
             }
           }
         ],
@@ -2494,6 +3199,118 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/branches": {
+      "get": {
+        "summary": "Report Branches",
+        "operationId": "report_branches_api_v1_admin_reports_branches_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/analytics": {
+      "get": {
+        "summary": "Analytics",
+        "operationId": "analytics_api_v1_admin_reports_analytics_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "branch_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch Id"
+            }
+          },
+          {
+            "name": "campaign",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Campaign"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4032,6 +4849,23 @@
               "default": 30,
               "title": "Limit"
             }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
           }
         ],
         "responses": {
@@ -5094,6 +5928,377 @@
         }
       }
     },
+    "/api/v1/admin/leads/{id}/billing": {
+      "get": {
+        "summary": "Billing Read",
+        "operationId": "billing_read_api_v1_admin_leads__id__billing_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Billing Save",
+        "operationId": "billing_save_api_v1_admin_leads__id__billing_put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DealSave"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/leads/{id}/payments": {
+      "get": {
+        "summary": "Payment List",
+        "operationId": "payment_list_api_v1_admin_leads__id__payments_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Payment Create",
+        "operationId": "payment_create_api_v1_admin_leads__id__payments_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payments/{id}": {
+      "patch": {
+        "summary": "Payment Update",
+        "operationId": "payment_update_api_v1_admin_payments__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payments/{id}/collect": {
+      "post": {
+        "summary": "Payment Collect",
+        "operationId": "payment_collect_api_v1_admin_payments__id__collect_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCollect"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/notifications": {
+      "get": {
+        "summary": "Notifications",
+        "operationId": "notifications_api_v1_admin_notifications_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/notifications/{id}/read": {
+      "post": {
+        "summary": "Notice Read",
+        "operationId": "notice_read_api_v1_admin_notifications__id__read_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/leads/{id}/intelligence": {
       "get": {
         "summary": "Intelligence",
@@ -5858,6 +7063,43 @@
           }
         }
       }
+    },
+    "/api/v1/landing/{slug}/activity": {
+      "get": {
+        "summary": "Activity",
+        "operationId": "activity_api_v1_landing__slug__activity_get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6243,6 +7485,80 @@
         ],
         "title": "CampaignInput"
       },
+      "CampaignPrice": {
+        "properties": {
+          "billing_months": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ],
+            "title": "Billing Months"
+          },
+          "monthly_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Monthly Vnd"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "billing_months",
+          "monthly_vnd"
+        ],
+        "title": "CampaignPrice"
+      },
+      "CardLabels": {
+        "properties": {
+          "badge": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Badge",
+            "default": "Gói đang cung cấp"
+          },
+          "speed": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Speed",
+            "default": "Tốc độ"
+          },
+          "offers": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Offers",
+            "default": "Ưu đãi đi kèm"
+          },
+          "equipment": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Equipment",
+            "default": "Thiết bị"
+          },
+          "register": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Register",
+            "default": "Đăng ký gói"
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Details",
+            "default": "Chi tiết gói"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CardLabels"
+      },
       "ChallengeInput": {
         "properties": {
           "session_token": {
@@ -6270,6 +7586,21 @@
           "provider_token"
         ],
         "title": "ChallengeInput"
+      },
+      "Code": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$",
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "Code"
       },
       "ConfirmQuote": {
         "properties": {
@@ -6379,12 +7710,77 @@
         ],
         "title": "CostInput"
       },
-      "DisplayPatch": {
+      "DealSave": {
         "properties": {
           "expected_version": {
             "type": "integer",
             "minimum": 0.0,
             "title": "Expected Version"
+          },
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "billing_months": {
+            "type": "integer",
+            "title": "Billing Months"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "plan_id",
+          "billing_months"
+        ],
+        "title": "DealSave"
+      },
+      "DisplayPatch": {
+        "properties": {
+          "navigation_items": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/NavigationItem"
+                },
+                "type": "array",
+                "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Navigation Items"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Version"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
           },
           "fpt_anim": {
             "anyOf": [
@@ -6487,6 +7883,49 @@
               }
             ],
             "title": "Tilt Parallax"
+          },
+          "hero_experiment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Experiment Id"
+          },
+          "promo_slides": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PromoSlideInput"
+                },
+                "type": "array",
+                "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promo Slides"
+          },
+          "plan_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PlanCategory"
+                },
+                "type": "array",
+                "maxItems": 3,
+                "minItems": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Categories"
           }
         },
         "additionalProperties": false,
@@ -6495,6 +7934,22 @@
           "expected_version"
         ],
         "title": "DisplayPatch"
+      },
+      "Enroll": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Enroll"
       },
       "EventBatch": {
         "properties": {
@@ -6539,7 +7994,8 @@
               "click_call",
               "click_zalo",
               "return_visit",
-              "experiment_exposure"
+              "experiment_exposure",
+              "view_landing"
             ],
             "title": "Name"
           },
@@ -6590,6 +8046,32 @@
               }
             ],
             "title": "Variant"
+          },
+          "experiment_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Version"
+          },
+          "landing_slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Landing Slug"
           }
         },
         "additionalProperties": false,
@@ -6728,6 +8210,30 @@
         ],
         "title": "FollowupInput"
       },
+      "FooterGroup": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Links"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "FooterGroup"
+      },
       "GeographySyncInput": {
         "properties": {
           "branch_id": {
@@ -6826,6 +8332,698 @@
         ],
         "title": "IntegrationInput"
       },
+      "LandingCampaign": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Title",
+            "default": "Ưu đãi đăng ký"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "gift_label": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Gift Label",
+            "default": ""
+          },
+          "conditions": {
+            "type": "string",
+            "maxLength": 1200,
+            "title": "Conditions",
+            "default": ""
+          },
+          "stock_total": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Total"
+          },
+          "stock_remaining": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Remaining"
+          },
+          "show_countdown": {
+            "type": "boolean",
+            "title": "Show Countdown",
+            "default": true
+          },
+          "show_activity": {
+            "type": "boolean",
+            "title": "Show Activity",
+            "default": false
+          },
+          "inherit_promotions": {
+            "type": "boolean",
+            "title": "Inherit Promotions",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LandingCampaign"
+      },
+      "LandingFAQ": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 180,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "LandingFAQ"
+      },
+      "LandingFeature": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Text",
+            "default": ""
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "wifi",
+              "support",
+              "install",
+              "play",
+              "camera",
+              "users",
+              "building",
+              "award",
+              "shield"
+            ],
+            "title": "Icon",
+            "default": "wifi"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "LandingFeature"
+      },
+      "LandingReview": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Location",
+            "default": ""
+          },
+          "quote": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Quote"
+          },
+          "rating": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating",
+            "default": 5
+          },
+          "avatar_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Image Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "quote"
+        ],
+        "title": "LandingReview"
+      },
+      "LandingSettings": {
+        "properties": {
+          "campaign": {
+            "$ref": "#/components/schemas/LandingCampaign"
+          },
+          "contact_phone": {
+            "type": "string",
+            "maxLength": 24,
+            "title": "Contact Phone",
+            "default": ""
+          },
+          "zalo_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Zalo Url",
+            "default": ""
+          },
+          "messenger_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Messenger Url",
+            "default": ""
+          },
+          "contact_label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Contact Label",
+            "default": "Liên hệ tư vấn"
+          },
+          "contact_icon": {
+            "type": "string",
+            "enum": [
+              "support",
+              "phone",
+              "message"
+            ],
+            "title": "Contact Icon",
+            "default": "support"
+          },
+          "show_contact_popup": {
+            "type": "boolean",
+            "title": "Show Contact Popup",
+            "default": true
+          },
+          "footer_groups": {
+            "items": {
+              "$ref": "#/components/schemas/FooterGroup"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Footer Groups"
+          },
+          "hero_eyebrow": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Hero Eyebrow",
+            "default": "INTERNET CÁP QUANG FPT TELECOM"
+          },
+          "hero_title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Hero Title",
+            "default": "Đăng Ký Lắp Đặt Internet"
+          },
+          "hero_highlight": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Hero Highlight",
+            "default": "Tốc Độ Cao FPT"
+          },
+          "hero_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Hero Subtitle",
+            "default": "Kết nối theo nhu cầu – Tư vấn gói phù hợp"
+          },
+          "hero_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Image Id"
+          },
+          "hero_mobile_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Mobile Image Id"
+          },
+          "promo_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promo Image Id"
+          },
+          "closing_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closing Image Id"
+          },
+          "logo_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Image Id"
+          },
+          "form_title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Form Title",
+            "default": "NHẬN TƯ VẤN GÓI INTERNET FPT"
+          },
+          "form_subtitle": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Form Subtitle",
+            "default": "Miễn phí tư vấn – Gói phù hợp – Giá rõ ràng"
+          },
+          "form_cta": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Form Cta",
+            "default": "Nhận tư vấn ngay"
+          },
+          "form_privacy": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Form Privacy",
+            "default": "Thông tin được dùng để liên hệ tư vấn"
+          },
+          "cta_label": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Cta Label",
+            "default": "Đăng ký ngay"
+          },
+          "plans_title": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Plans Title",
+            "default": "ĐA DẠNG GÓI CƯỚC – PHÙ HỢP MỌI NHU CẦU"
+          },
+          "plans_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Plans Subtitle",
+            "default": "Internet, truyền hình và camera – Chọn khu vực để xem giá áp dụng"
+          },
+          "compare_title": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Compare Title",
+            "default": "SO SÁNH NHANH CÁC GÓI CƯỚC"
+          },
+          "promo_title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Promo Title",
+            "default": "ƯU ĐÃI ĐĂNG KÝ"
+          },
+          "promo_subtitle": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Promo Subtitle",
+            "default": "Được xác nhận theo gói, khu vực và thời gian"
+          },
+          "benefits_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Benefits Title",
+            "default": "VÌ SAO NÊN CHỌN INTERNET FPT TELECOM?"
+          },
+          "stats_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Stats Title",
+            "default": "ĐỒNG HÀNH CÙNG KHÁCH HÀNG"
+          },
+          "reviews_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Reviews Title",
+            "default": "KHÁCH HÀNG NÓI GÌ VỀ DỊCH VỤ?"
+          },
+          "faq_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Faq Title",
+            "default": "CÂU HỎI THƯỜNG GẶP"
+          },
+          "closing_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Closing Title",
+            "default": "ĐĂNG KÝ ĐỂ ĐƯỢC TƯ VẤN GÓI PHÙ HỢP"
+          },
+          "closing_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Closing Subtitle",
+            "default": "Chọn gói, kiểm tra địa bàn và xác nhận lịch lắp đặt"
+          },
+          "footer_text": {
+            "type": "string",
+            "maxLength": 800,
+            "title": "Footer Text",
+            "default": "Tư vấn Internet, truyền hình và camera theo nhu cầu và địa bàn lắp đặt."
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 24,
+            "title": "Plan Ids"
+          },
+          "plan_presentations": {
+            "items": {
+              "$ref": "#/components/schemas/PlanPresentation"
+            },
+            "type": "array",
+            "maxItems": 24,
+            "title": "Plan Presentations"
+          },
+          "billing_months": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ],
+            "title": "Billing Months",
+            "default": 6
+          },
+          "desktop_columns": {
+            "type": "integer",
+            "enum": [
+              0,
+              3,
+              4,
+              5,
+              6
+            ],
+            "title": "Desktop Columns",
+            "default": 0
+          },
+          "hero_features": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Hero Features"
+          },
+          "benefits": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Benefits"
+          },
+          "promo_items": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "title": "Promo Items"
+          },
+          "stats": {
+            "items": {
+              "$ref": "#/components/schemas/LandingStat"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Stats"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/LandingReview"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Reviews"
+          },
+          "faqs": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFAQ"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Faqs"
+          },
+          "nav_items": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Nav Items"
+          },
+          "footer_links": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Footer Links"
+          },
+          "show_comparison": {
+            "type": "boolean",
+            "title": "Show Comparison",
+            "default": true
+          },
+          "show_promo": {
+            "type": "boolean",
+            "title": "Show Promo",
+            "default": true
+          },
+          "show_benefits": {
+            "type": "boolean",
+            "title": "Show Benefits",
+            "default": true
+          },
+          "show_stats": {
+            "type": "boolean",
+            "title": "Show Stats",
+            "default": true
+          },
+          "show_reviews": {
+            "type": "boolean",
+            "title": "Show Reviews",
+            "default": true
+          },
+          "show_faq": {
+            "type": "boolean",
+            "title": "Show Faq",
+            "default": true
+          },
+          "show_closing": {
+            "type": "boolean",
+            "title": "Show Closing",
+            "default": true
+          },
+          "theme_preset": {
+            "type": "string",
+            "enum": [
+              "fpt_standard",
+              "blue_trust",
+              "orange_vibrant",
+              "modern_dark",
+              "emerald_fresh"
+            ],
+            "title": "Theme Preset",
+            "default": "fpt_standard"
+          },
+          "theme_radius": {
+            "type": "string",
+            "enum": [
+              "rounded",
+              "soft",
+              "pill"
+            ],
+            "title": "Theme Radius",
+            "default": "rounded"
+          },
+          "hero_layout": {
+            "type": "string",
+            "enum": [
+              "split",
+              "centered",
+              "minimal"
+            ],
+            "title": "Hero Layout",
+            "default": "split"
+          },
+          "plans_layout": {
+            "type": "string",
+            "enum": [
+              "grid",
+              "carousel",
+              "list"
+            ],
+            "title": "Plans Layout",
+            "default": "grid"
+          },
+          "section_order": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "hero",
+                "plans",
+                "campaign",
+                "compare",
+                "promo",
+                "benefits",
+                "stats",
+                "reviews",
+                "faq",
+                "closing"
+              ]
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Section Order"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LandingSettings"
+      },
+      "LandingStat": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "wifi",
+              "support",
+              "install",
+              "play",
+              "camera",
+              "users",
+              "building",
+              "award",
+              "shield"
+            ],
+            "title": "Icon",
+            "default": "users"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "LandingStat"
+      },
       "LeadRequest": {
         "properties": {
           "phone": {
@@ -6866,6 +9064,15 @@
               }
             ],
             "title": "Plan Id"
+          },
+          "accessory_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Accessory Ids"
           },
           "region_id": {
             "anyOf": [
@@ -7125,6 +9332,101 @@
         ],
         "title": "LeadWebhook"
       },
+      "LocationHint": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "estimated"
+            ],
+            "title": "Status",
+            "default": "unknown"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "vercel",
+                  "geoip"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "province_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province Name"
+          },
+          "subdivision_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subdivision Code"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "accuracy_radius_km": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accuracy Radius Km"
+          },
+          "ward_id": {
+            "type": "null",
+            "title": "Ward Id"
+          },
+          "address_confirmed": {
+            "type": "boolean",
+            "const": false,
+            "title": "Address Confirmed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "LocationHint"
+      },
       "Login": {
         "properties": {
           "email": {
@@ -7144,6 +9446,18 @@
             "pattern": "^([0-9]{6})?$",
             "title": "Otp",
             "default": ""
+          },
+          "factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor Id"
           }
         },
         "additionalProperties": false,
@@ -7156,6 +9470,18 @@
       },
       "MembershipInput": {
         "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
           "display_name": {
             "type": "string",
             "maxLength": 100,
@@ -7228,6 +9554,87 @@
           "permissions"
         ],
         "title": "MembershipInput"
+      },
+      "NavigationItem": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Href"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Id"
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "play",
+              "camera",
+              "smart-home",
+              "speedtest",
+              "promotions",
+              "custom"
+            ],
+            "title": "Preset",
+            "default": "custom"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Children"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "href",
+          "id"
+        ],
+        "title": "NavigationItem"
+      },
+      "NavigationLink": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Href"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "href"
+        ],
+        "title": "NavigationLink"
       },
       "ObservationCommand": {
         "properties": {
@@ -7365,6 +9772,25 @@
               }
             ],
             "title": "Canonical Path"
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "blocks",
+              "telecom"
+            ],
+            "title": "Template",
+            "default": "blocks"
+          },
+          "landing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LandingSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -7375,6 +9801,220 @@
           "blocks"
         ],
         "title": "PageInput"
+      },
+      "PasswordChange": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Current Password"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^([0-9]{6})?$",
+            "title": "Otp",
+            "default": ""
+          },
+          "factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "current_password",
+          "password"
+        ],
+        "title": "PasswordChange"
+      },
+      "PaymentCollect": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "create_next": {
+            "type": "boolean",
+            "title": "Create Next",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "PaymentCollect"
+      },
+      "PaymentCreate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "payment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Id"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date"
+          },
+          "amount_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 1.0,
+            "title": "Amount Vnd"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "payment_id",
+          "due_date",
+          "amount_vnd"
+        ],
+        "title": "PaymentCreate"
+      },
+      "PaymentUpdate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "cancelled"
+            ],
+            "title": "Status",
+            "default": "pending"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "amount_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Vnd"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "PaymentUpdate"
+      },
+      "PlanCategory": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "short_name": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 1,
+            "title": "Short Name"
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Plan Ids"
+          },
+          "services": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "internet",
+                "business",
+                "combo",
+                "play",
+                "camera"
+              ]
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Services"
+          },
+          "all_plans": {
+            "type": "boolean",
+            "title": "All Plans",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "short_name"
+        ],
+        "title": "PlanCategory"
       },
       "PlanInput": {
         "properties": {
@@ -7408,6 +10048,9 @@
             "title": "Description",
             "default": ""
           },
+          "card_labels": {
+            "$ref": "#/components/schemas/CardLabels"
+          },
           "speed_mbps": {
             "anyOf": [
               {
@@ -7420,6 +10063,19 @@
               }
             ],
             "title": "Speed Mbps"
+          },
+          "upload_speed_mbps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upload Speed Mbps"
           },
           "equipment": {
             "items": {
@@ -7437,6 +10093,24 @@
             "type": "array",
             "maxItems": 500,
             "title": "Applicable Region Ids"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Image Alt",
+            "default": ""
           }
         },
         "additionalProperties": false,
@@ -7447,6 +10121,75 @@
           "code"
         ],
         "title": "PlanInput"
+      },
+      "PlanPresentation": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "subtitle": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Subtitle",
+            "default": ""
+          },
+          "badge": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Badge",
+            "default": ""
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "blue",
+              "orange"
+            ],
+            "title": "Accent",
+            "default": "blue"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Features"
+          },
+          "card_labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "badge",
+                "speed",
+                "offers",
+                "equipment",
+                "register",
+                "details"
+              ]
+            },
+            "type": "object",
+            "title": "Card Labels"
+          },
+          "campaign_prices": {
+            "items": {
+              "$ref": "#/components/schemas/CampaignPrice"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Campaign Prices"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan_id"
+        ],
+        "title": "PlanPresentation"
       },
       "PreferencesInput": {
         "properties": {
@@ -7502,6 +10245,21 @@
             "maximum": 1000000000.0,
             "minimum": 0.0,
             "title": "Monthly Vnd"
+          },
+          "monthly_coefficient": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,4}0*$"
+              }
+            ],
+            "title": "Monthly Coefficient",
+            "default": "1"
           },
           "setup_vnd": {
             "type": "integer",
@@ -7644,6 +10402,65 @@
             "type": "array",
             "maxItems": 50,
             "title": "Plan Ids"
+          },
+          "price_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Vnd"
+          },
+          "original_price_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Price Vnd"
+          },
+          "offer_label": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Offer Label",
+            "default": ""
+          },
+          "billing_mode": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly"
+            ],
+            "title": "Billing Mode",
+            "default": "one_time"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Image Alt",
+            "default": ""
           }
         },
         "additionalProperties": false,
@@ -7654,6 +10471,169 @@
           "service"
         ],
         "title": "ProductInput"
+      },
+      "ProfileInput": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Name",
+            "default": ""
+          },
+          "installation_address": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Installation Address"
+          },
+          "province_code": {
+            "type": "integer",
+            "maximum": 999999.0,
+            "minimum": 1.0,
+            "title": "Province Code"
+          },
+          "ward_code": {
+            "type": "integer",
+            "maximum": 999999.0,
+            "minimum": 1.0,
+            "title": "Ward Code"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "accessory_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Accessory Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "installation_address",
+          "province_code",
+          "ward_code"
+        ],
+        "title": "ProfileInput"
+      },
+      "PromoSlideInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Description",
+            "default": ""
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Image Alt",
+            "default": ""
+          },
+          "cta_label": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Cta Label",
+            "default": "Nhận tư vấn"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Href",
+            "default": ""
+          },
+          "video_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Video Url",
+            "default": ""
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "PromoSlideInput"
       },
       "PromotionInput": {
         "properties": {
@@ -7723,6 +10703,20 @@
       },
       "QuoteRequest": {
         "properties": {
+          "landing_slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Landing Slug"
+          },
           "plan_id": {
             "type": "string",
             "format": "uuid",
@@ -7746,6 +10740,15 @@
             "minimum": 1.0,
             "title": "Billing Months",
             "default": 6
+          },
+          "accessory_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Accessory Ids"
           }
         },
         "additionalProperties": false,
@@ -7997,14 +11000,31 @@
           },
           "otp": {
             "type": "string",
-            "pattern": "^[0-9]{6,8}$",
+            "pattern": "^[0-9]{6}$",
             "title": "Otp"
+          },
+          "challenge_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Challenge Id"
           },
           "totp": {
             "type": "string",
             "pattern": "^([0-9]{6})?$",
             "title": "Totp",
             "default": ""
+          },
+          "totp_factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Totp Factor Id"
           }
         },
         "additionalProperties": false,
@@ -8012,7 +11032,8 @@
         "required": [
           "email",
           "password",
-          "otp"
+          "otp",
+          "challenge_id"
         ],
         "title": "ResetPassword"
       },
@@ -8071,6 +11092,54 @@
         "additionalProperties": false,
         "type": "object",
         "title": "Shift"
+      },
+      "StaffCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Display Name"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Branch Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "sales",
+              "support",
+              "marketing",
+              "editor",
+              "manager"
+            ],
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "display_name",
+          "branch_id",
+          "role"
+        ],
+        "title": "StaffCreate"
       },
       "TransitionCommand": {
         "properties": {
@@ -8213,6 +11282,19 @@
             "maximum": 10000.0,
             "minimum": 0.0,
             "title": "Weight"
+          },
+          "cta_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 24,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cta Label"
           }
         },
         "additionalProperties": false,
@@ -8222,6 +11304,25 @@
           "weight"
         ],
         "title": "Variant"
+      },
+      "VariantRequest": {
+        "properties": {
+          "session_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8192
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VariantRequest"
       },
       "VersionCommand": {
         "properties": {

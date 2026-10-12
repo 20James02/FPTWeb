@@ -16,7 +16,7 @@ def round_score(value):
     return max(0, min(100, int(Decimal(str(value)).quantize(Decimal(1), rounding=ROUND_HALF_UP))))
 
 
-def score_lead(evidence: dict, as_of: datetime, ruleset_version="rules-v1") -> dict:
+def score_lead(evidence: dict, as_of: datetime, ruleset_version="rules-v2") -> dict:
     confidence = sum(w for k, w in CONFIDENCE.items() if evidence.get(k) is True)
     latest: dict[str, float] = {}
     for event in evidence.get("events", []):
@@ -53,6 +53,11 @@ def score_lead(evidence: dict, as_of: datetime, ruleset_version="rules-v1") -> d
         "fit": fit,
         "completeness": known / 3,
         "automation_risk": round_score(risk),
+        "risk_status": "evaluated"
+        if any(type(evidence.get(k)) is bool for k in RISK)
+        else "unknown",
+        "risk_checked_signals": [k for k in RISK if type(evidence.get(k)) is bool],
+        "risk_source": evidence.get("risk_source"),
         "reasons": reasons,
         "ruleset_version": ruleset_version,
         "computed_at": as_of.isoformat(),

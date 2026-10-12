@@ -4,7 +4,9 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Request
 from pydantic import Field
 
+from pagefpt.api.authorization import check, current_actor
 from pagefpt.api.dependencies import crypto, dispatch
+from pagefpt.core.errors import DomainError
 from pagefpt.modules.marketing.experiments import assign_variant
 from pagefpt.modules.marketing.schemas import ConsentInput, ConsentUpdate, EventBatch
 from pagefpt.modules.pricing.schemas import Command
@@ -38,6 +40,19 @@ async def consent(input: ConsentUpdate, request: Request):
 @router.post("/events/batch")
 async def events(input: EventBatch, request: Request):
     claims = crypto(request).verify(input.session_token, "session", datetime.now(UTC))
+    permission = await dispatch(request, "session_read", id=claims["id"])
+    for event in input.events:
+        if event.name == "experiment_exposure" and permission.get("analytics"):
+            if not event.experiment_id:
+                raise DomainError("INVALID_EXPERIMENT", 422)
+            exp = await dispatch(
+                request, "public_resource", kind="experiment", id=str(event.experiment_id)
+            )
+            expected = assign_variant(
+                exp["payload"]["salt"], claims["id"], exp["payload"]["variants"]
+            )
+            if event.variant != expected or event.experiment_version != exp["version"]:
+                raise DomainError("INVALID_EXPERIMENT", 422)
     return await dispatch(
         request,
         "events",
@@ -95,4 +110,28 @@ async def variant(id: UUID, request: Request, session_token: str | None = None):
     value = assign_variant(
         experiment["payload"]["salt"], session_id, experiment["payload"]["variants"]
     )
-    return {"variant": value, "experiment_version": experiment["version"]}
+    label = next(
+        v.get("cta_label") for v in experiment["payload"]["variants"] if v["name"] == value
+    )
+    return {
+        "variant": value,
+        "experiment_version": experiment["version"],
+        "cta_label": label,
+        "trackable": session_id is not None,
+    }
+
+
+class VariantRequest(Command):
+    session_token: str | None = Field(default=None, max_length=8192)
+
+
+@router.post("/experiments/{id}/variant")
+async def variant_post(id: UUID, input: VariantRequest, request: Request):
+    return await variant(id, request, input.session_token)
+
+
+@router.get("/admin/experiments/{id}/results")
+async def experiment_results(id: UUID, request: Request):
+    actor = await current_actor(request)
+    check(actor, "marketing.write")
+    return await dispatch(request, "experiment_results", actor=actor.user_id, id=str(id))

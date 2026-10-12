@@ -4,16 +4,20 @@
 {% block content %}
 <h1>{{ {'marketing':'Marketing & Quảng cáo','content':'Nội dung & Ưu đãi','operations':'Vận hành & Nhân sự'}[active_page] }}</h1>
 <p id="workspace-description"></p>
+{% if active_page=='content' %}<p>{% if admin_actor.permits('content.publish') %}<a class="btn-action-detail" href="/admin/appearance">Thiết lập slide & danh mục trang chủ</a>{% endif %}{% if admin_actor.permits('content.write') %}<a class="btn-action-detail" href="/admin/landing-pages">Thiết kế landing page theo mẫu</a>{% endif %}</p>{% endif %}
 <nav class="workspace-tabs" id="workspace-tabs" aria-label="Nhóm chức năng"></nav>
 <div class="workspace-item-actions"><button id="workspace-create" type="button" class="btn-action-call">Thêm mới</button><button id="workspace-refresh" type="button" class="btn-action-detail">Làm mới</button></div>
+<label class="workspace-search">Tìm trong dữ liệu đã tải<input id="workspace-search" type="search" placeholder="Tên hoặc nội dung…"></label>
 <p id="workspace-state" role="status" aria-live="polite"></p>
 <div id="workspace-list" class="workspace-list"></div>
 <button id="workspace-more" type="button" class="btn-action-detail" hidden>Tải thêm</button>
 <dialog id="workspace-editor" class="admin-dialog" aria-labelledby="workspace-editor-title">
 <form id="workspace-form"><h2 id="workspace-editor-title">Thiết lập</h2><div id="workspace-fields" class="admin-form-grid"></div><div id="workspace-special-fields"></div><p id="workspace-editor-error" class="workspace-error" role="alert"></p><div class="admin-dialog-actions"><button id="workspace-cancel" type="button" class="btn-action-detail">Hủy</button><button id="workspace-save" type="submit" class="btn-action-call">Lưu</button></div></form>
 </dialog>
+{% if active_page=='marketing' %}<section id="delivery-console" class="panel-card"><h2>Nhật ký gửi & đối soát quảng cáo</h2><button type="button" id="delivery-refresh" class="btn-action-detail">Làm mới nhật ký</button><p id="delivery-state" role="status"></p><div id="delivery-list" class="workspace-list"></div></section>{% endif %}
 {% endblock %}
 {% block extra_scripts %}
 <script>window.adminWorkspace={{ active_page | tojson }};</script>
 <script src="/static/js/admin/workspace.js"></script>
+<script src="/static/js/admin/deliveries.js"></script>
 {% endblock %}

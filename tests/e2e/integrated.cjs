@@ -150,7 +150,7 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
  await check('published card sends plan UUID and stores the confirmed quote on lead',async()=>{
   const before=new Set((await api('/api/v1/admin/leads?limit=100')).json.items.map(lead=>lead.id));
   await page.goto(origin+'/');
-  await page.waitForFunction(region=>document.getElementById('form-lead-province').value===region,regionId);
+  await page.waitForFunction(region=>getSelectedRegionId()===region,regionId);
   await page.locator('.plan-card-actions button[data-plan-id="'+planId+'"]').first().click();
   await page.waitForFunction(()=>typeof activeQuoteToken==='string' && activeQuoteToken.length>0);
   assert.equal(await page.evaluate(()=>selectedPlanId),planId);

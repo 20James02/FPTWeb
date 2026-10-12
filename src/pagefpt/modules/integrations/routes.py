@@ -20,6 +20,7 @@ async def capabilities(request: Request):
         "enabled": settings.integrations_enabled,
         "conversion_gateway_configured": bool(settings.conversion_url),
         "notification_gateway_configured": bool(settings.notification_url),
+        "telegram_notifications_enabled": settings.telegram_enabled,
         "incoming_webhooks_configured": bool(settings.incoming_webhook_secret.get_secret_value()),
         "provider_credentials_exposed": False,
     }

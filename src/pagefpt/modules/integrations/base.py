@@ -20,6 +20,7 @@ class DeliveryResult:
     state: DeliveryState
     code: str
     provider_id: str | None = None
+    retry_after: int = 0
 
 
 class JsonAdapter:

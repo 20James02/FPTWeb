@@ -79,6 +79,9 @@ def db_schema():
                 "CREATE SCHEMA auth; CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$"
             )
             conn.execute(Path("tools/vendor/pgmq.sql").read_text())
+            conn.execute(
+                "CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$"
+            )
             for migration in sorted(Path("supabase/migrations").glob("*.sql")):
                 content = migration.read_text()
                 assert content.strip().endswith("COMMIT;"), (
@@ -114,6 +117,7 @@ async def client(gateway):
     from pagefpt.core.config import Settings
 
     settings = Settings(
+        _env_file=None,
         environment="test",
         encryption_key="e" * 32,
         matching_key="m" * 32,

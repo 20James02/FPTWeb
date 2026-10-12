@@ -47,7 +47,11 @@ def calculate_quote(
             "region_id": region_id,
         }
     p = min(candidates, key=lambda x: (x[0], x[1]))[2]
-    base = p["monthly_vnd"] * months + p["setup_vnd"] + p["equipment_vnd"]
+    coefficient = Decimal(str(p.get("monthly_coefficient", 1)))
+    monthly = int(
+        (Decimal(p["monthly_vnd"]) * coefficient).quantize(Decimal(1), rounding=ROUND_HALF_UP)
+    )
+    base = monthly * months + p["setup_vnd"] + p["equipment_vnd"]
     before_vat = base
     if not p["vat_included"]:
         base += int(
@@ -85,7 +89,9 @@ def calculate_quote(
     return {
         "status": "confirmed",
         "price_id": str(p["id"]),
-        "monthly_vnd": p["monthly_vnd"],
+        "monthly_vnd": monthly,
+        "base_monthly_vnd": p["monthly_vnd"],
+        "monthly_coefficient": str(coefficient),
         "vat_included": p["vat_included"],
         "vat_bps": p["vat_bps"],
         "plan_id": plan_id,
@@ -95,7 +101,7 @@ def calculate_quote(
         "revision": revision,
         "initial_total_vnd": max(0, base - discount),
         "line_items": {
-            "term_vnd": p["monthly_vnd"] * months,
+            "term_vnd": monthly * months,
             "setup_vnd": p["setup_vnd"],
             "equipment_vnd": p["equipment_vnd"],
             "vat_added_vnd": base - before_vat,

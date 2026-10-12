@@ -32,7 +32,7 @@ async def test_client_home_renders(client):
     assert "Lắp Mạng FPT" in text
     assert "GÓI SKY" in text
     assert "Wi-Fi 6" in text
-    assert "Nhận Tư Vấn Gói Phù Hợp" in text
+    assert "Nhận tư vấn" in text
 
 
 @pytest.mark.asyncio
@@ -57,6 +57,29 @@ async def test_admin_login_renders(client):
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "Đăng Nhập" in response.text
+    assert "pagefpt-google-config" not in response.text
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/",
+        "/do-toc-do",
+        "/khuyen-mai",
+        "/chinh-sach-bao-mat",
+        "/san-pham/internet-gia-dinh",
+        "/san-pham/internet-doanh-nghiep",
+        "/san-pham/fpt-play",
+        "/san-pham/combo-fpt-play",
+        "/san-pham/camera-fpt",
+    ],
+)
+async def test_client_advanced_consent_has_transparent_notice(client, path):
+    response = await client.get(path)
+    assert response.status_code == 200
+    assert '"consent_mode": "advanced"' in response.text
+    assert response.text.count('id="pagefpt-google-config"') == 1
+    assert "tín hiệu đo lường hạn chế" in response.text
 
 
 @pytest.mark.asyncio
@@ -85,7 +108,8 @@ async def test_admin_lead_detail_renders(admin):
     assert "text/html" in response.headers["content-type"]
     assert "Hồ Sơ Khách Hàng" in response.text
     assert "detail-lead-status-badge" in response.text
-    assert "Nhu cầu đăng ký (điểm /100)" in response.text
+    assert "Xem cơ sở đánh giá" in response.text
+    assert '<dialog id="lead-intelligence-dialog"' in response.text
 
 
 @pytest.mark.asyncio
@@ -166,8 +190,8 @@ async def test_home_page_cascading_and_fpt_sections(client):
     # 2 Combobox elements present
     assert 'id="home-zone-select"' in text
     assert 'id="home-province-select"' in text
-    # Hero Carousel present
-    assert "hero-carousel" in text
+    # Empty merchandising uses the neutral consultation hero.
+    assert "public-consultation-hero" in text
     # Quick utilities present
     assert "quick-utilities-card" in text
     # Ecosystem grid present
@@ -177,7 +201,7 @@ async def test_home_page_cascading_and_fpt_sections(client):
 
 
 @pytest.mark.asyncio
-async def test_plans_3d_flip_slider_tags_menu_and_footer(client, published_ui_plans):
+async def test_plans_3d_details_slider_tags_menu_and_footer(client, published_ui_plans):
     response = await client.get("/")
     assert response.status_code == 200
     text = response.text
@@ -187,8 +211,8 @@ async def test_plans_3d_flip_slider_tags_menu_and_footer(client, published_ui_pl
     assert 'id="plans-slider-track"' in text
     assert "plan-card-3d-wrapper" in text
     assert "card-face-front" in text
-    assert "card-face-back" in text
-    assert "flipPlanCard" in text
+    assert 'id="plan-details-dialog"' in text
+    assert "openPublishedPlanDetails" in text
     assert "slidePlansNext" in text
     assert "slidePlansPrev" in text
 
@@ -202,11 +226,12 @@ async def test_plans_3d_flip_slider_tags_menu_and_footer(client, published_ui_pl
     # 3. Corporate Multi-Column Footer Check
     assert "footer-columns-grid" in text
     assert "footer-col" in text
-    assert "footer-branches-box" in text
-    assert "footer-disclaimer-card" in text
-    assert "Hotline Tư Vấn Lắp Đặt" in text
-    assert "Văn Phòng Đại Diện 3 Miền" in text
-    assert "13/2023/NĐ-CP" in text
+    assert "footer-office-details" in text
+    assert "footer-disclaimer-card" not in text
+    assert "footer-hotline" in text
+    assert "compact-footer-grid" in text
+    assert 'href="/chinh-sach-bao-mat"' in text
+    assert "Tuân Thủ NĐ" not in text
 
     # 4. CSS verify for navbar white-space nowrap & 3D rules
     css_res = await client.get("/static/css/client.css")
@@ -460,11 +485,13 @@ async def test_client_home_fpt_animation_and_runline_admin_controlled(client):
     assert "text/html" in response.headers["content-type"]
     text = response.text
 
-    # 1. 3-Color Animated FPT Brand Logo
+    # Official artwork replaces the reconstructed letter badges.
     assert "fpt-animated-badge" in text
-    assert "fpt-letter fpt-letter-f" in text
-    assert "fpt-letter fpt-letter-p" in text
-    assert "fpt-letter fpt-letter-t" in text
+    assert 'src="/static/images/fpt-telecom-logo.svg"' in text
+    assert 'alt="FPT Telecom"' in text
+    assert "fpt-letter fpt-letter-f" not in text
+    logo = await client.get("/static/images/fpt-telecom-logo.svg")
+    assert logo.status_code == 200 and "image/svg+xml" in logo.headers["content-type"]
 
     # 2. Promo Runline Marquee Ticker with Dynamic Date
     assert "promo-runline-wrapper" in text
@@ -503,7 +530,7 @@ async def test_client_home_fpt_animation_and_runline_admin_controlled(client):
 async def test_admin_display_settings_governance_and_persistence(admin):
     client = admin
     # 1. Admin Settings Page renders display controls
-    admin_res = await client.get("/admin/settings")
+    admin_res = await client.get("/admin/appearance")
     assert admin_res.status_code == 200
     admin_text = admin_res.text
     assert "Hiển thị website" in admin_text
@@ -581,9 +608,9 @@ async def test_banner_and_poster_zones_arrangement(admin):
     assert home_res.status_code == 200
     home_text = home_res.text
 
-    # 1. Zone 1: Hero Carousel Banner
-    assert "hero-carousel-section" in home_text
-    assert "SIÊU PHẨM VIỄN THÔNG 2026" in home_text
+    # No invented promotional slides without Admin configuration.
+    assert "public-consultation-hero" in home_text
+    assert "hero-carousel-section" not in home_text
 
     # 2. Zone 2: Dual Showcase Posters (Wi-Fi 6 & FPT Play Sports C1)
     assert "showcase-banners-section" in home_text
@@ -629,7 +656,7 @@ async def test_banner_and_poster_zones_arrangement(admin):
     assert "btn-floating-cta" in home_text
 
     # 7. Check Admin Settings Banner Map Table
-    settings_res = await client.get("/admin/settings")
+    settings_res = await client.get("/admin/appearance")
     assert settings_res.status_code == 200
     settings_text = settings_res.text
     for zone in [
@@ -841,18 +868,19 @@ async def test_admin_crm_and_dynamic_pages_structure(admin):
     reports_res = await client.get("/admin/reports")
     assert reports_res.status_code == 200
     reports_html = reports_res.text
-    assert 'id="rep-total-leads"' in reports_html
-    assert 'id="rep-contacted-rate"' in reports_html
-    assert 'id="daily-metrics-tbody"' in reports_html
-    assert "rebuildTodayReport" in reports_html
+    assert 'id="analytics-kpis"' in reports_html
+    assert 'id="analytics-trend"' in reports_html
+    assert 'id="analytics-funnel"' in reports_html
+    assert 'id="analytics-filter"' in reports_html
+    assert "/static/js/admin/analytics.js" in reports_html
 
     # 5. Dashboard
     dash_res = await client.get("/admin/dashboard")
     assert dash_res.status_code == 200
     dash_html = dash_res.text
-    assert 'id="kpi-total-leads"' in dash_html
-    assert 'id="funnel-container"' in dash_html
-    assert 'id="dashboard-recent-leads"' in dash_html
+    assert 'id="analytics-kpis"' in dash_html
+    assert 'id="analytics-funnel"' in dash_html
+    assert 'id="recent-leads-list"' in dash_html
 
 
 @pytest.mark.asyncio

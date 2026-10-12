@@ -11,8 +11,10 @@
 (function () {
   'use strict';
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // 1. LENIS SMOOTH SCROLLING
-  if (typeof Lenis !== 'undefined') {
+  if (!reduceMotion && typeof Lenis !== 'undefined') {
     try {
       const lenis = new Lenis({
         duration: 1.15,
@@ -73,6 +75,7 @@
         offset: 50,
         delay: 50,
         disableMutationObserver: false,
+        disable: reduceMotion,
       });
     } catch (err) {
       console.warn('AOS init skipped:', err);
@@ -81,7 +84,7 @@
 
   // 3. VANILLA-TILT (3D TACTILE HOVER)
   function initTiltEffects() {
-    if (typeof VanillaTilt === 'undefined') return;
+    if (reduceMotion || typeof VanillaTilt === 'undefined') return;
 
     // Only apply tilt on pointer/mouse devices for best UX
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -107,7 +110,7 @@
 
   // 4. CANVAS CONFETTI CELEBRATION HELPER
   window.fireConfettiCelebration = function (customOpts = {}) {
-    if (typeof confetti === 'function') {
+    if (!reduceMotion && typeof confetti === 'function') {
       try {
         const defaults = {
           particleCount: 90,

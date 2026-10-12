@@ -6,10 +6,18 @@ from fastapi import APIRouter, Query, Request
 
 from pagefpt.api.authorization import check, current_actor
 from pagefpt.api.dependencies import crypto, dispatch
+from pagefpt.modules.catalog.accessories import selection, with_accessories
 from pagefpt.modules.catalog.geography_routes import router as geography_router
+from pagefpt.modules.catalog.images import plan_payload
 from pagefpt.modules.catalog.schemas import PlanInput, RegionInput, VersionCommand
 from pagefpt.modules.content.cache import public_json
 from pagefpt.modules.pricing.engine import calculate_quote
+from pagefpt.modules.pricing.landing import (
+    has_landing_prices,
+    landing_context,
+    landing_inputs,
+    mark_landing,
+)
 from pagefpt.modules.pricing.schemas import PriceInput, QuoteRequest
 
 router = APIRouter(prefix="/api/v1")
@@ -26,13 +34,23 @@ async def save_resource(request, kind, input):
         actor=actor.user_id,
         kind=kind,
         branch_id=branch,
-        payload=input.model_dump(mode="json"),
+        payload=await plan_payload(input, request, actor.user_id)
+        if kind == "plan"
+        else input.model_dump(mode="json"),
     )
 
 
 @router.get("/catalog")
 async def catalog(request: Request):
     return public_json(request, await dispatch(request, "public_catalog", kind="plan"))
+
+
+@router.get("/accessories")
+async def accessories(request: Request):
+    data = await dispatch(request, "public_catalog", kind="product")
+    return public_json(
+        request, {"items": [p for p in data["items"] if p.get("price_vnd") is not None]}
+    )
 
 
 @router.get("/regions/hierarchy")
@@ -60,6 +78,7 @@ async def regions_hierarchy(request: Request):
                 "name": region["name"],
                 "price_group": region.get("price_group_id") or "",
                 "region_code": region["code"],
+                "aliases": region.get("aliases", []),
             }
         )
     return hierarchy
@@ -152,6 +171,10 @@ async def publish(kind: str, id: UUID, input: VersionCommand, request: Request):
     )
     actor = await current_actor(request)
     check(actor, permission, mfa=True)
+    if kind == "pages":
+        page = await dispatch(request, "resource_get", actor=actor.user_id, kind="page", id=str(id))
+        if has_landing_prices(page["payload"]):
+            check(actor, "pricing.publish", mfa=True)
     return await dispatch(
         request,
         "resource_publish",
@@ -173,6 +196,7 @@ async def create_price(input: PriceInput, request: Request):
 
 @router.post("/quotes")
 async def quote(input: QuoteRequest, request: Request):
+    devices = await selection(request, input.plan_id, input.accessory_ids)
     data = await dispatch(
         request,
         "pricing_data",
@@ -187,17 +211,44 @@ async def quote(input: QuoteRequest, request: Request):
             "region_id": str(input.region_id) if input.region_id else None,
             "revision": data["revision"],
         }
+    at = datetime.now(UTC)
+    context = await landing_context(request, input.landing_slug, str(input.plan_id), at)
+    prices, promotions = landing_inputs(
+        context, data["prices"], data["promotions"], input.billing_months
+    )
     proposal = calculate_quote(
-        data["prices"],
+        prices,
         str(input.plan_id),
         str(input.region_id) if input.region_id else None,
         data.get("group_id"),
         input.billing_months,
-        datetime.now(UTC),
-        data["promotions"],
+        at,
+        promotions,
         data["revision"],
         region_path=data.get("region_path"),
     )
+    # One database read supplies regional prices for all UI periods. Previews have no token.
+    billing_options = []
+    for months in (1, 6, 12):
+        period_prices, period_promotions = landing_inputs(
+            context, data["prices"], data["promotions"], months
+        )
+        preview = calculate_quote(
+            period_prices,
+            str(input.plan_id),
+            str(input.region_id) if input.region_id else None,
+            data.get("group_id"),
+            months,
+            at,
+            period_promotions,
+            data["revision"],
+            region_path=data.get("region_path"),
+        )
+        preview["billing_months"] = months
+        mark_landing(preview, context, at)
+        billing_options.append(preview)
+    with_accessories(proposal, devices, input.billing_months)
+    mark_landing(proposal, context, at)
     if proposal["status"] == "confirmed":
         result = await dispatch(request, "quote_save", payload=proposal)
         proposal["quote_token"] = crypto(request).sign(
@@ -207,4 +258,5 @@ async def quote(input: QuoteRequest, request: Request):
                 "exp": datetime.fromisoformat(proposal["expires_at"]).timestamp(),
             }
         )
+    proposal["billing_options"] = billing_options
     return proposal

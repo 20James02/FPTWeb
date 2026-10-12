@@ -2,14 +2,21 @@ from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from pagefpt.api.authorization import check, current_actor
 from pagefpt.api.dependencies import dispatch
 from pagefpt.core.errors import DomainError
 from pagefpt.modules.catalog.geography import import_rows
+from pagefpt.modules.catalog.location_hint import LocationHint, location_hint
 
 router = APIRouter()
+
+
+@router.get("/regions/location-suggestion", response_model=LocationHint)
+async def pricing_location(request: Request):
+    return JSONResponse(location_hint(request), headers={"Cache-Control": "private, no-store"})
 
 
 class GeographySyncInput(BaseModel):

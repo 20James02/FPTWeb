@@ -16,6 +16,8 @@ class Actor:
     memberships: list[dict]
 
     def permits(self, permission: str, branch_id: str | None = None) -> bool:
+        if self.aal != "aal2" and any(m.get("require_mfa", False) for m in self.memberships):
+            return False
         return any(
             (
                 branch_id is None

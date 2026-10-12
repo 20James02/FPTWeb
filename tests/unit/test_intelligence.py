@@ -80,3 +80,34 @@ def test_phone_carrier_is_prefix_estimate_and_never_current_network():
     assert value["current_carrier"]["status"] == "unknown"
     assert value["prefix_carrier"]["status"] == "inferred"
     assert "0901234567" not in str(value)
+
+
+def test_risk_unknown_and_partial_checked_signals():
+    missing = score({"phone_valid": True})
+    assert missing["risk_status"] == "unknown"
+    assert missing["risk_checked_signals"] == []
+    checked = score({"honeypot": False, "burst": True, "automation_pattern": "false"})
+    assert checked["risk_status"] == "evaluated"
+    assert checked["risk_checked_signals"] == ["honeypot", "burst"]
+    assert checked["automation_risk"] == 30
+
+
+def test_nlp_negation_hypothesis_and_conflicts():
+    from pagefpt.modules.intelligence.nlp import extract_needs
+
+    negative = extract_needs("Không cần camera, chỉ cần internet. Nhà không có 3 tầng")
+    assert not any(x["value"] in ("camera", 3) and x["status"] == "inferred" for x in negative)
+    assert any(x["value"] == "internet" and x["status"] == "inferred" for x in negative)
+    hypothetical = extract_needs("Nếu lắp camera thì giá bao nhiêu?")
+    assert all(x["status"] == "needs_review" for x in hypothetical)
+    conflict = extract_needs("Cần camera. Không cần camera nữa")
+    assert all(x["status"] == "needs_review" for x in conflict if x["value"] == "camera")
+    positive = extract_needs("Không chỉ cần camera mà còn wifi")
+    assert {x["value"] for x in positive} == {"camera", "internet"}
+
+
+def test_nlp_question_is_a_suggestion_for_review():
+    from pagefpt.modules.intelligence.nlp import extract_needs
+
+    result = extract_needs("Cần camera? Nhà 3 tầng?")
+    assert result and all(x["status"] == "needs_review" for x in result)

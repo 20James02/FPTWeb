@@ -49,6 +49,7 @@ class Shift(Command):
 
 
 class MembershipInput(Command):
+    expected_version: int | None = Field(default=None, ge=1)
     display_name: str = Field(default="", max_length=100)
     user_id: UUID
     branch_id: UUID

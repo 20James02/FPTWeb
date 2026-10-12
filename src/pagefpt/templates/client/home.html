@@ -1,14 +1,18 @@
 {% extends "layouts/client_base.html" %}
 
-{% block title %}Lắp Mạng FPT 2026 — Bảng Giá Cáp Quang & Modem Wi-Fi 6 FPT Telecom{% endblock %}
+{% block title %}Tư Vấn Lắp Mạng FPT — Gói Cước Theo Khu Vực{% endblock %}
 
-{% block meta_desc %}Đăng ký lắp mạng FPT mới nhất 2026: Tốc độ cao 150Mbps - 1Gbps, trang bị Modem Wi-Fi 6 miễn phí, tặng đến 2 tháng cước, tư vấn khảo sát hạ tầng tận nơi 24/7.{% endblock %}
+{% block meta_desc %}Tìm gói Internet, truyền hình và camera phù hợp. Chọn địa bàn để xem giá đã công bố và gửi yêu cầu tư vấn lắp đặt.{% endblock %}
 
 {% block content %}
 <!-- Hero Advertising Carousel / Slider Component -->
-{% if not display_settings or display_settings.banner_zones.hero_slider %}
-{% include "client/components/hero_carousel.html" %}
+{% if promo_slides and display_settings.banner_zones.hero_slider %}
+{% include "client/components/home_promo_slider.html" %}
+{% else %}
+<section class="container public-consultation-hero"><h1>Internet phù hợp với bạn</h1><p>Chọn địa bàn để xem giá. Để lại thông tin, chúng tôi sẽ tư vấn gói phù hợp.</p><button type="button" class="btn-primary-hero" data-experiment-cta onclick="openBottomSheet('Tư vấn gói phù hợp', '', null, 'internet')">Nhận tư vấn</button></section>
 {% endif %}
+
+<div class="container" id="home-speedtest-prompt"><a href="/do-toc-do" class="home-speedtest-link"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18a9 9 0 1 1 16 0M12 13l4-4"/><circle cx="12" cy="13" r="2"/></svg><span>Mạng của bạn nhanh đến đâu?</span><strong>Đo tốc độ <span aria-hidden="true">↗</span></strong></a></div>
 
 <!-- Quick Utilities & Shortcuts Bar (fpt.vn style) -->
 {% include "client/components/quick_utilities.html" %}
@@ -17,29 +21,26 @@
 {% include "client/components/cascading_regions.html" %}
 
 <!-- KHU VỰC 2: BANNERS ĐÔI SHOWCASE QUẢNG CÁO (FPT Play Thể Thao C1 & Wi-Fi 6) -->
-{% if not display_settings or display_settings.banner_zones.showcase_posters %}
+{% if request.app.state.settings.environment in ['development', 'test'] and (not display_settings or display_settings.banner_zones.showcase_posters) %}
 {% include "client/components/showcase_banners.html" %}
 {% endif %}
 
 <!-- Main Plans Section -->
 <section class="container" id="plans-section" style="padding-top: var(--space-8);">
   <div class="section-heading">
-    <h2 class="section-title">Bảng Giá Các Gói Cước Internet FPT</h2>
-    <p class="section-subtitle">Trang bị công nghệ Wi-Fi 6 mới nhất, băng thông vượt trội, kết nối không giới hạn thiết bị.</p>
+    <h2 class="section-title">Gói cước & bảng giá</h2>
+    <p class="section-subtitle">Giá áp dụng theo địa bàn bạn chọn.</p>
   </div>
 
   <!-- Segment Filter Tabs -->
   <div class="segment-tabs-wrap">
-    <div class="segment-tabs" role="tablist">
-      <button type="button" class="segment-tab-btn active" onclick="filterPlans('all', this)">Tất cả các gói</button>
-      <button type="button" class="segment-tab-btn" onclick="filterPlans('internet', this)">Internet gia đình</button>
-      <button type="button" class="segment-tab-btn" onclick="filterPlans('business', this)">Internet doanh nghiệp</button>
-      <button type="button" class="segment-tab-btn" onclick="filterPlans('combo', this)">Combo Internet + Truyền hình / Camera</button>
+    <div class="segment-tabs" role="group" aria-label="Danh mục gói cước">
+      {% for category in display_settings.plan_categories %}<button type="button" class="segment-tab-btn {{ 'active' if loop.first else '' }}" data-plan-category="{{loop.index0}}" data-category-plan-ids='{{category.plan_ids|tojson}}' data-category-services='{{category.services|tojson}}' data-category-all="{{ 'true' if category.all_plans else 'false' }}" aria-label="{{category.name}}" aria-pressed="{{'true' if loop.first else 'false'}}">{{category.short_name}}</button>{% endfor %}
     </div>
   </div>
 
   <!-- Plan Cards 3D Stage & Track (3-Card Multitask Mode) -->
-  <div class="plans-3d-stage slider-active-3d multitask-mode" id="plans-3d-stage">
+  <div class="plans-3d-stage slider-active-3d multitask-mode {{ 'catalog-empty' if not plans else '' }}" id="plans-3d-stage">
     
     <!-- Slider Navigation & Hint Controls -->
     <div class="plans-slider-controls" id="plans-slider-controls">
@@ -70,12 +71,12 @@
 </section>
 
 <!-- KHU VỰC 3: DẢI BANNER BĂNG CHUYỀN FLASH DEAL GIỮA TRANG -->
-{% if not display_settings or display_settings.banner_zones.ribbon_banner %}
+{% if request.app.state.settings.environment in ['development', 'test'] and (not display_settings or display_settings.banner_zones.ribbon_banner) %}
 {% include "client/components/ribbon_banner.html" %}
 {% endif %}
 
 <!-- KHU VỰC 4: LƯỚI POSTER QUẢNG CÁO ĐẶC QUYỀN & CHÍNH SÁCH 2026 -->
-{% if not display_settings or display_settings.banner_zones.promo_grid %}
+{% if request.app.state.settings.environment in ['development', 'test'] and (not display_settings or display_settings.banner_zones.promo_grid) %}
 {% include "client/components/promotions_section.html" %}
 {% endif %}
 
@@ -83,7 +84,7 @@
 {% include "client/components/ecosystem_grid.html" %}
 
 <!-- KHU VỰC 5: BANNER GIỚI THIỆU ỨNG DỤNG HI FPT & TIỆN ÍCH CHĂM SÓC SỐ -->
-{% if not display_settings or display_settings.banner_zones.app_banner %}
+{% if request.app.state.settings.environment in ['development', 'test'] and (not display_settings or display_settings.banner_zones.app_banner) %}
 {% include "client/components/app_banner.html" %}
 {% endif %}
 
@@ -105,33 +106,33 @@
 <!-- Installation Process 4 Steps -->
 <section class="container" id="process-section">
   <div class="section-heading" data-aos="fade-up">
-    <h2 class="section-title">Quy Trình Đăng Ký &amp; Lắp Đặt Nhanh Chóng</h2>
-    <p class="section-subtitle">Đơn giản, minh bạch, chỉ 4 bước là có mạng tốc độ cao sử dụng ngay trong ngày.</p>
+    <h2 class="section-title">4 bước đăng ký & lắp đặt</h2>
+    <p class="section-subtitle">Gửi nhu cầu, kiểm tra hạ tầng và xác nhận lịch lắp đặt phù hợp.</p>
   </div>
 
   <div class="process-grid">
     <div class="process-card" data-aos="fade-up" data-aos-delay="100">
-      <div class="process-step-num">1</div>
+      <div class="process-illustration"><div class="process-step-num">1</div><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h16v24H8zM12 7h8M12 11h8M12 15h5"/><path d="m19 22 3 3 6-6"/></svg><span class="process-label">Gửi nhu cầu</span></div>
       <h3 class="process-card-title">Đăng Ký Nhu Cầu</h3>
       <p class="process-card-desc">Để lại số điện thoại và địa chỉ lắp đặt trên website hoặc gọi hotline tư vấn.</p>
     </div>
 
     <div class="process-card" data-aos="fade-up" data-aos-delay="200">
-      <div class="process-step-num">2</div>
+      <div class="process-illustration"><div class="process-step-num">2</div><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 26h24M8 26V9l11-5 8 5v17M13 26V15h8v11"/><path d="M14 8h8"/></svg><span class="process-label">Kiểm tra hạ tầng</span></div>
       <h3 class="process-card-title">Khảo Sát Hộp Cáp</h3>
-      <p class="process-card-desc">Chuyên viên FPT liên hệ trong 5-10 phút, kiểm tra cổng cáp và tư vấn gói tối ưu.</p>
+      <p class="process-card-desc">Nhân viên tư vấn liên hệ, kiểm tra điều kiện hạ tầng và xác nhận gói phù hợp.</p>
     </div>
 
     <div class="process-card" data-aos="fade-up" data-aos-delay="300">
-      <div class="process-step-num">3</div>
+      <div class="process-illustration"><div class="process-step-num">3</div><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="15" width="24" height="12" rx="3"/><path d="M10 15V5M26 15V5M11 22h1M16 22h1M21 22h5"/></svg><span class="process-label">Lắp thiết bị</span></div>
       <h3 class="process-card-title">Ký Hợp Đồng &amp; Lắp Đặt</h3>
-      <p class="process-card-desc">Ký hợp đồng điện tử tiện lợi. Kỹ thuật viên kéo cáp và cấu hình Modem Wi-Fi 6.</p>
+      <p class="process-card-desc">Xác nhận giá, thiết bị, điều kiện hợp đồng và lịch lắp đặt trước khi thực hiện.</p>
     </div>
 
     <div class="process-card" data-aos="fade-up" data-aos-delay="400">
-      <div class="process-step-num">4</div>
+      <div class="process-illustration"><div class="process-step-num">4</div><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 7 7L28 8"/><circle cx="17" cy="17" r="15"/></svg><span class="process-label">Kiểm tra kết nối</span></div>
       <h3 class="process-card-title">Nghiệm Thu &amp; Sử Dụng</h3>
-      <p class="process-card-desc">Khách hàng kiểm tra tốc độ đạt cam kết mới thanh toán cước. Hỗ trợ 24/7 suốt quá trình.</p>
+      <p class="process-card-desc">Kiểm tra kết nối và thiết bị; xác nhận thông tin hỗ trợ và chi phí theo hợp đồng.</p>
     </div>
   </div>
 </section>
@@ -160,7 +161,7 @@
         <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer">
-        Thời gian triển khai lắp đặt trung bình chỉ từ 12 đến 24 giờ kể từ khi hoàn tất đăng ký thông tin. Trong trường hợp khách hàng cần mạng gấp, kỹ thuật viên có thể hỗ trợ lắp đặt ngay trong buổi sáng hoặc chiều.
+        Thời gian phụ thuộc hạ tầng và lịch kỹ thuật tại địa chỉ của bạn. Nhân viên tư vấn sẽ xác nhận lịch sau khi kiểm tra.
       </div>
     </div>
 
@@ -180,9 +181,10 @@
         <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer">
-        Khảo sát hạ tầng là hoàn toàn MIỄN PHÍ. Kỹ thuật viên sẽ kiểm tra cổng cáp trước. Trong trường hợp khu vực của bạn hết cổng cáp hoặc chưa thể thi công, bạn không phải trả bất kỳ khoản phí nào.
+        Các khoản phí, nếu có, cần được xác nhận trước khi thực hiện. Hãy gửi địa chỉ để được kiểm tra hạ tầng và tư vấn điều kiện lắp đặt.
       </div>
     </div>
   </div>
 </section>
 {% endblock %}
+{% block extra_scripts %}<script id="home-published-plans" type="application/json">{{plans|tojson}}</script><script src="/static/js/client/home.js"></script>{% endblock %}

@@ -92,9 +92,8 @@ def create_app(settings: Settings | None = None, gateway: Database | None = None
     if static_path.exists():
         app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
-    # These concurrently authored UI routes contain preview fixtures.
-    if settings.environment in {"development", "test"}:
-        app.include_router(web_client_router)
+    # Public pages use published catalog snapshots; preview banners stay environment-gated.
+    app.include_router(web_client_router)
     app.include_router(web_admin_router)
 
     from pagefpt.infrastructure.r2 import R2Storage
@@ -103,6 +102,9 @@ def create_app(settings: Settings | None = None, gateway: Database | None = None
     from pagefpt.modules.integrations.notifications import NotificationAdapter
 
     app.state.notifications = NotificationAdapter(settings, app.state.provider_http)
+    from pagefpt.modules.integrations.telegram import TelegramAdapter
+
+    app.state.telegram = TelegramAdapter(settings, app.state.provider_http)
     from pagefpt.modules.integrations.conversions import ConversionGateway
 
     app.state.conversions = ConversionGateway(settings, app.state.provider_http)

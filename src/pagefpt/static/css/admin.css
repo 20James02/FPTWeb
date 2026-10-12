@@ -109,6 +109,8 @@ body.admin-body {
 }
 
 .nav-link {
+  text-decoration: none;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -122,6 +124,7 @@ body.admin-body {
 }
 
 .nav-link:hover {
+  text-decoration: none;
   background: var(--bg-surface-muted);
   color: var(--text-primary);
 }

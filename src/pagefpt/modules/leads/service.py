@@ -11,9 +11,20 @@ async def submit_lead(request, input, key, crypt, durable=False):
     now = datetime.now(UTC)
     phone = normalize_phone(input.phone)
     semantic = input.model_dump(mode="json")
+    semantic["accessory_ids"] = sorted(semantic["accessory_ids"])
     semantic["phone"] = phone
     semantic.pop("challenge_token", None)
     digest = crypt.match(json.dumps(semantic, sort_keys=True, separators=(",", ":")), "request")
+
+    async def replay():
+        return await request.app.state.db.rpc(
+            "dispatch", {"command": {"op": "lead_replay", "key": key, "digest": digest}}
+        )
+
+    if input.accessory_ids:
+        previous = await replay()
+        if previous.get("replayed"):
+            return previous
     pii = {k: semantic.pop(k) for k in ("phone", "name", "installation_address", "notes")}
     for k in ("quote_token", "session_token", "attribution_token", "challenge_token", "website"):
         semantic.pop(k, None)
@@ -68,6 +79,20 @@ async def submit_lead(request, input, key, crypt, durable=False):
             }
         )
     semantic["phone_masked"] = "***" + phone[-4:]
+    from pagefpt.modules.catalog.accessories import selection
+
+    try:
+        semantic["accessory_snapshot"] = await selection(
+            request, input.plan_id, input.accessory_ids
+        )
+    except DomainError:
+        # A concurrent first submission may have committed while the catalog changed.
+        previous = await replay()
+        if previous.get("replayed"):
+            return previous
+        raise
+    semantic["risk_evidence"] = {"honeypot": bool(input.website)}
+    semantic["risk_source"] = "intake-v1"
     semantic["session_id"] = session_id
     semantic["ip_ciphertext"] = crypt.encrypt(raw_ip) if raw_ip else None
     from pagefpt.modules.workflow.sla import compute_sla
@@ -91,6 +116,7 @@ async def submit_lead(request, input, key, crypt, durable=False):
                 "buckets": buckets,
                 "honeypot": bool(input.website),
                 "challenge_id": challenge_id,
+                "notify_admin": request.app.state.settings.telegram_enabled,
             }
         },
     )

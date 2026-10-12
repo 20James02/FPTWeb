@@ -1,4 +1,7 @@
-"""Email recovery proof is exchanged and consumed on the server in one operation."""
+"""Six-digit Telegram proof unlocks a provider recovery proof on the server."""
+
+import secrets
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -25,8 +28,10 @@ class RecoveryEmail(Command):
 
 class ResetPassword(RecoveryEmail):
     password: str = Field(min_length=8, max_length=1024)
-    otp: str = Field(pattern=r"^[0-9]{6,8}$")
+    otp: str = Field(pattern=r"^[0-9]{6}$")
+    challenge_id: UUID
     totp: str = Field(default="", pattern=r"^([0-9]{6})?$")
+    totp_factor_id: UUID | None = None
 
 
 async def throttle(request, email):
@@ -41,25 +46,77 @@ async def throttle(request, email):
 @router.post("", status_code=202)
 async def request_recovery(input: RecoveryEmail, request: Request):
     same_origin(request)
+    settings = request.app.state.settings
+    if not settings.telegram_enabled or not settings.telegram_recovery_accounts:
+        raise DomainError("RECOVERY_UNCONFIGURED", 503)
     await throttle(request, input.email)
-    await request.app.state.auth.call("recover", {"email": input.email})
-    # Supabase returns the same response for an unknown account.
-    return {"accepted": True}
+    crypt = crypto(request)
+    key = crypt.match(input.email, "telegram-recovery-email")
+    await dispatch(request, "telegram_recovery_request_gate", key=key)
+    challenge_id = str(uuid4())
+    accepted = {"accepted": True, "challenge_id": challenge_id}
+    chat = settings.telegram_recovery_accounts.get(input.email)
+    if not chat:
+        # Same response shape for an account without a configured recovery binding.
+        return accepted
+    await dispatch(request, "telegram_recovery_reserve", key=key, id=challenge_id)
+    auth = request.app.state.auth
+    generated = await auth.call(
+        "admin/generate_link", {"type": "recovery", "email": input.email}, admin=True
+    )
+    user, proof = generated, generated.get("hashed_token")
+    if (
+        not isinstance(user, dict)
+        or not isinstance(user.get("email"), str)
+        or user["email"].lower() != input.email
+        or not isinstance(proof, str)
+        or not 16 <= len(proof) <= 512
+    ):
+        raise DomainError("AUTH_UNAVAILABLE", 503)
+    try:
+        subject = str(UUID(user["id"]))
+    except (KeyError, ValueError, TypeError, AttributeError) as exc:
+        raise DomainError("AUTH_UNAVAILABLE", 503) from exc
+    code = f"{secrets.randbelow(1000000):06d}"
+    await dispatch(
+        request,
+        "telegram_recovery_issue",
+        key=key,
+        id=challenge_id,
+        subject=subject,
+        chat_id=chat,
+        code_hash=crypt.match(challenge_id + ":" + code, "telegram-recovery-code"),
+        code_ciphertext=crypt.encrypt(code),
+        proof_ciphertext=crypt.encrypt(proof),
+    )
+    return accepted
 
 
 @router.post("/reset")
 async def reset_password(input: ResetPassword, request: Request):
     same_origin(request)
     await throttle(request, input.email)
+    crypt = crypto(request)
+    grant = await dispatch(
+        request,
+        "telegram_recovery_consume",
+        chat_id=request.app.state.settings.telegram_recovery_accounts.get(input.email, ""),
+        key=crypt.match(input.email, "telegram-recovery-email"),
+        id=str(input.challenge_id),
+        code_hash=crypt.match(str(input.challenge_id) + ":" + input.otp, "telegram-recovery-code"),
+    )
+    proof = {"token_hash": crypt.decrypt(grant["proof_ciphertext"]), "type": "recovery"}
     auth = request.app.state.auth
-    pair = await auth.call("verify", {"email": input.email, "token": input.otp, "type": "recovery"})
+    pair = await auth.call("verify", proof)
     if not isinstance(pair.get("access_token"), str) or not isinstance(pair.get("user"), dict):
         raise DomainError("AUTH_UNAVAILABLE", 503)
     claims = await request.app.state.verifier.verify(pair["access_token"])
+    if claims["sub"] != grant["subject"]:
+        raise DomainError("UNAUTHENTICATED", 401)
     await IdentityService(request.app.state.db).actor_for_subject(
         claims["sub"], claims.get("aal", "aal1")
     )
-    pair = await auth.assure_mfa(pair, input.totp)
+    pair = await auth.assure_mfa(pair, input.totp, input.totp_factor_id)
     if not isinstance(pair.get("access_token"), str):
         raise DomainError("AUTH_UNAVAILABLE", 503)
     elevated = await request.app.state.verifier.verify(pair["access_token"])

@@ -1,5 +1,13 @@
 # Quản lý gói và giá theo địa bàn
 
+## Tự gợi ý địa bàn khi xem giá
+
+Trang chủ, landing và trang đo mạng dùng chung luồng: ưu tiên tỉnh/xã khách đã chọn; nếu chưa chọn, lấy gợi ý từ `/api/v1/regions/location-suggestion`, đối chiếu duy nhất với danh mục công bố và làm mới giá. Khách vẫn đổi tỉnh, chọn xã/phường theo nơi lắp đặt. Không lưu gợi ý IP thành địa chỉ khách đã xác nhận. Chọn xã sẽ lưu cả tỉnh cha và xã để lần truy cập sau khôi phục đúng.
+
+IP không xác định chính xác xã/phường hay địa chỉ. Không sử dụng tọa độ IP để chọn xã gần nhất. Tên tỉnh không còn trong danh mục mới hoặc bí danh trùng nhau thì không tự áp dụng. `aliases` của địa bàn công bố được đưa vào hierarchy để Admin có thể khai báo tên/mã ISO tương đương đã kiểm chứng; không nhầm mã ISO `VN-SG` với mã địa giới `79`. Tỉnh sáp nhập cần đối chiếu có căn cứ, không tự suy luận từ tên gần giống.
+
+Trên Vercel cần cấu hình `PAGEFPT_TRUSTED_VERCEL_PROXY=true`. Giữ `false` cho máy chủ trực tiếp không có proxy Vercel tin cậy. Không cần bật analytics để gợi ý giá; gợi ý này không ghi hành vi hay sửa lựa chọn đồng ý đo lường. API không gọi dịch vụ ngoài hoặc Supabase mỗi lần tra. Khi không có metadata Vercel, có thể dùng MMDB cục bộ được cấu hình ở `PAGEFPT_GEOIP_PATH`.
+
 ## Thao tác tại /admin/pricing
 
 1. **Địa bàn:** ưu tiên **Đồng bộ tỉnh, xã từ API**, chọn checkbox tỉnh để nhập danh mục đã công bố. Xem [danh mục qua API](DANH-MUC-DIA-BAN-API.md). Khi cần nhập tay: thêm tỉnh/thành với tên, mã, vùng miền và chi nhánh có quyền quản lý. Thêm xã/phường bằng cách chọn tỉnh trực thuộc; hệ thống kế thừa chi nhánh và vùng miền. Lưu rồi **Công bố**. Không sử dụng danh mục địa lý giả khi chưa có dữ liệu được công bố.
@@ -10,6 +18,13 @@
 6. **Ngừng:** ngừng cung cấp gói hoặc ngừng áp dụng giá/địa bàn, giữ lịch sử lead/báo giá. Không ngừng tỉnh khi còn xã/phường hoạt động. Không công bố giá có khoảng thời gian trùng với giá cùng gói/địa bàn/kỳ.
 
 Giá mặc định chỉ có hiệu lực trong phạm vi cung cấp của gói. Giá chưa xác nhận hiển thị yêu cầu tư vấn; không lấy giá thấp nhất ở địa bàn khác. Không có sẵn giá thương mại; danh mục hành chính có thể đồng bộ từ API v2, quản trị viên thiết lập phạm vi cung cấp và giá đã kiểm chứng.
+
+### Chọn và xử lý hàng loạt (09/10/2026)
+
+- Danh sách mặc định **Đang sử dụng** ẩn gói đã ngừng và giá của các gói đó. Chọn **Đã ngừng** để xem lịch sử; **Tất cả · gồm đã ngừng** để xem đầy đủ. Không xóa bản ghi hoặc lịch sử khách hàng.
+- Tick từng dòng hoặc **Chọn tất cả đang hiển thị**, rồi chọn **Công bố đã chọn** / **Ngừng đã chọn**. Phạm vi là các bản ghi đã tải và khớp bộ lọc, không bao gồm các trang chưa tải. Đổi tìm kiếm hoặc trạng thái sẽ bỏ lựa chọn của dòng bị ẩn.
+- Checkbox đầu bảng biểu thị chọn toàn bộ, chọn một phần hoặc chưa chọn. Tải lại dữ liệu không tự cập nhật phiên bản của dòng đã chọn: khi có xung đột, bỏ chọn rồi chọn lại sau khi kiểm tra thay đổi.
+- Công bố hàng loạt chỉ gửi giá nháp của gói chưa ngừng, gói nháp hoặc gói có thay đổi chưa công bố. Bản ghi không phù hợp không được gửi lại. Mỗi bản ghi được xử lý độc lập, tối đa hai yêu cầu đồng thời; thông báo tổng kết thành công/lỗi. Dòng thành công được bỏ chọn; dòng lỗi giữ lựa chọn để kiểm tra. Quyền, MFA và kiểm tra phiên bản vẫn do server xác nhận.
 
 ## Quy tắc client
 

@@ -1,302 +1,38 @@
-{% extends "layouts/admin_base.html" %}
-
-{% set active_page = "dashboard" %}
-
-{% block title %}Tổng Quan Kinh Doanh — PageFPT Admin{% endblock %}
-{% block breadcrumbs %}Tổng quan kinh doanh & Tiếp nhận khách hàng{% endblock %}
-
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Tổng quan kinh doanh — PageFPT Admin{% endblock %}
+{% block breadcrumbs %}Tổng quan / Tiếp nhận & chuyển đổi{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-accounts-analytics.css">{% endblock %}
 {% block content %}
-<!-- 4 Thẻ Chỉ Số Nổi Bật (KPIs từ Funnel thực) -->
-<div class="kpi-grid">
-  <!-- Metric 1: Total Leads -->
-  <div class="kpi-card">
-    <div class="kpi-top">
-      <span class="kpi-label">Tổng Đơn Tiếp Nhận</span>
-      <div class="kpi-icon" style="background: rgba(242, 111, 33, 0.12); color: var(--color-primary);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-    </div>
-    <div class="kpi-value" id="kpi-total-leads">--</div>
-    <div class="kpi-sub" id="kpi-sub-total">
-      Dữ liệu báo cáo phễu chuyển đổi
-    </div>
-  </div>
-
-  <!-- Metric 2: Overdue / Pending Contact -->
-  <div class="kpi-card" style="border-left: 4px solid var(--color-danger);">
-    <div class="kpi-top">
-      <span class="kpi-label">Khách Quá Hạn Phản Hồi</span>
-      <div class="kpi-icon" style="background: #FEE2E2; color: #DC2626;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-    </div>
-    <div class="kpi-value" style="color: var(--color-danger);" id="kpi-pending-leads">--</div>
-    <div class="kpi-sub" style="color: #DC2626; font-weight: 600;" id="kpi-sub-overdue">
-      ⚡ Cần ưu tiên gọi ngay
-    </div>
-  </div>
-
-  <!-- Metric 3: Qualified Rate -->
-  <div class="kpi-card">
-    <div class="kpi-top">
-      <span class="kpi-label">Khách Có Nhu Cầu Thực</span>
-      <div class="kpi-icon" style="background: #DCFCE7; color: #16A34A;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-    </div>
-    <div class="kpi-value" id="kpi-qualified-rate">--</div>
-    <div class="kpi-sub" id="kpi-sub-qualified">
-      Khách chốt gói cước
-    </div>
-  </div>
-
-  <!-- Metric 4: Completed Installations -->
-  <div class="kpi-card">
-    <div class="kpi-top">
-      <span class="kpi-label">Đã Ký & Lắp Đặt Xong</span>
-      <div class="kpi-icon" style="background: #E0E7FF; color: #4F46E5;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      </div>
-    </div>
-    <div class="kpi-value" id="kpi-installed-count">--</div>
-    <div class="kpi-sub" id="kpi-sub-installed">
-      Hoàn tất nghiệm thu
-    </div>
-  </div>
-</div>
-
-<!-- Lưới 2 Cột: Tiến Trình Xử Lý & Khách Hàng Mới Đến -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: var(--space-6); margin-bottom: var(--space-6);">
-  
-  <!-- Cột 1: Tiến Trình Chăm Sóc Khách Hàng (Funnel) -->
-  <div class="panel-card">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
-      <div>
-        <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">Phễu Chuyển Đổi Khách Hàng</h2>
-        <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;" id="funnel-as-of-time">Đang nạp dữ liệu...</div>
-      </div>
-      <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-primary); background: var(--color-primary-subtle); padding: 3px 8px; border-radius: 6px;" id="funnel-badge-count">
-        -- Yêu Cầu
-      </span>
-    </div>
-
-    <!-- Thanh Tiến Trình 5 Bước -->
-    <div style="display: flex; flex-direction: column; gap: var(--space-3);" id="funnel-container">
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">
-          <span>1. Tiếp nhận từ website (Leads)</span>
-          <span style="color: #3B82F6;" id="funnel-lbl-leads">--</span>
-        </div>
-        <div style="height: 10px; background: var(--bg-surface-muted); border-radius: var(--radius-full); overflow: hidden;">
-          <div style="width: 100%; height: 100%; background: #3B82F6; border-radius: var(--radius-full);" id="funnel-bar-leads"></div>
-        </div>
-      </div>
-
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">
-          <span>2. Đã gọi điện tư vấn (Contacted)</span>
-          <span style="color: #6366F1;" id="funnel-lbl-contacted">--</span>
-        </div>
-        <div style="height: 10px; background: var(--bg-surface-muted); border-radius: var(--radius-full); overflow: hidden;">
-          <div style="width: 0%; height: 100%; background: #6366F1; border-radius: var(--radius-full); transition: width 0.8s ease;" id="funnel-bar-contacted"></div>
-        </div>
-      </div>
-
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">
-          <span>3. Đủ điều kiện & đồng ý gói cước (Qualified)</span>
-          <span style="color: #F59E0B;" id="funnel-lbl-qualified">--</span>
-        </div>
-        <div style="height: 10px; background: var(--bg-surface-muted); border-radius: var(--radius-full); overflow: hidden;">
-          <div style="width: 0%; height: 100%; background: #F59E0B; border-radius: var(--radius-full); transition: width 0.8s ease;" id="funnel-bar-qualified"></div>
-        </div>
-      </div>
-
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">
-          <span>4. Ký hợp đồng & Lắp đặt xong (Installed)</span>
-          <span style="color: #10B981;" id="funnel-lbl-installed">--</span>
-        </div>
-        <div style="height: 10px; background: var(--bg-surface-muted); border-radius: var(--radius-full); overflow: hidden;">
-          <div style="width: 0%; height: 100%; background: #10B981; border-radius: var(--radius-full); transition: width 0.8s ease;" id="funnel-bar-installed"></div>
-        </div>
-      </div>
-
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">
-          <span>5. Quá hạn phản hồi (Overdue)</span>
-          <span style="color: #EF4444;" id="funnel-lbl-overdue">--</span>
-        </div>
-        <div style="height: 10px; background: var(--bg-surface-muted); border-radius: var(--radius-full); overflow: hidden;">
-          <div style="width: 0%; height: 100%; background: #EF4444; border-radius: var(--radius-full); transition: width 0.8s ease;" id="funnel-bar-overdue"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cột 2: Khách Hàng Mới Nhận Thời Gian Thực -->
-  <div class="panel-card" style="display: flex; flex-direction: column;">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="status-beacon-dot"></span>
-        <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">Đơn Mới Gần Nhất</h2>
-      </div>
-      <a href="/admin/leads" style="font-size: 0.78rem; font-weight: 700; color: var(--color-primary); text-decoration: none;">Xem tất cả →</a>
-    </div>
-
-    <!-- Live lead cards container -->
-    <div id="dashboard-recent-leads" style="display: flex; flex-direction: column; gap: var(--space-3); flex-grow: 1; overflow-y: auto; max-height: 290px;">
-      <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.85rem;">
-        Đang nạp danh sách đơn mới...
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Khối Thao Tác Nhanh & Lối Tắt Tiện Ích -->
-<div class="panel-card" style="margin-bottom: var(--space-6);">
-  <div style="font-size: 0.95rem; font-weight: 800; margin-bottom: var(--space-3); color: var(--text-primary);">
-    Lối Tắt Xử Lý Nhanh
-  </div>
-  <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
-    <a href="/admin/leads" class="btn-action-call" style="padding: 10px 18px; font-size: 0.85rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-      <span>Danh Sách Đơn Tư Vấn</span>
-    </a>
-    <a href="/admin/pricing" class="btn-action-detail" style="padding: 10px 18px; font-size: 0.85rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span>Quản Lý Bảng Giá</span>
-    </a>
-    <a href="/admin/reports" class="btn-action-detail" style="padding: 10px 18px; font-size: 0.85rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Báo Cáo Hiệu Quả</span>
-    </a>
-  </div>
-</div>
-
+<div class="account-heading"><div><h1>Tổng quan kinh doanh</h1><p class="analytics-note">Theo dõi khách hàng, kết quả xử lý và chi phí trong cùng một kỳ báo cáo.</p></div><div class="workspace-item-actions">{% if admin_actor.permits('lead.read') %}<a href="/admin/leads" class="btn-action-call">Xử lý hồ sơ khách hàng</a>{% endif %}{% if admin_actor.permits('catalog.write') or admin_actor.permits('pricing.write') %}<a href="/admin/pricing" class="btn-action-detail">Gói cước & giá</a>{% endif %}</div></div>
+{% if admin_actor.permits('lead.read') %}{% include 'admin/components/workbench.html' %}{% endif %}
+<details class="dashboard-reports"><summary>Phân tích kinh doanh & chi phí</summary>{% include 'admin/components/analytics.html' %}</details>
+{% if admin_actor.permits('lead.read') %}
+<section class="panel-card"><div class="account-heading"><h2>Hồ sơ mới tiếp nhận</h2><a href="/admin/leads" class="btn-action-detail">Xem tất cả hồ sơ</a></div><p class="analytics-note">Các hồ sơ mới nhất trong phạm vi quyền của bạn; danh sách này không giới hạn theo kỳ biểu đồ.</p><div id="recent-leads-list" class="workspace-list" aria-live="polite">Đang tải hồ sơ…</div></section>
+{% endif %}
+{% endblock %}
+{% block extra_scripts %}
+<script src="/static/js/admin/analytics.js"></script>
+{% if admin_actor.permits('lead.read') %}<script src="/static/js/admin/workbench.js"></script>{% endif %}
 <script>
 async function loadDashboardRealData() {
-  // 1. Fetch Funnel Report
+  const container = document.getElementById('recent-leads-list');
+  if (!container) return true;
   try {
-    const resRep = await adminFetch('/api/v1/admin/reports');
-    if (!resRep.ok) throw new Error('Không thể tải báo cáo.');
-    if (resRep.ok) {
-      const rep = await resRep.json();
-      const fn = rep.funnel || {};
-      const total = fn.leads || 0;
-      const contacted = fn.contacted || 0;
-      const qualified = fn.qualified || 0;
-      const installed = fn.installed || 0;
-      const overdue = fn.overdue || 0;
-
-      // KPIs
-      document.getElementById('kpi-total-leads').textContent = String(total);
-      document.getElementById('kpi-pending-leads').textContent = String(overdue);
-      
-      const qualRate = total > 0 ? Math.round((qualified / total) * 100) : 0;
-      document.getElementById('kpi-qualified-rate').textContent = `${qualRate}%`;
-      document.getElementById('kpi-sub-qualified').textContent = `${qualified} / ${total} khách đủ điều kiện`;
-
-      document.getElementById('kpi-installed-count').textContent = String(installed);
-      const installRate = total > 0 ? Math.round((installed / total) * 100) : 0;
-      document.getElementById('kpi-sub-installed').textContent = `Tỷ lệ thành công: ${installRate}%`;
-
-      // Funnel
-      document.getElementById('funnel-badge-count').textContent = `${total} Yêu Cầu`;
-      if (rep.as_of) {
-        const d = new Date(rep.as_of);
-        document.getElementById('funnel-as-of-time').textContent = `Cập nhật: ${d.toLocaleTimeString('vi-VN')} (${rep.definition_version || 'v1'})`;
-      }
-
-      document.getElementById('funnel-lbl-leads').textContent = `100% (${total})`;
-      
-      const contactPct = total > 0 ? Math.round((contacted / total) * 100) : 0;
-      document.getElementById('funnel-lbl-contacted').textContent = `${contactPct}% (${contacted})`;
-      document.getElementById('funnel-bar-contacted').style.width = `${contactPct}%`;
-
-      document.getElementById('funnel-lbl-qualified').textContent = `${qualRate}% (${qualified})`;
-      document.getElementById('funnel-bar-qualified').style.width = `${qualRate}%`;
-
-      document.getElementById('funnel-lbl-installed').textContent = `${installRate}% (${installed})`;
-      document.getElementById('funnel-bar-installed').style.width = `${installRate}%`;
-
-      const overduePct = total > 0 ? Math.min(100, Math.round((overdue / total) * 100)) : 0;
-      document.getElementById('funnel-lbl-overdue').textContent = `${overduePct}% (${overdue})`;
-      document.getElementById('funnel-bar-overdue').style.width = `${overduePct}%`;
+    const response = await adminFetch('/api/v1/admin/leads?limit=5');
+    if (!response.ok) throw new Error('Không thể tải hồ sơ gần đây.');
+    const data = await response.json();
+    container.replaceChildren();
+    for (const lead of data.items || []) {
+      const card = adminNode('article', '', 'workspace-item');
+      card.append(adminNode('strong', lead.phone_masked || 'Thông tin liên hệ đã ẩn'), adminNode('p', adminStatusLabel(lead.status)), adminNode('p', (lead.labels?.plan || 'Chưa chọn gói') + ' · ' + PageFPTDates.format(lead.created_at)));
+      const link = adminNode('a', 'Mở hồ sơ', 'btn-action-detail');
+      link.href = '/admin/leads/detail?id=' + encodeURIComponent(lead.id);
+      card.append(link); container.append(card);
     }
-  } catch (_) {
-    showToast('Không thể tải chỉ số dashboard. Hãy làm mới trang.','error');
-    return false;
-  }
-
-  // 2. Fetch Recent Leads (limit 5)
-  try {
-    const resLeads = await adminFetch('/api/v1/admin/leads?limit=5');
-    if (!resLeads.ok) throw new Error('Không thể tải danh sách.');
-    if (resLeads.ok) {
-      const data = await resLeads.json();
-      const container = document.getElementById('dashboard-recent-leads');
-      if (!container) return;
-
-      const items = data.items || [];
-      if (items.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.85rem;">Chưa có đơn tư vấn nào được gửi tới hệ thống.</div>';
-        return;
-      }
-
-      container.replaceChildren();
-      items.forEach(lead => {
-        const card = document.createElement('div');
-        card.className = 'kanban-card';
-        card.style.borderLeft = lead.status === 'new' ? '4px solid var(--color-primary)' : '1px solid var(--border-subtle)';
-
-        const topRow = document.createElement('div');
-        topRow.className = 'kanban-card-top';
-
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'kanban-customer-name';
-        nameSpan.textContent = `Hồ sơ ${lead.id.slice(0, 8).toUpperCase()} • ${lead.payload?.phone_masked || '***'}`;
-
-        const badge = document.createElement('span');
-        badge.className = 'status-badge ' + lead.status;
-        badge.textContent = adminStatusLabel(lead.status);
-
-        topRow.appendChild(nameSpan);
-        topRow.appendChild(badge);
-        card.appendChild(topRow);
-
-        const bottomRow = document.createElement('div');
-        bottomRow.style.display = 'flex';
-        bottomRow.style.alignItems = 'center';
-        bottomRow.style.justifyContent = 'space-between';
-        bottomRow.style.marginTop = '4px';
-
-        const planText = document.createElement('span');
-        planText.className = 'kanban-card-plan';
-        const d = new Date(lead.created_at);
-        const timeStr = isNaN(d) ? '' : d.toLocaleTimeString('vi-VN');
-        planText.textContent = `${lead.labels?.plan || 'Cần tư vấn gói'} • ${timeStr}`;
-
-        const link = document.createElement('a');
-        link.href = '/admin/leads/detail?id=' + encodeURIComponent(lead.id);
-        link.className = 'btn-action-detail';
-        link.style.padding = '4px 10px';
-        link.style.fontSize = '0.75rem';
-        link.textContent = 'Hồ Sơ';
-
-        bottomRow.appendChild(planText);
-        bottomRow.appendChild(link);
-        card.appendChild(bottomRow);
-
-        container.appendChild(card);
-      });
-    }
-  } catch (_) {
-    showToast('Không thể tải hồ sơ gần đây.','error');
-    return false;
-  }
+    if (!data.items?.length) container.append(adminNode('p', 'Chưa có hồ sơ trong phạm vi được cấp quyền.'));
+    return true;
+  } catch (error) { container.replaceChildren(adminNode('p', error.message, 'workspace-error')); return false; }
 }
-
 document.addEventListener('DOMContentLoaded', loadDashboardRealData);
 </script>
 {% endblock %}

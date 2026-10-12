@@ -4,20 +4,58 @@ from fastapi import APIRouter, Query, Request
 
 from pagefpt.api.authorization import check, current_actor
 from pagefpt.api.dependencies import dispatch
+from pagefpt.modules.catalog.images import media_image, plan_payload
 from pagefpt.modules.catalog.schemas import PlanInput, ProductInput, RegionInput, VersionCommand
+from pagefpt.modules.content.landing_settings import LandingSettings
 from pagefpt.modules.content.schemas import PageInput
 from pagefpt.modules.governance.schemas import CostInput
 from pagefpt.modules.integrations.schemas import IntegrationInput
 from pagefpt.modules.marketing.schemas import CampaignInput, ExperimentInput, PromotionInput
+from pagefpt.modules.pricing.landing import has_landing_prices
 
 router = APIRouter(prefix="/api/v1/admin")
+
+
+async def cms_payload(input, request, actor):
+    data = input.model_dump(mode="json")
+    if has_landing_prices(data):
+        check(await current_actor(request), "pricing.write")
+    if data.get("template") == "telecom":
+        landing = data.get("landing") or LandingSettings().model_dump(mode="json")
+        for key in ("hero", "hero_mobile", "promo", "closing", "logo"):
+            if landing.get(key + "_image_id"):
+                landing[key + "_image_url"] = (
+                    await media_image(UUID(landing[key + "_image_id"]), request, actor)
+                )["image_url"]
+        for review in landing["reviews"]:
+            if review.get("avatar_image_id"):
+                review["avatar_image_url"] = (
+                    await media_image(UUID(review["avatar_image_id"]), request, actor)
+                )["image_url"]
+        data["landing"] = landing
+    for block in data["blocks"]:
+        if block["type"] == "image" and block.get("media_id"):
+            try:
+                media_id = UUID(block["media_id"])
+            except ValueError as exc:
+                from pagefpt.core.errors import DomainError
+
+                raise DomainError("INVALID_PLAN_IMAGE", 422) from exc
+            block["url"] = (await media_image(media_id, request, actor))["image_url"]
+    return data
 
 
 def register_resource(path, kind, model, permission, create=True, mfa=False):
     async def save(input, request: Request):
         actor = await current_actor(request)
         check(actor, permission, mfa=mfa)
-        data = input.model_dump(mode="json")
+        data = (
+            await plan_payload(input, request, actor.user_id)
+            if kind == "product"
+            else await cms_payload(input, request, actor.user_id)
+            if kind == "page"
+            else input.model_dump(mode="json")
+        )
         return await dispatch(
             request,
             "resource_save",
@@ -30,6 +68,13 @@ def register_resource(path, kind, model, permission, create=True, mfa=False):
     async def update(id: UUID, input, request: Request, expected_version: int = Query(ge=1)):
         actor = await current_actor(request)
         check(actor, permission, mfa=mfa)
+        data = (
+            await plan_payload(input, request, actor.user_id)
+            if kind in {"plan", "product"}
+            else await cms_payload(input, request, actor.user_id)
+            if kind == "page"
+            else input.model_dump(mode="json")
+        )
         return await dispatch(
             request,
             "resource_update",
@@ -37,7 +82,7 @@ def register_resource(path, kind, model, permission, create=True, mfa=False):
             kind=kind,
             id=str(id),
             expected_version=expected_version,
-            payload=input.model_dump(mode="json"),
+            payload=data,
         )
 
     async def catalog_listing(
@@ -84,7 +129,7 @@ def register_resource(path, kind, model, permission, create=True, mfa=False):
         )
     router.add_api_route(
         "/" + path,
-        catalog_listing if kind in {"plan", "region"} else listing,
+        catalog_listing if kind in {"plan", "region", "product"} else listing,
         methods=["GET"],
         name="list_" + kind,
     )

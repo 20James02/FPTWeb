@@ -1,0 +1,14 @@
+{% extends "layouts/client_base.html" %}
+{% block title %}{{page.title}} — PageFPT{% endblock %}
+{% block meta_desc %}{{page.description}}{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/client-services.css"><link rel="canonical" href="{{canonical}}">{% if preview %}<meta name="robots" content="noindex, nofollow">{% endif %}{% endblock %}
+{% block content %}<article class="container cms-page" style="padding-block:32px;max-width:1100px">
+{% if preview %}<p class="cms-preview-note" role="status">Bản xem trước — nội dung chưa công bố</p>{% endif %}<h1>{{page.title}}</h1>
+{% for block in page.blocks %}
+{% if block.type=='heading' %}<h2>{{block.text}}</h2>
+{% elif block.type=='text' %}<p style="white-space:pre-line;overflow-wrap:anywhere">{{block.text}}</p>
+{% elif block.type=='cta' %}{% if block.url %}<a class="btn-select-plan primary" href="{{block.url}}">{{block.text or 'Nhận tư vấn'}}</a>{% else %}<button class="btn-select-plan primary" type="button" onclick="openBottomSheet('Tư vấn gói phù hợp','')">{{block.text or 'Nhận tư vấn'}}</button>{% endif %}
+{% elif block.type=='image' and block.url %}<figure><img src="{{block.url}}" alt="{{block.text}}" loading="lazy" style="max-width:100%;height:auto;border-radius:16px"></figure>
+{% elif block.type=='pricing' %}<section class="cms-pricing"><h2>{{block.text or 'Gói cước đang cung cấp'}}</h2><div class="service-plan-grid">{% include 'client/components/published_plan_cards.html' %}</div></section>
+{% elif block.type=='faq' %}<details class="cms-faq"><summary>Thông tin thường gặp</summary><p style="white-space:pre-line">{{block.text}}</p></details>{% endif %}
+{% endfor %}</article>{% endblock %}

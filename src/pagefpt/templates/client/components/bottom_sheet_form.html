@@ -1,5 +1,5 @@
 <!-- Bottom Sheet Lead Intake Modal -->
-<div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" onclick="handleBackdropClick(event)">
+<div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" aria-hidden="true" inert onclick="handleBackdropClick(event)">
   <div class="bottom-sheet" id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
     <!-- Drag Handle -->
     <div class="bottom-sheet-drag-handle" id="sheet-drag-handle"></div>
@@ -15,76 +15,39 @@
     <!-- Body & Form -->
     <div class="bottom-sheet-body">
       <!-- Selected Plan Summary Card -->
-      <div class="selected-plan-summary" id="form-selected-plan-box">
+      <div class="selected-plan-summary" id="form-selected-plan-box" hidden>
         <div class="plan-info">
           <span class="p-name" id="form-plan-name">Gói đang chọn: Tư vấn gói phù hợp</span>
           <span class="p-fee" id="form-plan-fee">Giá được xác nhận theo khu vực</span>
         </div>
-        <button type="button" class="btn-change-plan" onclick="closeBottomSheet(); document.getElementById('plans-section').scrollIntoView({behavior: 'smooth'})">Đổi gói</button>
+        <button type="button" class="btn-change-plan" onclick="closeBottomSheet(); (document.getElementById('plans-section') || document.getElementById('lp-plans') || document.getElementById('speedtest-recommendations'))?.scrollIntoView({behavior: 'smooth'})">Đổi gói</button>
       </div>
 
       <form id="lead-intake-form" onsubmit="handleLeadSubmit(event)">
         <!-- Honeypot field against bots -->
-        <input type="text" name="hp_confirm" id="lead-hp" class="hp-field" tabindex="-1" autocomplete="off">
+        <input type="text" name="hp_confirm" id="lead-hp" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off">
 
-        <!-- Phone Number (Required, with inputmode=tel) -->
         <div class="form-group">
-          <label class="form-label" for="lead-phone">Số điện thoại liên hệ <span class="req">*</span></label>
-          <input type="tel" id="lead-phone" class="form-input" inputmode="tel" placeholder="Ví dụ: 0981234567" required autocomplete="tel">
-          <div class="form-error-msg" id="phone-error-msg">Vui lòng nhập số điện thoại hợp lệ (10 số).</div>
+          <label class="form-label" for="lead-name">Tên</label>
+          <input type="text" id="lead-name" class="form-input" placeholder="Ví dụ: Nguyễn Văn An" maxlength="150" autocomplete="name">
         </div>
 
-        <!-- Full Name (Optional) -->
         <div class="form-group">
-          <label class="form-label" for="lead-name">Họ và tên (không bắt buộc)</label>
-          <input type="text" id="lead-name" class="form-input" placeholder="Ví dụ: Nguyễn Văn An" autocomplete="name">
+          <label class="form-label" for="lead-phone">Số điện thoại <span class="req">*</span></label>
+          <input type="tel" id="lead-phone" class="form-input" inputmode="tel" placeholder="Ví dụ: 0981234567" maxlength="40" required autocomplete="tel" aria-describedby="phone-error-msg">
+          <div class="form-error-msg" id="phone-error-msg" role="alert">Vui lòng nhập số điện thoại hợp lệ (10 số).</div>
         </div>
 
-        <!-- Installation Region Cascading Comboboxes (Zone + Province) -->
-        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <div class="form-group">
-            <label class="form-label" for="form-lead-zone">Vùng miền <span class="req">*</span></label>
-            <select id="form-lead-zone" class="form-select" required>
-              <option value="">Đang tải vùng miền…</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="form-lead-province">Tỉnh / Thành phố <span class="req">*</span></label>
-            <select id="form-lead-province" class="form-select" required>
-              <option value="">Đang tải tỉnh/thành…</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group"><label class="form-label" for="form-lead-ward">Xã / Phường (không bắt buộc)</label><select id="form-lead-ward" class="form-select" disabled><option value="">Chọn tỉnh/thành trước</option></select></div>
-
-        <!-- Installation Address (Optional for initial consultation) -->
         <div class="form-group">
-          <label class="form-label" for="lead-address">Địa chỉ lắp đặt (Số nhà, ngõ, đường, phường...)</label>
-          <input type="text" id="lead-address" class="form-input" placeholder="Để nhân viên kiểm tra trước hộp cáp">
-        </div>
-
-        <!-- Preferred Contact Time -->
-        <div class="form-group">
-          <label class="form-label" for="lead-time">Giờ tiện liên hệ</label>
-          <select id="lead-time" class="form-select">
-            <option value="asap">Càng sớm càng tốt (trong 5-10 phút)</option>
-            <option value="working_hours">Giờ hành chính (8h00 - 17h30)</option>
-            <option value="evening">Buổi tối (18h00 - 21h00)</option>
-          </select>
-        </div>
-
-        <!-- Additional Notes -->
-        <div class="form-group">
-          <label class="form-label" for="lead-notes">Ghi chú nhu cầu thêm</label>
-          <textarea id="lead-notes" class="form-textarea" rows="2" placeholder="Ví dụ: Nhà 3 tầng cần thêm Wi-Fi Mesh, lắp thêm camera..."></textarea>
+          <label class="form-label" for="lead-address">Địa chỉ cụ thể</label>
+          <input type="text" id="lead-address" class="form-input" placeholder="Số nhà, đường, xã/phường, tỉnh/thành" maxlength="500" autocomplete="street-address">
         </div>
 
         <!-- Consent Checkbox -->
         <div class="consent-box">
           <input type="checkbox" id="lead-consent" checked required>
           <label for="lead-consent">
-            Tôi đồng ý cung cấp thông tin để nhân viên tư vấn FPT liên hệ kiểm tra hạ tầng và tư vấn gói cước.
+            Tôi đồng ý được liên hệ tư vấn theo thông tin trên.
           </label>
         </div>
 
@@ -95,7 +58,7 @@
         </button>
 
         <p style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">
-          Cam kết bảo mật thông tin • Nhân viên tư vấn miễn phí tận nơi
+          <a href="/chinh-sach-bao-mat" target="_blank" rel="noopener noreferrer">Xem thông tin về dữ liệu khách hàng ↗</a>
         </p>
       </form>
     </div>

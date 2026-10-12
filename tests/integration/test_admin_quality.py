@@ -331,7 +331,9 @@ async def test_production_admin_routes_keep_auth_gate(admin):
         assert response.status_code == 200, response.text
         login = await guest.get("/admin/login")
         assert "Admin@123456" not in login.text
-        assert (await guest.get("/")).status_code == 404
+        home = await guest.get("/")
+        assert home.status_code == 200
+        assert "tặng đến 2 tháng" not in home.text
 
 
 @pytest.mark.asyncio
@@ -339,7 +341,8 @@ async def test_production_admin_routes_keep_auth_gate(admin):
     "permissions,landing",
     [
         (["*"], "/admin/dashboard"),
-        (["lead.read", "lead.write"], "/admin/leads"),
+        (["lead.read", "lead.write"], "/admin/workbench"),
+        (["lead.read"], "/admin/workbench"),
         (["marketing.write"], "/admin/marketing"),
         (["content.write"], "/admin/content"),
         (["pricing.write"], "/admin/pricing"),
@@ -373,7 +376,9 @@ async def test_admin_entry_without_workspace_permission_has_no_redirect_loop(adm
             [actor_id],
         )
     response = await admin.get("/admin", follow_redirects=False)
-    assert response.status_code == 403
+    assert response.status_code == 303
+    assert response.headers["location"] == "/admin/account"
+    assert (await admin.get("/admin/account")).status_code == 200
 
 
 @pytest.mark.asyncio
@@ -381,3 +386,99 @@ async def test_admin_entry_guest_and_login_redirect_use_authenticated_resolver(c
     response = await client.get("/admin", follow_redirects=False)
     assert response.status_code == 303
     assert response.headers["location"] == "/admin/login"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "status",
+    [
+        "contacting",
+        "contacted",
+        "qualified",
+        "survey",
+        "quoted",
+        "closed",
+        "unreachable",
+        "no_infrastructure",
+    ],
+)
+async def test_reassign_active_lead_preserves_progress_and_balances_capacity(
+    admin, gateway, status
+):
+    from tests.integration.test_worker_crm import lead
+
+    lead_id = await lead(admin, gateway)
+    old = (await admin.get("/api/v1/admin/me")).json()["id"]
+    staff = str(uuid4())
+    with psycopg.connect(gateway.dsn) as db:
+        db.execute(
+            "UPDATE private.leads SET status=%s,assignee_id=%s,assignment_branch_id='00000000-0000-0000-0000-000000000000' WHERE id=%s",
+            [status, old, lead_id],
+        )
+        db.execute("UPDATE private.memberships SET active_leads=1 WHERE user_id=%s", [old])
+        db.execute(
+            "INSERT INTO private.memberships(user_id,branch_id,permissions,capacity,display_name,shift) VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['lead.read','lead.write'],1,'Nhân viên nhận bàn giao','{\"weekdays\":[0,1,2,3,4,5,6],\"start\":\"00:00\",\"end\":\"23:59\"}')",
+            [staff],
+        )
+        before = db.execute(
+            "SELECT sla_due_at,payload FROM private.leads WHERE id=%s", [lead_id]
+        ).fetchone()
+    result = await admin.post(
+        f"/api/v1/admin/leads/{lead_id}/assignments",
+        json={"expected_version": 1, "assignee_id": staff},
+    )
+    assert result.status_code == 200, result.text
+    assert result.json()["status"] == status and result.json()["assignee_id"] == staff
+    # Re-selecting the same assignee while their capacity is full stays safe.
+    same = await admin.post(
+        f"/api/v1/admin/leads/{lead_id}/assignments",
+        json={"expected_version": 2, "assignee_id": staff},
+    )
+    assert same.status_code == 200, same.text
+    with psycopg.connect(gateway.dsn) as db:
+        assert (
+            db.execute(
+                "SELECT active_leads FROM private.memberships WHERE user_id=%s", [old]
+            ).fetchone()[0]
+            == 0
+        )
+        assert (
+            db.execute(
+                "SELECT active_leads FROM private.memberships WHERE user_id=%s", [staff]
+            ).fetchone()[0]
+            == 1
+        )
+        assert (
+            db.execute(
+                "SELECT sla_due_at,payload FROM private.leads WHERE id=%s", [lead_id]
+            ).fetchone()
+            == before
+        )
+        assert (
+            db.execute(
+                "SELECT count(*) FROM private.audit WHERE entity_id=%s AND action='lead.assign'",
+                [lead_id],
+            ).fetchone()[0]
+            == 2
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", ["installed", "invalid", "rejected", "duplicate"])
+async def test_reassignment_rejects_finished_lead_with_specific_error(admin, gateway, status):
+    from tests.integration.test_worker_crm import lead
+
+    lead_id = await lead(admin, gateway)
+    actor = (await admin.get("/api/v1/admin/me")).json()["id"]
+    with psycopg.connect(gateway.dsn) as db:
+        db.execute("UPDATE private.leads SET status=%s WHERE id=%s", [status, lead_id])
+    result = await admin.post(
+        f"/api/v1/admin/leads/{lead_id}/assignments",
+        json={"expected_version": 1, "assignee_id": actor},
+    )
+    assert result.status_code == 409
+    assert result.json()["code"] == "ASSIGNMENT_NOT_ALLOWED"
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute(
+            "SELECT status,assignee_id,version FROM private.leads WHERE id=%s", [lead_id]
+        ).fetchone() == (status, None, 1)

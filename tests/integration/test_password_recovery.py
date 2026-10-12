@@ -1,167 +1,81 @@
-"""Recovery operates through provider proof, never through an admin bypass."""
+"""Telegram recovery: real SQL, HTTP doubles only for Telegram and Supabase."""
 
+import asyncio
 import json
+from uuid import uuid4
 
 import httpx
+import jwt
 import psycopg
 import pytest
 import respx
+from pydantic import SecretStr
+
+from pagefpt.core.crypto import Crypto
+from pagefpt.modules.workflow.worker import Worker
+
+EMAIL = "admin@example.com"
+BOT = "123456789:" + "a" * 35
+URL = "https://test.supabase.co/auth/v1/"
+CRYPT = Crypto("e" * 32, "m" * 32, "t" * 32)
 
 
 @pytest.fixture
-async def recovery_backend(admin):
+async def recovery_backend(admin, gateway):
     app = admin._transport.app
-    app.state.settings.supabase_url = "https://test.supabase.co"
-    app.state.settings.supabase_auth_key = "sb_publishable_test"
+    s = app.state.settings
+    s.supabase_url = "https://test.supabase.co"
+    s.supabase_auth_key = "sb_publishable_test"
+    s.supabase_secret = SecretStr("sb_secret_test")
+    s.telegram_enabled = True
+    s.telegram_bot_token = SecretStr(BOT)
+    s.telegram_chat_id = "-999999"
+    s.telegram_recovery_accounts = {EMAIL: "123456789"}
     token = admin.headers.pop("Authorization")[7:]
-    return admin, token
+    subject = jwt.decode(token, options={"verify_signature": False})["sub"]
+    return admin, token, subject
 
 
-PAYLOAD = {
-    "email": "admin@example.com",
-    "otp": "123456",
-    "password": "QA-new-password-123",
-    "totp": "",
-}
-
-
-@respx.mock
-async def test_recovery_request_waits_for_provider_and_does_not_enumerate(recovery_backend):
-    client, _ = recovery_backend
-
-    def provider(request):
-        assert json.loads(request.content) == {"email": "missing@example.com"}
-        return httpx.Response(200, json={})
-
-    respx.post("https://test.supabase.co/auth/v1/recover").mock(side_effect=provider)
-    result = await client.post("/api/v1/auth/recovery", json={"email": "missing@example.com"})
-    assert result.status_code == 202
-    assert result.json() == {"accepted": True}
-    assert not client.cookies
-
-
-@respx.mock
-async def test_recovery_reset_changes_password_and_revokes_local_sessions(
-    recovery_backend, gateway
-):
-    client, token = recovery_backend
-    pair = {
-        "access_token": token,
-        "refresh_token": "private-provider-refresh",
-        "user": {"factors": []},
+def generate_response(subject):
+    return {
+        "id": subject,
+        "email": EMAIL,
+        "hashed_token": "a" * 64,
+        "email_otp": "87654321",
+        "action_link": URL + "verify?token=" + "a" * 64 + "&type=recovery",
+        "verification_type": "recovery",
     }
-    respx.post("https://test.supabase.co/auth/v1/token").mock(
-        return_value=httpx.Response(200, json=pair)
+
+
+async def issue(backend, gateway):
+    client, _, subject = backend
+
+    def generated(request):
+        assert request.headers["Authorization"] == "Bearer sb_secret_test"
+        assert json.loads(request.content) == {"type": "recovery", "email": EMAIL}
+        return httpx.Response(200, json=generate_response(subject))
+
+    respx.post(URL + "admin/generate_link").mock(side_effect=generated)
+    r = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert r.status_code == 202, r.text
+    assert "challenge_id" in r.json(), (
+        "Recovery must create a server challenge for the private Telegram code"
     )
-    assert (
-        await client.post(
-            "/api/v1/auth/session", json={"email": PAYLOAD["email"], "password": "old"}
-        )
-    ).status_code == 200
-
-    def verified(request):
-        assert json.loads(request.content) == {
-            "email": PAYLOAD["email"],
-            "token": PAYLOAD["otp"],
-            "type": "recovery",
-        }
-        return httpx.Response(200, json=pair)
-
-    def updated(request):
-        assert request.headers["Authorization"] == "Bearer " + token
-        assert json.loads(request.content) == {"password": PAYLOAD["password"]}
-        import jwt
-
-        return httpx.Response(
-            200, json={"id": jwt.decode(token, options={"verify_signature": False})["sub"]}
-        )
-
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(side_effect=verified)
-    respx.put("https://test.supabase.co/auth/v1/user").mock(side_effect=updated)
-    respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(204))
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 200
-    assert result.json()["changed"] is True
-    assert token not in result.text and PAYLOAD["password"] not in result.text
-    assert (await client.get("/api/v1/admin/me")).status_code == 401
-    with psycopg.connect(gateway.dsn) as connection:
-        assert connection.execute("SELECT count(*) FROM private.admin_sessions").fetchone()[0] == 0
-        assert (
-            connection.execute(
-                "SELECT count(*) FROM private.audit WHERE action='auth.password_recovered'"
-            ).fetchone()[0]
-            == 1
-        )
-
-
-@respx.mock
-@pytest.mark.parametrize("provider_status,expected", [(400, 401), (429, 429), (500, 503)])
-async def test_recovery_invalid_expired_or_limited_code_never_changes_password(
-    recovery_backend, provider_status, expected
-):
-    client, _ = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(provider_status, json={"error_code": "otp_expired"})
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == expected
-    assert not result.json().get("changed")
-    assert not client.cookies
-
-
-@respx.mock
-async def test_recovery_mfa_required_without_password_write(recovery_backend):
-    client, token = recovery_backend
-    pair = {
-        "access_token": token,
-        "user": {
-            "factors": [
-                {
-                    "id": "e69808c7-760e-4e1a-9a1b-bee4ea891443",
-                    "factor_type": "totp",
-                    "status": "verified",
-                }
-            ]
-        },
+    with psycopg.connect(gateway.dsn) as db:
+        row = db.execute(
+            "SELECT code_ciphertext FROM private.telegram_recovery WHERE id=%s",
+            [r.json()["challenge_id"]],
+        ).fetchone()
+    return {
+        "email": EMAIL,
+        "challenge_id": r.json()["challenge_id"],
+        "otp": CRYPT.decrypt(row[0]),
+        "password": "QA-new-password-123",
+        "totp": "",
     }
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 403 and result.json()["code"] == "MFA_REQUIRED"
 
 
-@respx.mock
-async def test_recovery_cross_origin_and_bad_input_rejected(recovery_backend):
-    client, _ = recovery_backend
-    assert (
-        await client.post(
-            "/api/v1/auth/recovery",
-            json={"email": PAYLOAD["email"]},
-            headers={"Origin": "https://evil.example"},
-        )
-    ).status_code == 403
-    assert (
-        await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "otp": "abcdef"})
-    ).status_code == 422
-    assert (
-        await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "password": "short"})
-    ).status_code == 422
-
-
-@respx.mock
-async def test_recovery_revoked_member_cannot_change_password(recovery_backend, gateway):
-    client, token = recovery_backend
-    with psycopg.connect(gateway.dsn, autocommit=True) as connection:
-        connection.execute("UPDATE private.memberships SET active=false")
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": []}})
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 403
-
-
-def provider_pair(token, mfa=False):
+def reset_provider(token, subject, mfa=False):
     factors = (
         [
             {
@@ -173,87 +87,361 @@ def provider_pair(token, mfa=False):
         if mfa
         else []
     )
-    return {"access_token": token, "user": {"factors": factors}}
+    pair = {"access_token": token, "user": {"id": subject, "factors": factors}}
 
+    def verify(request):
+        assert json.loads(request.content) == {"token_hash": "a" * 64, "type": "recovery"}
+        return httpx.Response(200, json=pair)
 
-def provider_user(token):
-    import jwt
-
-    return {"id": jwt.decode(token, options={"verify_signature": False})["sub"]}
+    respx.post(URL + "verify").mock(side_effect=verify)
+    update = respx.put(URL + "user").mock(return_value=httpx.Response(200, json={"id": subject}))
+    respx.post(URL + "logout").mock(return_value=httpx.Response(204))
+    return update, pair
 
 
 @respx.mock
-@pytest.mark.parametrize("code,expected", [("123456", 200), ("654321", 401)])
-async def test_recovery_verifies_totp_before_writing_password(recovery_backend, code, expected):
-    client, token = recovery_backend
-    pair = provider_pair(token, mfa=True)
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
-    )
-    factor = "https://test.supabase.co/auth/v1/factors/e69808c7-760e-4e1a-9a1b-bee4ea891443"
-    respx.post(factor + "/challenge").mock(
-        return_value=httpx.Response(200, json={"id": "challenge"})
-    )
+async def test_code_delivered_only_to_bound_private_chat_without_link_or_provider_proof(
+    recovery_backend, gateway
+):
+    payload = await issue(recovery_backend, gateway)
+    client, _, _ = recovery_backend
+    app = client._transport.app
 
-    def verified(request):
-        assert json.loads(request.content) == {"challenge_id": "challenge", "code": code}
-        return (
-            httpx.Response(200, json=pair)
-            if code == "123456"
-            else httpx.Response(400, json={"error_code": "invalid_code"})
+    def sent(request):
+        data = json.loads(request.content)
+        assert data["chat_id"] == "123456789"
+        assert (
+            payload["otp"] in data["text"] and len(payload["otp"]) == 6 and payload["otp"].isascii()
         )
+        assert "reply_markup" not in data and "http" not in data["text"]
+        for secret in [EMAIL, "a" * 64, "87654321", payload["password"]]:
+            assert secret not in request.content.decode()
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 123}})
 
-    respx.post(factor + "/verify").mock(side_effect=verified)
-    update = respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(200, json=provider_user(token))
-    )
-    respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(204))
-    result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": code})
-    assert result.status_code == expected
-    assert update.call_count == (1 if expected == 200 else 0)
-    assert bool(result.json().get("changed")) == (expected == 200)
+    respx.post("https://api.telegram.org/bot" + BOT + "/sendMessage").mock(side_effect=sent)
+    worker = Worker(gateway, CRYPT, telegram=app.state.telegram)
+    assert (await worker.process("notifications"))["completed"] == 1
+    with psycopg.connect(gateway.dsn) as db:
+        jobs = db.execute("SELECT job_command,result FROM private.jobs").fetchall()
+        row = db.execute("SELECT code_ciphertext FROM private.telegram_recovery").fetchone()
+    assert payload["otp"] not in json.dumps(jobs, default=str)
+    assert row[0] == ""  # clear ciphertext after delivery; HMAC remains for validation
 
 
 @respx.mock
-async def test_recovery_requires_elevated_aal_after_mfa(recovery_backend, monkeypatch):
-    client, token = recovery_backend
-    verifier = client._transport.app.state.verifier
-    original = verifier.verify
+async def test_valid_code_changes_password_once_and_revokes_bff_sessions(recovery_backend, gateway):
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    pair = {
+        "access_token": token,
+        "refresh_token": "private-refresh",
+        "user": {"id": subject, "factors": []},
+    }
+    respx.post(URL + "token").mock(return_value=httpx.Response(200, json=pair))
+    assert (
+        await client.post("/api/v1/auth/session", json={"email": EMAIL, "password": "old"})
+    ).status_code == 200
+    update, _ = reset_provider(token, subject)
+    r = await client.post("/api/v1/auth/recovery/reset", json=payload)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"changed": True, "provider_revoked": True}
+    assert (await client.get("/api/v1/admin/me")).status_code == 401
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+    assert update.call_count == 1
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.admin_sessions").fetchone()[0] == 0
+        assert (
+            db.execute(
+                "SELECT count(*) FROM private.audit WHERE action='auth.password_recovered'"
+            ).fetchone()[0]
+            == 1
+        )
+        assert db.execute(
+            "SELECT proof_ciphertext,code_ciphertext FROM private.telegram_recovery"
+        ).fetchone() == ("", "")
 
-    async def low_aal(value):
-        return {**await original(value), "aal": "aal1"}
 
-    monkeypatch.setattr(verifier, "verify", low_aal)
-    pair = provider_pair(token, mfa=True)
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
+@respx.mock
+async def test_five_wrong_codes_lock_challenge_even_when_correct_code_follows(
+    recovery_backend, gateway
+):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    wrong = "000000" if payload["otp"] != "000000" else "000001"
+    for _ in range(5):
+        assert (
+            await client.post("/api/v1/auth/recovery/reset", json={**payload, "otp": wrong})
+        ).status_code == 401
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+
+
+@respx.mock
+async def test_expired_code_and_expired_queue_job_cannot_be_used_or_sent(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("UPDATE private.telegram_recovery SET expires_at=now()-interval '1 second'")
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+    worker = Worker(gateway, CRYPT, telegram=client._transport.app.state.telegram)
+    assert (await worker.process("notifications"))["completed"] == 1  # no outbound send
+
+
+@respx.mock
+async def test_resend_cooldown_and_old_challenge_invalidation(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    first = await issue(recovery_backend, gateway)
+    assert (await client.post("/api/v1/auth/recovery", json={"email": EMAIL})).status_code == 429
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("UPDATE private.telegram_recovery SET created_at=now()-interval '61 seconds'")
+        db.execute(
+            "UPDATE private.rate_buckets SET updated_at=now()-interval '61 seconds' WHERE key LIKE 'telegram-recovery-send:%'"
+        )
+    second = await issue(recovery_backend, gateway)
+    assert first["challenge_id"] != second["challenge_id"]
+    assert (await client.post("/api/v1/auth/recovery/reset", json=first)).status_code == 401
+    token, subject = recovery_backend[1:]
+    reset_provider(token, subject)
+    assert (await client.post("/api/v1/auth/recovery/reset", json=second)).status_code == 200
+
+
+@respx.mock
+async def test_concurrent_valid_resets_only_write_one_password(recovery_backend, gateway):
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    update, _ = reset_provider(token, subject)
+    results = await asyncio.gather(
+        *[client.post("/api/v1/auth/recovery/reset", json=payload) for _ in range(2)]
     )
-    factor = "https://test.supabase.co/auth/v1/factors/e69808c7-760e-4e1a-9a1b-bee4ea891443"
+    assert sorted(r.status_code for r in results) == [200, 401]
+    assert update.call_count == 1
+
+
+@respx.mock
+async def test_unknown_unbound_email_is_generic_and_sends_nothing(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    r = await client.post("/api/v1/auth/recovery", json={"email": "missing@example.test"})
+    assert r.status_code == 202 and r.json()["accepted"] is True
+    assert "challenge_id" in r.json()
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.telegram_recovery").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+    assert not respx.calls
+
+
+@respx.mock
+async def test_challenge_cannot_be_used_for_another_email(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    r = await client.post(
+        "/api/v1/auth/recovery/reset", json={**payload, "email": "another@example.test"}
+    )
+    assert r.status_code == 401
+
+
+@respx.mock
+@pytest.mark.parametrize(
+    "code",
+    [
+        "12345",
+        "1234567",
+        "12345678",
+        "abcdef",
+        "１２３４５６",
+        "https://test.supabase.co/auth/v1/verify",
+    ],
+)
+async def test_only_six_ascii_digits_are_accepted(recovery_backend, gateway, code):
+    client, _, _ = recovery_backend
+    r = await client.post(
+        "/api/v1/auth/recovery/reset",
+        json={
+            "email": EMAIL,
+            "challenge_id": str(uuid4()),
+            "otp": code,
+            "password": "valid-password-123",
+        },
+    )
+    assert r.status_code == 422 and not respx.calls
+
+
+@respx.mock
+async def test_cross_origin_and_old_link_contract_are_rejected(recovery_backend):
+    client, _, _ = recovery_backend
+    assert (
+        await client.post(
+            "/api/v1/auth/recovery",
+            json={"email": EMAIL},
+            headers={"Origin": "https://evil.example"},
+        )
+    ).status_code == 403
+    assert (
+        await client.post(
+            "/api/v1/auth/recovery/reset",
+            json={
+                "email": EMAIL,
+                "recovery_link": URL + "verify?token=x",
+                "password": "valid-password",
+            },
+        )
+    ).status_code == 422
+
+
+@respx.mock
+async def test_revoked_member_cannot_receive_or_use_recovery(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("UPDATE private.memberships SET active=false")
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 403
+    assert (
+        await Worker(gateway, CRYPT, telegram=client._transport.app.state.telegram).process(
+            "notifications"
+        )
+    )["completed"] == 1
+
+
+@respx.mock
+@pytest.mark.parametrize("code,expected", [("", 403), ("654321", 401), ("123456", 200)])
+async def test_mfa_required_and_verified_before_password_write(
+    recovery_backend, gateway, code, expected
+):
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    update, pair = reset_provider(token, subject, mfa=True)
+    factor = URL + "factors/e69808c7-760e-4e1a-9a1b-bee4ea891443"
     respx.post(factor + "/challenge").mock(
         return_value=httpx.Response(200, json={"id": "challenge"})
     )
-    respx.post(factor + "/verify").mock(return_value=httpx.Response(200, json=pair))
-    result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
-    assert result.status_code == 403 and result.json()["code"] == "MFA_REQUIRED"
+
+    def mfa(request):
+        assert json.loads(request.content) == {"challenge_id": "challenge", "code": code}
+        return httpx.Response(200, json=pair) if code == "123456" else httpx.Response(400, json={})
+
+    respx.post(factor + "/verify").mock(side_effect=mfa)
+    r = await client.post("/api/v1/auth/recovery/reset", json={**payload, "totp": code})
+    assert r.status_code == expected and update.call_count == (1 if expected == 200 else 0)
+
+
+@respx.mock
+@pytest.mark.parametrize("status,expected", [(400, 401), (429, 429), (500, 503)])
+async def test_provider_rejection_does_not_write_password(
+    recovery_backend, gateway, status, expected
+):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    respx.post(URL + "verify").mock(return_value=httpx.Response(status, json={}))
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == expected
+
+
+@respx.mock
+async def test_provider_subject_must_match_challenge(recovery_backend, gateway):
+    client, token, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        other = str(uuid4())
+        db.execute(
+            "INSERT INTO private.memberships(user_id,branch_id,permissions) VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['*'])",
+            [other],
+        )
+        db.execute("UPDATE private.telegram_recovery SET subject=%s", [other])
+    respx.post(URL + "verify").mock(
+        return_value=httpx.Response(200, json={"access_token": token, "user": {}})
+    )
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+
+
+@respx.mock
+async def test_telegram_failure_retries_but_does_not_deliver_stale_resend(
+    recovery_backend, gateway
+):
+    client, _, _ = recovery_backend
+    first = await issue(recovery_backend, gateway)
+    respx.post("https://api.telegram.org/bot" + BOT + "/sendMessage").mock(
+        return_value=httpx.Response(503, json={})
+    )
+    worker = Worker(gateway, CRYPT, telegram=client._transport.app.state.telegram)
+    assert (await worker.process("notifications"))["retried"] == 1
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("UPDATE private.telegram_recovery SET created_at=now()-interval '61 seconds'")
+        db.execute(
+            "UPDATE private.rate_buckets SET updated_at=now()-interval '61 seconds' WHERE key LIKE 'telegram-recovery-send:%'"
+        )
+        db.execute("UPDATE private.jobs SET next_attempt_at=now()")
+        db.execute("UPDATE pgmq.q_notifications SET vt=now()")
+    second = await issue(recovery_backend, gateway)
+    sent = []
+
+    def delivered(request):
+        sent.append(json.loads(request.content)["text"])
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 123}})
+
+    respx.post("https://api.telegram.org/bot" + BOT + "/sendMessage").mock(side_effect=delivered)
+    assert (await worker.process("notifications"))["completed"] == 2
+    assert len(sent) == 1 and second["otp"] in sent[0]
+    assert first["challenge_id"] != second["challenge_id"]
+
+
+@respx.mock
+@pytest.mark.parametrize(
+    "operation,writes", [("auth_recovery_revoke_sessions", 0), ("auth_recovery_complete", 1)]
+)
+async def test_database_failure_never_leaves_changed_password_with_old_sessions(
+    recovery_backend, gateway, monkeypatch, operation, writes
+):
+    from pagefpt.core.errors import DomainError
+
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    respx.post(URL + "token").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "access_token": token,
+                "refresh_token": "private-refresh",
+                "user": {"id": subject, "factors": []},
+            },
+        )
+    )
+    assert (
+        await client.post("/api/v1/auth/session", json={"email": EMAIL, "password": "old"})
+    ).status_code == 200
+    original = gateway.rpc
+
+    async def failing(name, payload, actor_token=None):
+        if payload.get("command", payload).get("op") == operation:
+            raise DomainError("DATABASE_UNAVAILABLE", 503)
+        return await original(name, payload, actor_token)
+
+    monkeypatch.setattr(gateway, "rpc", failing)
+    update, _ = reset_provider(token, subject)
+    r = await client.post("/api/v1/auth/recovery/reset", json=payload)
+    assert r.status_code == 503 and update.call_count == writes
+    with psycopg.connect(gateway.dsn) as db:
+        count = db.execute("SELECT count(*) FROM private.admin_sessions").fetchone()[0]
+    assert count == (0 if writes else 1)
+
+
+@respx.mock
+@pytest.mark.parametrize("pair", [{}, [], {"access_token": 123, "user": {}}, {"user": None}])
+async def test_malformed_verify_payload_fails_closed(recovery_backend, gateway, pair):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    respx.post(URL + "verify").mock(return_value=httpx.Response(200, json=pair))
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 503
 
 
 @respx.mock
 @pytest.mark.parametrize("error", ["weak_password", "same_password", "password_too_short"])
-async def test_recovery_password_policy_failure_never_reports_success(
-    recovery_backend, gateway, error
-):
-    client, token = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=provider_pair(token))
-    )
-    respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(422, json={"error_code": error})
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 422 and result.json()["code"] == "PASSWORD_REJECTED"
-    with psycopg.connect(gateway.dsn) as connection:
+async def test_password_policy_rejection_never_reports_success(recovery_backend, gateway, error):
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    reset_provider(token, subject)
+    respx.put(URL + "user").mock(return_value=httpx.Response(422, json={"error_code": error}))
+    r = await client.post("/api/v1/auth/recovery/reset", json=payload)
+    assert r.status_code == 422 and r.json()["code"] == "PASSWORD_REJECTED"
+    with psycopg.connect(gateway.dsn) as db:
         assert (
-            connection.execute(
+            db.execute(
                 "SELECT count(*) FROM private.audit WHERE action='auth.password_recovered'"
             ).fetchone()[0]
             == 0
@@ -261,158 +449,97 @@ async def test_recovery_password_policy_failure_never_reports_success(
 
 
 @respx.mock
-@pytest.mark.parametrize(
-    "pair", [{}, [], {"access_token": 123, "user": {}}, {"user": None}, {"user": {"factors": None}}]
-)
-async def test_recovery_malformed_verify_payload_never_writes_password(recovery_backend, pair):
-    client, _ = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 503 and not result.json().get("changed")
+async def test_private_binding_change_invalidates_existing_code(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    client._transport.app.state.settings.telegram_recovery_accounts = {EMAIL: "222222222"}
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
 
 
 @respx.mock
-@pytest.mark.parametrize("user", [{}, [], {"id": "wrong-subject"}])
-async def test_recovery_malformed_password_update_does_not_claim_completion(recovery_backend, user):
-    client, token = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=provider_pair(token))
-    )
-    respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(200, json=user)
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 503 and not result.json().get("changed")
-
-
-@respx.mock
-async def test_recovery_provider_timeout_does_not_advance_success(recovery_backend):
-    client, _ = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/recover").mock(
-        side_effect=httpx.ReadTimeout("provider deadline")
-    )
-    result = await client.post("/api/v1/auth/recovery", json={"email": PAYLOAD["email"]})
-    assert result.status_code == 503 and not result.json().get("accepted")
-
-
-@respx.mock
-async def test_recovery_provider_rejects_used_email_code(recovery_backend):
-    client, token = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        side_effect=[
-            httpx.Response(200, json=provider_pair(token)),
-            httpx.Response(400, json={"error_code": "otp_expired"}),
-        ]
-    )
-    update = respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(200, json=provider_user(token))
-    )
-    respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(204))
-    assert (await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)).status_code == 200
-    second = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert second.status_code == 401 and update.call_count == 1
-
-
-@respx.mock
-@pytest.mark.parametrize(
-    "factors", [None, {}, [None], [{"status": "verified", "factor_type": "totp", "id": "bad-uuid"}]]
-)
-async def test_recovery_malformed_mfa_metadata_fails_closed(recovery_backend, factors):
-    client, token = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json={"access_token": token, "user": {"factors": factors}})
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json={**PAYLOAD, "totp": "123456"})
-    assert result.status_code == 503 and not result.json().get("changed")
-
-
-@respx.mock
-async def test_recovery_malformed_error_response_fails_closed(recovery_backend):
-    client, token = recovery_backend
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=provider_pair(token))
-    )
-    respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(422, json=[])
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 503
-
-
-@respx.mock
-@pytest.mark.parametrize(
-    "failed_operation,update_count",
-    [("auth_recovery_revoke_sessions", 0), ("auth_recovery_complete", 1)],
-)
-async def test_recovery_database_failure_never_leaves_changed_password_with_live_sessions(
-    recovery_backend, gateway, monkeypatch, failed_operation, update_count
+async def test_leading_zero_code_survives_delivery_and_reset(
+    recovery_backend, gateway, monkeypatch
 ):
-    from pagefpt.core.errors import DomainError
+    import pagefpt.modules.identity.recovery as recovery
 
-    client, token = recovery_backend
-    pair = provider_pair(token)
-    respx.post("https://test.supabase.co/auth/v1/token").mock(
-        return_value=httpx.Response(200, json={**pair, "refresh_token": "private-refresh"})
-    )
-    assert (
-        await client.post(
-            "/api/v1/auth/session", json={"email": PAYLOAD["email"], "password": "old"}
-        )
-    ).status_code == 200
-    original = gateway.rpc
-
-    async def failing(name, payload, actor_token=None):
-        if payload.get("command", payload).get("op") == failed_operation:
-            raise DomainError("DATABASE_UNAVAILABLE", 503)
-        return await original(name, payload, actor_token)
-
-    monkeypatch.setattr(gateway, "rpc", failing)
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
-    )
-    update = respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(200, json=provider_user(token))
-    )
-    logout = respx.post("https://test.supabase.co/auth/v1/logout").mock(
-        return_value=httpx.Response(204)
-    )
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 503 and update.call_count == update_count
-    if update_count:
-        assert logout.call_count == 1
-        assert (await client.get("/api/v1/admin/me")).status_code == 401
-        with psycopg.connect(gateway.dsn) as connection:
-            assert (
-                connection.execute("SELECT count(*) FROM private.admin_sessions").fetchone()[0] == 0
-            )
+    monkeypatch.setattr(recovery.secrets, "randbelow", lambda maximum: 7)
+    payload = await issue(recovery_backend, gateway)
+    assert payload["otp"] == "000007"
+    client, token, subject = recovery_backend
+    reset_provider(token, subject)
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 200
 
 
 @respx.mock
-async def test_recovery_provider_logout_failure_still_revokes_all_bff_sessions(
-    recovery_backend, gateway
-):
-    client, token = recovery_backend
-    pair = provider_pair(token)
-    respx.post("https://test.supabase.co/auth/v1/token").mock(
-        return_value=httpx.Response(200, json={**pair, "refresh_token": "private-refresh"})
+async def test_low_aal_after_mfa_cannot_change_password(recovery_backend, gateway, monkeypatch):
+    client, token, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    app = client._transport.app
+    original = app.state.verifier.verify
+
+    async def low_aal(value):
+        return {**await original(value), "aal": "aal1"}
+
+    monkeypatch.setattr(app.state.verifier, "verify", low_aal)
+    update, pair = reset_provider(token, subject, mfa=True)
+    factor = URL + "factors/e69808c7-760e-4e1a-9a1b-bee4ea891443"
+    respx.post(factor + "/challenge").mock(
+        return_value=httpx.Response(200, json={"id": "challenge"})
     )
+    respx.post(factor + "/verify").mock(return_value=httpx.Response(200, json=pair))
     assert (
-        await client.post(
-            "/api/v1/auth/session", json={"email": PAYLOAD["email"], "password": "old"}
+        await client.post("/api/v1/auth/recovery/reset", json={**payload, "totp": "123456"})
+    ).status_code == 403
+    assert update.call_count == 0
+
+
+@respx.mock
+async def test_generate_timeout_never_queues_or_advances_success(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    respx.post(URL + "admin/generate_link").mock(side_effect=httpx.ReadTimeout("Synthetic timeout"))
+    r = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert r.status_code == 503 and not r.json().get("accepted")
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+
+
+@respx.mock
+async def test_ambiguous_telegram_send_does_not_replay_code(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    await issue(recovery_backend, gateway)
+    respx.post("https://api.telegram.org/bot" + BOT + "/sendMessage").mock(
+        side_effect=httpx.ReadTimeout("Synthetic timeout")
+    )
+    worker = Worker(gateway, CRYPT, telegram=client._transport.app.state.telegram)
+    assert (await worker.process("notifications"))["completed"] == 1
+    assert (await worker.process("notifications"))["claimed"] == 0
+    with psycopg.connect(gateway.dsn) as db:
+        assert (
+            db.execute(
+                "SELECT state FROM private.deliveries WHERE platform='telegram_recovery'"
+            ).fetchone()[0]
+            == "unknown"
         )
-    ).status_code == 200
-    respx.post("https://test.supabase.co/auth/v1/verify").mock(
-        return_value=httpx.Response(200, json=pair)
+        assert (
+            db.execute("SELECT code_ciphertext FROM private.telegram_recovery").fetchone()[0] == ""
+        )
+
+
+@respx.mock
+async def test_concurrent_request_only_generates_one_challenge(recovery_backend, gateway):
+    client, _, subject = recovery_backend
+    respx.post(URL + "admin/generate_link").mock(
+        return_value=httpx.Response(200, json=generate_response(subject))
     )
-    respx.put("https://test.supabase.co/auth/v1/user").mock(
-        return_value=httpx.Response(200, json=provider_user(token))
+    results = await asyncio.gather(
+        *[client.post("/api/v1/auth/recovery", json={"email": EMAIL}) for _ in range(2)]
     )
-    respx.post("https://test.supabase.co/auth/v1/logout").mock(return_value=httpx.Response(503))
-    result = await client.post("/api/v1/auth/recovery/reset", json=PAYLOAD)
-    assert result.status_code == 200 and result.json() == {
-        "changed": True,
-        "provider_revoked": False,
-    }
-    assert (await client.get("/api/v1/admin/me")).status_code == 401
+    assert sorted(r.status_code for r in results) == [202, 429]
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.telegram_recovery").fetchone()[0] == 1
+        assert (
+            db.execute(
+                "SELECT count(*) FROM private.jobs WHERE kind='telegram_recovery'"
+            ).fetchone()[0]
+            == 1
+        )

@@ -4,7 +4,16 @@ let changesInFlight = false;
 let changeTimer = null;
 let changesFailures = 0;
 async function refreshAdminView() {
+  if (document.querySelector("dialog[data-preserve-draft][open]")) return false;
   const path = window.location.pathname;
+  let workbenchRefreshed = false;
+  if (
+    ["/admin/workbench", "/admin/dashboard"].includes(path) &&
+    typeof window.loadWorkbench === "function"
+  ) {
+    if ((await window.loadWorkbench()) === false) return false;
+    workbenchRefreshed = true;
+  }
   if (path === "/admin/leads") return await refreshCrmLeads();
   if (
     path === "/admin/dashboard" &&
@@ -16,10 +25,19 @@ async function refreshAdminView() {
     if ((await initLeadDetail()) === false) return false;
   if (path === "/admin/reports" && typeof loadReportsData === "function")
     if ((await loadReportsData()) === false) return false;
-  document.dispatchEvent(new CustomEvent("admin:data-changed"));
+  document.dispatchEvent(
+    new CustomEvent("admin:data-changed", {
+      detail: { workbench_refreshed: workbenchRefreshed },
+    }),
+  );
   return true;
 }
 async function refreshAdminChanges() {
+  if (document.querySelector("dialog[data-preserve-draft][open]")) {
+    clearTimeout(changeTimer);
+    changeTimer = setTimeout(refreshAdminChanges, 5000);
+    return;
+  }
   if (
     changesInFlight ||
     document.visibilityState === "hidden" ||

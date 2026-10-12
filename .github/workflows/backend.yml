@@ -34,7 +34,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node tests/contracts/browser_api.mjs
+      - run: uv run python tools/run_js_contracts.py
+      - name: Install isolated browser test runtime
+        run: |
+          npm install --prefix .local/browser-ci playwright@1.56.1
+          .local/browser-ci/node_modules/.bin/playwright install --with-deps chromium
+      - name: Chromium workflow and product card smoke
+        env:
+          NODE_PATH: ${{ github.workspace }}/.local/browser-ci/node_modules
+        run: |
+          uv run python tools/run_browser_smoke.py
+          PAGEFPT_QA_SCRIPT=tests/e2e/reference_cards.cjs uv run python tools/run_browser_smoke.py
+          PAGEFPT_QA_SCRIPT=tests/e2e/ip_location.cjs uv run python tools/run_browser_smoke.py
+          PAGEFPT_QA_SCRIPT=tests/e2e/landing_studio.cjs uv run python tools/run_browser_smoke.py
       - run: uv run python tools/export_openapi.py
       - run: uv build
       - run: uv run python tools/verify_wheel.py

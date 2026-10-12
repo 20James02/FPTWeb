@@ -45,7 +45,7 @@
   </div>
 </div>
 
-{% if admin_actor.permits("lead.assign") %}<button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button>{% endif %}
+{% if admin_actor.permits("lead.assign") %}<button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible()">Chọn tất cả đang hiển thị</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible(false)">Bỏ chọn</button>{% endif %}
 <!-- Thanh Bộ Lọc Nhanh -->
 <div class="crm-filters-row">
   <input type="text" class="filter-input" placeholder="Tìm theo mã hồ sơ, gói, địa bàn hoặc số đã che" aria-label="Tìm hồ sơ trên server" id="filter-search" oninput="applyLocalSearch()" style="min-width: 240px; border-radius: 8px;">

@@ -10,8 +10,8 @@
           </svg>
         </div>
         <div class="region-header-text">
-          <h2 class="region-title">Tra Cứu Bảng Giá & Ưu Đãi Theo Khu Vực</h2>
-          <p class="region-desc">Chọn tỉnh/thành và xã/phường để xem giá áp dụng. Nếu chưa có giá riêng xã/phường, hệ thống dùng giá của tỉnh/thành.</p>
+          <h2 class="region-title">Xem giá tại địa chỉ lắp đặt</h2>
+          <p class="region-desc">Chọn tỉnh/thành và xã/phường của bạn.</p>
         </div>
       </div>
 
@@ -20,7 +20,7 @@
         <div class="combobox-field">
           <label class="combobox-label" for="home-zone-select">
             <span class="label-step">1</span>
-            <span>Chọn Vùng Miền</span>
+            <span>Vùng miền</span>
           </label>
           <div class="combobox-wrapper">
             <select id="home-zone-select" class="fpt-select-custom" aria-label="Combobox 1: Chọn Vùng Miền">
@@ -34,7 +34,7 @@
         <div class="combobox-field">
           <label class="combobox-label" for="home-province-select">
             <span class="label-step">2</span>
-            <span>Chọn Tỉnh / Thành Phố</span>
+            <span>Tỉnh / Thành phố</span>
           </label>
           <div class="combobox-wrapper">
             <select id="home-province-select" class="fpt-select-custom" aria-label="Combobox 2: Chọn Tỉnh / Thành Phố">
@@ -51,21 +51,22 @@
 
         <!-- Action / CTA to open intake form -->
         <div class="combobox-cta">
-          <button type="button" class="btn-region-inquiry" onclick="openBottomSheet('Tư Vấn Theo Khu Vực', '', null, 'internet')">
+          <button type="button" class="btn-region-inquiry" onclick="openBottomSheet('Tư Vấn Theo Khu Vực', '')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Nhận tư vấn tại địa bàn này</span>
+            <span>Tư vấn tại địa bàn này</span>
           </button>
         </div>
       </div>
 
       <!-- Current Selected Region Status & Note -->
+      <p id="client-location-status" class="client-location-hint" role="status" hidden></p>
       <div class="region-card-footer">
         <div id="active-province-badge" class="active-province-badge">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Đang xem giá cước tại: <strong>Chưa chọn địa bàn</strong></span>
+          <span>Địa bàn: <strong>Chưa chọn địa bàn</strong></span>
         </div>
         <div class="region-tax-note">
-          VAT, phí thiết bị và kỳ thanh toán được hiển thị theo báo giá của từng gói.
+          VAT và phí lắp đặt được ghi trong báo giá.
         </div>
       </div>
     </div>

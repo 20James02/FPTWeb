@@ -1,0 +1,17 @@
+<div>
+        <button type="button" class="mobile-accordion-btn" onclick="toggleMobileAccordion('acc-net')" aria-expanded="false" aria-controls="acc-net">
+          <span>{{item.label}}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mobile-accordion-content" id="acc-net" inert><a href="{{item.href}}" class="mobile-sublink" onclick="toggleMobileNav()">Xem {{item.label}}</a>
+          <div class="mobile-consult-card">
+            <img src="/static/images/device-internet-3d.webp" class="consult-device-image" alt="Minh họa thiết bị dịch vụ" width="100" height="100" loading="lazy" decoding="async">
+            <div><strong>Internet &amp; Wi-Fi</strong><small>Hình minh họa. Thiết bị tùy gói.</small>
+            <button type="button" class="btn-select-plan primary" onclick="toggleMobileNav(); openBottomSheet('Tư vấn dịch vụ theo khu vực', '', null, 'internet')">Nhận tư vấn</button></div>
+          </div>
+          <a href="/san-pham/internet-gia-dinh#gia-dinh" class="mobile-sublink" onclick="toggleMobileNav()">Internet cho gia đình</a>
+          <a href="/san-pham/internet-gia-dinh#toc-do-cao" class="mobile-sublink" onclick="toggleMobileNav()">Internet tốc độ cao</a>
+          <a href="/san-pham/internet-gia-dinh#lam-viec" class="mobile-sublink" onclick="toggleMobileNav()">Internet cho làm việc &amp; sáng tạo</a>
+          <a href="/san-pham/internet-doanh-nghiep" class="mobile-sublink" onclick="toggleMobileNav()">Internet Doanh Nghiệp</a>
+        </div>
+      </div>

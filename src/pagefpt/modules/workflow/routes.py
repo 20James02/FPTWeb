@@ -37,6 +37,7 @@ async def process(input: ProcessInput, request: Request):
         request.app.state.storage,
         request.app.state.notifications,
         request.app.state.conversions,
+        telegram=request.app.state.telegram,
     ).process(input.queue)
 
 
@@ -50,6 +51,7 @@ async def recover(request: Request):
         request.app.state.storage,
         request.app.state.notifications,
         request.app.state.conversions,
+        telegram=request.app.state.telegram,
     )
     await request.app.state.db.rpc("dispatch", {"command": {"op": "schedule_tick"}})
     # Bounded total: at most one small batch per queue, independent queue deadlines.
