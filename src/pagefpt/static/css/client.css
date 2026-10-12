@@ -6373,3 +6373,15 @@ body { --text-muted: #64748b; }
 @keyframes fptBrandBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 @keyframes fptBrandGlow { 0%, 100% { filter: none; } 50% { filter: drop-shadow(0 1px 3px rgb(242 111 33 / .18)); } }
 @media (prefers-reduced-motion: reduce) { .fpt-brand-mark .official-fpt-logo { animation: none !important; } }
+
+
+/* Plan Details Modal Image */
+#plan-details-image {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}

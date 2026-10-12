@@ -1,7 +1,7 @@
 {% for plan in speed_plans %}
 {% set labels = plan.card_labels or {} %}
 <article class="speed-plan-card" data-speed-plan="{{ plan.id }}" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="speedtest" {% if loop.index > 3 %}hidden{% endif %}>
-  <div class="speed-plan-artwork">
+  <div class="speed-plan-artwork {{ 'is-placeholder' if not plan.image_url }}">
     <img src="{{ plan.image_url or '/static/images/device-internet-3d.webp' }}" alt="{{ plan.image_alt or plan.name if plan.image_url else 'Minh họa thiết bị Internet' }}" width="{{ plan.image_width or 800 }}" height="{{ plan.image_height or 800 }}" loading="lazy" decoding="async">
     <span class="speed-plan-match" hidden><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg> Gợi ý từ kết quả đo</span>
   </div>

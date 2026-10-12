@@ -35,10 +35,11 @@
   gap: 0 !important;
   background: #fff !important;
   border: 0 !important;
-  border-radius: 14px !important;
+  border-radius: 18px !important;
   box-shadow: 0 8px 24px #00000012 !important;
   display: flex;
   flex-direction: column;
+  overflow: hidden !important;
 }
 :is(
     .plan-card--reference,
@@ -59,7 +60,7 @@
   min-height: 238px !important;
   flex: 0 0 238px !important;
   overflow: hidden;
-  border-radius: 0 !important;
+  border-radius: 18px 18px 0 0 !important;
   background: #f4f5f7;
 }
 :is(
@@ -73,7 +74,8 @@
   height: 238px !important;
   max-height: 238px !important;
   object-fit: cover !important;
-  border-radius: 0 !important;
+  object-position: center !important;
+  border-radius: 18px 18px 0 0 !important;
 }
 :is(
     .plan-card--reference,
@@ -526,4 +528,16 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 330px));
     justify-content: center;
   }
+}
+
+
+:is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference
+  )
+  .plan-card-image-placeholder
+  .plan-card-image {
+  object-fit: contain !important;
+  padding: 16px;
 }
