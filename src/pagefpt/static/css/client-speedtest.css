@@ -1213,3 +1213,66 @@
     margin-inline: auto;
   }
 }
+
+/* ==========================================================================
+   MOBILE SPEEDTEST RE-ORDERING (Đồng hồ lên đầu -> Kết quả -> Thông tin kết nối)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .speed-console {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .speed-console-top {
+    order: 1 !important;
+    margin-bottom: 8px !important;
+  }
+  .speed-measure-layout {
+    display: contents !important;
+  }
+  .speed-gauge-block {
+    order: 2 !important;
+    width: 100% !important;
+    margin: 0 auto 12px !important;
+  }
+  .speed-primary-metrics {
+    order: 3 !important;
+    width: 100% !important;
+    margin: 12px 0 20px !important;
+  }
+  .speed-connection {
+    order: 4 !important;
+    width: 100% !important;
+    margin: 0 0 20px !important;
+  }
+  .speed-chart-header,
+  .speed-chart-wrap {
+    order: 5 !important;
+  }
+  .speed-details {
+    order: 6 !important;
+  }
+  .speed-result-footer {
+    order: 7 !important;
+  }
+}
+
+.speed-auto-address-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(22, 101, 52, 0.08);
+  animation: speedNoticeFade 0.3s ease-out;
+}
+
+@keyframes speedNoticeFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

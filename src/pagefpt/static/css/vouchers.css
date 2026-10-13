@@ -797,18 +797,19 @@
 }
 
 /* Client Voucher Banner */
+/* Client Voucher Banner - Compact & Modern */
 .client-voucher-banner {
-  border: 1.5px solid rgba(243, 112, 33, 0.35);
+  border: 1.5px solid #fed7aa;
   background: #ffffff;
   color: #172554;
-  border-radius: 14px;
-  max-width: 100%;
-  margin: 10px 0 0;
-  padding: 16px 20px;
+  border-radius: 16px;
+  max-width: 520px;
+  margin: 12px auto;
+  padding: 14px 18px;
   box-sizing: border-box;
   font-size: 14px;
-  line-height: 1.55;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  line-height: 1.5;
+  box-shadow: 0 10px 28px rgba(243, 112, 33, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
   animation: voucherSlideDown 0.25s ease-out;
 }
 
@@ -817,57 +818,137 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.client-voucher-banner header,
-.client-voucher-controls {
+.client-voucher-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
   flex-wrap: wrap;
 }
 
-.client-voucher-banner header {
-  justify-content: space-between;
-}
-
-.client-voucher-banner strong {
-  font-size: 16px;
+.client-voucher-head strong {
+  font-size: 14px;
   font-weight: 800;
   color: #9a3412;
-  overflow-wrap: anywhere;
 }
 
-.client-voucher-banner p {
-  margin: 6px 0;
-  font-size: 13px;
-}
-
-.client-voucher-banner input {
-  width: 160px;
-  max-width: 100%;
-  min-height: 44px;
+.client-voucher-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
   border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 8px 12px;
-  background: #fff;
-  color: #0f172a;
-  font: inherit;
+  border-radius: 10px;
+  padding: 4px 6px 4px 12px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
-.client-voucher-banner button {
-  min-height: 44px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #172554;
-  padding: 8px 14px;
+.client-voucher-input-group:focus-within {
+  background: #ffffff;
+  border-color: #f37021;
+  box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.15);
+}
+
+.client-voucher-input-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.client-voucher-input-group input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  padding: 6px 4px !important;
+  min-height: 32px !important;
+  width: auto !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 0;
+}
+
+.client-voucher-input-group input::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.client-voucher-apply-btn {
+  background: #f37021 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 6px 18px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 36px !important;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.client-voucher-apply-btn:hover {
+  background: #ea580c !important;
+  transform: translateY(-1px);
+}
+
+.client-voucher-clear-btn {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
+  white-space: nowrap;
+  min-height: unset;
+  line-height: 1.2;
 }
 
-.client-voucher-banner button:hover {
-  border-color: #f37021;
+.client-voucher-clear-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.client-voucher-msg {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.client-voucher-details {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.client-voucher-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #64748b;
+  user-select: none;
+}
+
+.client-voucher-details summary:hover {
   color: #f37021;
+}
+
+.client-voucher-details p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #475569;
 }
 
 /* CRM Lead Detail Voucher Panel */

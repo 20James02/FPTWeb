@@ -58,22 +58,23 @@
     const box = node("section", "", "client-voucher-banner");
     box.id = "client-voucher-banner";
     box.setAttribute("aria-label", "Voucher ưu đãi");
-    // Hidden by default so it does not clutter the homepage
+    // Hidden by default so it does not clutter the page
     box.hidden = true;
 
-    const head = node("header");
-    const badge = node("span", "ƯU ĐÃI ĐÃ KÍCH HOẠT", "client-voucher-hero-tag");
+    // Head: compact row shown when voucher is active
+    const head = node("header", "", "client-voucher-head");
+    const badge = node("span", "ĐÃ ÁP DỤNG", "client-voucher-hero-tag");
     badge.id = "client-voucher-badge";
     badge.hidden = true;
 
-    const title = node("strong", "Mã ưu đãi");
+    const title = node("strong", "Mã ưu đãi", "client-voucher-title");
     title.id = "client-voucher-name";
 
     const urgency = node("span", "", "client-voucher-urgency");
     urgency.id = "client-voucher-urgency";
     urgency.hidden = true;
 
-    const clear = node("button", "Bỏ mã");
+    const clear = node("button", "✕ Bỏ mã", "client-voucher-clear-btn");
     clear.id = "client-voucher-clear";
     clear.type = "button";
     clear.onclick = async () => {
@@ -97,7 +98,35 @@
     };
     head.append(badge, title, urgency, clear);
 
-    const msg = node("p");
+    // Form: unified sleek input bar
+    const form = node("form", "", "client-voucher-controls");
+    const wrap = node("div", "", "client-voucher-input-group");
+    const icon = node("span", "🎟️", "client-voucher-input-icon");
+    const input = node("input");
+    input.id = "client-voucher-code";
+    input.maxLength = 40;
+    input.pattern = "[A-Za-z0-9_-]{3,40}";
+    input.placeholder = "Nhập mã ưu đãi của bạn...";
+    input.autocomplete = "off";
+    const apply = node("button", "Áp dụng", "client-voucher-apply-btn");
+    apply.type = "submit";
+    wrap.append(icon, input, apply);
+    form.append(wrap);
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const next = input.value.trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{3,40}$/.test(next)) return;
+      apply.disabled = true;
+      await load(next);
+      apply.disabled = false;
+      refresh();
+    };
+
+    const entry = node("div", "", "client-voucher-entry-box");
+    entry.id = "client-voucher-entry";
+    entry.append(form);
+
+    const msg = node("p", "", "client-voucher-msg");
     msg.id = "client-voucher-message";
     msg.setAttribute("role", "status");
 
@@ -114,40 +143,14 @@
       if (cat) cat.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
-    const details = node("details");
-    const summary = node("summary", "Điều kiện ưu đãi");
-    const terms = node("p");
+    const details = node("details", "", "client-voucher-details");
+    const summary = node("summary", "Xem điều kiện ưu đãi ▾");
+    const terms = node("p", "", "client-voucher-terms-p");
     terms.id = "client-voucher-terms";
     details.append(summary, terms);
     details.id = "client-voucher-conditions";
 
-    const form = node("form", "", "client-voucher-controls");
-    const label = node("label", "Mã ưu đãi");
-    label.htmlFor = "client-voucher-code";
-    const input = node("input");
-    input.id = "client-voucher-code";
-    input.maxLength = 40;
-    input.pattern = "[A-Za-z0-9_-]{3,40}";
-    input.placeholder = "Nhập mã (nếu có)";
-    const apply = node("button", "Áp dụng");
-    apply.type = "submit";
-    form.append(label, input, apply);
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const next = input.value.trim().toUpperCase();
-      if (!/^[A-Z0-9_-]{3,40}$/.test(next)) return;
-      apply.disabled = true;
-      await load(next);
-      apply.disabled = false;
-      refresh();
-    };
-
-    const entry = node("details");
-    const entryTitle = node("summary", "Có mã ưu đãi?");
-    entry.id = "client-voucher-entry";
-    entry.append(entryTitle, form);
-
-    box.append(head, msg, recovery, cta, details, entry);
+    box.append(head, entry, msg, recovery, cta, details);
     head.hidden = msg.hidden = details.hidden = true;
 
     if (slot) {
@@ -163,7 +166,6 @@
         box.hidden = !box.hidden;
         marqueeBtn.setAttribute("aria-expanded", String(!box.hidden));
         if (!box.hidden) {
-          entry.open = true;
           input.focus();
         }
       };

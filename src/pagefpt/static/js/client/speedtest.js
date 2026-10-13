@@ -286,10 +286,14 @@
             country,
           );
       } catch (_) {}
+      const locStr = [data.city, country].filter(Boolean).join(", ");
       text(
         "speed-meta-location",
-        [data.city, country].filter(Boolean).join(", ") || "Không xác định",
+        locStr || "Không xác định",
       );
+      if (locStr && typeof window.autoFillInstallationAddress === "function") {
+        window.autoFillInstallationAddress(locStr, true);
+      }
     }
     await Promise.all(
       [

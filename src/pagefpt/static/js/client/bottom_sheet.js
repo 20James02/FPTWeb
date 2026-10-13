@@ -1,3 +1,30 @@
+
+// Global auto-fill address helper (from Speedtest or Geolocation)
+window.autoFillInstallationAddress = function (addressStr, isEstimated = false) {
+  if (!addressStr || addressStr === "Không xác định") return;
+  if (isEstimated && window.PageFPTAutoAddressPrecision === "high") return;
+  if (!isEstimated) window.PageFPTAutoAddressPrecision = "high";
+
+  window.PageFPTAutoAddress = addressStr;
+  try {
+    sessionStorage.setItem("fpt_auto_address", addressStr);
+  } catch (_) {}
+
+  const addrInput = document.getElementById("lead-address");
+  if (addrInput) {
+    addrInput.value = addressStr;
+  }
+  document.querySelectorAll("input[name='address']").forEach((inp) => {
+    inp.value = addressStr;
+  });
+
+  const notice = document.getElementById("speed-auto-address-notice");
+  if (notice) {
+    notice.innerHTML = `📍 <strong>Vị trí đã xác định:</strong> ${addressStr} &bull; <em>Đã tự động điền vào Địa chỉ lắp đặt khi gửi yêu cầu!</em>`;
+    notice.hidden = false;
+  }
+};
+
 /**
  * PAGEFPT BOTTOM SHEET & FORM CONTROLLER
  * Smooth drag-to-dismiss, phone validation, and real submission flow
@@ -106,6 +133,12 @@ function openBottomSheet(planName, planFee, planId = null, service = null) {
   if (backdrop) {
     backdrop.classList.add("active");
     document.body.style.overflow = "hidden"; // Prevent background scroll
+  }
+
+  const addressInput = document.getElementById("lead-address");
+  if (addressInput && !addressInput.value.trim()) {
+    const saved = window.PageFPTAutoAddress || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("fpt_auto_address"));
+    if (saved) addressInput.value = saved;
   }
 
   // Refresh real quote from backend

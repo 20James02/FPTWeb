@@ -70,12 +70,16 @@
       if (run !== generation) return;
       const ward = model.locationWard(place, wards, point.accuracy);
       suggestion = { province, ward };
+      const locationText = [ward?.name, province.name].filter(Boolean).join(", ");
       status.textContent =
         "Địa bàn gợi ý: " +
-        [ward?.name, province.name].filter(Boolean).join(", ") +
+        locationText +
         ". Vị trí đo có thể khác nơi lắp đặt; hãy xác nhận trước khi xem giá.";
       button.hidden = false;
       button.disabled = false;
+      if (typeof window.autoFillInstallationAddress === "function") {
+        window.autoFillInstallationAddress(locationText, false);
+      }
     } catch (_) {
       if (run === generation)
         status.textContent =
