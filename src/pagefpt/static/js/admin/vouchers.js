@@ -33,17 +33,25 @@
     date = (s) => window.PageFPTDates?.format(s) || s;
 
   const errors = {
-    VERSION_CONFLICT: "Dữ liệu đã thay đổi. Tải lại trước khi lưu.",
-    PERMISSION_DENIED: "Cần đúng quyền quản lý và xác minh MFA.",
+    VERSION_CONFLICT: "Dữ liệu đã thay đổi bởi người khác. Vui lòng tải lại trước khi lưu.",
+    PERMISSION_DENIED: "Cần đúng quyền quản trị viên (marketing.write / pricing.publish) và xác minh MFA 2 bước.",
+    FORBIDDEN: "Bạn không có quyền thực hiện thao tác này.",
+    UNAUTHENTICATED: "Phiên đăng nhập đã hết hạn hoặc chưa xác thực. Vui lòng tải lại trang và đăng nhập lại.",
+    CSRF_INVALID: "Phiên bảo mật (CSRF) đã hết hạn. Vui lòng làm mới trang.",
+    CSRF_MISSING: "Thiếu mã xác thực CSRF. Vui lòng làm mới trang.",
+    DATABASE_UNAVAILABLE: "Hệ thống cơ sở dữ liệu tạm thời bận hoặc mất kết nối. Vui lòng thử lại sau.",
+    NOT_FOUND: "Không tìm thấy dữ liệu voucher hoặc link yêu cầu trong hệ thống.",
+    HTTP_ERROR: "Máy chủ gặp sự cố khi xử lý yêu cầu.",
     VALIDATION_ERROR: "Kiểm tra các trường bắt buộc, mức giảm và thời gian.",
-    VOUCHER_CODE_EXISTS: "Mã voucher đã tồn tại.",
+    VOUCHER_CODE_EXISTS: "Mã voucher này đã tồn tại trong hệ thống. Hãy chọn mã khác.",
     VOUCHER_CODE_IMMUTABLE: "Mã đã tạo không được thay đổi; hãy tạo voucher mới.",
     VOUCHER_ARCHIVE_REQUIRED: "Voucher đã công bố, có link hoặc đã dùng. Hãy tạm dừng để giữ lịch sử.",
     INVALID_GIFT: "Quà cần là phụ kiện công bố, tính một lần và đã thiết lập tồn kho.",
-    VOUCHER_EXPIRED: "Ngày kết thúc đã qua.",
+    VOUCHER_EXPIRED: "Ngày kết thúc chiến dịch đã qua.",
     VOUCHER_LIMIT_BELOW_COMMITTED: "Hạn mức/ngân sách thấp hơn số đã dùng hoặc đang giữ.",
     INVENTORY_BELOW_COMMITTED: "Tồn kho không được nhỏ hơn số đã dùng/giữ.",
-    LINK_SLUG_EXISTS: "Tên link đã thuộc voucher khác.",
+    LINK_SLUG_EXISTS: "Tên link ngắn (slug) này đã được sử dụng. Vui lòng chọn tên khác.",
+    INVALID_SITE_ORIGIN: "Nguồn trang web không hợp lệ.",
   };
 
   async function api(path = "", method = "GET", body) {
@@ -63,6 +71,15 @@
       d = {};
     }
     if (!r.ok) {
+      if (r.status === 401 || d.code === "UNAUTHENTICATED") {
+        throw Error("Phiên đăng nhập đã hết hạn. Vui lòng tải lại trang và đăng nhập lại.");
+      }
+      if (r.status === 403 || d.code === "PERMISSION_DENIED" || d.code === "FORBIDDEN") {
+        throw Error("Tài khoản chưa đủ quyền thực hiện thao tác này (Cần quyền quản trị hoặc xác thực 2 bước MFA).");
+      }
+      if (d.code === "CSRF_INVALID" || d.code === "CSRF_MISSING") {
+        throw Error("Phiên bảo mật (CSRF) đã hết hạn. Vui lòng tải lại trang.");
+      }
       let errMsg = errors[d.code];
       if (!errMsg && d.detail) {
         if (Array.isArray(d.detail)) {
@@ -78,8 +95,13 @@
           errMsg = d.detail;
         }
       }
+      if (!errMsg && d.code && d.code !== "DOMAIN_ERROR") {
+        errMsg = errors[d.code] || `Lỗi thao tác: ${d.code}`;
+      }
       if (!errMsg) {
-        errMsg = d.message || "Lỗi xử lý yêu cầu (HTTP " + r.status + ").";
+        errMsg = d.message && d.message !== "Request cannot be completed"
+          ? d.message
+          : `Không thể hoàn tất yêu cầu (Mã lỗi ${d.code || r.status}).`;
       }
       throw Error(errMsg);
     }
@@ -131,12 +153,11 @@
   }
 
   function status(s) {
-    const isErr =
-      s.toLowerCase().includes("lỗi") ||
-      s.toLowerCase().includes("chưa") ||
-      s.toLowerCase().includes("không") ||
-      s.toLowerCase().includes("hãy");
-    showNotice(s, isErr ? "error" : "success");
+    const isSuccess =
+      s.toLowerCase().includes("đã") ||
+      s.toLowerCase().includes("thành công") ||
+      s.toLowerCase().includes("hoàn tất");
+    showNotice(s, isSuccess ? "success" : "error");
   }
 
   function highlightField(id) {
@@ -161,7 +182,7 @@
     try {
       await fn();
     } catch (e) {
-      status(e.message);
+      showNotice(e.message, "error");
     } finally {
       controls.forEach(([e, disabled]) => (e.disabled = disabled));
       busy = false;
