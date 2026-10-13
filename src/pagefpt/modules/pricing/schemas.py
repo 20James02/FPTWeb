@@ -11,6 +11,9 @@ class Command(BaseModel):
 
 
 class QuoteRequest(Command):
+    voucher_code: str | None = Field(
+        default=None, max_length=40, pattern=r"^(?:[A-Z0-9_-]{3,40})?$"
+    )
     landing_slug: str | None = Field(
         default=None, min_length=1, max_length=100, pattern=r"^[a-z0-9-]+$"
     )

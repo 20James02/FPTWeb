@@ -72,6 +72,7 @@ async function refreshCatalogPrices(regionId = null) {
             billing_months: window.PageFPTAccessories?.term(id) || 6,
             accessory_ids: window.PageFPTAccessories?.ids(id) || [],
             ...(window.PageFPTLanding?.quoteContext?.() || {}),
+            ...(window.PageFPTVoucher?.quoteContext?.() || {}),
           }),
         });
         if (!response.ok) continue;

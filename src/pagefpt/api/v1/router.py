@@ -28,10 +28,12 @@ from pagefpt.modules.media.routes import router as media_router
 from pagefpt.modules.pricing.imports import router as imports_router
 from pagefpt.modules.pricing.routes import router as pricing_router
 from pagefpt.modules.reporting.routes import router as reporting_router
+from pagefpt.modules.vouchers.routes import router as vouchers_router
 from pagefpt.modules.workflow.routes import router as jobs_router
 from pagefpt.web.cms_pages import router as cms_router
 
 router = APIRouter()
+router.include_router(vouchers_router)
 router.include_router(identity_router)
 router.include_router(accounts_router)
 router.include_router(catalog_router)
@@ -71,6 +73,7 @@ router.include_router(integrations_router)
 router.include_router(display_router)
 
 router.include_router(administration_router)
+
 
 # CMS slug fallback follows every concrete API route.
 router.include_router(cms_router)

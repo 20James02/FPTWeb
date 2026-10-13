@@ -404,7 +404,7 @@ Phụ lục sau được sinh từ route tree FastAPI hiện tại. Khi code tha
 
 Sinh từ code hiện tại bằng `uv run python tools/export_frontend_contract.py`. Không truy cập tài khoản cloud. Quyền trong bảng là kiểm tra Python; SQL còn kiểm tra scope/assignee/global. Response OpenAPI của phần lớn API chưa có DTO: xem response map trong prompt, không coi schema `{}` là hợp đồng đầy đủ.
 
-Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài OpenAPI.
+Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài OpenAPI.
 
 ## Toàn bộ method, URL, quyền và body
 
@@ -427,6 +427,7 @@ Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/admin/pricing` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:116` |
 | GET | `/admin/reports` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:123` |
 | GET | `/admin/settings` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:128` |
+| GET | `/admin/vouchers` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:191` |
 | GET | `/admin/workbench` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:99` |
 | GET | `/api/v1/accessories` | public | — | — | `src/pagefpt/modules/catalog/routes.py:48` |
 | GET | `/api/v1/admin/address-options` | lead.write | — | — | `src/pagefpt/modules/leads/profile.py:47` |
@@ -492,6 +493,9 @@ Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | POST | `/api/v1/admin/leads/{id}/recompute` | intelligence.write | — | — | `src/pagefpt/modules/intelligence/routes.py:23` |
 | POST | `/api/v1/admin/leads/{id}/reveal` | lead.pii | AAL2 | — | `src/pagefpt/modules/leads/admin.py:183` |
 | POST | `/api/v1/admin/leads/{id}/transitions` | lead.write | — | TransitionCommand | `src/pagefpt/modules/leads/admin.py:209` |
+| GET | `/api/v1/admin/leads/{id}/voucher` | lead.write | — | — | `src/pagefpt/modules/vouchers/routes.py:261` |
+| POST | `/api/v1/admin/leads/{id}/voucher/reserve` | lead.write | — | ReserveInput | `src/pagefpt/modules/vouchers/routes.py:267` |
+| POST | `/api/v1/admin/leads/{id}/voucher/{action}` | lead.write | — | ActionInput | `src/pagefpt/modules/vouchers/routes.py:331` |
 | GET | `/api/v1/admin/locations` | catalog.write | — | — | `src/pagefpt/modules/catalog/routes.py:105` |
 | GET | `/api/v1/admin/locations/source` | catalog.write | — | — | `src/pagefpt/modules/catalog/geography_routes.py:29` |
 | POST | `/api/v1/admin/locations/sync` | catalog.write | AAL2 | GeographySyncInput | `src/pagefpt/modules/catalog/geography_routes.py:44` |
@@ -558,6 +562,19 @@ Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | POST | `/api/v1/admin/staff` | identity.manage; permission | AAL2 | StaffCreate | `src/pagefpt/modules/identity/accounts.py:321` |
 | GET | `/api/v1/admin/staff/branches` | identity.manage | AAL2 | — | `src/pagefpt/modules/identity/accounts.py:312` |
 | GET | `/api/v1/admin/staff/roles` | identity.manage | AAL2 | — | `src/pagefpt/modules/identity/accounts.py:288` |
+| GET | `/api/v1/admin/vouchers` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:80` |
+| POST | `/api/v1/admin/vouchers` | marketing.write | — | VoucherInput | `src/pagefpt/modules/vouchers/routes.py:88` |
+| GET | `/api/v1/admin/vouchers/employees` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:57` |
+| GET | `/api/v1/admin/vouchers/inventory` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:63` |
+| PUT | `/api/v1/admin/vouchers/inventory` | marketing.write; pricing.publish | AAL2 | InventoryInput | `src/pagefpt/modules/vouchers/routes.py:69` |
+| GET | `/api/v1/admin/vouchers/links/{slug}/qr` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:157` |
+| GET | `/api/v1/admin/vouchers/options` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:40` |
+| GET | `/api/v1/admin/vouchers/report` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:34` |
+| DELETE | `/api/v1/admin/vouchers/{id}` | marketing.write; pricing.publish | AAL2 | — | `src/pagefpt/modules/vouchers/routes.py:133` |
+| PUT | `/api/v1/admin/vouchers/{id}` | marketing.write | — | VoucherUpdate | `src/pagefpt/modules/vouchers/routes.py:96` |
+| POST | `/api/v1/admin/vouchers/{id}/links` | marketing.write | — | LinkInput | `src/pagefpt/modules/vouchers/routes.py:145` |
+| POST | `/api/v1/admin/vouchers/{id}/pause` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:121` |
+| POST | `/api/v1/admin/vouchers/{id}/publish` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:109` |
 | GET | `/api/v1/admin/workbench` | lead.read | — | — | `src/pagefpt/modules/leads/admin.py:169` |
 | GET | `/api/v1/admin/workspace/{kind}` | RESOURCE_PERMISSIONS[kind] | — | — | `src/pagefpt/modules/administration/routes.py:105` |
 | POST | `/api/v1/admin/{kind}/{id}/publish` | prices:pricing.publish; pages:content.publish; experiments:marketing.write; plans/products/regions/promotions:catalog.write | AAL2 | VersionCommand | `src/pagefpt/modules/catalog/routes.py:141` |
@@ -591,6 +608,9 @@ Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | POST | `/api/v1/system/display-settings` | content.publish | AAL2 | DisplayPatch | `src/pagefpt/modules/content/display_settings.py:234` |
 | POST | `/api/v1/touches` | public | — | AttributionInput | `src/pagefpt/modules/marketing/routes.py:75` |
 | POST | `/api/v1/visits/assess` | public | — | VisitInput | `src/pagefpt/modules/intelligence/routes.py:37` |
+| DELETE | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:214` |
+| GET | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:208` |
+| POST | `/api/v1/vouchers/context` | public | — | ContextInput | `src/pagefpt/modules/vouchers/routes.py:221` |
 | POST | `/api/v1/webhooks/leads/{provider}` | server HMAC signature | — | LeadWebhook | `src/pagefpt/modules/integrations/webhooks.py:27` |
 | GET | `/chinh-sach-bao-mat` | public_html | — | — | `src/pagefpt/web/client_routes.py:85` |
 | GET | `/do-toc-do` | server_guarded_admin_html | — | — | `src/pagefpt/web/client_routes.py:99` |
@@ -600,6 +620,7 @@ Tổng 192 method/path: 187 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/internal/jobs/recover` | server worker secret | — | — | `src/pagefpt/modules/workflow/routes.py:44` |
 | GET | `/khuyen-mai` | public_html | — | — | `src/pagefpt/web/client_routes.py:63` |
 | GET | `/robots.txt` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:40` |
+| GET | `/s/{slug}` | public_html | — | — | `src/pagefpt/modules/vouchers/routes.py:184` |
 | GET | `/san-pham/{slug}` | public_html | — | — | `src/pagefpt/web/client_routes.py:43` |
 | GET | `/sitemap.xml` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:18` |
 
@@ -911,6 +932,25 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|---|
 | path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
 
+### GET /api/v1/admin/leads/{id}/voucher
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/leads/{id}/voucher/reserve
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/leads/{id}/voucher/{action}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+| path | `action` | True | `{"type":"string","title":"Action"}` |
+
 ### GET /api/v1/admin/locations
 
 | Vị trí | Tên | Bắt buộc | Schema/giới hạn |
@@ -1154,6 +1194,49 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | query | `q` | False | `{"type":"string","maxLength":100,"default":"","title":"Q"}` |
 | query | `offset` | False | `{"type":"integer","maximum":100000,"minimum":0,"default":0,"title":"Offset"}` |
 
+### GET /api/v1/admin/vouchers
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| query | `before` | False | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Before"}` |
+
+### GET /api/v1/admin/vouchers/links/{slug}/qr
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `slug` | True | `{"type":"string","title":"Slug"}` |
+
+### DELETE /api/v1/admin/vouchers/{id}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+| query | `expected_version` | True | `{"type":"integer","minimum":1,"title":"Expected Version"}` |
+
+### PUT /api/v1/admin/vouchers/{id}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/vouchers/{id}/links
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/vouchers/{id}/pause
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/vouchers/{id}/publish
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
 ### GET /api/v1/admin/workbench
 
 | Vị trí | Tên | Bắt buộc | Schema/giới hạn |
@@ -1232,11 +1315,23 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | query | `limit` | False | `{"type":"integer","maximum":100,"minimum":1,"default":100,"title":"Limit"}` |
 | query | `before` | False | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Before"}` |
 
+### GET /api/v1/vouchers/context
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| query | `code` | False | `{"anyOf":[{"type":"string","maxLength":40},{"type":"null"}],"title":"Code"}` |
+
 ### POST /api/v1/webhooks/leads/{provider}
 
 | Vị trí | Tên | Bắt buộc | Schema/giới hạn |
 |---|---|---|---|
 | path | `provider` | True | `{"enum":["google","meta","tiktok","crm"],"type":"string","title":"Provider"}` |
+
+### GET /s/{slug}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `slug` | True | `{"type":"string","title":"Slug"}` |
 
 ### GET /san-pham/{slug}
 
@@ -1247,6 +1342,13 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 ## Tất cả request schemas và fields
 
 `additionalProperties=false`: chỉ gửi whitelist fields, không spread DTO response vào request. Null khác bỏ field. Validator Python về thời gian/fit/redirect/CSV không thể hiện hết bằng JSON Schema; xem prompt và source.
+
+### ActionInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `reason` | Có | `{"type":"string","maxLength":500,"minLength":3}` |
+| `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
 ### ActivityCommand
 
@@ -1393,6 +1495,12 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `consent_version` | Có | `{"type":"string","maxLength":50,"minLength":1}` |
 | `session_token` | Có | `{"type":"string","maxLength":8192}` |
 
+### ContextInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `code` | Có | `{"type":"string","maxLength":40,"minLength":3,"pattern":"^[A-Z0-9_-]+$"}` |
+
 ### CostInput
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
@@ -1523,6 +1631,15 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `enabled` | Không | `{"type":"boolean","default":false}` |
 | `description` | Không | `{"type":"string","maxLength":500,"default":""}` |
 
+### InventoryInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `product_id` | Có | `{"type":"string","format":"uuid"}` |
+| `stock` | Có | `{"type":"integer","maximum":1000000.0,"minimum":0.0}` |
+| `cost_vnd` | Có | `{"type":"integer","maximum":1000000000.0,"minimum":0.0}` |
+| `expected_version` | Không | `{"type":"integer","minimum":0.0,"default":0}` |
+
 ### LandingCampaign
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
@@ -1639,6 +1756,8 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
+| `voucher_code` | Không | `{"anyOf":[{"type":"string","maxLength":40,"pattern":"^(?:[A-Z0-9_-]{3,40})?$"},{"type":"null"}]}` |
+| `voucher_link` | Không | `{"anyOf":[{"type":"string","maxLength":50,"pattern":"^[a-z0-9-]+$"},{"type":"null"}]}` |
 | `phone` | Có | `{"type":"string","maxLength":40,"minLength":5}` |
 | `name` | Không | `{"type":"string","maxLength":150,"default":""}` |
 | `service_ids` | Không | `{"items":{"type":"string","enum":["internet","combo","camera","business","play"]},"type":"array","maxItems":5}` |
@@ -1684,6 +1803,16 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|
 | `provider_event_id` | Có | `{"type":"string","maxLength":100,"minLength":1,"pattern":"^[a-zA-Z0-9_.:-]+$"}` |
 | `lead` | Có | `{"$ref":"#/components/schemas/LeadRequest"}` |
+
+### LinkInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `slug` | Có | `{"type":"string","maxLength":50,"minLength":3,"pattern":"^[a-z0-9-]+$"}` |
+| `target` | Không | `{"type":"string","maxLength":110,"default":"/"}` |
+| `channel` | Không | `{"type":"string","maxLength":40,"minLength":1,"pattern":"^[a-zA-Z0-9_-]+$","default":"direct"}` |
+| `employee_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
+| `active` | Không | `{"type":"boolean","default":true}` |
 
 ### LocationHint
 
@@ -1946,6 +2075,7 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
+| `voucher_code` | Không | `{"anyOf":[{"type":"string","maxLength":40,"pattern":"^(?:[A-Z0-9_-]{3,40})?$"},{"type":"null"}]}` |
 | `landing_slug` | Không | `{"anyOf":[{"type":"string","maxLength":100,"minLength":1,"pattern":"^[a-z0-9-]+$"},{"type":"null"}]}` |
 | `plan_id` | Có | `{"type":"string","format":"uuid"}` |
 | `region_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
@@ -2007,6 +2137,14 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `level` | Không | `{"type":"string","enum":["province","ward"],"default":"province"}` |
 | `parent_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
 
+### ReserveInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
+| `code` | Có | `{"type":"string","maxLength":40,"minLength":3,"pattern":"^[A-Z0-9_-]+$"}` |
+| `billing_months` | Không | `{"type":"integer","enum":[1,6,12],"default":6}` |
+
 ### ResetPassword
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
@@ -2017,6 +2155,20 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `challenge_id` | Có | `{"type":"string","format":"uuid"}` |
 | `totp` | Không | `{"type":"string","pattern":"^([0-9]{6})?$","default":""}` |
 | `totp_factor_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
+
+### Rule
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `key` | Có | `{"type":"string","maxLength":50,"minLength":1,"pattern":"^[a-zA-Z0-9_-]+$"}` |
+| `region_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
+| `region_name` | Không | `{"type":"string","maxLength":200,"default":"Toàn quốc"}` |
+| `discount_kind` | Không | `{"type":"string","enum":["fixed","percent"],"default":"fixed"}` |
+| `amount` | Không | `{"type":"integer","maximum":1000000000.0,"minimum":0.0,"default":0}` |
+| `basis` | Không | `{"type":"string","enum":["initial","monthly","setup","equipment"],"default":"initial"}` |
+| `cap_vnd` | Không | `{"anyOf":[{"type":"integer","maximum":1000000000.0,"minimum":0.0},{"type":"null"}]}` |
+| `quota` | Không | `{"anyOf":[{"type":"integer","maximum":1000000.0,"minimum":1.0},{"type":"null"}]}` |
+| `gift_product_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
 
 ### ScheduleInput
 
@@ -2095,6 +2247,51 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
 | `session_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+
+### VoucherInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `code` | Có | `{"type":"string","maxLength":40,"minLength":3,"pattern":"^[A-Z0-9_-]+$"}` |
+| `name` | Có | `{"type":"string","maxLength":150,"minLength":1}` |
+| `label` | Không | `{"type":"string","maxLength":80,"default":"Ưu đãi khu vực"}` |
+| `terms` | Có | `{"type":"string","maxLength":2000,"minLength":1}` |
+| `start` | Có | `{"type":"string","format":"date-time"}` |
+| `end` | Có | `{"type":"string","format":"date-time"}` |
+| `plan_ids` | Không | `{"items":{"type":"string","format":"uuid"},"type":"array","maxItems":100}` |
+| `services` | Không | `{"items":{"type":"string","enum":["internet","combo","camera","business","play"]},"type":"array","maxItems":5}` |
+| `billing_months` | Không | `{"items":{"type":"integer","enum":[1,6,12]},"type":"array","maxItems":3,"minItems":1}` |
+| `rules` | Có | `{"items":{"$ref":"#/components/schemas/Rule"},"type":"array","maxItems":200,"minItems":1}` |
+| `exclusions` | Không | `{"items":{"type":"string","format":"uuid"},"type":"array","maxItems":200}` |
+| `quota` | Có | `{"type":"integer","maximum":1000000.0,"minimum":1.0}` |
+| `per_contact_limit` | Không | `{"type":"integer","maximum":100.0,"minimum":1.0,"default":1}` |
+| `budget_vnd` | Có | `{"type":"integer","maximum":1000000000000.0,"minimum":1.0}` |
+| `hold_hours` | Không | `{"type":"integer","maximum":720.0,"minimum":1.0,"default":48}` |
+| `redeem_at` | Không | `{"type":"string","enum":["closed","installed"],"default":"installed"}` |
+| `stackable` | Không | `{"type":"boolean","default":false}` |
+
+### VoucherUpdate
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `code` | Có | `{"type":"string","maxLength":40,"minLength":3,"pattern":"^[A-Z0-9_-]+$"}` |
+| `name` | Có | `{"type":"string","maxLength":150,"minLength":1}` |
+| `label` | Không | `{"type":"string","maxLength":80,"default":"Ưu đãi khu vực"}` |
+| `terms` | Có | `{"type":"string","maxLength":2000,"minLength":1}` |
+| `start` | Có | `{"type":"string","format":"date-time"}` |
+| `end` | Có | `{"type":"string","format":"date-time"}` |
+| `plan_ids` | Không | `{"items":{"type":"string","format":"uuid"},"type":"array","maxItems":100}` |
+| `services` | Không | `{"items":{"type":"string","enum":["internet","combo","camera","business","play"]},"type":"array","maxItems":5}` |
+| `billing_months` | Không | `{"items":{"type":"integer","enum":[1,6,12]},"type":"array","maxItems":3,"minItems":1}` |
+| `rules` | Có | `{"items":{"$ref":"#/components/schemas/Rule"},"type":"array","maxItems":200,"minItems":1}` |
+| `exclusions` | Không | `{"items":{"type":"string","format":"uuid"},"type":"array","maxItems":200}` |
+| `quota` | Có | `{"type":"integer","maximum":1000000.0,"minimum":1.0}` |
+| `per_contact_limit` | Không | `{"type":"integer","maximum":100.0,"minimum":1.0,"default":1}` |
+| `budget_vnd` | Có | `{"type":"integer","maximum":1000000000000.0,"minimum":1.0}` |
+| `hold_hours` | Không | `{"type":"integer","maximum":720.0,"minimum":1.0,"default":48}` |
+| `redeem_at` | Không | `{"type":"string","enum":["closed","installed"],"default":"installed"}` |
+| `stackable` | Không | `{"type":"boolean","default":false}` |
+| `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
 
 <!-- END GENERATED FRONTEND CONTRACT -->

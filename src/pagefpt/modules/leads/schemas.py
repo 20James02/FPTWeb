@@ -8,6 +8,10 @@ from pagefpt.modules.pricing.schemas import Command
 
 
 class LeadRequest(Command):
+    voucher_code: str | None = Field(
+        default=None, max_length=40, pattern=r"^(?:[A-Z0-9_-]{3,40})?$"
+    )
+    voucher_link: str | None = Field(default=None, max_length=50, pattern=r"^[a-z0-9-]+$")
     phone: str = Field(min_length=5, max_length=40)
     name: str = Field(default="", max_length=150)
     service_ids: list[Literal["internet", "combo", "camera", "business", "play"]] = Field(

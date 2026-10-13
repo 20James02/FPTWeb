@@ -1,0 +1,461 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Voucher & Link chia sẻ — PageFPT{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/vouchers.css">
+{% endblock %}
+{% block breadcrumbs %}Marketing / Voucher &amp; Link chia sẻ{% endblock %}
+{% block content %}
+<section class="voucher-admin">
+  <!-- Header Zone -->
+  <header class="voucher-heading">
+    <div>
+      <span class="voucher-eyebrow">ƯU ĐÃI THEO ĐỊA BÀN &amp; CHIẾN DỊCH FPT</span>
+      <h1>Voucher &amp; Link chia sẻ</h1>
+      <p>Tạo ưu đãi khu vực, kiểm soát hạn mức suất và theo dõi chuyển đổi từ hồ sơ khách hàng thực tế.</p>
+    </div>
+    <div class="voucher-header-actions">
+      <button class="btn-action-call" id="voucher-new" type="button">+ Tạo voucher</button>
+      <button class="btn-action-detail" id="voucher-refresh" type="button" title="Làm mới danh sách và báo cáo">↻ Làm mới</button>
+    </div>
+  </header>
+
+  <!-- 1. KPI Overview Zone -->
+  <div id="voucher-kpis" class="voucher-kpis" aria-label="Kết quả voucher"></div>
+  <p id="voucher-status" role="status" aria-live="polite" class="voucher-status-badge"></p>
+
+  <!-- 2. Voucher Table & Management Zone -->
+  <section class="panel-card">
+    <div class="voucher-toolbar">
+      <div class="voucher-toolbar-left">
+        <label class="voucher-search-label">
+          <span class="sr-only">Tìm voucher</span>
+          <input type="search" id="voucher-search" placeholder="🔍 Tìm mã hoặc tên chiến dịch...">
+        </label>
+        <label class="voucher-filter-label">
+          <span class="sr-only">Bộ lọc trạng thái</span>
+          <select id="voucher-filter-status" aria-label="Lọc trạng thái voucher">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="published">Đang công bố</option>
+            <option value="active">Còn hạn sử dụng</option>
+            <option value="draft">Bản nháp</option>
+            <option value="paused">Tạm dừng</option>
+            <option value="upcoming">Sắp diễn ra</option>
+            <option value="expired">Đã hết hạn</option>
+          </select>
+        </label>
+        <span id="voucher-loaded-count" class="voucher-counter-badge" aria-live="polite">Hiển thị 0 mục</span>
+      </div>
+      <div class="voucher-toolbar-right">
+        <button type="button" id="voucher-bulk-pause" class="btn-action-detail" title="Tạm dừng tất cả voucher đang được chọn">Tạm dừng mục đã chọn</button>
+      </div>
+    </div>
+
+    <div class="voucher-table-scroll">
+      <table id="voucher-table" data-managed-list="true">
+        <thead>
+          <tr>
+            <th style="width: 44px;"><input type="checkbox" id="voucher-check-all" aria-label="Chọn toàn bộ voucher đang hiển thị"></th>
+            <th><button type="button" data-v-sort="code">Mã ↕</button></th>
+            <th><button type="button" data-v-sort="name">Tên chiến dịch ↕</button></th>
+            <th><button type="button" data-v-sort="status">Trạng thái ↕</button></th>
+            <th><button type="button" data-v-sort="end">Ngày kết thúc ↕</button></th>
+            <th style="min-width: 140px;">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="margin-top: 14px; display: flex; justify-content: center;">
+      <button type="button" id="voucher-more" class="btn-action-detail" hidden>Tải thêm</button>
+    </div>
+  </section>
+
+  <!-- 3. Voucher Editor: 3-Step Wizard Zone -->
+  <section id="voucher-editor" class="panel-card voucher-editor-card" hidden aria-labelledby="voucher-editor-title">
+    <div class="voucher-heading voucher-editor-header">
+      <div>
+        <h2 id="voucher-editor-title">Thiết lập voucher</h2>
+        <p class="voucher-editor-subtitle">Cấu hình ưu đãi, đối tượng áp dụng và hạn mức chiến dịch theo 3 bước chuẩn.</p>
+      </div>
+      <div class="voucher-editor-top-actions">
+        <button type="button" id="voucher-preview-toggle-mobile" class="btn-action-detail voucher-mobile-only" aria-expanded="false">👁 Xem trước bản nháp</button>
+        <button type="button" id="voucher-close" class="btn-action-detail" aria-label="Đóng trình thiết lập">✕ Đóng</button>
+      </div>
+    </div>
+
+    <!-- Wizard Stepper Navigation -->
+    <nav class="voucher-stepper" aria-label="Các bước thiết lập voucher">
+      <button type="button" class="voucher-step-btn active" id="v-step-tab-1" data-step="1" aria-current="step">
+        <span class="v-step-num">1</span>
+        <span class="v-step-text">
+          <strong>Ưu đãi &amp; Quyền lợi</strong>
+          <small>Mã, tên, điều kiện, mức giảm</small>
+        </span>
+      </button>
+      <button type="button" class="voucher-step-btn" id="v-step-tab-2" data-step="2">
+        <span class="v-step-num">2</span>
+        <span class="v-step-text">
+          <strong>Gói &amp; Địa bàn áp dụng</strong>
+          <small>Gói, dịch vụ, tỉnh, xã, loại trừ</small>
+        </span>
+      </button>
+      <button type="button" class="voucher-step-btn" id="v-step-tab-3" data-step="3">
+        <span class="v-step-num">3</span>
+        <span class="v-step-text">
+          <strong>Thời hạn &amp; Kiểm tra</strong>
+          <small>Thời gian, suất, ngân sách, tóm tắt</small>
+        </span>
+      </button>
+    </nav>
+
+    <!-- Error Summary & Warnings -->
+    <div id="voucher-error-summary" class="voucher-error-summary" tabindex="-1" hidden role="alert"></div>
+    <div id="voucher-warning-banner" class="voucher-warning-banner" hidden role="status"></div>
+
+    <form id="voucher-form" novalidate>
+      <div class="voucher-editor-grid">
+        <div class="voucher-steps-container">
+
+          <!-- BƯỚC 1: Ưu đãi & Điều kiện -->
+          <fieldset class="voucher-step-section active" id="v-step-1">
+            <legend class="sr-only">1. Ưu đãi &amp; điều kiện</legend>
+            <div class="voucher-step-header">
+              <span class="voucher-step-badge">Bước 1 / 3</span>
+              <h3>Thông tin ưu đãi &amp; Nội dung cam kết</h3>
+              <p>Mã voucher được dùng để nhận diện và áp dụng trong hệ thống. Khách hàng sẽ thấy nhãn và điều kiện này.</p>
+            </div>
+
+            <div class="voucher-fields">
+              <label>
+                Mã voucher <span class="v-req">*</span>
+                <input id="v-code" required minlength="3" maxlength="40" pattern="[A-Z0-9_-]+" placeholder="VD: VT-CAMERA, GIGA-KM" autocomplete="off" spellcheck="false">
+                <small class="v-help">Viết hoa không dấu, số, gạch ngang (A-Z, 0-9, -, _). Không thể sửa sau khi tạo.</small>
+              </label>
+
+              <label>
+                Tên chiến dịch <span class="v-req">*</span>
+                <input id="v-name" required maxlength="150" placeholder="VD: Ưu đãi lắp đặt cáp quang Vũng Tàu">
+                <small class="v-help">Tên nội bộ để nhân viên và báo cáo dễ phân biệt.</small>
+              </label>
+
+              <label>
+                Nhãn hiển thị khách hàng
+                <input id="v-label" maxlength="80" placeholder="VD: Ưu đãi khu vực, Tri ân khách hàng">
+                <small class="v-help">Xuất hiện trên thẻ gói và banner website khách hàng.</small>
+              </label>
+
+              <div class="voucher-wide">
+                <label>
+                  Điều kiện khách cần biết <span class="v-req">*</span>
+                  <textarea id="v-terms" required maxlength="2000" rows="3" placeholder="Ghi rõ điều kiện: áp dụng địa chỉ lắp mới, yêu cầu kỹ thuật, thời hạn nhận ưu đãi..."></textarea>
+                  <small class="v-help">Hiển thị trong mục điều kiện chi tiết. Giúp khách hiểu rõ trước khi gửi thông tin.</small>
+                </label>
+              </div>
+            </div>
+
+            <div class="voucher-form-group" style="margin-top: 14px;">
+              <span class="voucher-group-title">Kỳ thanh toán áp dụng:</span>
+              <div class="voucher-checks" id="v-months">
+                <label><input type="checkbox" value="1" checked> Hàng tháng</label>
+                <label><input type="checkbox" value="6" checked> 6 tháng</label>
+                <label><input type="checkbox" value="12" checked> 12 tháng</label>
+              </div>
+              <small class="v-help">Chỉ khách chọn các kỳ thanh toán này mới thỏa điều kiện voucher.</small>
+            </div>
+
+            <label class="voucher-check" style="margin-top: 10px;">
+              <input type="checkbox" id="v-stackable">
+              <span><strong>Cho phép cộng dồn:</strong> Áp dụng chung với các khuyến mại khác hoặc giá riêng trên Landing Page</span>
+            </label>
+
+            <div class="voucher-step-actions">
+              <button type="button" class="btn-action-call" id="v-next-to-step-2">Tiếp tục: Chọn gói &amp; địa bàn →</button>
+            </div>
+          </fieldset>
+
+          <!-- BƯỚC 2: Gói & Địa bàn áp dụng -->
+          <fieldset class="voucher-step-section" id="v-step-2">
+            <legend class="sr-only">2. Gói &amp; khu vực áp dụng</legend>
+            <div class="voucher-step-header">
+              <span class="voucher-step-badge">Bước 2 / 3</span>
+              <h3>Phạm vi gói cước &amp; Địa bàn áp dụng</h3>
+              <p>Phân vùng ưu đãi theo địa lý và danh mục dịch vụ. Hệ thống ưu tiên theo thứ bậc rõ ràng.</p>
+            </div>
+
+            <!-- Priority Explainer Alert -->
+            <div class="voucher-priority-notice" role="note">
+              <strong>📌 Nguyên tắc ưu tiên địa bàn:</strong>
+              <ul>
+                <li>Quy tắc cấp <strong>Xã / Phường</strong> luôn có độ ưu tiên cao hơn <strong>Tỉnh / Thành phố</strong>.</li>
+                <li>Vùng <strong>Loại trừ</strong> có quyền ưu tiên cao nhất (loại trừ thắng tất cả quy tắc giảm giá).</li>
+                <li><strong>Để trống danh sách gói</strong> = voucher áp dụng cho toàn bộ các gói cước đang mở bán.</li>
+              </ul>
+            </div>
+
+            <div class="voucher-form-group">
+              <span class="voucher-group-title">Gói cước cụ thể (để trống nếu áp dụng tất cả):</span>
+              <div id="v-plans" class="voucher-checks voucher-picks" aria-label="Chọn gói cước áp dụng"></div>
+            </div>
+
+            <div class="voucher-form-group">
+              <span class="voucher-group-title">Danh mục dịch vụ:</span>
+              <div id="v-services" class="voucher-checks" aria-label="Chọn dịch vụ áp dụng"></div>
+            </div>
+
+            <div class="voucher-form-group">
+              <label for="v-geo-search" class="voucher-group-title">Tìm kiếm tỉnh / xã / phường để thêm quy tắc:</label>
+              <input id="v-geo-search" type="search" placeholder="Nhập tên tỉnh hoặc xã để chọn checkbox thêm quy tắc...">
+              <div id="v-geographies" class="voucher-checks voucher-picks" aria-label="Danh sách địa bàn áp dụng"></div>
+            </div>
+
+            <div class="voucher-form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="voucher-group-title">Quy tắc giảm giá &amp; quà tặng theo địa bàn:</span>
+                <button type="button" id="v-default-rule" class="btn-action-detail">+ Thêm quy tắc Toàn quốc</button>
+              </div>
+              <div id="v-rules" class="voucher-rules" aria-label="Các quy tắc giảm giá theo địa bàn"></div>
+            </div>
+
+            <!-- Exclusion Regions -->
+            <details class="voucher-exclusions-details">
+              <summary><strong>🚫 Khu vực loại trừ đặc biệt (không áp dụng)</strong></summary>
+              <div style="padding-top: 12px;">
+                <label for="v-exclude-search">
+                  Tìm vùng loại trừ:
+                  <input id="v-exclude-search" type="search" placeholder="Nhập tên địa bàn loại trừ...">
+                </label>
+                <div id="v-exclusions" class="voucher-checks voucher-picks" aria-label="Danh sách địa bàn loại trừ"></div>
+                <small class="v-help">Các địa bàn được tích chọn ở đây sẽ bị từ chối áp dụng voucher dù có quy tắc tỉnh hay toàn quốc.</small>
+              </div>
+            </details>
+
+            <div class="voucher-step-actions">
+              <button type="button" class="btn-action-detail" id="v-prev-to-step-1">← Quay lại: Ưu đãi</button>
+              <button type="button" class="btn-action-call" id="v-next-to-step-3">Tiếp tục: Thời hạn &amp; kiểm tra →</button>
+            </div>
+          </fieldset>
+
+          <!-- BƯỚC 3: Thời hạn, Kiểm soát & Xem xét -->
+          <fieldset class="voucher-step-section" id="v-step-3">
+            <legend class="sr-only">3. Thời hạn &amp; kiểm soát chi phí</legend>
+            <div class="voucher-step-header">
+              <span class="voucher-step-badge">Bước 3 / 3</span>
+              <h3>Thời hạn hiệu lực, Hạn mức &amp; Tổng hợp trước khi lưu</h3>
+              <p>Quản lý ngân sách chiết khấu, số suất tối đa và các điều kiện nghiệm thu quyền lợi.</p>
+            </div>
+
+            <div class="voucher-fields">
+              <label>
+                Bắt đầu (giờ Việt Nam) <span class="v-req">*</span>
+                <input type="datetime-local" id="v-start" required>
+              </label>
+
+              <label>
+                Kết thúc (giờ Việt Nam) <span class="v-req">*</span>
+                <input type="datetime-local" id="v-end" required>
+              </label>
+
+              <label>
+                Tổng số suất <span class="v-req">*</span>
+                <input type="number" id="v-quota" min="1" max="1000000" placeholder="VD: 50" required>
+                <small class="v-help">Hạn mức toàn chiến dịch. Suất hết thời gian giữ sẽ tự trả lại quỹ.</small>
+              </label>
+
+              <label>
+                Ngân sách tối đa (đ) <span class="v-req">*</span>
+                <input type="number" id="v-budget" min="1" max="1000000000000" placeholder="VD: 10000000" required>
+                <small class="v-help">Bao gồm tổng tiền giảm cước và giá vốn phụ kiện quà tặng.</small>
+              </label>
+            </div>
+
+            <!-- Advanced Controls Accordion -->
+            <details class="voucher-advanced-details" style="margin-top: 16px;">
+              <summary><strong>⚙️ Cài đặt nâng cao (Giới hạn khách, Thời gian giữ, Nghiệm thu)</strong></summary>
+              <div class="voucher-fields" style="padding-top: 14px;">
+                <label>
+                  Số suất tối đa / một khách <span class="v-req">*</span>
+                  <input type="number" id="v-per-contact" value="1" min="1" max="100" required>
+                  <small class="v-help">Chống một số điện thoại giữ quá nhiều suất.</small>
+                </label>
+
+                <label>
+                  Thời gian tạm giữ suất (giờ) <span class="v-req">*</span>
+                  <input type="number" id="v-hold" value="48" min="1" max="720" required>
+                  <small class="v-help">Nhân viên có tối đa khoảng thời gian này để liên hệ và xác nhận trước khi suất tự hủy.</small>
+                </label>
+
+                <label class="voucher-wide">
+                  Điều kiện ghi nhận đã dùng voucher <span class="v-req">*</span>
+                  <select id="v-redeem">
+                    <option value="installed">Đã hoàn tất lắp đặt (Khuyến nghị chuẩn FPT)</option>
+                    <option value="closed">Khách đồng ý chốt đơn (Sớm)</option>
+                  </select>
+                  <small class="v-help">Chỉ khi hồ sơ đạt trạng thái này thì chi phí voucher mới được ghi nhận tiêu hao ngân sách.</small>
+                </label>
+              </div>
+            </details>
+
+            <!-- Comprehensive Review Summary Card -->
+            <div class="voucher-review-card" id="voucher-review-summary" style="margin-top: 20px;">
+              <h4>📋 Bảng Tóm Tắt Chiến Dịch Trước Khi Lưu / Công Bố</h4>
+              <div id="voucher-review-content" class="voucher-review-content">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+
+            <div class="voucher-step-actions">
+              <button type="button" class="btn-action-detail" id="v-prev-to-step-2">← Quay lại: Gói &amp; địa bàn</button>
+            </div>
+          </fieldset>
+
+        </div>
+
+        <!-- Desktop Sticky Live Preview Sidebar -->
+        <aside class="voucher-preview" id="voucher-preview-container">
+          <div class="voucher-preview-header">
+            <span class="voucher-eyebrow">👁 BẢN NHÁP · DIỆN MẠO KHÁCH HÀNG</span>
+          </div>
+          <div id="voucher-preview"></div>
+          <div class="voucher-preview-footer">
+            <p>💡 <em>Lưu ý: Báo giá thực tế sẽ xác nhận lại điều kiện; suất chỉ được giữ khi nhân viên xác nhận địa chỉ chính xác.</em></p>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Action Footer Toolbar -->
+      <div class="voucher-editor-footer">
+        <p id="v-draft-state" role="status" class="voucher-draft-label"></p>
+        <div class="voucher-toolbar">
+          <button id="voucher-save" class="btn-action-call" type="submit">💾 Lưu bản nháp</button>
+          <button id="voucher-publish" class="btn-action-detail" type="button" disabled title="Chỉ công bố khi đã lưu và có quyền AAL2">🚀 Công bố chiến dịch</button>
+          <button id="voucher-pause" class="btn-action-detail" type="button" disabled>⏸ Tạm dừng</button>
+          <button id="voucher-delete" class="btn-action-detail btn-danger" type="button" disabled>🗑 Xóa bản nháp</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- 4. Sharing Links & QR Code Zone -->
+    <fieldset id="voucher-share" disabled class="voucher-share-fieldset">
+      <legend>4. Link chia sẻ &amp; Mã QR Marketing</legend>
+      <p class="voucher-help-p">Tạo đường link ngắn định danh kèm mã QR để nhân viên gửi qua Zalo, Facebook hoặc dán trên tờ rơi.</p>
+      
+      <form id="voucher-link-form">
+        <div class="voucher-fields">
+          <label>
+            Tên link ngắn (slug) <span class="v-req">*</span>
+            <input id="v-link-slug" required pattern="[a-z0-9-]{3,50}" placeholder="VD: vungtau-camera-zalo" autocomplete="off">
+            <small class="v-help">Đường dẫn: <code>fpt.vn/s/[slug]</code></small>
+          </label>
+
+          <label>
+            Trang đích (Target URL) <span class="v-req">*</span>
+            <div style="display: flex; gap: 6px;">
+              <input id="v-link-target" value="/" required placeholder="/ hoặc /ten-landing" style="flex: 1;">
+              <button type="button" id="v-link-verify-target" class="btn-action-detail" title="Kiểm tra xem trang đích có tồn tại trên website không">Kiểm tra trang</button>
+            </div>
+            <small id="v-link-target-status" class="v-help">Trang khách hàng sẽ được chuyển đến sau khi ghi nhận ưu đãi.</small>
+          </label>
+
+          <label>
+            Kênh phân phối (Channel) <span class="v-req">*</span>
+            <select id="v-link-channel">
+              <option value="zalo">Zalo</option>
+              <option value="facebook">Facebook</option>
+              <option value="google">Google Ads</option>
+              <option value="telegram">Telegram</option>
+              <option value="direct">Trực tiếp / Tờ rơi</option>
+            </select>
+          </label>
+
+          <label>
+            Nhân viên phụ trách giới thiệu (tùy chọn)
+            <select id="v-link-employee">
+              <option value="">Không gắn nhân viên (Chiến dịch chung)</option>
+            </select>
+            <small class="v-help">Gắn để theo dõi KPI nguồn giới thiệu, không tự gán người xử lý hồ sơ.</small>
+          </label>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <button id="voucher-link-save" class="btn-action-call" type="submit">+ Tạo link chia sẻ</button>
+        </div>
+      </form>
+
+      <div id="voucher-links" class="voucher-links-container" style="margin-top: 18px;"></div>
+    </fieldset>
+  </section>
+
+  <!-- 5. Tồn kho Quà Tặng Zone -->
+  <details class="panel-card voucher-inventory-card">
+    <summary><strong>🎁 Quản lý Tồn kho Quà Tặng (Dùng chung)</strong></summary>
+    <div style="padding-top: 14px;">
+      <p>Tổng tồn kho áp dụng chung cho tất cả các voucher. Hệ thống tự động chống vượt hạn mức (oversell).</p>
+      <form id="voucher-inventory-form">
+        <div class="voucher-fields">
+          <label>
+            Phụ kiện tính một lần <span class="v-req">*</span>
+            <select id="v-inventory-product" required></select>
+          </label>
+
+          <label>
+            Tổng số lượng tồn kho <span class="v-req">*</span>
+            <input id="v-inventory-stock" type="number" min="0" required placeholder="Tổng tồn kho thực tế">
+            <small class="v-help">Tổng tồn kho đã cấu hình. Không thể giảm dưới số đã dùng hoặc đang giữ.</small>
+          </label>
+
+          <label>
+            Giá vốn dự toán (đ) <span class="v-req">*</span>
+            <input id="v-inventory-cost" type="number" min="0" required placeholder="Giá vốn mỗi sản phẩm">
+            <small class="v-help">Dùng để tính trừ vào ngân sách chiến dịch khi khách nhận quà.</small>
+          </label>
+        </div>
+        <div style="margin-top: 12px;">
+          <button class="btn-action-call" type="submit">Lưu cấu hình tồn kho</button>
+        </div>
+      </form>
+      <div id="voucher-inventory-list" class="voucher-inventory-list" style="margin-top: 16px;"></div>
+    </div>
+  </details>
+
+  <!-- 6. Báo cáo Hiệu Quả & Thống Kê Zone -->
+  <details class="panel-card voucher-report-card" open>
+    <summary>
+      <div style="display: inline-flex; justify-content: space-between; align-items: center; width: calc(100% - 30px);">
+        <strong>📊 Hiệu quả theo Chiến dịch, Kênh &amp; Khu vực</strong>
+      </div>
+    </summary>
+    <div style="padding-top: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+        <p style="margin: 0;">Báo cáo tổng hợp số liệu thực tế từ luồng xử lý hồ sơ. Lượt mở link không tính là lead.</p>
+        <button type="button" id="voucher-report-export-csv" class="btn-action-detail" title="Tải xuống tệp CSV tổng hợp số liệu hiện tại">📥 Xuất dữ liệu báo cáo (CSV)</button>
+      </div>
+      <div id="voucher-report"></div>
+    </div>
+  </details>
+</section>
+
+<!-- Dialog Nhân Bản Voucher (Clone Voucher Modal) -->
+<dialog id="voucher-clone-dialog" class="admin-dialog voucher-clone-dialog" aria-labelledby="voucher-clone-title">
+  <div class="admin-dialog-header">
+    <h3 id="voucher-clone-title">Nhân bản chiến dịch voucher</h3>
+    <button type="button" class="pricing-btn lp-btn-icon" onclick="document.getElementById('voucher-clone-dialog').close()">✕</button>
+  </div>
+  <p class="pricing-hint" style="margin: 8px 0 16px;">
+    Tạo bản nháp mới kế thừa toàn bộ gói cước, quy tắc địa bàn và ngân sách từ chiến dịch nguồn. Vui lòng nhập mã voucher mới.
+  </p>
+  <form id="voucher-clone-form">
+    <label>
+      Mã voucher mới <span class="v-req">*</span>
+      <input id="v-clone-code" required minlength="3" maxlength="40" pattern="[A-Z0-9_-]+" placeholder="VD: VT-CAMERA-V2" autocomplete="off" style="text-transform: uppercase;">
+      <small class="v-help">Mã mới viết hoa, không dấu, chưa từng tồn tại trên hệ thống.</small>
+    </label>
+    <div class="admin-dialog-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+      <button type="button" class="btn-action-detail" onclick="document.getElementById('voucher-clone-dialog').close()">Hủy</button>
+      <button type="submit" class="btn-action-call">Xác nhận nhân bản</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+{% block extra_scripts %}
+<script src="/static/js/admin/vouchers.js"></script>
+{% endblock %}

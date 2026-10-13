@@ -320,6 +320,7 @@
     for (const [index, table] of [
       ...document.querySelectorAll(".admin-content table"),
     ].entries()) {
+      if (table.dataset.managedList === "true") continue;
       const body = table.tBodies[0];
       if (
         body &&
@@ -382,6 +383,7 @@
       });
     }
     for (const table of document.querySelectorAll(".admin-content table")) {
+      if (table.dataset.managedList === "true") continue;
       const header = table.tHead?.rows[0],
         body = table.tBodies[0];
       if (!header || !body) continue;

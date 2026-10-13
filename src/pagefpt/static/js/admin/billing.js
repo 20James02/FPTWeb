@@ -80,7 +80,9 @@
         showToast("Đã lưu thanh toán.", "success");
       } catch (e) {
         error.textContent =
-          e.code === "VERSION_CONFLICT"
+          e.code === "VOUCHER_RELEASE_BEFORE_EDIT"
+            ? "Hồ sơ đang giữ voucher. Hủy suất trước khi đổi gói hoặc kỳ thanh toán."
+            : e.code === "VERSION_CONFLICT"
             ? "Dữ liệu đã được người khác sửa. Bản nháp vẫn được giữ; đóng cửa sổ và tải lại hồ sơ trước khi lưu."
             : e.message;
       } finally {

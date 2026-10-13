@@ -52,6 +52,7 @@ def authorization(endpoint, path):
             if path.startswith("/health/")
             else "public_html"
             if path in {"/", "/san-pham/{slug}", "/khuyen-mai", "/chinh-sach-bao-mat"}
+            or path.startswith("/s/")
             else "public_admin_login"
             if path == "/admin/login"
             else "server_guarded_admin_html",
@@ -82,6 +83,12 @@ def authorization(endpoint, path):
             checks.append({"permission": value, "mfa": enabled})
     if endpoint.__name__ in {"create_plan", "create_region"}:
         checks = [{"permission": "catalog.write", "mfa": False}]
+    if path.startswith("/api/v1/admin/vouchers"):
+        checks = [{"permission": "marketing.write", "mfa": False}]
+        if endpoint.__name__ in {"publish", "pause", "delete", "inventory_save"}:
+            checks.append({"permission": "pricing.publish", "mfa": True})
+    elif path.startswith("/api/v1/admin/leads/") and "/voucher" in path:
+        checks = [{"permission": "lead.write", "mfa": False}]
     if path == "/api/v1/admin/{kind}/{id}/publish":
         checks = [
             {

@@ -196,6 +196,12 @@ async def create_price(input: PriceInput, request: Request):
 
 @router.post("/quotes")
 async def quote(input: QuoteRequest, request: Request):
+    from pagefpt.modules.vouchers.service import public_quote
+
+    return public_quote(await build_quote(input, request))
+
+
+async def build_quote(input, request, confirmed_path=None):
     devices = await selection(request, input.plan_id, input.accessory_ids)
     data = await dispatch(
         request,
@@ -212,6 +218,19 @@ async def quote(input: QuoteRequest, request: Request):
             "revision": data["revision"],
         }
     at = datetime.now(UTC)
+    from pagefpt.modules.vouchers.service import decorate, resolve
+
+    campaign = await resolve(request, input.voucher_code) if input.voucher_code != "" else None
+    voucher_plan = (
+        await dispatch(request, "public_resource", kind="plan", id=str(input.plan_id))
+        if campaign
+        else None
+    )
+    voucher_path = (
+        confirmed_path
+        or data.get("region_path")
+        or ([str(input.region_id)] if input.region_id else [])
+    )
     context = await landing_context(request, input.landing_slug, str(input.plan_id), at)
     prices, promotions = landing_inputs(
         context, data["prices"], data["promotions"], input.billing_months
@@ -246,9 +265,13 @@ async def quote(input: QuoteRequest, request: Request):
         )
         preview["billing_months"] = months
         mark_landing(preview, context, at)
+        await decorate(request, preview, campaign, voucher_path, input.plan_id, at, voucher_plan)
         billing_options.append(preview)
     with_accessories(proposal, devices, input.billing_months)
     mark_landing(proposal, context, at)
+    await decorate(request, proposal, campaign, voucher_path, input.plan_id, at, voucher_plan)
+    if input.voucher_code and campaign is None:
+        proposal["voucher"] = {"status": "unavailable", "code": input.voucher_code}
     if proposal["status"] == "confirmed":
         result = await dispatch(request, "quote_save", payload=proposal)
         proposal["quote_token"] = crypto(request).sign(

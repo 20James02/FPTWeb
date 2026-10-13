@@ -20,6 +20,7 @@
     }
     return (
       {
+        VOUCHER_RELEASE_BEFORE_EDIT: "Hồ sơ đang giữ ưu đãi. Hủy suất trước khi xác nhận lại địa chỉ hoặc đổi gói/phụ kiện.",
         VERSION_CONFLICT:
           "Hồ sơ đã thay đổi. Giữ bản nháp này, tải lại hồ sơ trước khi lưu.",
         INVALID_ADDRESS: "Xã/phường không thuộc tỉnh/thành đã chọn.",

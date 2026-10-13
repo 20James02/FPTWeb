@@ -502,6 +502,34 @@
     },
     {
       "method": "GET",
+      "path": "/admin/vouchers",
+      "operation_id": "vouchers_admin_vouchers_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 191,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/admin/workbench",
       "operation_id": "admin_workbench_admin_workbench_get",
       "source": "src/pagefpt/web/admin_routes.py",
@@ -4115,6 +4143,192 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/TransitionCommand"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/leads/{id}/voucher",
+      "operation_id": "lead_voucher_api_v1_admin_leads__id__voucher_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 261,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/{id}/voucher/reserve",
+      "operation_id": "reserve_api_v1_admin_leads__id__voucher_reserve_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 267,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReserveInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/leads/{id}/voucher/{action}",
+      "operation_id": "action_api_v1_admin_leads__id__voucher__action__post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 331,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "lead.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        {
+          "name": "action",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Action"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ActionInput"
             }
           }
         }
@@ -7866,6 +8080,675 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/admin/vouchers",
+      "operation_id": "list_vouchers_api_v1_admin_vouchers_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 80,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "before",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers",
+      "operation_id": "create_api_v1_admin_vouchers_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 88,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VoucherInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/employees",
+      "operation_id": "employees_api_v1_admin_vouchers_employees_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 57,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/inventory",
+      "operation_id": "inventory_list_api_v1_admin_vouchers_inventory_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 63,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/vouchers/inventory",
+      "operation_id": "inventory_save_api_v1_admin_vouchers_inventory_put",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 69,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "pricing.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InventoryInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/links/{slug}/qr",
+      "operation_id": "link_qr_api_v1_admin_vouchers_links__slug__qr_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 157,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Slug"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/options",
+      "operation_id": "options_api_v1_admin_vouchers_options_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 40,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/report",
+      "operation_id": "report_api_v1_admin_vouchers_report_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 34,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/vouchers/{id}",
+      "operation_id": "delete_api_v1_admin_vouchers__id__delete",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 133,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "pricing.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        {
+          "name": "expected_version",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "title": "Expected Version"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/vouchers/{id}",
+      "operation_id": "update_api_v1_admin_vouchers__id__put",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 96,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VoucherUpdate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers/{id}/links",
+      "operation_id": "share_api_v1_admin_vouchers__id__links_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 145,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LinkInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers/{id}/pause",
+      "operation_id": "pause_api_v1_admin_vouchers__id__pause_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 121,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "pricing.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionCommand"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers/{id}/publish",
+      "operation_id": "publish_api_v1_admin_vouchers__id__publish_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 109,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "pricing.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionCommand"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/admin/workbench",
       "operation_id": "workbench_api_v1_admin_workbench_get",
       "source": "src/pagefpt/modules/leads/admin.py",
@@ -9416,6 +10299,134 @@
       "in_openapi": true
     },
     {
+      "method": "DELETE",
+      "path": "/api/v1/vouchers/context",
+      "operation_id": "clear_api_v1_vouchers_context_delete",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 214,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/vouchers/context",
+      "operation_id": "context_api_v1_vouchers_context_get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 208,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "code",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/vouchers/context",
+      "operation_id": "save_context_api_v1_vouchers_context_post",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 221,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ContextInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "POST",
       "path": "/api/v1/webhooks/leads/{provider}",
       "operation_id": "gateway_lead_api_v1_webhooks_leads__provider__post",
@@ -9674,6 +10685,52 @@
     },
     {
       "method": "GET",
+      "path": "/s/{slug}",
+      "operation_id": "short_link_s__slug__get",
+      "source": "src/pagefpt/modules/vouchers/routes.py",
+      "source_line": 184,
+      "authorization": {
+        "caller": "public_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Slug"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/san-pham/{slug}",
       "operation_id": "product_detail_san_pham__slug__get",
       "source": "src/pagefpt/web/client_routes.py",
@@ -9739,6 +10796,28 @@
     }
   ],
   "schemas": {
+    "ActionInput": {
+      "properties": {
+        "reason": {
+          "type": "string",
+          "maxLength": 500,
+          "minLength": 3,
+          "title": "Reason"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "reason",
+        "expected_version"
+      ],
+      "title": "ActionInput"
+    },
     "ActivityCommand": {
       "properties": {
         "kind": {
@@ -10316,6 +11395,23 @@
         "session_token"
       ],
       "title": "ConsentUpdate"
+    },
+    "ContextInput": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 3,
+          "pattern": "^[A-Z0-9_-]+$",
+          "title": "Code"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "title": "ContextInput"
     },
     "CostInput": {
       "properties": {
@@ -10966,6 +12062,41 @@
         "platform"
       ],
       "title": "IntegrationInput"
+    },
+    "InventoryInput": {
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Product Id"
+        },
+        "stock": {
+          "type": "integer",
+          "maximum": 1000000.0,
+          "minimum": 0.0,
+          "title": "Stock"
+        },
+        "cost_vnd": {
+          "type": "integer",
+          "maximum": 1000000000.0,
+          "minimum": 0.0,
+          "title": "Cost Vnd"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0.0,
+          "title": "Expected Version",
+          "default": 0
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "product_id",
+        "stock",
+        "cost_vnd"
+      ],
+      "title": "InventoryInput"
     },
     "LandingCampaign": {
       "properties": {
@@ -11661,6 +12792,32 @@
     },
     "LeadRequest": {
       "properties": {
+        "voucher_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 40,
+              "pattern": "^(?:[A-Z0-9_-]{3,40})?$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Voucher Code"
+        },
+        "voucher_link": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Voucher Link"
+        },
         "phone": {
           "type": "string",
           "maxLength": 40,
@@ -11966,6 +13123,54 @@
         "lead"
       ],
       "title": "LeadWebhook"
+    },
+    "LinkInput": {
+      "properties": {
+        "slug": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 3,
+          "pattern": "^[a-z0-9-]+$",
+          "title": "Slug"
+        },
+        "target": {
+          "type": "string",
+          "maxLength": 110,
+          "title": "Target",
+          "default": "/"
+        },
+        "channel": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "title": "Channel",
+          "default": "direct"
+        },
+        "employee_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Employee Id"
+        },
+        "active": {
+          "type": "boolean",
+          "title": "Active",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "slug"
+      ],
+      "title": "LinkInput"
     },
     "LocationHint": {
       "properties": {
@@ -14240,6 +15445,19 @@
     },
     "QuoteRequest": {
       "properties": {
+        "voucher_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 40,
+              "pattern": "^(?:[A-Z0-9_-]{3,40})?$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Voucher Code"
+        },
         "landing_slug": {
           "anyOf": [
             {
@@ -14521,6 +15739,39 @@
       ],
       "title": "RegionInput"
     },
+    "ReserveInput": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "code": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 3,
+          "pattern": "^[A-Z0-9_-]+$",
+          "title": "Code"
+        },
+        "billing_months": {
+          "type": "integer",
+          "enum": [
+            1,
+            6,
+            12
+          ],
+          "title": "Billing Months",
+          "default": 6
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "code"
+      ],
+      "title": "ReserveInput"
+    },
     "ResetPassword": {
       "properties": {
         "email": {
@@ -14573,6 +15824,106 @@
         "challenge_id"
       ],
       "title": "ResetPassword"
+    },
+    "Rule": {
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "title": "Key"
+        },
+        "region_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Region Id"
+        },
+        "region_name": {
+          "type": "string",
+          "maxLength": 200,
+          "title": "Region Name",
+          "default": "Toàn quốc"
+        },
+        "discount_kind": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "percent"
+          ],
+          "title": "Discount Kind",
+          "default": "fixed"
+        },
+        "amount": {
+          "type": "integer",
+          "maximum": 1000000000.0,
+          "minimum": 0.0,
+          "title": "Amount",
+          "default": 0
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "initial",
+            "monthly",
+            "setup",
+            "equipment"
+          ],
+          "title": "Basis",
+          "default": "initial"
+        },
+        "cap_vnd": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cap Vnd"
+        },
+        "quota": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Quota"
+        },
+        "gift_product_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Gift Product Id"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "title": "Rule"
     },
     "ScheduleInput": {
       "properties": {
@@ -14891,6 +16242,308 @@
         "session_token"
       ],
       "title": "VisitInput"
+    },
+    "VoucherInput": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 3,
+          "pattern": "^[A-Z0-9_-]+$",
+          "title": "Code"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 150,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80,
+          "title": "Label",
+          "default": "Ưu đãi khu vực"
+        },
+        "terms": {
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Terms"
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Start"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "title": "End"
+        },
+        "plan_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 100,
+          "title": "Plan Ids"
+        },
+        "services": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "combo",
+              "camera",
+              "business",
+              "play"
+            ]
+          },
+          "type": "array",
+          "maxItems": 5,
+          "title": "Services"
+        },
+        "billing_months": {
+          "items": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ]
+          },
+          "type": "array",
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Billing Months"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "type": "array",
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Rules"
+        },
+        "exclusions": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 200,
+          "title": "Exclusions"
+        },
+        "quota": {
+          "type": "integer",
+          "maximum": 1000000.0,
+          "minimum": 1.0,
+          "title": "Quota"
+        },
+        "per_contact_limit": {
+          "type": "integer",
+          "maximum": 100.0,
+          "minimum": 1.0,
+          "title": "Per Contact Limit",
+          "default": 1
+        },
+        "budget_vnd": {
+          "type": "integer",
+          "maximum": 1000000000000.0,
+          "minimum": 1.0,
+          "title": "Budget Vnd"
+        },
+        "hold_hours": {
+          "type": "integer",
+          "maximum": 720.0,
+          "minimum": 1.0,
+          "title": "Hold Hours",
+          "default": 48
+        },
+        "redeem_at": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "installed"
+          ],
+          "title": "Redeem At",
+          "default": "installed"
+        },
+        "stackable": {
+          "type": "boolean",
+          "title": "Stackable",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "code",
+        "name",
+        "terms",
+        "start",
+        "end",
+        "rules",
+        "quota",
+        "budget_vnd"
+      ],
+      "title": "VoucherInput"
+    },
+    "VoucherUpdate": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 3,
+          "pattern": "^[A-Z0-9_-]+$",
+          "title": "Code"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 150,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80,
+          "title": "Label",
+          "default": "Ưu đãi khu vực"
+        },
+        "terms": {
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Terms"
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Start"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "title": "End"
+        },
+        "plan_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 100,
+          "title": "Plan Ids"
+        },
+        "services": {
+          "items": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "combo",
+              "camera",
+              "business",
+              "play"
+            ]
+          },
+          "type": "array",
+          "maxItems": 5,
+          "title": "Services"
+        },
+        "billing_months": {
+          "items": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ]
+          },
+          "type": "array",
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Billing Months"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "type": "array",
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Rules"
+        },
+        "exclusions": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 200,
+          "title": "Exclusions"
+        },
+        "quota": {
+          "type": "integer",
+          "maximum": 1000000.0,
+          "minimum": 1.0,
+          "title": "Quota"
+        },
+        "per_contact_limit": {
+          "type": "integer",
+          "maximum": 100.0,
+          "minimum": 1.0,
+          "title": "Per Contact Limit",
+          "default": 1
+        },
+        "budget_vnd": {
+          "type": "integer",
+          "maximum": 1000000000000.0,
+          "minimum": 1.0,
+          "title": "Budget Vnd"
+        },
+        "hold_hours": {
+          "type": "integer",
+          "maximum": 720.0,
+          "minimum": 1.0,
+          "title": "Hold Hours",
+          "default": 48
+        },
+        "redeem_at": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "installed"
+          ],
+          "title": "Redeem At",
+          "default": "installed"
+        },
+        "stackable": {
+          "type": "boolean",
+          "title": "Stackable",
+          "default": false
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "code",
+        "name",
+        "terms",
+        "start",
+        "end",
+        "rules",
+        "quota",
+        "budget_vnd",
+        "expected_version"
+      ],
+      "title": "VoucherUpdate"
     },
     "ProcessInput": {
       "additionalProperties": false,

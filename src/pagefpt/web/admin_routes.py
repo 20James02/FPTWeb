@@ -186,3 +186,8 @@ async def admin_landing_pages(request: Request):
         ("content.write",),
         landing_defaults=LandingSettings().model_dump(mode="json"),
     )
+
+
+@router.get("/vouchers", response_class=HTMLResponse)
+async def vouchers(request: Request):
+    return await render_admin(request, "admin/vouchers.html", "vouchers", ("marketing.write",))

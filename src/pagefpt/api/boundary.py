@@ -16,7 +16,13 @@ def install_boundary(app: FastAPI) -> None:
         started = monotonic()
         request.state.request_id = str(uuid4())
         if request.method in {"POST", "PUT", "PATCH"}:
-            limit = 1024 * 1024 if "/imports" in request.url.path else 16 * 1024
+            limit = (
+                1024 * 1024
+                if "/imports" in request.url.path
+                else 128 * 1024
+                if request.url.path.startswith("/api/v1/admin/vouchers")
+                else 16 * 1024
+            )
             body = bytearray()
             oversized = False
             async for chunk in request.stream():

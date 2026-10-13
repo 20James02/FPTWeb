@@ -1,0 +1,1334 @@
+/* Structured voucher editor. No secrets or customer data are kept in browser storage. */
+(() => {
+  const $ = (id) => document.getElementById(id),
+    el = (tag, text = "", cls = "") => {
+      const n = document.createElement(tag);
+      n.textContent = text;
+      if (cls) n.className = cls;
+      return n;
+    };
+
+  let rows = [],
+    links = [],
+    plans = [],
+    products = [],
+    geos = [],
+    inventory = [],
+    employees = [],
+    selected = null,
+    rules = [],
+    excluded = new Set(),
+    checks = new Set(),
+    sort = "code",
+    direction = 1,
+    busy = false,
+    cursor = null,
+    geoFailure = false,
+    savedForm = "",
+    dirty = false,
+    cloningRow = null,
+    lastReportData = null;
+
+  const money = (n) => new Intl.NumberFormat("vi-VN").format(n || 0) + "đ",
+    date = (s) => window.PageFPTDates?.format(s) || s;
+
+  const errors = {
+    VERSION_CONFLICT: "Dữ liệu đã thay đổi. Tải lại trước khi lưu.",
+    PERMISSION_DENIED: "Cần đúng quyền quản lý và xác minh MFA.",
+    VALIDATION_ERROR: "Kiểm tra các trường bắt buộc, mức giảm và thời gian.",
+    VOUCHER_CODE_EXISTS: "Mã voucher đã tồn tại.",
+    VOUCHER_CODE_IMMUTABLE: "Mã đã tạo không được thay đổi; hãy tạo voucher mới.",
+    VOUCHER_ARCHIVE_REQUIRED: "Voucher đã công bố, có link hoặc đã dùng. Hãy tạm dừng để giữ lịch sử.",
+    INVALID_GIFT: "Quà cần là phụ kiện công bố, tính một lần và đã thiết lập tồn kho.",
+    VOUCHER_EXPIRED: "Ngày kết thúc đã qua.",
+    VOUCHER_LIMIT_BELOW_COMMITTED: "Hạn mức/ngân sách thấp hơn số đã dùng hoặc đang giữ.",
+    INVENTORY_BELOW_COMMITTED: "Tồn kho không được nhỏ hơn số đã dùng/giữ.",
+    LINK_SLUG_EXISTS: "Tên link đã thuộc voucher khác.",
+  };
+
+  async function api(path = "", method = "GET", body) {
+    const r = await adminFetch("/api/v1/admin/vouchers" + path, {
+      method,
+      ...(body
+        ? {
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        : {}),
+    });
+    const d = await r.json();
+    if (!r.ok)
+      throw Error(errors[d.code] || "Chưa xử lý được (" + d.code + ").");
+    return d;
+  }
+
+  function status(s) {
+    const st = $("voucher-status");
+    if (st) st.textContent = s;
+  }
+
+  async function job(fn) {
+    if (busy) return;
+    busy = true;
+    const controls = [
+      ...document.querySelectorAll(
+        ".voucher-admin input,.voucher-admin select,.voucher-admin textarea",
+      ),
+    ].map((e) => [e, e.disabled]);
+    controls.forEach(([e]) => (e.disabled = true));
+    document
+      .querySelectorAll(".voucher-admin button")
+      .forEach((b) => (b.disabled = true));
+    try {
+      await fn();
+    } catch (e) {
+      status(e.message);
+    } finally {
+      controls.forEach(([e, disabled]) => (e.disabled = disabled));
+      busy = false;
+      document
+        .querySelectorAll(".voucher-admin button")
+        .forEach((b) => (b.disabled = false));
+      syncButtons();
+    }
+  }
+
+  function syncButtons() {
+    const live = selected?.status === "published";
+    const publishBtn = $("voucher-publish");
+    if (publishBtn) {
+      publishBtn.disabled =
+        dirty ||
+        !selected ||
+        !adminHasPermission("pricing.publish") ||
+        window.adminAAL !== "aal2";
+    }
+    const pauseBtn = $("voucher-pause");
+    if (pauseBtn) {
+      pauseBtn.disabled = !live || !adminHasPermission("pricing.publish");
+    }
+    const deleteBtn = $("voucher-delete");
+    if (deleteBtn) {
+      deleteBtn.disabled =
+        !selected ||
+        !!selected.published_payload ||
+        !adminHasPermission("pricing.publish");
+    }
+    const shareFieldset = $("voucher-share");
+    if (shareFieldset) {
+      shareFieldset.disabled = !selected;
+    }
+    const codeInput = $("v-code");
+    if (codeInput) {
+      codeInput.readOnly = !!selected;
+    }
+  }
+
+  function selectOptions(input, options, value) {
+    if (!input) return;
+    input.replaceChildren();
+    for (const [val, title] of options) {
+      const o = el("option", title);
+      o.value = val;
+      input.append(o);
+    }
+    input.value = value ?? "";
+  }
+
+  function inputField(box, title, value, type = "number", options) {
+    const l = el("label", title),
+      i = el(options ? "select" : "input");
+    if (options) selectOptions(i, options, value);
+    else {
+      i.type = type;
+      i.value = value ?? "";
+      if (type === "number") i.min = "0";
+    }
+    l.append(i);
+    box.append(l);
+    return i;
+  }
+
+  function baseRule() {
+    return {
+      key: "default",
+      region_id: null,
+      region_name: "Toàn quốc",
+      amount: 0,
+      discount_kind: "fixed",
+      basis: "initial",
+      quota: null,
+      cap_vnd: null,
+      gift_product_id: null,
+    };
+  }
+
+  function newRule(g) {
+    const template = rules[0] || baseRule();
+    return {
+      ...template,
+      key: g ? "geo-" + g.id : "default",
+      region_id: g?.id || null,
+      region_name: g?.name || "Toàn quốc",
+    };
+  }
+
+  function renderRules() {
+    const box = $("v-rules");
+    if (!box) return;
+    box.replaceChildren();
+    for (const rule of rules) {
+      const card = el("section", "", "voucher-rule"),
+        head = el("header"),
+        remove = el("button", "Xóa vùng", "btn-action-detail");
+      remove.type = "button";
+      head.append(
+        el("h3", (rule.region_name || rule.region_id || "Toàn quốc")),
+        remove,
+      );
+      remove.onclick = () => {
+        rules = rules.filter((x) => x !== rule);
+        renderRules();
+        renderGeos();
+        preview();
+      };
+      card.append(head);
+      const fields = el("div", "", "voucher-fields");
+      card.append(fields);
+      const kind = inputField(fields, "Kiểu giảm", rule.discount_kind, "", [
+        ["fixed", "Số tiền cố định"],
+        ["percent", "Phần trăm (%)"],
+      ]);
+      kind.onchange = () => {
+        rule.discount_kind = kind.value;
+        if (kind.value === "percent" && rule.amount > 10000) rule.amount = 0;
+        renderRules();
+        preview();
+      };
+      const amount = inputField(
+        fields,
+        rule.discount_kind === "percent" ? "Mức giảm (%)" : "Mức giảm (đ)",
+        rule.discount_kind === "percent" ? rule.amount / 100 : rule.amount,
+      );
+      amount.dataset.vRuleAmount = "";
+      amount.step = rule.discount_kind === "percent" ? "0.01" : "1";
+      amount.max = rule.discount_kind === "percent" ? "100" : "1000000000";
+      amount.oninput = () => {
+        rule.amount =
+          rule.discount_kind === "percent"
+            ? Math.round(Number(amount.value) * 100)
+            : Number(amount.value);
+        preview();
+      };
+      const basis = inputField(fields, "Áp dụng vào", rule.basis, "", [
+        ["initial", "Thanh toán ban đầu"],
+        ["monthly", "Giá gói mỗi tháng"],
+        ["setup", "Phí hòa mạng"],
+        ["equipment", "Phí thiết bị gói"],
+      ]);
+      basis.onchange = () => {
+        rule.basis = basis.value;
+        preview();
+      };
+      const cap = inputField(
+        fields,
+        rule.basis === "monthly" ? "Trần giảm / tháng (đ)" : "Trần giảm (đ)",
+        rule.cap_vnd,
+      );
+      cap.placeholder = "Không giới hạn (giảm tiền)";
+      cap.oninput = () => {
+        rule.cap_vnd = cap.value === "" ? null : Number(cap.value);
+        preview();
+      };
+      const quota = inputField(fields, "Số suất vùng", rule.quota);
+      quota.placeholder = "Dùng hạn mức chiến dịch";
+      quota.min = "1";
+      quota.oninput = () => {
+        rule.quota = quota.value === "" ? null : Number(quota.value);
+      };
+      const gift = inputField(fields, "Quà kèm", rule.gift_product_id, "", [
+        ["", "Không tặng thiết bị"],
+        ...products
+          .filter((p) => p.billing_mode === "one_time")
+          .map((p) => [p.id, p.name]),
+      ]);
+      gift.onchange = () => {
+        rule.gift_product_id = gift.value || null;
+        preview();
+      };
+      box.append(card);
+    }
+  }
+
+  function renderChecks(box, items, chosen, onchange) {
+    if (!box) return;
+    box.replaceChildren();
+    for (const item of items) {
+      const l = el("label"),
+        i = el("input");
+      i.type = "checkbox";
+      i.value = item.id;
+      i.checked = chosen.has(item.id);
+      l.append(i, document.createTextNode(item.name));
+      i.onchange = () => onchange(item, i.checked);
+      box.append(l);
+    }
+  }
+
+  function renderGeos() {
+    const filter = $("v-geo-search")?.value.trim().toLocaleLowerCase("vi") || "",
+      xfilter = $("v-exclude-search")?.value.trim().toLocaleLowerCase("vi") || "";
+    const visible = (q) =>
+      geos
+        .filter((g) =>
+          q
+            ? g.name.toLocaleLowerCase("vi").includes(q)
+            : g.level === "province",
+        )
+        .slice(0, 150);
+    renderChecks(
+      $("v-geographies"),
+      visible(filter),
+      new Set(rules.map((r) => r.region_id)),
+      (g, on) => {
+        if (on && !rules.some((r) => r.region_id === g.id)) {
+          if (rules.length >= 200) {
+            status("Tối đa 200 vùng.");
+            return;
+          }
+          rules.push(newRule(g));
+        } else if (!on) rules = rules.filter((r) => r.region_id !== g.id);
+        renderRules();
+        preview();
+      },
+    );
+    renderChecks($("v-exclusions"), visible(xfilter), excluded, (g, on) => {
+      if (on) excluded.add(g.id);
+      else excluded.delete(g.id);
+      preview();
+    });
+  }
+
+  function formData() {
+    const value = (id) => $(id)?.value.trim() || "",
+      num = (id) => Number(value(id)),
+      ids = (id) =>
+        [...($(id)?.querySelectorAll("input:checked") || [])].map((i) => i.value);
+    return {
+      code: value("v-code").toUpperCase(),
+      name: value("v-name"),
+      label: value("v-label"),
+      terms: value("v-terms"),
+      start: value("v-start") ? value("v-start") + ":00+07:00" : "",
+      end: value("v-end") ? value("v-end") + ":00+07:00" : "",
+      quota: num("v-quota"),
+      budget_vnd: num("v-budget"),
+      per_contact_limit: num("v-per-contact"),
+      hold_hours: num("v-hold"),
+      redeem_at: value("v-redeem") || "installed",
+      stackable: $("v-stackable")?.checked || false,
+      plan_ids: ids("v-plans"),
+      services: ids("v-services"),
+      billing_months: ids("v-months").map(Number),
+      rules: rules.map((r) => ({ ...r })),
+      exclusions: [...excluded],
+    };
+  }
+
+  function updateReviewSummary(data) {
+    const container = $("voucher-review-content");
+    if (!container) return;
+    container.replaceChildren();
+
+    const items = [
+      { label: "Mã chiến dịch", val: data.code || "(Chưa nhập)" },
+      { label: "Tên chiến dịch", val: data.name || "(Chưa nhập)" },
+      { label: "Nhãn hiển thị", val: data.label || "Ưu đãi khu vực" },
+      {
+        label: "Thời gian hiệu lực",
+        val:
+          (data.start ? date(data.start) : "---") +
+          " đến " +
+          (data.end ? date(data.end) : "---"),
+      },
+      { label: "Tổng số suất", val: data.quota ? data.quota + " suất" : "---" },
+      {
+        label: "Ngân sách tối đa",
+        val: data.budget_vnd ? money(data.budget_vnd) : "---",
+      },
+      {
+        label: "Kỳ thanh toán",
+        val: data.billing_months.length
+          ? data.billing_months.map((m) => m + " tháng").join(", ")
+          : "Chưa chọn",
+      },
+      { label: "Số quy tắc vùng", val: rules.length + " quy tắc" },
+      {
+        label: "Vùng loại trừ",
+        val: excluded.size ? excluded.size + " địa bàn" : "Không có",
+      },
+      { label: "Cộng dồn", val: data.stackable ? "Cho phép" : "Không" },
+      { label: "Thời gian giữ suất", val: data.hold_hours + " giờ" },
+      {
+        label: "Điều kiện đã dùng",
+        val: data.redeem_at === "installed" ? "Đã lắp đặt" : "Khách chốt",
+      },
+    ];
+
+    items.forEach((it) => {
+      const card = el("div", "", "voucher-review-item");
+      card.append(el("span", it.label), el("strong", it.val));
+      container.append(card);
+    });
+
+    const warnBox = $("voucher-warning-banner");
+    if (warnBox) {
+      const warnings = [];
+      for (const r of rules) {
+        if (r.discount_kind === "percent" && r.cap_vnd === 0) {
+          warnings.push(
+            `Quy tắc "${r.region_name || "Toàn quốc"}": Cấu hình trần 0đ cho mức giảm theo % sẽ khiến mức giảm thực tế bằng 0đ!`,
+          );
+        }
+        if (r.amount === 0 && !r.gift_product_id) {
+          warnings.push(
+            `Quy tắc "${r.region_name || "Toàn quốc"}": Mức giảm là 0đ/0% và không kèm quà tặng.`,
+          );
+        }
+      }
+      if (
+        data.start &&
+        data.end &&
+        new Date(data.end) <= new Date(data.start)
+      ) {
+        warnings.push("Ngày kết thúc phải diễn ra sau ngày bắt đầu.");
+      }
+      if (warnings.length > 0) {
+        warnBox.replaceChildren(
+          el("strong", "⚠️ Cảnh báo cấu hình cần chú ý:"),
+          ...warnings.map((w) => el("p", "• " + w)),
+        );
+        warnBox.hidden = false;
+      } else {
+        warnBox.hidden = true;
+      }
+    }
+  }
+
+  function preview() {
+    const data = formData();
+    dirty = !!selected && JSON.stringify(data) !== savedForm;
+    const draftState = $("v-draft-state");
+    if (draftState) {
+      draftState.textContent = dirty
+        ? "Có thay đổi chưa lưu. Lưu bản nháp trước khi công bố."
+        : selected
+          ? "Đang xem bản nháp đã lưu. Công bố để khách thấy nội dung này."
+          : "";
+    }
+    if (!busy) syncButtons();
+
+    const box = $("voucher-preview");
+    if (box) {
+      box.replaceChildren(
+        el("h3", $("v-name")?.value || "Tên ưu đãi"),
+        el("span", $("v-label")?.value || "Ưu đãi khu vực", "voucher-badge"),
+        el("p", $("v-terms")?.value || "Thêm điều kiện rõ ràng cho khách"),
+      );
+      for (const r of rules) {
+        const benefit =
+          r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
+        const text =
+          (r.region_name || "Toàn quốc") +
+          ": Giảm " +
+          benefit +
+          (r.basis === "monthly" ? "/tháng" : "") +
+          (r.gift_product_id
+            ? " + " +
+              (products.find((p) => p.id === r.gift_product_id)?.name || "quà")
+            : "");
+        box.append(el("p", text));
+      }
+      if (excluded.size)
+        box.append(el("p", excluded.size + " địa bàn loại trừ"));
+    }
+
+    updateReviewSummary(data);
+  }
+
+  function initStepper() {
+    const tabs = [
+      $("v-step-tab-1"),
+      $("v-step-tab-2"),
+      $("v-step-tab-3"),
+    ];
+    const sections = [
+      $("v-step-1"),
+      $("v-step-2"),
+      $("v-step-3"),
+    ];
+
+    function goToStep(idx) {
+      tabs.forEach((tab, i) => {
+        if (!tab) return;
+        const isActive = i === idx;
+        tab.classList.toggle("active", isActive);
+        if (isActive) tab.setAttribute("aria-current", "step");
+        else tab.removeAttribute("aria-current");
+      });
+      if (sections[idx]) {
+        sections[idx].scrollIntoView({ behavior: "smooth", block: "start" });
+        sections[idx].classList.add("active-focus");
+        setTimeout(() => sections[idx]?.classList.remove("active-focus"), 1200);
+      }
+    }
+
+    tabs.forEach((tab, i) => {
+      if (tab) tab.onclick = () => goToStep(i);
+    });
+
+    const next2 = $("v-next-to-step-2");
+    if (next2)
+      next2.onclick = () => {
+        goToStep(1);
+        $("v-geo-search")?.focus();
+      };
+
+    const next3 = $("v-next-to-step-3");
+    if (next3)
+      next3.onclick = () => {
+        goToStep(2);
+        $("v-start")?.focus();
+      };
+
+    const prev1 = $("v-prev-to-step-1");
+    if (prev1)
+      prev1.onclick = () => {
+        goToStep(0);
+        $("v-name")?.focus();
+      };
+
+    const prev2 = $("v-prev-to-step-2");
+    if (prev2)
+      prev2.onclick = () => {
+        goToStep(1);
+        $("v-geo-search")?.focus();
+      };
+  }
+
+  function edit(row = null) {
+    selected = row;
+    const p = row?.payload;
+    rules = p ? structuredClone(p.rules) : [baseRule()];
+    excluded = new Set(p?.exclusions || []);
+    const values = {
+      "v-code": p?.code || "",
+      "v-name": p?.name || "",
+      "v-label": p?.label || "Ưu đãi khu vực",
+      "v-terms": p?.terms || "",
+      "v-quota": p?.quota || "",
+      "v-budget": p?.budget_vnd || "",
+      "v-per-contact": p?.per_contact_limit || 1,
+      "v-hold": p?.hold_hours || 48,
+      "v-redeem": p?.redeem_at || "installed",
+    };
+    for (const [id, v] of Object.entries(values)) {
+      const fieldEl = $(id);
+      if (fieldEl) fieldEl.value = v;
+    }
+    for (const id of ["start", "end"]) {
+      const dtEl = $("v-" + id);
+      if (dtEl)
+        dtEl.value = p
+          ? window.PageFPTDates.toISO(
+              window.PageFPTDates.format(p[id]),
+              "datetime-local",
+            )
+          : "";
+    }
+    const stackableEl = $("v-stackable");
+    if (stackableEl) stackableEl.checked = p?.stackable || false;
+
+    renderChecks($("v-plans"), plans, new Set(p?.plan_ids || []), () =>
+      preview(),
+    );
+    renderChecks(
+      $("v-services"),
+      [
+        { id: "internet", name: "Internet" },
+        { id: "combo", name: "Combo" },
+        { id: "camera", name: "Camera" },
+        { id: "business", name: "Doanh nghiệp" },
+        { id: "play", name: "FPT Play" },
+      ],
+      new Set(p?.services || []),
+      () => preview(),
+    );
+    $("v-months")
+      ?.querySelectorAll("input")
+      .forEach(
+        (i) =>
+          (i.checked = p ? p.billing_months.includes(Number(i.value)) : true),
+      );
+    if ($("v-geo-search")) $("v-geo-search").value = "";
+    if ($("v-exclude-search")) $("v-exclude-search").value = "";
+    $("voucher-editor").hidden = false;
+    $("voucher-editor-title").textContent = p
+      ? "Sửa " + p.code
+      : "Tạo voucher mới";
+    renderRules();
+    renderGeos();
+    renderLinks();
+    savedForm = JSON.stringify(formData());
+    preview();
+    syncButtons();
+    $("v-code")?.focus();
+  }
+
+  function openCloneDialog(row) {
+    cloningRow = row;
+    const dialog = $("voucher-clone-dialog");
+    const codeInput = $("v-clone-code");
+    if (!dialog || !codeInput) return;
+    codeInput.value = ((row.code || "") + "-COPY").toUpperCase().slice(0, 40);
+    dialog.showModal();
+    codeInput.focus();
+  }
+
+  function table() {
+    const q = $("voucher-search")?.value.toLocaleLowerCase("vi") || "",
+      statusFilter = $("voucher-filter-status")?.value || "all",
+      now = new Date();
+
+    const matchesFilter = (r) => {
+      if (statusFilter === "all") return true;
+      if (statusFilter === "draft") return r.status === "draft";
+      if (statusFilter === "paused") return r.status === "paused";
+      if (statusFilter === "published") return r.status === "published";
+      const endStr = r.published_payload?.end || r.payload.end;
+      const startStr = r.published_payload?.start || r.payload.start;
+      const endDate = endStr ? new Date(endStr) : null;
+      const startDate = startStr ? new Date(startStr) : null;
+      if (statusFilter === "active") {
+        return (
+          r.status === "published" &&
+          (!endDate || endDate > now) &&
+          (!startDate || startDate <= now)
+        );
+      }
+      if (statusFilter === "upcoming") {
+        return r.status === "published" && startDate && startDate > now;
+      }
+      if (statusFilter === "expired") {
+        return r.status === "published" && endDate && endDate <= now;
+      }
+      return true;
+    };
+
+    const visible = rows.filter(
+      (r) =>
+        (r.code + " " + r.payload.name).toLocaleLowerCase("vi").includes(q) &&
+        matchesFilter(r),
+    );
+
+    const countBadge = $("voucher-loaded-count");
+    if (countBadge) {
+      countBadge.textContent = `Hiển thị ${visible.length}/${rows.length} mục đã tải`;
+    }
+
+    visible.sort(
+      (a, b) =>
+        String(
+          sort === "name"
+            ? a.payload.name
+            : sort === "end"
+              ? a.payload.end
+              : a[sort],
+        ).localeCompare(
+          String(
+            sort === "name"
+              ? b.payload.name
+              : sort === "end"
+                ? b.payload.end
+                : b[sort],
+          ),
+          "vi",
+        ) * direction,
+    );
+
+    const tbody = $("voucher-table")?.querySelector("tbody");
+    if (!tbody) return;
+    tbody.replaceChildren();
+
+    for (const row of visible) {
+      const tr = el("tr"),
+        cb = el("input");
+      cb.type = "checkbox";
+      cb.checked = checks.has(row.id);
+      cb.setAttribute("aria-label", "Chọn " + row.code);
+      cb.onchange = () =>
+        cb.checked ? checks.add(row.id) : checks.delete(row.id);
+      const td = el("td");
+      td.append(cb);
+
+      let statusText =
+        { draft: "Bản nháp", published: "Đang công bố", paused: "Tạm dừng" }[
+          row.status
+        ] || row.status;
+
+      if (row.status === "published") {
+        const endD = (row.published_payload?.end || row.payload.end)
+          ? new Date(row.published_payload?.end || row.payload.end)
+          : null;
+        const startD = (row.published_payload?.start || row.payload.start)
+          ? new Date(row.published_payload?.start || row.payload.start)
+          : null;
+        if (endD && endD <= now) statusText = "Đang công bố (Hết hạn)";
+        else if (startD && startD > now) statusText = "Đang công bố (Sắp tới)";
+      }
+
+      tr.append(
+        td,
+        el("td", row.code),
+        el("td", row.payload.name),
+        el("td", statusText),
+        el("td", date(row.published_payload?.end || row.payload.end)),
+      );
+
+      const action = el("td"),
+        btnGroup = el("div");
+      btnGroup.style.display = "flex";
+      btnGroup.style.gap = "6px";
+      btnGroup.style.flexWrap = "wrap";
+
+      const button = el("button", "Thiết lập", "btn-action-detail");
+      button.type = "button";
+      button.onclick = () => edit(row);
+
+      const cloneBtn = el("button", "Nhân bản", "btn-action-detail");
+      cloneBtn.type = "button";
+      cloneBtn.title = "Tạo bản nháp mới kế thừa cấu hình từ voucher này";
+      cloneBtn.onclick = () => openCloneDialog(row);
+
+      btnGroup.append(button, cloneBtn);
+      action.append(btnGroup);
+      tr.append(action);
+      tbody.append(tr);
+    }
+
+    if (!visible.length) {
+      const tr = el("tr"),
+        td = el("td", "Chưa có voucher phù hợp. Tạo voucher để bắt đầu.");
+      td.colSpan = 6;
+      td.style.textAlign = "center";
+      td.style.padding = "24px";
+      tr.append(td);
+      tbody.append(tr);
+    }
+
+    const checkAll = $("voucher-check-all");
+    if (checkAll) {
+      checkAll.checked =
+        visible.length > 0 && visible.every((r) => checks.has(r.id));
+      checkAll.onchange = (e) => {
+        visible.forEach((r) =>
+          e.target.checked ? checks.add(r.id) : checks.delete(r.id),
+        );
+        table();
+      };
+    }
+  }
+
+  function renderLinks() {
+    const box = $("voucher-links");
+    if (!box) return;
+    box.replaceChildren();
+    for (const link of links.filter((l) => l.voucher_id === selected?.id)) {
+      const line = el("div", "", "voucher-link-item");
+      line.append(
+        el("code", location.origin + "/s/" + link.slug),
+        el("span", link.channel + " · " + (link.active ? "Đang bật" : "Đã tắt")),
+      );
+      const copy = el("button", "Sao chép link", "btn-action-detail");
+      copy.type = "button";
+      copy.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(
+            location.origin + "/s/" + link.slug,
+          );
+          status("Đã sao chép link /s/" + link.slug);
+        } catch (_) {
+          status("Hãy chọn và sao chép địa chỉ link trên màn hình.");
+        }
+      };
+      const copyMsg = el("button", "📋 Copy tin nhắn", "btn-action-detail");
+      copyMsg.type = "button";
+      copyMsg.title = "Sao chép mẫu tin nhắn marketing gửi Zalo / Messenger cho khách";
+      copyMsg.onclick = async () => {
+        const url = location.origin + "/s/" + link.slug;
+        const vName = selected?.payload?.name || selected?.name || "Ưu đãi đặc quyền";
+        const vCode = selected?.code || "";
+        const shareMsg = `🎁 ƯU ĐÃI ĐẶC QUYỀN TỪ FPT TELECOM!\n` +
+          `Nhận ngay ưu đãi "${vName}" (Mã: ${vCode}) khi đăng ký trực tuyến hôm nay.\n` +
+          `👉 Nhấp vào link để nhận ưu đãi và giữ suất:\n${url}\n` +
+          `(Số lượng suất ưu đãi có hạn, áp dụng theo địa bàn lắp đặt).`;
+        try {
+          await navigator.clipboard.writeText(shareMsg);
+          status("Đã sao chép mẫu tin nhắn marketing!");
+        } catch (_) {
+          status("Chưa thể sao chép tự động, vui lòng chọn văn bản.");
+        }
+      };
+      const qr = el("a", "Tải QR", "btn-action-detail");
+      qr.href = "/api/v1/admin/vouchers/links/" + link.slug + "/qr";
+      qr.download = link.slug + ".svg";
+      const toggle = el(
+        "button",
+        link.active ? "Tắt link" : "Bật link",
+        "btn-action-detail",
+      );
+      toggle.type = "button";
+      toggle.onclick = () =>
+        job(async () => {
+          await api("/" + selected.id + "/links", "POST", {
+            slug: link.slug,
+            target: link.target,
+            channel: link.channel,
+            employee_id: link.employee_id,
+            active: !link.active,
+          });
+          await load();
+          renderLinks();
+          status("Đã cập nhật link");
+        });
+      const change = el("button", "Sửa", "btn-action-detail");
+      change.type = "button";
+      change.onclick = () => {
+        if ($("v-link-slug")) $("v-link-slug").value = link.slug;
+        if ($("v-link-target")) $("v-link-target").value = link.target;
+        if ($("v-link-channel")) $("v-link-channel").value = link.channel;
+        if ($("v-link-employee")) $("v-link-employee").value = link.employee_id || "";
+        $("v-link-slug")?.focus();
+      };
+      line.append(copy, copyMsg, qr, toggle, change);
+      box.append(line);
+    }
+  }
+
+  async function load(more = false) {
+    const data = await api(more && cursor ? "?before=" + cursor : "");
+    rows = more ? [...rows, ...data.items] : data.items;
+    links = data.links;
+    cursor = data.items.at(-1)?.id || null;
+    const moreBtn = $("voucher-more");
+    if (moreBtn) moreBtn.hidden = data.items.length < 50;
+    table();
+  }
+
+  async function report() {
+    const d = await api("/report");
+    lastReportData = d;
+    const box = $("voucher-kpis");
+    if (box) {
+      box.replaceChildren();
+      const kpiDefs = [
+        ["requested", "Yêu cầu ưu đãi", "Số lượt gửi lead hoặc mở link ưu đãi của khách hàng."],
+        ["eligible", "Đủ điều kiện", "Số lượt hồ sơ đã vượt qua kiểm tra quy tắc chiến dịch."],
+        ["held", "Đang giữ suất", "Số suất ưu đãi đang được nhân viên tạm giữ trong thời hạn."],
+        ["redeemed", "Đã dùng", "Số suất đã được nghiệm thu hoàn tất sử dụng."],
+        ["installed", "Đã lắp đặt", "Số khách yêu cầu voucher đã triển khai lắp đặt thành công."],
+        ["cost_vnd", "Chi phí thực tế", "Tổng tiền giảm cước + giá vốn quà tặng từ các voucher đã dùng."],
+      ];
+
+      for (const [key, title, hint] of kpiDefs) {
+        const card = el("div", "", "voucher-kpi");
+        const top = el("div", "", "voucher-kpi-top");
+        const titleSpan = el("span", title, "voucher-kpi-title");
+        const infoBtn = el("button", "ⓘ", "voucher-kpi-info-btn");
+        infoBtn.type = "button";
+        infoBtn.title = hint;
+        infoBtn.setAttribute("aria-label", "Định nghĩa " + title);
+        top.append(titleSpan, infoBtn);
+
+        const valStrong = el(
+          "strong",
+          key === "cost_vnd" ? money(d.totals[key]) : String(d.totals[key]),
+        );
+        const tooltip = el("div", hint, "voucher-kpi-tooltip");
+        card.append(top, valStrong, tooltip);
+        box.append(card);
+      }
+    }
+
+    const root = $("voucher-report");
+    if (root) {
+      root.replaceChildren();
+      for (const [list, title] of [
+        ["campaigns", "Chiến dịch"],
+        ["channels", "Kênh & nhân viên"],
+        ["regions", "Khu vực"],
+      ]) {
+        root.append(el("h3", title));
+        const max = Math.max(1, ...d[list].map((x) => x.redeemed));
+        for (const x of d[list]) {
+          const row = el("div", "", "voucher-report-row"),
+            label =
+              x.name ||
+              x.channel ||
+              (x.rule_key === "pending_address"
+                ? "Chờ xác nhận địa bàn"
+                : rows
+                    .find((r) => r.id === x.voucher_id)
+                    ?.published_payload?.rules.find((r) => r.key === x.rule_key)
+                    ?.region_name || x.rule_key);
+          const names = el("div");
+          names.append(
+            el("strong", label),
+            el(
+              "p",
+              `Yêu cầu ${x.requested} · Đủ điều kiện ${x.eligible} · Đang giữ ${x.held} · Đã dùng ${x.redeemed} · Đã lắp ${x.installed} · ${money(x.cost_vnd)}${x.employee_id ? " · " + (employees.find((e) => e.id === x.employee_id)?.name || x.employee_id) : ""}`,
+            ),
+          );
+          const bar = el("progress");
+          bar.max = max;
+          bar.value = x.redeemed;
+          bar.setAttribute(
+            "aria-label",
+            label + ": " + x.redeemed + " voucher đã dùng",
+          );
+          row.append(names, bar);
+          root.append(row);
+        }
+        if (!d[list].length) root.append(el("p", "Chưa có kết quả."));
+      }
+    }
+  }
+
+  function exportReportCsv() {
+    if (!lastReportData) return status("Chưa có dữ liệu báo cáo để xuất.");
+    const lines = [
+      "Loại dữ liệu,Tên/Kênh/Khu vực,Yêu cầu,Đủ điều kiện,Đang giữ,Đã dùng,Đã lắp đặt,Chi phí (VND)",
+    ];
+    for (const item of lastReportData.campaigns || []) {
+      lines.push(
+        `"Chiến dịch","${item.name || item.code || ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+      );
+    }
+    for (const item of lastReportData.channels || []) {
+      const emp = item.employee_id
+        ? employees.find((e) => e.id === item.employee_id)?.name || item.employee_id
+        : "";
+      lines.push(
+        `"Kênh / Nhân viên","${item.channel || ""}${emp ? " (" + emp + ")" : ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+      );
+    }
+    for (const item of lastReportData.regions || []) {
+      lines.push(
+        `"Khu vực / Quy tắc","${item.rule_key || ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+      );
+    }
+    const blob = new Blob(["﻿" + lines.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `voucher_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    status("Đã xuất tệp CSV báo cáo thành công.");
+  }
+
+  async function loadInventory() {
+    inventory = (await api("/inventory")).items;
+    const box = $("voucher-inventory-list");
+    if (!box) return;
+    box.replaceChildren();
+    for (const row of inventory) {
+      box.append(
+        el(
+          "p",
+          (products.find((p) => p.id === row.product_id)?.name ||
+            row.product_id) +
+            ": " +
+            row.stock +
+            " sản phẩm tồn kho · Giá vốn " +
+            money(row.cost_vnd),
+        ),
+      );
+    }
+    inventorySelection();
+  }
+
+  function inventorySelection() {
+    const row = inventory.find(
+      (i) => i.product_id === $("v-inventory-product")?.value,
+    );
+    if ($("v-inventory-stock")) $("v-inventory-stock").value = row?.stock ?? "";
+    if ($("v-inventory-cost")) $("v-inventory-cost").value = row?.cost_vnd ?? "";
+  }
+
+  // Bind Event Listeners
+  const newBtn = $("voucher-new");
+  if (newBtn) newBtn.onclick = () => edit();
+
+  const closeBtn = $("voucher-close");
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      $("voucher-editor").hidden = true;
+    };
+  }
+
+  const vForm = $("voucher-form");
+  if (vForm) {
+    vForm.addEventListener("input", preview);
+  }
+
+  const vCode = $("v-code");
+  if (vCode) {
+    vCode.addEventListener("input", () => {
+      vCode.value = vCode.value.toUpperCase();
+    });
+  }
+
+  const defaultRuleBtn = $("v-default-rule");
+  if (defaultRuleBtn) {
+    defaultRuleBtn.onclick = () => {
+      if (!rules.some((r) => !r.region_id)) rules.unshift(newRule());
+      renderRules();
+      preview();
+    };
+  }
+
+  const geoSearch = $("v-geo-search");
+  if (geoSearch) geoSearch.oninput = renderGeos;
+
+  const excludeSearch = $("v-exclude-search");
+  if (excludeSearch) excludeSearch.oninput = renderGeos;
+
+  const vSearch = $("voucher-search");
+  if (vSearch) vSearch.oninput = table;
+
+  const vStatusFilter = $("voucher-filter-status");
+  if (vStatusFilter) vStatusFilter.onchange = table;
+
+  const invProduct = $("v-inventory-product");
+  if (invProduct) invProduct.onchange = inventorySelection;
+
+  const exportCsvBtn = $("voucher-report-export-csv");
+  if (exportCsvBtn) exportCsvBtn.onclick = exportReportCsv;
+
+  // Verify target URL button
+  const verifyTargetBtn = $("v-link-verify-target");
+  if (verifyTargetBtn) {
+    verifyTargetBtn.onclick = async () => {
+      const targetInput = $("v-link-target");
+      const statusEl = $("v-link-target-status");
+      const targetVal = targetInput?.value.trim() || "";
+      if (!statusEl) return;
+      if (!targetVal.startsWith("/")) {
+        statusEl.textContent = "⚠️ Trang đích nên bắt đầu bằng dấu gạch chéo (/ hoặc /ten-landing).";
+        statusEl.style.color = "#dc2626";
+        return;
+      }
+      if (targetVal === "/") {
+        statusEl.textContent = "✅ Trang đích là Trang chủ (hợp lệ).";
+        statusEl.style.color = "#16a34a";
+        return;
+      }
+      const slug = targetVal.replace(/^\/+/, "").split("/")[0];
+      statusEl.textContent = "Đang kiểm tra trang đích  + slug + ...";
+      statusEl.style.color = "#64748b";
+      try {
+        const res = await adminFetch("/api/v1/admin/pages/" + encodeURIComponent(slug));
+        if (res.ok) {
+          statusEl.textContent = "✅ Trang đích công khai hợp lệ (tìm thấy trang).";
+          statusEl.style.color = "#16a34a";
+        } else {
+          statusEl.textContent = "ℹ️ Kiểm tra UI: Chưa tìm thấy landing page  + slug + . Hãy đảm bảo trang đã tạo.";
+          statusEl.style.color = "#d97706";
+        }
+      } catch (_) {
+        statusEl.textContent = "ℹ️ Kiểm tra UI: Không thể xác minh trang lúc này (bạn vẫn có thể tạo link).";
+        statusEl.style.color = "#64748b";
+      }
+    };
+  }
+
+  // Clone Form submit
+  const cloneForm = $("voucher-clone-form");
+  if (cloneForm) {
+    cloneForm.onsubmit = (e) => {
+      e.preventDefault();
+      if (!cloningRow) return;
+      const newCode = $("v-clone-code")?.value.trim().toUpperCase();
+      if (!newCode) return;
+      $("voucher-clone-dialog")?.close();
+      job(async () => {
+        const src = cloningRow.published_payload || cloningRow.payload;
+        const newPayload = {
+          code: newCode,
+          name: (src.name || "") + " (Bản sao)",
+          label: src.label || "Ưu đãi khu vực",
+          terms: src.terms || "",
+          start: src.start,
+          end: src.end,
+          quota: src.quota || 10,
+          budget_vnd: src.budget_vnd || 1000000,
+          per_contact_limit: src.per_contact_limit || 1,
+          hold_hours: src.hold_hours || 48,
+          redeem_at: src.redeem_at || "installed",
+          stackable: Boolean(src.stackable),
+          plan_ids: src.plan_ids ? [...src.plan_ids] : [],
+          services: src.services ? [...src.services] : [],
+          billing_months: src.billing_months
+            ? [...src.billing_months]
+            : [1, 6, 12],
+          rules: src.rules ? structuredClone(src.rules) : [baseRule()],
+          exclusions: src.exclusions ? [...src.exclusions] : [],
+        };
+        const created = await api("", "POST", newPayload);
+        await load();
+        edit(created);
+        status("Đã nhân bản voucher '" + newCode + "' thành công.");
+      });
+    };
+  }
+
+  // Mobile preview toggle
+  const previewToggleMobile = $("voucher-preview-toggle-mobile");
+  if (previewToggleMobile) {
+    previewToggleMobile.onclick = () => {
+      const previewContainer = $("voucher-preview-container");
+      if (!previewContainer) return;
+      const isVisible =
+        previewContainer.style.display !== "none" && !previewContainer.hidden;
+      if (isVisible) {
+        previewContainer.style.display = "none";
+        previewToggleMobile.setAttribute("aria-expanded", "false");
+        previewToggleMobile.textContent = "👁 Xem trước bản nháp";
+      } else {
+        previewContainer.style.display = "block";
+        previewContainer.hidden = false;
+        previewToggleMobile.setAttribute("aria-expanded", "true");
+        previewToggleMobile.textContent = "✕ Đóng xem trước";
+        previewContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+  }
+
+  // Submit Voucher Form (Save draft)
+  if (vForm) {
+    vForm.onsubmit = (e) => {
+      e.preventDefault();
+      job(async () => {
+        const body = formData();
+        const row = await api(
+          selected ? "/" + selected.id : "",
+          selected ? "PUT" : "POST",
+          {
+            ...body,
+            ...(selected ? { expected_version: selected.version } : {}),
+          },
+        );
+        selected = row;
+        await load();
+        edit(row);
+        status("Đã lưu bản nháp");
+      });
+    };
+  }
+
+  // Actions (Publish / Pause)
+  for (const action of ["publish", "pause"]) {
+    const actBtn = $("voucher-" + action);
+    if (actBtn) {
+      actBtn.onclick = () =>
+        job(async () => {
+          if (!selected) return;
+          const row = await api("/" + selected.id + "/" + action, "POST", {
+            expected_version: selected.version,
+          });
+          selected = row;
+          await load();
+          edit(row);
+          await report();
+          status(action === "publish" ? "Đã công bố" : "Đã tạm dừng");
+        });
+    }
+  }
+
+  // Delete Draft
+  const deleteBtn = $("voucher-delete");
+  if (deleteBtn) {
+    deleteBtn.onclick = () =>
+      job(async () => {
+        if (!selected || !confirm("Xóa voucher chưa công bố và chưa có lịch sử?"))
+          return;
+        await api(
+          "/" + selected.id + "?expected_version=" + selected.version,
+          "DELETE",
+        );
+        selected = null;
+        $("voucher-editor").hidden = true;
+        await load();
+        status("Đã xóa voucher");
+      });
+  }
+
+  // Submit Link Form
+  const linkForm = $("voucher-link-form");
+  if (linkForm) {
+    linkForm.onsubmit = (e) => {
+      e.preventDefault();
+      job(async () => {
+        await api("/" + selected.id + "/links", "POST", {
+          slug: $("v-link-slug").value.trim(),
+          target: $("v-link-target").value.trim(),
+          channel: $("v-link-channel").value,
+          employee_id: $("v-link-employee").value || null,
+          active: true,
+        });
+        await load();
+        renderLinks();
+        status("Đã tạo / cập nhật link");
+      });
+    };
+  }
+
+  // Submit Inventory Form
+  const invForm = $("voucher-inventory-form");
+  if (invForm) {
+    invForm.onsubmit = (e) => {
+      e.preventDefault();
+      job(async () => {
+        const id = $("v-inventory-product").value;
+        await api("/inventory", "PUT", {
+          product_id: id,
+          stock: Number($("v-inventory-stock").value),
+          cost_vnd: Number($("v-inventory-cost").value),
+          expected_version:
+            inventory.find((x) => x.product_id === id)?.version || 0,
+        });
+        await loadInventory();
+        status("Đã lưu tồn kho");
+      });
+    };
+  }
+
+  // Bulk Pause
+  const bulkPauseBtn = $("voucher-bulk-pause");
+  if (bulkPauseBtn) {
+    bulkPauseBtn.onclick = () =>
+      job(async () => {
+        let ok = 0;
+        const failed = [];
+        for (const row of rows.filter(
+          (x) => checks.has(x.id) && x.status === "published",
+        )) {
+          try {
+            await api("/" + row.id + "/pause", "POST", {
+              expected_version: row.version,
+            });
+            ok++;
+            checks.delete(row.id);
+          } catch (e) {
+            failed.push(row.code + ": " + e.message);
+          }
+        }
+        await load();
+        status(
+          "Đã tạm dừng " +
+            ok +
+            " voucher." +
+            (failed.length ? " " + failed.join(" · ") : ""),
+        );
+      });
+  }
+
+  // Refresh
+  const refreshBtn = $("voucher-refresh");
+  if (refreshBtn) {
+    refreshBtn.onclick = () =>
+      job(async () => {
+        await load();
+        await report();
+        status("Đã làm mới");
+      });
+  }
+
+  // More
+  const moreBtn = $("voucher-more");
+  if (moreBtn) moreBtn.onclick = () => job(() => load(true));
+
+  // Table Sorting
+  document.querySelectorAll("[data-v-sort]").forEach((b) => {
+    b.onclick = () => {
+      direction = sort === b.dataset.vSort ? -direction : 1;
+      sort = b.dataset.vSort;
+      document.querySelectorAll("[data-v-sort]").forEach((x) =>
+        x
+          .closest("th")
+          .setAttribute(
+            "aria-sort",
+            x === b ? (direction === 1 ? "ascending" : "descending") : "none",
+          ),
+      );
+      table();
+    };
+  });
+
+  // Initialization
+  initStepper();
+
+  job(async () => {
+    const results = await Promise.allSettled([
+      fetch("/api/v1/catalog").then((r) => r.json()),
+      fetch("/api/v1/accessories").then((r) => r.json()),
+      api("/options"),
+      api("/employees"),
+    ]);
+    plans = results[0].status === "fulfilled" ? results[0].value.items : [];
+    products = results[1].status === "fulfilled" ? results[1].value.items : [];
+    if (results[2].status === "fulfilled")
+      geos = results[2].value.provinces.flatMap((p) => [
+        { id: p.id, name: p.name, level: "province" },
+        ...p.wards.map((w) => ({
+          id: w.id,
+          name: p.name + " / " + w.name,
+          level: "ward",
+        })),
+      ]);
+    else geoFailure = true;
+    if (results[3].status === "fulfilled") employees = results[3].value.items;
+
+    selectOptions(
+      $("v-link-employee"),
+      [
+        ["", "Không gắn nhân viên"],
+        ...employees.map((e) => [
+          e.id,
+          e.name || "Nhân viên " + e.id.slice(0, 8),
+        ]),
+      ],
+      "",
+    );
+
+    selectOptions(
+      $("v-inventory-product"),
+      products
+        .filter((p) => p.billing_mode === "one_time")
+        .map((p) => [p.id, p.name]),
+      products.find((p) => p.billing_mode === "one_time")?.id,
+    );
+
+    await load();
+    await report();
+    await loadInventory();
+    status(
+      geoFailure
+        ? "Danh sách địa bàn chưa tải được. Làm mới trang để chọn địa bàn."
+        : "Đã tải voucher",
+    );
+  });
+})();

@@ -45,6 +45,7 @@ function refreshActiveQuote(provinceId = null) {
           billing_months: window.PageFPTAccessories?.term(planId) || 6,
           accessory_ids: window.PageFPTAccessories?.ids(planId) || [],
           ...(window.PageFPTLanding?.quoteContext?.() || {}),
+          ...(window.PageFPTVoucher?.quoteContext?.() || {}),
         }),
       });
       if (!response.ok) throw new Error("Quote unavailable");
@@ -58,7 +59,7 @@ function refreshActiveQuote(provinceId = null) {
         activeQuoteToken = quote.quote_token;
         quoteExpiresAt = Date.parse(quote.expires_at) || 0;
         if (fee)
-          fee.textContent = `Tổng trả trước: ${new Intl.NumberFormat("vi-VN").format(quote.initial_total_vnd)}đ (${quote.service_months || 6} tháng sử dụng)`;
+          fee.textContent = `Tổng trả trước: ${new Intl.NumberFormat("vi-VN").format(quote.initial_total_vnd)}đ (${quote.service_months || 6} tháng sử dụng)${window.PageFPTVoucher?.summary?.(quote) ? ' · ' + window.PageFPTVoucher.summary(quote) : ''}`;
       } else if (fee)
         fee.textContent =
           "Giá cước: Nhân viên sẽ báo giá chi tiết theo khu vực";
@@ -235,6 +236,7 @@ async function handleLeadSubmit(event) {
     notesParts.push(`[Khu vực: ${selectedProvinceName} - ${selectedZoneName}]`);
 
   const leadPayload = {
+    ...(window.PageFPTVoucher?.leadContext?.() || {}),
     phone: phone,
     name: nameInput ? nameInput.value.trim() : "",
     service_ids: [selectedServiceId],

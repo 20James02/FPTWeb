@@ -78,6 +78,14 @@ async def submit_lead(request, input, key, crypt, durable=False):
                 "mode": "throttle",
             }
         )
+    from pagefpt.modules.vouchers.service import cookie_context, link_cookie
+
+    if input.voucher_code is None and input.voucher_link is None:
+        semantic["voucher_code"] = cookie_context(request).get("code")
+
+    semantic["voucher_link"] = input.voucher_link or (
+        link_cookie(request) if input.voucher_code != "" else None
+    )
     semantic["phone_masked"] = "***" + phone[-4:]
     from pagefpt.modules.catalog.accessories import selection
 

@@ -47,6 +47,7 @@ jobs:
           PAGEFPT_QA_SCRIPT=tests/e2e/reference_cards.cjs uv run python tools/run_browser_smoke.py
           PAGEFPT_QA_SCRIPT=tests/e2e/ip_location.cjs uv run python tools/run_browser_smoke.py
           PAGEFPT_QA_SCRIPT=tests/e2e/landing_studio.cjs uv run python tools/run_browser_smoke.py
+          PAGEFPT_QA_SCRIPT=tests/e2e/vouchers.cjs uv run python tools/run_browser_smoke.py
       - run: uv run python tools/export_openapi.py
       - run: uv build
       - run: uv run python tools/verify_wheel.py

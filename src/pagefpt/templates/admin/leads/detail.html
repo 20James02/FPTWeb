@@ -7,6 +7,7 @@
 <a href="/admin/leads" style="color: var(--text-secondary); text-decoration: none;">Khách hàng & Đơn tư vấn</a> / <span style="font-weight: 700;" id="breadcrumb-lead-id">Chi tiết hồ sơ</span>
 {% endblock %}
 
+{% block extra_head %}<link rel="stylesheet" href="/static/css/vouchers.css">{% endblock %}
 {% block content %}
 <div id="lead-detail-wrapper" style="display: flex; flex-direction: column; gap: var(--space-6);">
 
@@ -200,6 +201,7 @@
         </div>
 
         {% include "admin/leads/billing_panel.html" %}
+        <section id="lead-voucher-panel" class="voucher-lead-panel" hidden></section>
 
         <!-- Thẻ Lịch Hẹn Tư Vấn & Khảo Sát (Appointments) -->
         <div class="panel-card">
@@ -401,7 +403,7 @@ async function initLeadDetail() {
     const data = await crmRequest('/leads/' + id);
     currentLead = data;
     renderLeadDetailData(data);
-    await Promise.all([loadAppointmentsList(id), loadLeadBilling(id)]);
+    await Promise.all([loadAppointmentsList(id), loadLeadBilling(id),window.loadLeadVoucher?.()]);
 
     if (loadingPanel) loadingPanel.style.display = 'none';
     if (invalidPanel) invalidPanel.style.display = 'none';
@@ -530,6 +532,10 @@ function renderLeadDetailData(lead) {
   // Quote info
   const quoteBadge = document.getElementById('detail-quote-badge');
   const quoteStatusVal = document.getElementById('detail-quote-status-val');
+  const quoteTotalVal = document.getElementById('detail-quote-total-val');
+  const quoteMonthsVal = document.getElementById('detail-billing-months-val');
+  if (quoteTotalVal) quoteTotalVal.textContent = lead.quote_status === 'confirmed' && Number.isSafeInteger(lead.quote?.initial_total_vnd) ? adminMoney(lead.quote.initial_total_vnd) : 'Nhân viên sẽ xác nhận';
+  if (quoteMonthsVal) quoteMonthsVal.textContent = lead.quote?.billing_months ? lead.quote.billing_months + ' tháng' : 'Chưa xác nhận';
   if (quoteBadge && quoteStatusVal) {
     if (lead.quote_status === 'confirmed') {
       quoteBadge.textContent = 'Giá hệ thống xác nhận';
@@ -548,12 +554,12 @@ function renderLeadDetailData(lead) {
   renderLeadNextAction(lead);
   const quoteDetails=document.getElementById('lead-quote-details');
   if(quoteDetails) {
-    quoteDetails.replaceChildren(adminNode('h3','Chi phí đã xác nhận tại lúc gửi hồ sơ'));
+    quoteDetails.replaceChildren(adminNode('h3','Chi phí tại lần xác nhận gần nhất'));
     const quote=lead.quote||{};
     if(lead.quote_status!=='confirmed') quoteDetails.append(adminNode('p','Chưa có báo giá được xác nhận. Nhân viên cần tư vấn giá.'));
     else {
       quoteDetails.append(adminNode('p',`Cước / tháng: ${adminMoney(quote.monthly_vnd)} · Kỳ thanh toán: ${quote.billing_months} tháng · Dịch vụ: ${quote.service_months} tháng`));
-      const names={term_vnd:'Cước kỳ thanh toán',setup_vnd:'Hòa mạng',equipment_vnd:'Thiết bị',vat_added_vnd:'VAT cộng thêm',discount_vnd:'Giảm giá'};
+      const names={term_vnd:'Cước kỳ thanh toán',setup_vnd:'Hòa mạng',equipment_vnd:'Thiết bị',vat_added_vnd:'VAT cộng thêm',discount_vnd:'Giảm giá',voucher_discount_vnd:'Giảm voucher',accessory_once_vnd:'Phụ kiện một lần',accessory_term_vnd:'Phụ kiện theo kỳ'};
       for(const [key,title] of Object.entries(names))if(quote.line_items?.[key]!=null) quoteDetails.append(adminNode('p',`${title}: ${adminMoney(quote.line_items[key])}`));
       quoteDetails.append(adminNode('strong','Tổng ban đầu: '+adminMoney(quote.initial_total_vnd)));
     }
@@ -880,4 +886,5 @@ document.addEventListener('DOMContentLoaded', initLeadDetail);
 <script src="/static/js/admin/lead_next_action.js"></script>
 <script src="/static/js/admin/billing.js"></script>
 <script src="/static/js/admin/profile.js"></script>
+<script src="/static/js/admin/lead_voucher.js"></script>
 {% endblock %}

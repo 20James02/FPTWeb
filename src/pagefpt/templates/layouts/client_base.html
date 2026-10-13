@@ -25,7 +25,7 @@
   {% include "client/components/google_analytics.html" %}
   {% block extra_head %}{% endblock %}
   <link rel="stylesheet" href="/static/css/client-plan-reference.css">
-</head>
+<link rel="stylesheet" href="/static/css/vouchers.css"></head>
 <body>
   {% set contact_phone = display_settings.contact_phone | default('0868247625') %}
   {% set contact_phone_display = display_settings.contact_phone_display | default('0868.247.625') %}
@@ -69,7 +69,7 @@
   <script type="application/json" id="published-plans-data">{{ plans | default([]) | tojson }}</script>
 
   <script type="application/json" id="published-accessories-data">{{ accessories|default([])|tojson }}</script>
-  <script src="/static/js/client/accessories.js"></script>
+  <script src="/static/js/client/vouchers.js"></script><script src="/static/js/client/accessories.js"></script>
   <!-- Client-side Scripts & UI Motion Orchestrator -->
   <script src="/static/js/dates_vn.js"></script>
   <script src="/static/js/client/ui_motion.js"></script>

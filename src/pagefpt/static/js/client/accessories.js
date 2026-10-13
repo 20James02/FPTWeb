@@ -66,7 +66,7 @@
     document.querySelectorAll("[data-quote-note]").forEach((el) => {
       if (el.dataset.quoteNote === plan)
         el.textContent = q
-          ? `${q.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · Giá mỗi tháng`
+          ? `${q.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · Giá mỗi tháng${window.PageFPTVoucher?.summary(q) ? " · " + window.PageFPTVoucher.summary(q) : ""}`
           : "Chọn khu vực hoặc kỳ có giá để được tư vấn.";
     });
     document.querySelectorAll("[data-accessory-total]").forEach((el) => {
@@ -167,6 +167,7 @@
           billing_months: term(plan),
           accessory_ids: ids(plan),
           ...(window.PageFPTLanding?.quoteContext?.() || {}),
+            ...(window.PageFPTVoucher?.quoteContext?.() || {}),
         }),
       });
       if (!r.ok) throw Error();
