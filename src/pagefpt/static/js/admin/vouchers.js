@@ -56,15 +56,94 @@
           }
         : {}),
     });
-    const d = await r.json();
-    if (!r.ok)
-      throw Error(errors[d.code] || "Chưa xử lý được (" + d.code + ").");
+    let d;
+    try {
+      d = await r.json();
+    } catch (_) {
+      d = {};
+    }
+    if (!r.ok) {
+      let errMsg = errors[d.code];
+      if (!errMsg && d.detail) {
+        if (Array.isArray(d.detail)) {
+          errMsg = d.detail
+            .map((item) => {
+              const field = item.loc ? item.loc.slice(1).join(".") : "";
+              let msg = item.msg || "";
+              msg = msg.replace(/^Value error,\s*/i, "");
+              return field ? `${field}: ${msg}` : msg;
+            })
+            .join("; ");
+        } else if (typeof d.detail === "string") {
+          errMsg = d.detail;
+        }
+      }
+      if (!errMsg) {
+        errMsg = d.message || "Lỗi xử lý yêu cầu (HTTP " + r.status + ").";
+      }
+      throw Error(errMsg);
+    }
     return d;
   }
 
-  function status(s) {
+  function showNotice(msg, type = "info") {
     const st = $("voucher-status");
-    if (st) st.textContent = s;
+    if (st) st.textContent = msg;
+
+    const draftState = $("v-draft-state");
+    if (draftState) {
+      draftState.textContent = msg;
+      draftState.className =
+        "voucher-draft-label " +
+        (type === "error"
+          ? "voucher-state-error"
+          : type === "success"
+            ? "voucher-state-success"
+            : "");
+    }
+
+    const errBox = $("voucher-error-summary");
+    if (errBox) {
+      if (type === "error") {
+        errBox.textContent = "⚠️ " + msg;
+        errBox.hidden = false;
+        errBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } else {
+        errBox.hidden = true;
+      }
+    }
+
+    let toast = document.getElementById("voucher-floating-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "voucher-floating-toast";
+      toast.className = "voucher-floating-toast";
+      document.body.appendChild(toast);
+    }
+    toast.className = `voucher-floating-toast show ${type}`;
+    const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
+    toast.innerHTML = `<span class="toast-icon">${icon}</span> <span class="toast-msg">${msg}</span>`;
+
+    if (window._voucherToastTimeout) clearTimeout(window._voucherToastTimeout);
+    window._voucherToastTimeout = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4500);
+  }
+
+  function status(s) {
+    const isErr =
+      s.toLowerCase().includes("lỗi") ||
+      s.toLowerCase().includes("chưa") ||
+      s.toLowerCase().includes("không") ||
+      s.toLowerCase().includes("hãy");
+    showNotice(s, isErr ? "error" : "success");
+  }
+
+  function highlightField(id) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.add("voucher-field-highlight");
+    setTimeout(() => el.classList.remove("voucher-field-highlight"), 2500);
   }
 
   async function job(fn) {
@@ -114,9 +193,15 @@
         !!selected.published_payload ||
         !adminHasPermission("pricing.publish");
     }
-    const shareFieldset = $("voucher-share");
-    if (shareFieldset) {
-      shareFieldset.disabled = !selected;
+    const shareBanner = $("voucher-share-banner");
+    if (shareBanner) {
+      if (selected) {
+        shareBanner.className = "voucher-share-status-banner";
+        shareBanner.innerHTML = `🔗 <strong>Chiến dịch đang chọn:</strong> <span class="voucher-code-badge">${selected.code}</span> — Đã kích hoạt tạo link rút gọn và tải mã QR Marketing.`;
+      } else {
+        shareBanner.className = "voucher-share-status-banner pending";
+        shareBanner.innerHTML = `💡 <strong>Tạo link nhanh:</strong> Nhập link ngắn và chọn kênh phân phối bên dưới. Bấm <strong>"+ Tạo link chia sẻ"</strong> sẽ tự động lưu voucher và xuất mã QR Marketing!`;
+      }
     }
     const codeInput = $("v-code");
     if (codeInput) {
@@ -154,7 +239,7 @@
       key: "default",
       region_id: null,
       region_name: "Toàn quốc",
-      amount: 0,
+      amount: 100000,
       discount_kind: "fixed",
       basis: "initial",
       quota: null,
@@ -456,7 +541,22 @@
     updateReviewSummary(data);
   }
 
-  function initStepper() {
+  function getDefaultDates() {
+    const now = new Date();
+    const startYear = now.getFullYear();
+    const startMonth = String(now.getMonth() + 1).padStart(2, "0");
+    const startDay = String(now.getDate()).padStart(2, "0");
+    const startISO = `${startYear}-${startMonth}-${startDay}T00:00`;
+
+    const endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const endYear = endDate.getFullYear();
+    const endMonth = String(endDate.getMonth() + 1).padStart(2, "0");
+    const endDay = String(endDate.getDate()).padStart(2, "0");
+    const endISO = `${endYear}-${endMonth}-${endDay}T23:59`;
+    return { startISO, endISO };
+  }
+
+  function goToStep(idx) {
     const tabs = [
       $("v-step-tab-1"),
       $("v-step-tab-2"),
@@ -467,21 +567,150 @@
       $("v-step-2"),
       $("v-step-3"),
     ];
+    tabs.forEach((tab, i) => {
+      if (!tab) return;
+      const isActive = i === idx;
+      tab.classList.toggle("active", isActive);
+      if (isActive) tab.setAttribute("aria-current", "step");
+      else tab.removeAttribute("aria-current");
+    });
+    if (sections[idx]) {
+      sections[idx].scrollIntoView({ behavior: "smooth", block: "start" });
+      sections[idx].classList.add("active-focus");
+      setTimeout(() => sections[idx]?.classList.remove("active-focus"), 1200);
+    }
+  }
 
-    function goToStep(idx) {
-      tabs.forEach((tab, i) => {
-        if (!tab) return;
-        const isActive = i === idx;
-        tab.classList.toggle("active", isActive);
-        if (isActive) tab.setAttribute("aria-current", "step");
-        else tab.removeAttribute("aria-current");
-      });
-      if (sections[idx]) {
-        sections[idx].scrollIntoView({ behavior: "smooth", block: "start" });
-        sections[idx].classList.add("active-focus");
-        setTimeout(() => sections[idx]?.classList.remove("active-focus"), 1200);
+  function validateVoucherForm() {
+    const code = $("v-code")?.value.trim().toUpperCase() || "";
+    if (!code || code.length < 3 || !/^[A-Z0-9_-]+$/.test(code)) {
+      goToStep(0);
+      highlightField("v-code");
+      showNotice(
+        "Mã voucher cần từ 3 đến 40 ký tự (chỉ gồm chữ hoa A-Z, số 0-9, gạch nối: A-Z, 0-9, -, _).",
+        "error",
+      );
+      $("v-code")?.focus();
+      return false;
+    }
+
+    const name = $("v-name")?.value.trim() || "";
+    if (!name) {
+      goToStep(0);
+      highlightField("v-name");
+      showNotice("Vui lòng nhập tên chiến dịch ưu đãi (Bước 1).", "error");
+      $("v-name")?.focus();
+      return false;
+    }
+
+    const termsInput = $("v-terms");
+    if (!termsInput?.value.trim()) {
+      if (termsInput) {
+        termsInput.value =
+          "Áp dụng cho khách hàng hoàn tất đăng ký và nghiệm thu lắp đặt mới. Không quy đổi thành tiền mặt.";
       }
     }
+
+    const months = [...($("v-months")?.querySelectorAll("input:checked") || [])];
+    if (!months.length) {
+      goToStep(0);
+      showNotice(
+        "Vui lòng chọn ít nhất một kỳ thanh toán áp dụng (Hàng tháng, 6 tháng hoặc 12 tháng).",
+        "error",
+      );
+      return false;
+    }
+
+    if (!rules || rules.length === 0) {
+      rules = [baseRule()];
+      renderRules();
+    }
+    for (const rule of rules) {
+      if (rule.discount_kind === "percent") {
+        if (!rule.amount || rule.amount <= 0 || rule.amount > 10000) {
+          goToStep(1);
+          showNotice(
+            `Quy tắc vùng "${rule.region_name || "Toàn quốc"}": Mức giảm % cần từ 0.01% đến 100%.`,
+            "error",
+          );
+          return false;
+        }
+        if (!rule.cap_vnd || rule.cap_vnd <= 0) {
+          goToStep(1);
+          showNotice(
+            `Quy tắc vùng "${rule.region_name || "Toàn quốc"}": Giảm theo % bắt buộc phải nhập Trần giảm tối đa (đ).`,
+            "error",
+          );
+          return false;
+        }
+      } else {
+        if ((!rule.amount || rule.amount <= 0) && !rule.gift_product_id) {
+          goToStep(1);
+          showNotice(
+            `Quy tắc vùng "${rule.region_name || "Toàn quốc"}": Cần nhập số tiền giảm (VD: 50.000đ) hoặc chọn phụ kiện quà tặng kèm.`,
+            "error",
+          );
+          return false;
+        }
+      }
+    }
+
+    const startVal = $("v-start")?.value.trim();
+    const endVal = $("v-end")?.value.trim();
+    if (!startVal) {
+      goToStep(2);
+      highlightField("v-start");
+      showNotice("Vui lòng chọn ngày giờ bắt đầu hiệu lực (Bước 3).", "error");
+      $("v-start")?.focus();
+      return false;
+    }
+    if (!endVal) {
+      goToStep(2);
+      highlightField("v-end");
+      showNotice("Vui lòng chọn ngày giờ kết thúc hiệu lực (Bước 3).", "error");
+      $("v-end")?.focus();
+      return false;
+    }
+    const startDt = new Date(startVal);
+    const endDt = new Date(endVal);
+    if (endDt <= startDt) {
+      goToStep(2);
+      highlightField("v-end");
+      showNotice(
+        "Ngày giờ kết thúc phải sau ngày giờ bắt đầu chiến dịch.",
+        "error",
+      );
+      $("v-end")?.focus();
+      return false;
+    }
+
+    const quota = Number($("v-quota")?.value);
+    if (!quota || quota < 1 || quota > 1000000) {
+      goToStep(2);
+      highlightField("v-quota");
+      showNotice("Vui lòng nhập tổng số suất hợp lệ (từ 1 đến 1.000.000 suất).", "error");
+      $("v-quota")?.focus();
+      return false;
+    }
+
+    const budget = Number($("v-budget")?.value);
+    if (!budget || budget < 1) {
+      goToStep(2);
+      highlightField("v-budget");
+      showNotice("Vui lòng nhập ngân sách tối đa hợp lệ (tối thiểu 1đ).", "error");
+      $("v-budget")?.focus();
+      return false;
+    }
+
+    return true;
+  }
+
+  function initStepper() {
+    const tabs = [
+      $("v-step-tab-1"),
+      $("v-step-tab-2"),
+      $("v-step-tab-3"),
+    ];
 
     tabs.forEach((tab, i) => {
       if (tab) tab.onclick = () => goToStep(i);
@@ -521,13 +750,16 @@
     const p = row?.payload;
     rules = p ? structuredClone(p.rules) : [baseRule()];
     excluded = new Set(p?.exclusions || []);
+    const defaultDates = getDefaultDates();
     const values = {
       "v-code": p?.code || "",
       "v-name": p?.name || "",
       "v-label": p?.label || "Ưu đãi khu vực",
-      "v-terms": p?.terms || "",
-      "v-quota": p?.quota || "",
-      "v-budget": p?.budget_vnd || "",
+      "v-terms":
+        p?.terms ||
+        "Áp dụng cho khách hàng hoàn tất đăng ký và nghiệm thu lắp đặt mới. Không quy đổi thành tiền mặt.",
+      "v-quota": p?.quota ?? 50,
+      "v-budget": p?.budget_vnd ?? 10000000,
       "v-per-contact": p?.per_contact_limit || 1,
       "v-hold": p?.hold_hours || 48,
       "v-redeem": p?.redeem_at || "installed",
@@ -544,7 +776,9 @@
               window.PageFPTDates.format(p[id]),
               "datetime-local",
             )
-          : "";
+          : id === "start"
+            ? defaultDates.startISO
+            : defaultDates.endISO;
     }
     const stackableEl = $("v-stackable");
     if (stackableEl) stackableEl.checked = p?.stackable || false;
@@ -1117,24 +1351,33 @@
     };
   }
 
+  async function saveDraftInternal() {
+    if (!validateVoucherForm()) {
+      return null;
+    }
+    const body = formData();
+    showNotice("⏳ Đang lưu bản nháp voucher...", "info");
+    const row = await api(
+      selected ? "/" + selected.id : "",
+      selected ? "PUT" : "POST",
+      {
+        ...body,
+        ...(selected ? { expected_version: selected.version } : {}),
+      },
+    );
+    selected = row;
+    await load();
+    edit(row);
+    showNotice("✅ Đã lưu bản nháp thành công! Có thể tạo link chia sẻ bên dưới.", "success");
+    return row;
+  }
+
   // Submit Voucher Form (Save draft)
   if (vForm) {
     vForm.onsubmit = (e) => {
       e.preventDefault();
       job(async () => {
-        const body = formData();
-        const row = await api(
-          selected ? "/" + selected.id : "",
-          selected ? "PUT" : "POST",
-          {
-            ...body,
-            ...(selected ? { expected_version: selected.version } : {}),
-          },
-        );
-        selected = row;
-        await load();
-        edit(row);
-        status("Đã lưu bản nháp");
+        await saveDraftInternal();
       });
     };
   }
@@ -1182,18 +1425,49 @@
     linkForm.onsubmit = (e) => {
       e.preventDefault();
       job(async () => {
+        let slug = $("v-link-slug")?.value.trim().toLowerCase() || "";
+        slug = slug.replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        if (!slug || slug.length < 3 || slug.length > 50) {
+          showNotice(
+            "Tên link ngắn (slug) cần từ 3 đến 50 ký tự (chỉ gồm chữ thường a-z, số 0-9 và dấu gạch ngang).",
+            "error",
+          );
+          $("v-link-slug")?.focus();
+          return;
+        }
+
+        if (!selected) {
+          showNotice("Đang lưu bản nháp voucher trước khi tạo link chia sẻ...", "info");
+          const savedRow = await saveDraftInternal();
+          if (!savedRow) return;
+        }
+
         await api("/" + selected.id + "/links", "POST", {
-          slug: $("v-link-slug").value.trim(),
-          target: $("v-link-target").value.trim(),
-          channel: $("v-link-channel").value,
-          employee_id: $("v-link-employee").value || null,
+          slug: slug,
+          target: $("v-link-target")?.value.trim() || "/",
+          channel: $("v-link-channel")?.value || "zalo",
+          employee_id: $("v-link-employee")?.value || null,
           active: true,
         });
         await load();
         renderLinks();
-        status("Đã tạo / cập nhật link");
+        showNotice(
+          `🎉 Đã tạo thành công link chia sẻ /s/${slug} kèm mã QR Marketing!`,
+          "success",
+        );
       });
     };
+  }
+
+  // Auto clean slug input
+  const slugInput = $("v-link-slug");
+  if (slugInput) {
+    slugInput.addEventListener("input", () => {
+      slugInput.value = slugInput.value
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-")
+        .replace(/-+/g, "-");
+    });
   }
 
   // Submit Inventory Form
