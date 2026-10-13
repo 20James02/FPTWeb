@@ -63,6 +63,7 @@
 {% set active_order = landing.section_order if landing.section_order else default_order %}
 {% for sec in active_order %}
 {% if sec == 'hero' %}{{ section_hero() }}
+{% include 'client/components/voucher_marquee.html' %}
 {% elif sec == 'campaign' %}{{ section_campaign() }}
 {% elif sec == 'plans' %}{{ section_plans() }}
 {% elif sec == 'compare' %}{{ section_compare() }}

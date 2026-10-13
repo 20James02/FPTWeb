@@ -5,8 +5,7 @@
     link = null,
     generation = 0,
     hasContext = false,
-    controller = null,
-    pillDismissed = false;
+    controller = null;
   const money = (n) => new Intl.NumberFormat("vi-VN").format(n || 0) + "đ";
   const labels = {
     gift_unavailable: "Quà tặng cần xác nhận lại.",
@@ -43,22 +42,24 @@
       return "Đến " + (window.PageFPTDates?.format(endStr, false) || new Date(endStr).toLocaleDateString("vi-VN"));
     }
     if (days >= 1) {
-      return `⏳ Còn ${days} ngày ${hours > 0 ? hours + "h" : ""}`;
+      return `Còn ${days} ngày ${hours > 0 ? hours + "h" : ""}`;
     }
     const mins = Math.max(1, Math.floor((diff % 3600000) / 60000));
-    return `🔥 Còn ${hours}h ${mins}p cuối!`;
+    return `Còn ${hours}h ${mins}p cuối!`;
   }
-
-  let syncFloatingPill = () => {};
 
   const mount = () => {
     if (document.querySelector("[data-landing-preview=true]")) return null;
+    const slot = document.getElementById("voucher-banner-slot");
     const root =
-      document.getElementById("main-content") || document.querySelector("main");
+      slot || document.getElementById("main-content") || document.querySelector("main");
     if (!root) return null;
+
     const box = node("section", "", "client-voucher-banner");
     box.id = "client-voucher-banner";
     box.setAttribute("aria-label", "Voucher ưu đãi");
+    // Hidden by default so it does not clutter the homepage
+    box.hidden = true;
 
     const head = node("header");
     const badge = node("span", "ƯU ĐÃI ĐÃ KÍCH HOẠT", "client-voucher-hero-tag");
@@ -90,8 +91,7 @@
       voucher = null;
       link = null;
       hasContext = false;
-      const pillEl = document.getElementById("client-voucher-floating-pill");
-      if (pillEl) pillEl.hidden = true;
+      box.hidden = true;
       render();
       refresh();
     };
@@ -110,7 +110,7 @@
     cta.type = "button";
     cta.hidden = true;
     cta.onclick = () => {
-      const cat = document.getElementById("catalog-section") || document.getElementById("catalog") || document.querySelector(".telecom-catalog");
+      const cat = document.getElementById("plans-section") || document.getElementById("lp-plans") || document.querySelector(".telecom-catalog");
       if (cat) cat.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
@@ -149,55 +149,34 @@
 
     box.append(head, msg, recovery, cta, details, entry);
     head.hidden = msg.hidden = details.hidden = true;
-    root.prepend(box);
 
-    // Floating Sticky Voucher Mini-Pill
-    const pill = node("aside", "", "client-voucher-floating-pill");
-    pill.id = "client-voucher-floating-pill";
-    pill.setAttribute("aria-label", "Ưu đãi đang kích hoạt");
-    pill.hidden = true;
+    if (slot) {
+      slot.append(box);
+    } else {
+      root.prepend(box);
+    }
 
-    const pillContent = node("div", "", "client-voucher-pill-content");
-    const pillIcon = node("span", "🎁");
-    const pillText = node("span", "Ưu đãi FPT");
-    pillText.id = "client-voucher-pill-text";
-    pillContent.append(pillIcon, pillText);
-
-    const pillCta = node("button", "Nhận ưu đãi", "client-voucher-pill-cta");
-    pillCta.id = "client-voucher-pill-cta";
-    pillCta.type = "button";
-    pillCta.onclick = () => {
-      const cat = document.getElementById("catalog-section") || document.getElementById("catalog") || box;
-      if (cat) cat.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-
-    const pillClose = node("button", "×", "client-voucher-pill-close");
-    pillClose.type = "button";
-    pillClose.setAttribute("aria-label", "Đóng thông báo");
-    pillClose.onclick = () => {
-      pillDismissed = true;
-      pill.hidden = true;
-    };
-
-    pill.append(pillContent, pillCta, pillClose);
-    document.body.append(pill);
-
-    syncFloatingPill = () => {
-      if (pillDismissed || !voucher) {
-        pill.hidden = true;
-        return;
-      }
-      const rect = box.getBoundingClientRect();
-      pill.hidden = rect.bottom > 50;
-    };
-    window.addEventListener("scroll", syncFloatingPill, { passive: true });
+    // Toggle button from Marquee Line
+    const marqueeBtn = document.getElementById("voucher-marquee-btn");
+    if (marqueeBtn) {
+      marqueeBtn.onclick = () => {
+        box.hidden = !box.hidden;
+        marqueeBtn.setAttribute("aria-expanded", String(!box.hidden));
+        if (!box.hidden) {
+          entry.open = true;
+          input.focus();
+        }
+      };
+    }
 
     return box;
   };
 
   function render() {
+    const box = document.getElementById("client-voucher-banner");
     const name = document.getElementById("client-voucher-name");
     if (!name) return;
+
     name.textContent = voucher ? voucher.name : "Mã ưu đãi";
     name.parentElement.hidden = !voucher && !hasContext && !code;
 
@@ -207,7 +186,7 @@
     const urgency = document.getElementById("client-voucher-urgency");
     if (urgency) {
       if (voucher && voucher.end) {
-        urgency.textContent = formatUrgency(voucher.end);
+        urgency.textContent = "⏳ " + formatUrgency(voucher.end);
         urgency.hidden = false;
       } else {
         urgency.hidden = true;
@@ -234,17 +213,6 @@
       }
     }
 
-    const pill = document.getElementById("client-voucher-floating-pill");
-    const pillText = document.getElementById("client-voucher-pill-text");
-    if (pill && pillText) {
-      if (voucher) {
-        pillText.textContent = voucher.label || voucher.name || "Ưu đãi FPT";
-        syncFloatingPill();
-      } else {
-        pill.hidden = true;
-      }
-    }
-
     document.getElementById("client-voucher-message").hidden =
       !voucher && !hasContext && !code;
     document.getElementById("client-voucher-conditions").hidden = !voucher;
@@ -265,6 +233,42 @@
         : "Nhập mã nếu bạn được giới thiệu một ưu đãi.";
     document.getElementById("client-voucher-clear").hidden =
       !voucher && !code && !hasContext;
+
+    // Show box when voucher is loaded or context is active; hide when empty/cleared
+    if (box) {
+      if (voucher || (code && code.length > 0) || (hasContext && !voucher)) {
+        box.hidden = false;
+      } else {
+        box.hidden = true;
+      }
+    }
+
+    // Dynamic Marquee updates
+    const marqueeBtn = document.getElementById("voucher-marquee-btn");
+    const marqueeBtnLabel = document.getElementById("voucher-marquee-btn-label");
+    const marqueeText = document.getElementById("voucher-marquee-text");
+    const marqueeDup = document.getElementById("voucher-marquee-text-dup");
+
+    if (voucher) {
+      if (marqueeBtn) marqueeBtn.classList.add("active");
+      if (marqueeBtnLabel) marqueeBtnLabel.textContent = voucher.code ? "Đang áp dụng: " + voucher.code : "Đã kích hoạt ưu đãi";
+      if (marqueeText) {
+        const disc = voucher.discount_vnd ? "Giảm -" + money(voucher.discount_vnd) : "";
+        const gift = voucher.gift ? " + Tặng " + voucher.gift.name : "";
+        const urg = voucher.end ? " &bull; ⏳ " + formatUrgency(voucher.end) : "";
+        const activeHtml = `🎉 <strong class="voucher-marquee-highlight">ĐÃ KÍCH HOẠT:</strong> ${voucher.name} &bull; ${disc}${gift}${urg} &bull; Nhấp để xem chi tiết điều kiện & giữ suất!`;
+        marqueeText.innerHTML = activeHtml;
+        if (marqueeDup) marqueeDup.innerHTML = activeHtml;
+      }
+    } else {
+      if (marqueeBtn) marqueeBtn.classList.remove("active");
+      if (marqueeBtnLabel) marqueeBtnLabel.textContent = "Nhập mã ưu đãi";
+      if (marqueeText) {
+        const defaultHtml = `🔥 <strong class="voucher-marquee-highlight">ƯU ĐÃI ĐẶC QUYỀN:</strong> Nhập mã voucher giảm ngay cước lắp đặt &bull; Tặng Modem Wi-Fi 6 thế hệ mới &bull; Miễn phí hòa mạng 100% &bull; Giữ suất ưu đãi trong 48h! &bull; Hotline: 0868.247.625`;
+        marqueeText.innerHTML = defaultHtml;
+        if (marqueeDup) marqueeDup.innerHTML = defaultHtml;
+      }
+    }
   }
 
   function refresh() {

@@ -798,17 +798,23 @@
 
 /* Client Voucher Banner */
 .client-voucher-banner {
-  border: 1.5px solid #fed7aa;
-  background: #fff7ed;
+  border: 1.5px solid rgba(243, 112, 33, 0.35);
+  background: #ffffff;
   color: #172554;
-  border-radius: 16px;
-  max-width: 1200px;
-  margin: 16px auto;
+  border-radius: 14px;
+  max-width: 100%;
+  margin: 10px 0 0;
   padding: 16px 20px;
   box-sizing: border-box;
   font-size: 14px;
   line-height: 1.55;
-  box-shadow: 0 4px 12px rgba(243, 112, 33, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  animation: voucherSlideDown 0.25s ease-out;
+}
+
+@keyframes voucherSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .client-voucher-banner header,
@@ -1094,7 +1100,7 @@
 }
 
 /* Floating Sticky Voucher Mini-Pill */
-.client-voucher-floating-pill {
+.client-voucher-floating-pill { display: none !important; 
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -1198,12 +1204,192 @@
 }
 
 @media (max-width: 600px) {
-  .client-voucher-floating-pill {
+  .client-voucher-floating-pill { display: none !important; 
     bottom: 14px;
     right: 12px;
     left: 12px;
     padding: 8px 14px;
     justify-content: space-between;
     border-radius: 14px;
+  }
+}
+
+/* ==========================================================================
+   VOUCHER MARQUEE LINE (Chữ chạy nổi bật ngay dưới slider)
+   ========================================================================== */
+.voucher-marquee-container {
+  width: 100%;
+  max-width: var(--container-max, 1280px);
+  margin: 0 auto 16px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.voucher-marquee-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(90deg, #070d1e 0%, #111e42 45%, #070d1e 100%);
+  border: 1.5px solid rgba(243, 112, 33, 0.45);
+  border-radius: 12px;
+  padding: 8px 14px;
+  box-shadow: 0 4px 20px rgba(243, 112, 33, 0.16), 0 2px 6px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+  min-height: 46px;
+  box-sizing: border-box;
+}
+
+.voucher-marquee-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09), transparent);
+  animation: marqueeShimmer 5s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes marqueeShimmer {
+  0% { left: -100%; }
+  40%, 100% { left: 160%; }
+}
+
+.voucher-marquee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ff4500 0%, #ea580c 100%);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.55);
+}
+
+.voucher-marquee-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px #ffffff;
+  animation: voucherDotPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes voucherDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.45; }
+}
+
+.voucher-marquee-track-outer {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
+
+.voucher-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 48px;
+  animation: voucherMarqueeRun 30s linear infinite;
+  will-change: transform;
+}
+
+.voucher-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes voucherMarqueeRun {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.voucher-marquee-item {
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voucher-marquee-highlight {
+  color: #fb923c;
+  font-weight: 800;
+}
+
+.voucher-marquee-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.voucher-marquee-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-height: 32px;
+}
+
+.voucher-marquee-btn:hover {
+  background: #f37021;
+  border-color: #f37021;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(243, 112, 33, 0.4);
+}
+
+.voucher-marquee-btn.active {
+  background: #16a34a;
+  border-color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+.voucher-banner-slot {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .voucher-marquee-container {
+    margin-bottom: 12px;
+    padding: 0 10px;
+  }
+  .voucher-marquee-bar {
+    padding: 6px 10px;
+    gap: 8px;
+    min-height: 42px;
+  }
+  .voucher-marquee-badge-text {
+    display: none;
+  }
+  .voucher-marquee-badge {
+    padding: 4px 6px;
+  }
+  .voucher-marquee-item {
+    font-size: 12px;
+  }
+  .voucher-marquee-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+    min-height: 28px;
   }
 }
