@@ -6385,3 +6385,68 @@ body { --text-muted: #64748b; }
   border-radius: 14px;
   margin-bottom: 16px;
 }
+
+
+/* ===================================================================
+   Trust Guarantees Bar (Hero Trust Bar on Homepage & Product Detail)
+   =================================================================== */
+.home-trust-bar-section {
+  padding-inline: var(--space-4, 16px);
+}
+
+.lp-hero-trust-bar {
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto 24px;
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: var(--radius-base, 14px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.lp-trust-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+}
+
+.lp-trust-item svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary, #f37021);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .lp-hero-trust-bar {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 0 auto 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-hero-trust-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 0 auto 18px;
+    padding: 12px 16px;
+  }
+  .lp-trust-item {
+    font-size: 0.85rem;
+    justify-content: flex-start;
+  }
+}
