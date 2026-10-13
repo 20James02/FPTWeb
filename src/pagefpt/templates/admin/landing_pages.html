@@ -16,6 +16,7 @@
     </div>
     <div class="lp-admin-header-actions">
       <button class="pricing-btn" id="lp-admin-refresh" type="button">Làm mới danh sách</button>
+      <button class="pricing-btn" id="lp-admin-open-templates-btn" type="button" style="background: linear-gradient(135deg, #005a9e, #f37021); color: #fff; border: 0; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.25); font-weight: 700;">🎨 Kho Mẫu FPT Sẵn Có (8 Mẫu)</button>
       <button class="pricing-btn btn-action-call" id="lp-admin-new" type="button">+ Tạo landing page</button>
     </div>
   </div>
@@ -55,14 +56,18 @@
         <div class="lp-admin-preset-box" title="Chọn mẫu nội dung và giao diện được cấu hình sẵn cho từng chiến dịch">
           <label for="lp-admin-preset-select" class="sr-only">Mẫu thiết kế 1-Click</label>
           <select id="lp-admin-preset-select" aria-label="Mẫu thiết kế 1-Click">
-            <option value="">Chọn mẫu</option>
-            <option value="family">Gia đình</option>
-            <option value="sport">Giải trí &amp; thể thao</option>
-            <option value="camera">Camera &amp; an ninh</option>
-            <option value="gamer">Làm việc &amp; chơi game</option>
-            <option value="megasale">Ưu đãi theo chiến dịch</option>
+            <option value="">Chọn mẫu nhanh</option>
+            <option value="family">1. Combo Gia đình (Internet + FPT Play 4K)</option>
+            <option value="student">2. Cá nhân &amp; Sinh viên (Gói Giga 300Mbps)</option>
+            <option value="camera">3. Combo Camera AI &amp; Smart Home</option>
+            <option value="business">4. Doanh nghiệp &amp; Quán Cafe (IP Tĩnh)</option>
+            <option value="gamer">5. Game thủ &amp; Streamer (Ultra Fast)</option>
+            <option value="megasale">6. Đại tiệc Mega Sale (Tặng cước &amp; Quà)</option>
+            <option value="sport">7. Thể thao Ngoại Hạng Anh &amp; Cúp C1</option>
+            <option value="condo">8. Chung cư &amp; Căn hộ (Lắp nhanh 2h)</option>
           </select>
-          <button class="pricing-btn" id="lp-admin-preset-apply" type="button">Áp dụng Preset</button>
+          <button class="pricing-btn" id="lp-admin-preset-apply" type="button">Áp dụng</button>
+          <button class="pricing-btn" id="lp-admin-browse-templates" type="button" title="Mở kho mẫu trực quan với hình ảnh và mô tả chi tiết" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; font-weight: 600;">🎨 Kho Mẫu</button>
         </div>
 
         <div class="lp-admin-history-actions">
@@ -136,6 +141,40 @@
     </div>
   </section>
 </div>
+
+<!-- Modal Thư Viện Mẫu Landing Page (8 Mẫu Sẵn Cho FPT Telecom) -->
+<dialog id="lp-template-library-modal" class="admin-dialog lp-template-dialog" aria-labelledby="lp-template-modal-title">
+  <div class="lp-template-modal-header">
+    <div>
+      <h2 id="lp-template-modal-title">🎨 Kho Mẫu Landing Page FPT Telecom</h2>
+      <p class="pricing-hint" style="margin-top: 4px; color: var(--text-secondary);">
+        Chọn mẫu có sẵn chuẩn nhận diện FPT. Áp dụng 1-click và chỉ cần sửa số điện thoại Hotline, địa phương là có thể công bố ngay!
+      </p>
+    </div>
+    <button type="button" class="pricing-btn lp-btn-icon" onclick="document.getElementById('lp-template-library-modal').close()">✕</button>
+  </div>
+
+  <div class="lp-template-filter-chips">
+    <button type="button" class="lp-filter-chip active" data-filter="all">Tất cả mẫu (8)</button>
+    <button type="button" class="lp-filter-chip" data-filter="family">Combo Gia đình</button>
+    <button type="button" class="lp-filter-chip" data-filter="student">Cá nhân / Sinh viên</button>
+    <button type="button" class="lp-filter-chip" data-filter="camera">Camera AI</button>
+    <button type="button" class="lp-filter-chip" data-filter="business">Doanh nghiệp</button>
+    <button type="button" class="lp-filter-chip" data-filter="gamer">Game thủ / Streamer</button>
+    <button type="button" class="lp-filter-chip" data-filter="megasale">Mega Sale</button>
+    <button type="button" class="lp-filter-chip" data-filter="sport">Thể thao / C1</button>
+    <button type="button" class="lp-filter-chip" data-filter="condo">Chung cư</button>
+  </div>
+
+  <div class="lp-template-grid" id="lp-template-grid-container">
+    <!-- Rendered dynamically by JS -->
+  </div>
+
+  <div class="admin-dialog-actions" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+    <button type="button" class="pricing-btn" onclick="document.getElementById('lp-template-library-modal').close()">Đóng</button>
+  </div>
+</dialog>
+
 <script type="application/json" id="landing-defaults">{{landing_defaults|tojson}}</script>
 {% endblock %}
 {% block extra_scripts %}

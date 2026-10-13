@@ -381,55 +381,309 @@
   /* Templates change presentation only. Real offers, schedules and stock stay untouched. */
   const presetContent = {
     family: {
-      name: "Combo Gia đình",
+      name: "Combo Gia Đình (Internet + FPT Play)",
+      badge: "Phổ biến nhất",
       theme: "fpt_standard",
-      title: "Internet cho cả gia đình",
-      highlight: "Chọn gói phù hợp nhu cầu",
+      radius: "rounded",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "COMBO INTERNET & TRUYỀN HÌNH FPT PLAY",
+      title: "Internet Cáp Quang & Truyền Hình FPT Play 4K",
+      highlight: "Trọn Gói Giải Trí Đỉnh Cao Cho Cả Nhà",
       subtitle:
-        "Tư vấn kết nối cho học tập, làm việc và giải trí tại địa chỉ lắp đặt.",
-      form: "TƯ VẤN INTERNET GIA ĐÌNH",
+        "Băng thông không giới hạn đến 1Gbps, trang bị Modem Wi-Fi 6 thế hệ mới và đầu thu điều khiển giọng nói 4K.",
+      form: "TƯ VẤN COMBO INTERNET GIA ĐÌNH",
+      form_subtitle: "Giá, thiết bị và lịch lắp được xác nhận khi tư vấn",
       cta: "Nhận tư vấn gia đình",
+      slug: "combo-internet-fpt-play-gia-dinh",
+      page_title: "Combo Internet & Truyền Hình FPT Play Gia Đình",
+      benefits: [
+        { title: "Băng thông cực đỉnh", text: "Tốc độ 1Gbps cho cả nhà lướt web cùng lúc", icon: "speed" },
+        { title: "Đầu thu 4K giọng nói", text: "Xem gần 200 kênh truyền hình và kho phim khổng lồ", icon: "play" },
+        { title: "Modem Wi-Fi 6 AX3000", text: "Phủ sóng xuyên tường, kết nối ổn định 30+ máy", icon: "wifi" },
+        { title: "Triển khai trong 24h", text: "Kỹ thuật hỗ trợ khảo sát tận nơi miễn phí", icon: "install" }
+      ],
+      faqs: [
+        {
+          question: "Gói combo có sử dụng được cho nhiều tivi không?",
+          answer: "Tài khoản FPT Play xem được đồng thời trên 2-3 thiết bị (Smart TV, Smartphone, Box, Tablet) cùng lúc."
+        },
+        {
+          question: "Nhà chưa có Smart TV thì có xem được không?",
+          answer: "FPT trang bị miễn phí Box FPT Play điều khiển giọng nói, biến tivi thường thành Smart TV."
+        },
+        {
+          question: "Thủ tục đăng ký lắp đặt cần những gì?",
+          answer: "Chỉ cần ảnh chụp CCCD/CMND. Nhân viên hoàn tất thủ tục online trong 5 phút và kỹ thuật kéo cáp trong 12-24h."
+        }
+      ]
     },
-    sport: {
-      name: "Internet & FPT Play",
+    student: {
+      name: "Cá Nhân & Sinh Viên (Gói Giga Giá Rẻ)",
+      badge: "Tiết kiệm tối đa",
       theme: "orange_vibrant",
-      title: "Internet và FPT Play",
-      highlight: "Giải trí theo gói bạn chọn",
+      radius: "pill",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "INTERNET CÁP QUANG GIÁ SINH VIÊN",
+      title: "Lắp Mạng Internet Cáp Quang FPT Siêu Tốc",
+      highlight: "Tối Ưu Chi Phí - Tốc Độ Cực Đỉnh 300Mbps+",
       subtitle:
-        "Nội dung, thiết bị và quyền xem được xác nhận theo gói và kỳ thanh toán.",
-      form: "TƯ VẤN COMBO INTERNET & TRUYỀN HÌNH",
-      cta: "Tư vấn Combo",
+        "Thủ tục nhanh chóng chỉ cần CCCD, miễn phí modem Wi-Fi 6 băng tần kép, hỗ trợ triển khai nhanh trong ngày.",
+      form: "ĐĂNG KÝ GÓI INTERNET CÁ NHÂN",
+      form_subtitle: "Miễn phí lắp đặt – Hỗ trợ phòng trọ, căn hộ, sinh viên",
+      cta: "Nhận báo giá sinh viên",
+      slug: "lap-mang-fpt-sinh-vien-gia-re",
+      page_title: "Lắp Mạng FPT Sinh Viên & Cá Nhân - Giá Rẻ Tốc Độ Cao",
+      benefits: [
+        { title: "Giá cước tiết kiệm", text: "Chi phí vừa túi tiền, không phí ẩn", icon: "award" },
+        { title: "Modem Wi-Fi 6 0đ", text: "Trang bị thiết bị Wi-Fi 6 chuẩn mới nhất", icon: "wifi" },
+        { title: "Thủ tục đơn giản", text: "Chỉ cần CCCD, không cần đặt cọc hộ khẩu", icon: "users" },
+        { title: "Lắp siêu tốc 12h", text: "Kéo cáp nhanh chóng để kịp học tập và làm việc", icon: "install" }
+      ],
+      faqs: [
+        {
+          question: "Sinh viên ở trọ thuê phòng có đăng ký được không?",
+          answer: "Hoàn toàn được! FPT không yêu cầu hộ khẩu tại nơi lắp đặt, chỉ cần CCCD chính chủ."
+        },
+        {
+          question: "Thời gian lắp đặt mất bao lâu?",
+          answer: "Kỹ thuật viên sẽ liên hệ và lắp đặt hoàn tất trong vòng 12 đến 24 giờ sau khi đăng ký."
+        },
+        {
+          question: "Có được đổi địa chỉ khi chuyển phòng trọ không?",
+          answer: "FPT hỗ trợ chuyển địa điểm mạng miễn phí sang phòng trọ hoặc nhà mới trên toàn quốc."
+        }
+      ]
     },
     camera: {
-      name: "Camera An ninh",
+      name: "Combo Camera AI & Smart Home",
+      badge: "An ninh thông minh",
       theme: "blue_trust",
-      title: "Internet và Camera cho ngôi nhà",
-      highlight: "Chọn thiết bị theo nhu cầu",
+      radius: "rounded",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "INTERNET & FPT CAMERA AI AN NINH",
+      title: "Internet Tốc Độ Cao & Camera An Ninh FPT AI",
+      highlight: "Giám Sát Thông Minh - Bảo Vệ Toàn Diện 24/7",
       subtitle:
-        "Tư vấn vị trí lắp, kết nối và chi phí thiết bị theo địa bàn thực tế.",
-      form: "NHẬN TƯ VẤN LẮP CAMERA",
-      cta: "Nhận báo giá Camera",
+        "Hình ảnh Full HD sắc nét, đàm thoại 2 chiều, nhận diện người lạ AI và lưu trữ Cloud FPT an toàn tuyệt đối.",
+      form: "NHẬN TƯ VẤN LẮP CAMERA AN NINH",
+      form_subtitle: "Tư vấn vị trí lắp, góc nhìn và chi phí thiết bị ưu đãi",
+      cta: "Nhận tư vấn Camera",
+      slug: "combo-internet-camera-fpt-an-ninh",
+      page_title: "Combo Internet & FPT Camera AI An Ninh Cho Ngôi Nhà",
+      benefits: [
+        { title: "Nhận diện người lạ AI", text: "Phân biệt người và vật thể, cảnh báo tức thì", icon: "camera" },
+        { title: "Lưu trữ Cloud bảo mật", text: "Dữ liệu an toàn tại FPT Data Center, không lo mất thẻ", icon: "shield" },
+        { title: "Đàm thoại 2 chiều", text: "Trò chuyện dễ dàng từ điện thoại về camera", icon: "support" },
+        { title: "Bảo hành 1 đổi 1", text: "Bảo trì miễn phí trọn đời suốt thời gian dùng", icon: "award" }
+      ],
+      faqs: [
+        {
+          question: "Gói nào được nhận ưu đãi camera?",
+          answer: "Nhân viên kiểm tra gói, kỳ thanh toán và điều kiện chiến dịch tại địa chỉ lắp đặt trước khi xác nhận quà."
+        },
+        {
+          question: "Có phí lắp đặt hoặc lưu trữ camera không?",
+          answer: "Chi phí thiết bị, lắp đặt, VAT và lưu trữ (nếu có) được thể hiện trong báo giá trước khi đăng ký."
+        },
+        {
+          question: "Gửi thông tin có giữ suất ưu đãi không?",
+          answer: "Gửi form là yêu cầu tư vấn. Suất ưu đãi chỉ được xác nhận khi nhân viên chốt điều kiện và lịch lắp đặt."
+        }
+      ]
+    },
+    business: {
+      name: "Doanh Nghiệp & Quán Cafe (IP Tĩnh)",
+      badge: "SLA 99.9% & IP Tĩnh",
+      theme: "emerald_fresh",
+      radius: "soft",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "CÁP QUANG DOANH NGHIỆP & HỘ KINH DOANH",
+      title: "Đường Truyền Internet Cáp Quang Doanh Nghiệp",
+      highlight: "Băng Thông Quốc Tế Lớn - Cam Kết SLA 99.9%",
+      subtitle:
+        "Hỗ trợ IP Tĩnh miễn phí, thiết bị cân bằng tải chuyên dụng chịu tải cùng lúc 50 - 200+ kết nối liên tục không nghẽn.",
+      form: "TƯ VẤN KẾT NỐI DOANH NGHIỆP",
+      form_subtitle: "Kèm hóa đơn VAT, hợp đồng pháp nhân và kỹ thuật viên riêng",
+      cta: "Nhận báo giá doanh nghiệp",
+      slug: "internet-fpt-doanh-nghiep-quan-cafe",
+      page_title: "Internet Cáp Quang FPT Doanh Nghiệp, Quán Cafe, Phòng Net",
+      benefits: [
+        { title: "Băng thông quốc tế lớn", text: "Cam kết tốc độ tối thiểu đi quốc tế theo hợp đồng", icon: "speed" },
+        { title: "Cấp IP Tĩnh miễn phí", text: "Phục vụ máy chủ nội bộ, VPN, Camera giám sát", icon: "building" },
+        { title: "Thiết bị cân bằng tải", text: "Chịu tải cao MikroTik, Vigor DrayTek chính hãng", icon: "wifi" },
+        { title: "Hỗ trợ kỹ thuật 2h", text: "Đội ngũ kỹ sư mạng FPT xử lý sự cố trong vòng 2 giờ", icon: "support" }
+      ],
+      faqs: [
+        {
+          question: "Doanh nghiệp có được xuất hóa đơn VAT đầy đủ không?",
+          answer: "Có! FPT xuất hóa đơn điện tử VAT hợp lệ theo mã số thuế doanh nghiệp ngay sau khi thanh toán."
+        },
+        {
+          question: "Quán cafe 100 khách nên chọn gói cước nào?",
+          answer: "Nên chọn gói từ 400Mbps - 1000Mbps kèm thiết bị cân bằng tải chuyên dụng và Access Point Wi-Fi 6 Mesh chịu tải cao."
+        },
+        {
+          question: "Hợp đồng doanh nghiệp cần những giấy tờ gì?",
+          answer: "Chỉ cần bản scan/ảnh Giấy phép đăng ký kinh doanh và CCCD của người đại diện pháp luật."
+        }
+      ]
     },
     gamer: {
-      name: "Game & Doanh nghiệp",
+      name: "Game Thủ & Streamer (Ultra Fast)",
+      badge: "Ping thấp - Không lag",
       theme: "modern_dark",
-      title: "Kết nối cho game và công việc",
-      highlight: "Tư vấn tốc độ và thiết bị",
+      radius: "rounded",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "INTERNET GAMING & STREAMING CHUYÊN NGHIỆP",
+      title: "Internet FPT Chuyên Game - Độc Quyền Ultra Fast",
+      highlight: "Ping Cực Thấp - Triệt Tiêu Giật Lag - Băng Thông 1Gbps",
       subtitle:
-        "Lựa chọn băng thông theo gói đã công bố và điều kiện hạ tầng tại nơi lắp đặt.",
-      form: "TƯ VẤN KẾT NỐI THEO NHU CẦU",
-      cta: "Tư vấn gói phù hợp",
+        "Tích hợp công nghệ Big Data & AI tự động tối ưu hóa đường truyền đến hơn 50 tựa game hot nhất hiện nay.",
+      form: "TƯ VẤN GÓI CƯỚC GAME THỦ",
+      form_subtitle: "Tối ưu hóa đường truyền game online trong nước & quốc tế",
+      cta: "Tư vấn gói Ultra Fast",
+      slug: "internet-fpt-gaming-ultra-fast",
+      page_title: "Internet FPT Chuyên Game Thủ & Streamer - Ultra Fast 1Gbps",
+      benefits: [
+        { title: "Công nghệ Ultra Fast", text: "Tự động định tuyến tối ưu giảm giật lag khi chơi game", icon: "speed" },
+        { title: "Băng thông 1024Mbps", text: "Tải game nặng hàng chục GB chỉ trong vài phút", icon: "wifi" },
+        { title: "Modem Wi-Fi 6 gaming", text: "Độ trễ thấp, chống nhiễu sóng khi nhiều người cùng dùng", icon: "shield" },
+        { title: "Hỗ trợ 24/7 tức thì", text: "Kênh kỹ thuật ưu tiên hỗ trợ cho game thủ và streamer", icon: "support" }
+      ],
+      faqs: [
+        {
+          question: "Tính năng Ultra Fast hỗ trợ những tựa game nào?",
+          answer: "Hỗ trợ hơn 50+ tựa game phổ biến nhất: LMHT, Valorant, PUBG, CS2, FO4, Dota 2, Genshin Impact, Free Fire, Liên Quân."
+        },
+        {
+          question: "Có cần cài đặt thêm phần mềm gì trên máy không?",
+          answer: "Không cần cài phần mềm! Tính năng Ultra Fast được kích hoạt và xử lý trực tiếp từ hạ tầng mạng FPT."
+        },
+        {
+          question: "Livestream có bị drop frame hay giật hình không?",
+          answer: "Gói cước có băng thông Upload cực lớn (đến 1Gbps) đảm bảo đường truyền livestream Full HD/4K luôn mượt mà."
+        }
+      ]
     },
     megasale: {
-      name: "Chiến dịch ưu đãi",
+      name: "Đại Tiệc Mega Sale (Tặng Cước & Quà)",
+      badge: "Khuyến mãi lớn",
       theme: "orange_vibrant",
-      title: "Tìm ưu đãi phù hợp với bạn",
-      highlight: "Xem giá và điều kiện áp dụng",
+      radius: "pill",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "SIÊU BÃO ƯU ĐÃI ĐỘC QUYỀN THÁNG NÀY",
+      title: "Đại Tiệc Ưu Đãi Lắp Mạng FPT Telecom",
+      highlight: "Tặng Đến 2 Tháng Cước + Modem Wi-Fi 6 0đ",
       subtitle:
-        "Ưu đãi được xác nhận theo gói, địa bàn và kỳ thanh toán đã thiết lập.",
-      form: "NHẬN TƯ VẤN ƯU ĐÃI",
-      cta: "Tư vấn ưu đãi",
+        "Cơ hội nhận ưu đãi lớn nhất năm: Giảm 50% phí hòa mạng, tặng thêm tháng sử dụng và hỗ trợ chuyển mạng nhanh chóng.",
+      form: "NHẬN TƯ VẤN ƯU ĐÃI ĐỘC QUYỀN",
+      form_subtitle: "Số lượng ưu đãi có hạn theo khu vực – Đăng ký ngay hôm nay",
+      cta: "Đăng ký nhận ưu đãi",
+      slug: "sieu-khuyen-mai-lap-mang-fpt",
+      page_title: "Đại Tiệc Siêu Khuyến Mãi Lắp Mạng Cáp Quang FPT Telecom",
+      benefits: [
+        { title: "Tặng 1-2 tháng cước", text: "Áp dụng khi thanh toán trước 6 hoặc 12 tháng", icon: "award" },
+        { title: "Miễn phí Modem Wi-Fi 6", text: "Trang bị thiết bị Wi-Fi 6 cao cấp hoàn toàn 0đ", icon: "wifi" },
+        { title: "Lắp đặt siêu tốc", text: "Kéo cáp nhanh chóng trong vòng 12 - 24 giờ", icon: "install" },
+        { title: "Hỗ trợ đổi mạng", text: "Tặng thêm quà đặc biệt cho khách hàng chuyển từ mạng khác sang", icon: "users" }
+      ],
+      faqs: [
+        {
+          question: "Điều kiện để nhận tháng cước tặng kèm là gì?",
+          answer: "Khách hàng tham gia chương trình trả trước 6 tháng (tặng 1 tháng) hoặc 12 tháng (tặng 2 tháng) theo chính sách hiện hành."
+        },
+        {
+          question: "Khách hàng chuyển từ mạng khác sang có quà gì?",
+          answer: "FPT hỗ trợ giảm tối đa phí hòa mạng và tặng kèm quà lưu niệm độc quyền khi xuất trình hợp đồng mạng cũ."
+        },
+        {
+          question: "Đăng ký tư vấn hôm nay có bắt buộc phải lắp ngay không?",
+          answer: "Không bắt buộc! Bạn có thể đăng ký giữ gói ưu đãi trước và hẹn ngày kỹ thuật viên tới kéo cáp theo thời gian rảnh của bạn."
+        }
+      ]
     },
+    sport: {
+      name: "Thể Thao Ngoại Hạng Anh & Cúp C1",
+      badge: "Trực tiếp bóng đá",
+      theme: "fpt_standard",
+      radius: "rounded",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "TRỌN VẸN THỂ THAO ĐỈNH CAO FPT PLAY",
+      title: "Xem Ngoại Hạng Anh & Cúp C1 Đỉnh Cao Trên FPT Play",
+      highlight: "Internet Cực Mượt - Hình Ảnh 4K Sống Động Từng Giây",
+      subtitle:
+        "Trọn vẹn 380 trận Ngoại Hạng Anh và toàn bộ Cúp C1 UEFA, bản quyền chính thức, xem đồng thời trên nhiều thiết bị.",
+      form: "TƯ VẤN GÓI THỂ THAO & FPT PLAY",
+      form_subtitle: "Kèm tài khoản VIP xem Ngoại Hạng Anh & Cúp C1",
+      cta: "Nhận tư vấn thể thao",
+      slug: "fpt-play-ngoai-hang-anh-cup-c1",
+      page_title: "Internet & FPT Play Độc Quyền Ngoại Hạng Anh và Cúp C1 UEFA",
+      benefits: [
+        { title: "Độc quyền Ngoại Hạng Anh", text: "Bản quyền phát sóng trọn vẹn 380 trận cầu rực lửa", icon: "play" },
+        { title: "Cúp C1 & C2 Châu Âu", text: "Toàn bộ các trận cầu đỉnh cao UEFA Champions League", icon: "award" },
+        { title: "Bình luận tiếng Việt", text: "Đội ngũ BLV hàng đầu với phong cách phân tích cuốn hút", icon: "users" },
+        { title: "Xem đa nền tảng", text: "Xem mượt trên Tivi, Điện thoại, Máy tính, Tablet", icon: "wifi" }
+      ],
+      faqs: [
+        {
+          question: "Có được xem trọn mùa Ngoại Hạng Anh không?",
+          answer: "Có! Gói FPT Play Thể Thao phát sóng đầy đủ toàn bộ 380 trận đấu của giải Ngoại Hạng Anh mỗi mùa."
+        },
+        {
+          question: "Đang đi ngoài đường có xem bóng đá trên điện thoại được không?",
+          answer: "Được! Ứng dụng FPT Play hỗ trợ đăng nhập trên điện thoại di động với chất lượng HD/4K siêu nét qua 4G/5G hoặc Wi-Fi."
+        },
+        {
+          question: "Một tài khoản xem được bao nhiêu người?",
+          answer: "Gói cước hỗ trợ đăng nhập và xem đồng thời trên 2-3 thiết bị cùng một lúc."
+        }
+      ]
+    },
+    condo: {
+      name: "Chung Cư & Căn Hộ (Lắp Nhanh 2h)",
+      badge: "Hạ tầng sẵn sàng",
+      theme: "blue_trust",
+      radius: "soft",
+      hero_layout: "split",
+      plans_layout: "grid",
+      eyebrow: "HẠ TẦNG CÁP QUANG KHU CĂN HỘ CHUNG CƯ",
+      title: "Cáp Quang FPT Cho Căn Hộ & Chung Cư Cao Tầng",
+      highlight: "Hạ Tầng Sẵn Sàng - Triển Khai Trong 2 Giờ",
+      subtitle:
+        "Đi dây ngầm thẩm mỹ 100%, tín hiệu phủ sóng mọi ngóc ngách căn hộ, hỗ trợ trọn gói thủ tục đăng ký với ban quản lý.",
+      form: "ĐĂNG KÝ LẮP ĐẶT CHUNG CƯ",
+      form_subtitle: "Hỗ trợ thủ tục Ban quản lý tòa nhà – Không phát sinh phụ phí",
+      cta: "Tư vấn lắp tại căn hộ",
+      slug: "lap-mang-fpt-chung-cu-can-ho",
+      page_title: "Lắp Mạng FPT Căn Hộ Chung Cư - Hạ Tầng Sẵn Sàng Đi Dây Ngầm",
+      benefits: [
+        { title: "Hạ tầng ngầm sẵn sàng", text: "Có sẵn cổng chờ tại hộp kỹ thuật tòa nhà, tín hiệu cực chuẩn", icon: "building" },
+        { title: "Đi dây thẩm mỹ", text: "Thi công giấu dây ngầm tinh tế, không làm hỏng tường nhà", icon: "shield" },
+        { title: "Hỗ trợ Ban Quản Lý", text: "Kỹ sư FPT chủ động làm thủ tục cấp phép thi công với tòa nhà", icon: "install" },
+        { title: "Wi-Fi 6 xuyên tường", text: "Sóng phủ mạnh mẽ xuyên qua các phòng ngủ và phòng khách", icon: "wifi" }
+      ],
+      faqs: [
+        {
+          question: "Chung cư tôi ở có hạ tầng mạng FPT chưa?",
+          answer: "Nhân viên FPT sẽ kiểm tra dữ liệu tòa nhà và số căn hộ của bạn ngay khi tiếp nhận yêu cầu."
+        },
+        {
+          question: "Có phải tự xin phép Ban Quản Lý tòa nhà không?",
+          answer: "Kỹ thuật viên FPT sẽ đại diện làm thủ tục đăng ký ra vào và thi công theo quy định của BQL."
+        },
+        {
+          question: "Căn hộ nhiều phòng ngủ thì Wi-Fi có phủ tới không?",
+          answer: "FPT có các giải pháp Wi-Fi 6 Mesh thông minh giúp mở rộng sóng phủ khắp các phòng ngủ mà không cần kéo dây loằng ngoằng."
+        }
+      ]
+    }
   };
   const PRESETS = Object.fromEntries(
     Object.entries(presetContent).map(([key, copy]) => [
@@ -438,34 +692,25 @@
         name: copy.name,
         apply: (d) => {
           d.landing.theme_preset = copy.theme;
-          d.landing.theme_radius = "rounded";
-          d.landing.hero_eyebrow = "TƯ VẤN DỊCH VỤ FPT TELECOM";
+          d.landing.theme_radius = copy.radius || "rounded";
+          d.landing.hero_layout = copy.hero_layout || "split";
+          d.landing.plans_layout = copy.plans_layout || "grid";
+          d.landing.hero_eyebrow = copy.eyebrow;
           d.landing.hero_title = copy.title;
           d.landing.hero_highlight = copy.highlight;
           d.landing.hero_subtitle = copy.subtitle;
           d.landing.form_title = copy.form;
-          d.landing.form_subtitle =
-            "Giá, thiết bị và lịch lắp được xác nhận khi tư vấn";
+          d.landing.form_subtitle = copy.form_subtitle || "Giá, thiết bị và lịch lắp được xác nhận khi tư vấn";
           d.landing.form_cta = copy.cta;
           d.landing.cta_label = copy.cta;
-          if (key === "camera")
-            d.landing.faqs = [
-              {
-                question: "Gói nào được nhận ưu đãi camera?",
-                answer:
-                  "Nhân viên kiểm tra gói, kỳ thanh toán và điều kiện chiến dịch tại địa chỉ lắp đặt trước khi xác nhận quà.",
-              },
-              {
-                question: "Có phí lắp đặt hoặc lưu trữ camera không?",
-                answer:
-                  "Chi phí thiết bị, lắp đặt, VAT và lưu trữ (nếu có) được thể hiện trong báo giá trước khi đăng ký.",
-              },
-              {
-                question: "Gửi thông tin có giữ suất ưu đãi không?",
-                answer:
-                  "Gửi form là yêu cầu tư vấn. Suất ưu đãi chỉ được xác nhận khi nhân viên chốt điều kiện và lịch lắp đặt.",
-              },
-            ];
+          if (copy.benefits) d.landing.benefits = clone(copy.benefits);
+          if (copy.faqs) d.landing.faqs = clone(copy.faqs);
+          if (!d.id || d.title === "Landing Internet FPT") {
+            d.title = copy.page_title;
+            if (!d.slug || d.slug === "landing" || d.slug.startsWith("landing-")) {
+              d.slug = copy.slug + "-" + Math.floor(1000 + Math.random() * 9000);
+            }
+          }
         },
       },
     ]),
@@ -1808,6 +2053,168 @@
         queuePreview();
       };
     }
+
+    // Template Library Modal (8 Mẫu Sẵn Cho FPT Telecom)
+    const THEME_NAMES = {
+      fpt_standard: "FPT Chuẩn (Cam & Xanh)",
+      orange_vibrant: "Cam Năng Động",
+      blue_trust: "Xanh Tin Cậy",
+      emerald_fresh: "Xanh Doanh Nghiệp",
+      modern_dark: "Dark Game & Streamer",
+      custom: "Tùy biến",
+    };
+
+    function renderTemplateLibraryModal(activeFilter = "all") {
+      const container = $("lp-template-grid-container");
+      if (!container) return;
+      container.replaceChildren();
+
+      const entries = Object.entries(presetContent);
+      const filtered =
+        activeFilter === "all"
+          ? entries
+          : entries.filter(([key]) => key === activeFilter);
+
+      if (filtered.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "pricing-hint";
+        empty.textContent = "Không tìm thấy mẫu phù hợp.";
+        container.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(([key, item]) => {
+        const card = document.createElement("div");
+        card.className = "lp-template-card";
+
+        const top = document.createElement("div");
+        top.className = "lp-template-card-top";
+
+        const badge = document.createElement("span");
+        badge.className = "lp-template-badge";
+        badge.textContent = item.badge || "Mẫu FPT";
+        top.appendChild(badge);
+
+        const themeChip = document.createElement("span");
+        themeChip.className = "lp-template-theme-chip";
+        themeChip.textContent = THEME_NAMES[item.theme] || item.theme;
+        top.appendChild(themeChip);
+
+        const body = document.createElement("div");
+
+        const title = document.createElement("h3");
+        title.className = "lp-template-card-title";
+        title.textContent = item.name;
+
+        const desc = document.createElement("p");
+        desc.className = "lp-template-card-desc";
+        desc.textContent = item.highlight + " · " + item.subtitle;
+
+        const perks = document.createElement("div");
+        perks.className = "lp-template-perks";
+        (item.benefits || []).slice(0, 3).forEach((b) => {
+          const perkItem = document.createElement("div");
+          perkItem.className = "lp-template-perks-item";
+          const check = document.createElement("span");
+          check.textContent = "✓";
+          const text = document.createElement("span");
+          text.style.color = "inherit";
+          text.style.fontWeight = "500";
+          text.textContent = b.title + ": " + b.text;
+          perkItem.appendChild(check);
+          perkItem.appendChild(text);
+          perks.appendChild(perkItem);
+        });
+
+        body.appendChild(title);
+        body.appendChild(desc);
+        body.appendChild(perks);
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lp-template-apply-btn";
+        btn.innerHTML = "⚡ Áp Dụng Mẫu Này";
+        btn.onclick = async () => {
+          if (pendingUploads()) {
+            return showError("Đợi ảnh tải xong trước khi áp dụng mẫu.");
+          }
+          if (draft && dirty) {
+            if (
+              !confirm(
+                "Áp dụng mẫu '" +
+                  item.name +
+                  "'? Tiêu đề, màu sắc và nội dung sẽ thay đổi. Giá và suất ưu đãi được giữ nguyên.",
+              )
+            ) {
+              return;
+            }
+          }
+          const modal = $("lp-template-library-modal");
+          if (modal) modal.close();
+
+          if (!draft) {
+            await open(null);
+          }
+          PRESETS[key].apply(draft);
+          const sel = $("lp-admin-preset-select");
+          if (sel) sel.value = key;
+          updateDirtyState(true);
+          pushHistory();
+          renderFields();
+          queuePreview();
+
+          const toast = $("lp-admin-save-state");
+          if (toast) {
+            toast.textContent =
+              "Đã áp dụng mẫu '" +
+              item.name +
+              "'. Sửa thông tin và nhấn Lưu!";
+            toast.style.color = "#16a34a";
+            setTimeout(() => {
+              if (toast.textContent.includes("Đã áp dụng mẫu")) {
+                toast.textContent = "";
+                toast.style.color = "";
+              }
+            }, 4500);
+          }
+        };
+
+        card.appendChild(top);
+        card.appendChild(body);
+        card.appendChild(btn);
+        container.appendChild(card);
+      });
+    }
+
+    const modal = $("lp-template-library-modal");
+    if (modal) {
+      const chips = modal.querySelectorAll(".lp-filter-chip");
+      chips.forEach((chip) => {
+        chip.onclick = () => {
+          chips.forEach((c) => c.classList.remove("active"));
+          chip.classList.add("active");
+          renderTemplateLibraryModal(chip.dataset.filter || "all");
+        };
+      });
+    }
+
+    const showTemplatesModal = () => {
+      const m = $("lp-template-library-modal");
+      if (!m) return;
+      renderTemplateLibraryModal("all");
+      if (m.querySelectorAll) {
+        m.querySelectorAll(".lp-filter-chip").forEach((c) => {
+          c.classList.toggle("active", c.dataset.filter === "all");
+        });
+      }
+      m.showModal();
+    };
+
+    const openTemplatesBtn = $("lp-admin-open-templates-btn");
+    if (openTemplatesBtn) openTemplatesBtn.onclick = showTemplatesModal;
+
+    const browseTemplatesBtn = $("lp-admin-browse-templates");
+    if (browseTemplatesBtn) browseTemplatesBtn.onclick = showTemplatesModal;
 
     // Undo / Redo
     const undoBtn = $("lp-admin-undo"),
