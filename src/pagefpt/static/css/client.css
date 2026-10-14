@@ -6450,3 +6450,33 @@ body { --text-muted: #64748b; }
     justify-content: flex-start;
   }
 }
+
+/* Voucher summary banner inside bottom sheet form */
+.form-voucher-summary {
+  display: block;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fed7aa 100%);
+  border: 1.5px solid #f97316;
+  border-left: 5px solid #ea580c;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  box-shadow: 0 4px 14px rgba(242, 111, 33, 0.15);
+}
+.form-voucher-summary[hidden] {
+  display: none !important;
+}
+
+/* Hide floating voucher reminder whenever bottom sheet or dialog is open */
+.bottom-sheet-backdrop.active ~ .voucher-acquisition-reminder,
+.bottom-sheet-backdrop.active ~ * .voucher-acquisition-reminder,
+body:has(.bottom-sheet-backdrop.active) .voucher-acquisition-reminder,
+html:has(.bottom-sheet-backdrop.active) .voucher-acquisition-reminder {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

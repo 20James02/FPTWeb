@@ -235,7 +235,7 @@
 
     const benefits = get('voucher-acquisition-benefits'); benefits.replaceChildren();
     if (valid) {
-      for (const b of (v.benefits || []).slice(0, 3)) {
+      for (const b of (v.benefits || []).slice(0, 2)) {
         const pieces = [];
         const effective = b.discount_kind === 'percent' ? b.amount : Math.min(b.amount || 0, b.cap_vnd ?? b.amount ?? 0);
         if (effective > 0 && b.cap_vnd !== 0) pieces.push(b.discount_kind === 'percent' ? `Giảm ${b.amount / 100}%${b.cap_vnd != null ? ' (tối đa ' + money(b.cap_vnd) + ')' : ''}` : 'Giảm ' + money(effective));
@@ -250,7 +250,12 @@
     get('voucher-acquisition-use').textContent = valid ? 'Nhận quà & Sử dụng ngay →' : 'Nhận tư vấn ngay →';
     get('voucher-acquisition-reminder-label').textContent = valid ? 'Dùng mã ' + v.code : 'Nhận tư vấn ưu đãi';
     const summary = get('form-voucher-summary');
-    if (summary) { summary.hidden = !valid; summary.textContent = valid ? 'Mã ' + v.code + ' · ' + v.label + ' · Nhân viên xác nhận điều kiện' : ''; }
+    if (summary) {
+      summary.hidden = !valid;
+      summary.textContent = valid
+        ? '🎁 BẠN ĐÃ NHẬN ĐƯỢC ƯU ĐÃI: Mã ' + v.code + ' (' + v.label + ') · Vui lòng để lại thông tin liên hệ bên dưới để chuyên viên áp dụng ưu đãi ngay cho bạn!'
+        : '';
+    }
     reminder.hidden = !(marker || v?.link) || completedFor === (v?.id || marker);
   }
 
