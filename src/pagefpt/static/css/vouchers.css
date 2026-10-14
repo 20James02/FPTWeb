@@ -1770,3 +1770,140 @@
     pointer-events: auto !important;
   }
 }
+
+
+/* PROMAX_VOUCHER_CARDS */
+/* ===================================================================
+   VOUCHER (#voucher-table) CHUẨN SAAS PROMAX
+   =================================================================== */
+
+#voucher-table tbody tr {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  border-radius: 14px !important;
+  padding: 16px 18px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
+  position: relative !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#voucher-table tbody tr:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Hàng 1: Checkbox (order 1) */
+#voucher-table tbody td:first-child {
+  order: 1 !important;
+  position: static !important;
+  margin: 3px 10px 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  min-height: unset !important;
+  height: auto !important;
+  width: auto !important;
+  flex-shrink: 0 !important;
+}
+
+#voucher-table tbody td:first-child input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  accent-color: #f26f21 !important;
+}
+
+/* Hàng 1: Mã voucher (order 2) chiếm phần còn lại của hàng 1 */
+#voucher-table tbody td:nth-child(2) {
+  order: 2 !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  font-family: var(--font-family-mono, monospace);
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  color: var(--brand-primary, #f26f21) !important;
+  line-height: 1.3 !important;
+}
+
+/* Hàng 2: Tên chiến dịch (order 3) */
+#voucher-table tbody td:nth-child(3) {
+  order: 3 !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 6px 0 2px 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  line-height: 1.35 !important;
+}
+
+/* Hàng 2: Trạng thái (order 4) */
+#voucher-table tbody td:nth-child(4) {
+  order: 4 !important;
+  width: 100% !important;
+  padding: 0 !important;
+  font-size: 0.8rem !important;
+  color: var(--text-secondary) !important;
+  margin-top: 2px !important;
+}
+
+/* Hàng 2: Ngày kết thúc (order 5) */
+#voucher-table tbody td:nth-child(5) {
+  order: 5 !important;
+  width: 100% !important;
+  padding: 0 !important;
+  font-size: 0.8rem !important;
+  color: var(--text-muted) !important;
+  margin-top: 4px !important;
+}
+
+/* Hàng 3: Cụm nút thao tác (order 6, width 100%) - HOVER MỚI HIỆN */
+#voucher-table tbody td:last-child {
+  order: 6 !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+#voucher-table tbody td:last-child > div {
+  display: flex !important;
+  gap: 6px !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  opacity: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+  transform: translateY(6px) !important;
+  pointer-events: none !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#voucher-table tbody tr:hover td:last-child > div,
+#voucher-table tbody tr:focus-within td:last-child > div {
+  opacity: 1 !important;
+  max-height: 48px !important;
+  overflow: visible !important;
+  margin-top: 10px !important;
+  padding-top: 8px !important;
+  border-top: 1px dashed var(--border-color, #e2e8f0) !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+#voucher-table tbody td:last-child button {
+  padding: 5px 10px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  min-height: 30px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}

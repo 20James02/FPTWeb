@@ -1638,3 +1638,31 @@ button:active,
   transform: scale(0.97) !important;
   transition: transform 0.1s ease !important;
 }
+
+
+/* PROMAX_BULK_CHECKBOX_RESET */
+/* Xóa bỏ hoàn toàn hộp xám 44px của checkbox trong danh sách thẻ */
+.admin-check.bulk-row-check,
+.bulk-row-check {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: unset !important;
+  height: auto !important;
+  width: auto !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.admin-check.bulk-row-check input[type="checkbox"],
+.bulk-row-check input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  accent-color: #f26f21 !important;
+  border-radius: 4px !important;
+}
