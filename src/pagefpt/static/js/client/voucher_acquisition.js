@@ -13,7 +13,7 @@
   const current = () => window.PageFPTVoucher?.current?.();
 
   // ===========================================================================
-  // CANVAS FIREWORKS & CONFETTI ENGINE (BÙNG NỔ THỊ GIÁC HIỆU NĂNG CAO)
+  // CANVAS FIREWORKS & CONFETTI ENGINE (BÙNG NỔ THỊ GIÁC)
   // ===========================================================================
   function launchFireworks() {
     const canvas = get('voucher-confetti-canvas');
@@ -27,21 +27,21 @@
     const colors = ['#f26f21', '#ff8b26', '#ef4444', '#fbbf24', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#ffffff'];
     const particles = [];
     const originX = canvas.width / 2;
-    const originY = Math.max(120, canvas.height * 0.28);
+    const originY = Math.max(120, canvas.height * 0.3);
 
-    for (let i = 0; i < 90; i++) {
-      const angle = (Math.PI * 2 * i) / 90 + (Math.random() - 0.5) * 0.4;
-      const speed = Math.random() * 11 + 4;
+    for (let i = 0; i < 95; i++) {
+      const angle = (Math.PI * 2 * i) / 95 + (Math.random() - 0.5) * 0.4;
+      const speed = Math.random() * 12 + 4;
       particles.push({
         x: originX,
         y: originY,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 3,
+        vy: Math.sin(angle) * speed - 4,
         size: Math.random() * 7 + 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
         rotSpeed: (Math.random() - 0.5) * 14,
-        gravity: 0.22,
+        gravity: 0.24,
         drag: 0.982,
         life: 1.0,
         decay: Math.random() * 0.015 + 0.009,
@@ -75,7 +75,6 @@
         ctx.fillStyle = p.color;
 
         if (p.isStar) {
-          // Ngôi sao lấp lánh 4 cánh
           ctx.beginPath();
           ctx.moveTo(0, -p.size);
           ctx.lineTo(p.size * 0.3, -p.size * 0.3);
@@ -88,7 +87,6 @@
           ctx.closePath();
           ctx.fill();
         } else {
-          // Dải kim tuyến hình chữ nhật xoay lật
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
         }
         ctx.restore();
@@ -105,25 +103,52 @@
   }
 
   // ===========================================================================
-  // MỞ HỘP QUÀ VÀ HIỆN VÉ VOUCHER
+  // HOẠT CẢNH: HỘP QUÀ MỞ NẮP ➔ POPUP BAY RA
   // ===========================================================================
-  function triggerGiftOpening() {
-    const stage = get('voucher-gift-stage');
-    if (!stage) return;
-    stage.classList.remove('is-opened');
-    setTimeout(() => {
-      stage.classList.add('is-opened');
+  let openTimer = null;
+  function triggerGiftSequence() {
+    const intro = get('voucher-gift-intro');
+    const panel = get('voucher-ticket-panel');
+    if (!intro || !panel) return;
+
+    if (openTimer) clearTimeout(openTimer);
+
+    // Khởi tạo trạng thái ban đầu: Hộp quà hiện, Tấm vé ẩn chờ bay ra
+    intro.classList.remove('is-hidden', 'is-opening');
+    panel.classList.remove('is-revealed');
+    panel.classList.add('is-waiting');
+
+    // Sau 550ms: Hộp quà mở nắp và pháo hoa nổ
+    openTimer = setTimeout(() => {
+      intro.classList.add('is-opening');
       launchFireworks();
-    }, 450);
+
+      // Sau 250ms tiếp theo: Tấm vé voucher từ lòng hộp quà bay vút ra phóng to
+      setTimeout(() => {
+        panel.classList.remove('is-waiting');
+        panel.classList.add('is-revealed');
+        // Ẩn hộp quà sau khi vé đã bay ra hoàn chỉnh
+        setTimeout(() => {
+          intro.classList.add('is-hidden');
+        }, 400);
+      }, 250);
+    }, 550);
   }
 
   const giftBox = get('voucher-gift-box');
   if (giftBox) {
     giftBox.addEventListener('click', () => {
-      const stage = get('voucher-gift-stage');
-      if (stage && !stage.classList.contains('is-opened')) {
-        stage.classList.add('is-opened');
+      const intro = get('voucher-gift-intro');
+      const panel = get('voucher-ticket-panel');
+      if (intro && panel && !intro.classList.contains('is-opening')) {
+        if (openTimer) clearTimeout(openTimer);
+        intro.classList.add('is-opening');
         launchFireworks();
+        setTimeout(() => {
+          panel.classList.remove('is-waiting');
+          panel.classList.add('is-revealed');
+          setTimeout(() => { intro.classList.add('is-hidden'); }, 400);
+        }, 200);
       }
     });
   }
@@ -149,6 +174,54 @@
       (!marker || v.link?.slug === marker);
   }
 
+  // ===========================================================================
+  // TRÍCH XUẤT SỐ TIỀN ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT)
+  // ===========================================================================
+  function updateHeroDiscount(v, valid) {
+    const heroBox = get('voucher-hero-discount');
+    const heroPrefix = get('voucher-hero-prefix');
+    const heroAmount = get('voucher-hero-amount');
+    const heroSub = get('voucher-hero-sub');
+    if (!heroBox || !heroAmount) return;
+
+    if (!valid || !v) {
+      if (heroPrefix) heroPrefix.textContent = 'TƯ VẤN ƯU ĐÃI';
+      heroAmount.textContent = 'GÓI CƯỚC TỐT NHẤT';
+      if (heroSub) heroSub.textContent = 'Nhân viên sẽ kiểm tra chính sách khuyến mại hiện hành theo địa chỉ của bạn';
+      return;
+    }
+
+    const b = (v.benefits || [])[0];
+    if (!b) {
+      if (heroPrefix) heroPrefix.textContent = 'ƯU ĐÃI ĐẶC QUYỀN';
+      heroAmount.textContent = v.label || 'VOUCHER VIP';
+      if (heroSub) heroSub.textContent = 'Áp dụng trực tiếp khi đăng ký lắp đặt FPT Telecom';
+      return;
+    }
+
+    const effective = b.discount_kind === 'percent'
+      ? b.amount
+      : Math.min(b.amount || 0, b.cap_vnd ?? b.amount ?? 0);
+
+    if (b.discount_kind === 'percent' && effective > 0) {
+      if (heroPrefix) heroPrefix.textContent = 'GIẢM NGAY';
+      heroAmount.textContent = `${effective / 100}%`;
+      if (heroSub) heroSub.textContent = b.cap_vnd ? `Giảm tối đa ${money(b.cap_vnd)} trực tiếp vào gói cước` : 'Áp dụng trực tiếp khi đăng ký lắp đặt';
+    } else if (effective > 0) {
+      if (heroPrefix) heroPrefix.textContent = 'GIẢM TRỰC TIẾP';
+      heroAmount.textContent = money(effective);
+      if (heroSub) heroSub.textContent = 'Trừ thẳng vào chi phí đăng ký lắp đặt FPT Telecom';
+    } else if (b.gift_name) {
+      if (heroPrefix) heroPrefix.textContent = 'TẶNG QUÀ CHÍNH HÃNG';
+      heroAmount.textContent = b.gift_name.toUpperCase();
+      if (heroSub) heroSub.textContent = 'Quà tặng đặc quyền kèm theo hợp đồng lắp đặt mới';
+    } else {
+      if (heroPrefix) heroPrefix.textContent = 'ƯU ĐÃI ĐẶC BIỆT';
+      heroAmount.textContent = v.label || 'VOUCHER VIP';
+      if (heroSub) heroSub.textContent = 'Áp dụng cho khách hàng đăng ký qua link này';
+    }
+  }
+
   function render() {
     const v = current(), valid = eligible(v); state = valid ? v : null;
     get('voucher-acquisition-title').textContent = valid ? 'Chúc mừng! Bạn nhận được ưu đãi' : 'Cùng tìm ưu đãi phù hợp';
@@ -156,6 +229,10 @@
     get('voucher-acquisition-code').textContent = valid ? v.code : 'Chưa áp dụng';
     get('voucher-acquisition-end').textContent = valid ? day(v.end) : 'Nhân viên kiểm tra';
     get('voucher-acquisition-terms').textContent = valid ? v.terms : 'Mã chưa công bố, chưa bắt đầu hoặc đã ngừng không được áp dụng. Nhân viên sẽ kiểm tra ưu đãi đang có theo địa chỉ của bạn.';
+
+    // Cập nhật số tiền ưu đãi to nổi bật
+    updateHeroDiscount(v, valid);
+
     const benefits = get('voucher-acquisition-benefits'); benefits.replaceChildren();
     if (valid) {
       for (const b of (v.benefits || []).slice(0, 3)) {
@@ -183,7 +260,7 @@
     if (document.querySelector('dialog[open], .bottom-sheet-backdrop.active')) return false;
     dialog.showModal();
     get('voucher-acquisition-use').focus();
-    triggerGiftOpening();
+    triggerGiftSequence();
     return true;
   }
 

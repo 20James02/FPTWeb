@@ -2,7 +2,34 @@
   <!-- Canvas pháo hoa bùng nổ hiệu năng cao 60fps -->
   <canvas id="voucher-confetti-canvas" class="voucher-confetti-canvas" aria-hidden="true"></canvas>
 
-  <div class="voucher-acquisition-panel voucher-ticket-card">
+  <!-- Giai đoạn 1: Hộp Quà 3D Nổi Lên & Mở Nắp -->
+  <div id="voucher-gift-intro" class="voucher-gift-intro" aria-hidden="true">
+    <div class="gift-radial-rays"></div>
+    <div class="gift-box-3d" id="voucher-gift-box" title="Nhấn vào hộp quà để mở ngay">
+      <!-- Nắp hộp quà với nơ vàng kim hoàng gia -->
+      <div class="gift-lid-group">
+        <div class="gift-bow">
+          <span class="bow-loop bow-left"></span>
+          <span class="bow-loop bow-right"></span>
+          <span class="bow-knot"></span>
+          <span class="bow-ribbon ribbon-left"></span>
+          <span class="bow-ribbon ribbon-right"></span>
+        </div>
+        <div class="gift-lid-cap"></div>
+      </div>
+      <!-- Thân hộp quà đỏ cam FPT đính ruy băng chữ thập vàng -->
+      <div class="gift-box-body">
+        <div class="gift-ribbon-v"></div>
+        <div class="gift-ribbon-h"></div>
+      </div>
+      <!-- Luồng sáng vàng lóe lên từ miệng hộp -->
+      <div class="gift-glow-burst"></div>
+    </div>
+    <p class="gift-intro-hint" id="voucher-gift-hint">🎁 Chạm vào hộp quà để mở ưu đãi!</p>
+  </div>
+
+  <!-- Giai đoạn 2: Tấm Vé Voucher Bay Ra Phóng To Lộng Lẫy -->
+  <div class="voucher-acquisition-panel voucher-ticket-card" id="voucher-ticket-panel">
     <!-- Nút đóng tinh tế -->
     <button id="voucher-acquisition-close" class="voucher-acquisition-close" type="button" aria-label="Đóng thông tin ưu đãi">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
@@ -12,36 +39,25 @@
     <div class="ticket-notch ticket-notch-left" aria-hidden="true"></div>
     <div class="ticket-notch ticket-notch-right" aria-hidden="true"></div>
 
-    <!-- Sân khấu Hộp Quà 3D bung mở lộng lẫy -->
-    <div class="voucher-gift-stage" id="voucher-gift-stage" aria-hidden="true">
-      <div class="gift-radial-rays"></div>
-      <div class="gift-box-3d" id="voucher-gift-box" title="Nhấn để mở quà ngay">
-        <!-- Nắp hộp quà với nơ vàng kim hoàng gia -->
-        <div class="gift-lid-group">
-          <div class="gift-bow">
-            <span class="bow-loop bow-left"></span>
-            <span class="bow-loop bow-right"></span>
-            <span class="bow-knot"></span>
-          </div>
-          <div class="gift-lid-cap"></div>
-        </div>
-        <!-- Thân hộp quà đỏ cam FPT đính ruy băng chữ thập vàng -->
-        <div class="gift-box-body">
-          <div class="gift-ribbon-v"></div>
-          <div class="gift-ribbon-h"></div>
-        </div>
-        <!-- Luồng sáng vàng lóe lên từ miệng hộp -->
-        <div class="gift-glow-burst"></div>
-      </div>
-      <p class="gift-tap-hint" id="voucher-gift-hint">🎁 Nhấn vào hộp quà để mở ưu đãi!</p>
-    </div>
-
     <!-- Nội dung Tấm Vé Ưu Đãi Hoàng Gia -->
     <div class="voucher-ticket-inner" id="voucher-ticket-inner">
       <div class="voucher-ticket-head">
         <span class="voucher-acquisition-eyebrow">🎁 ĐẶC QUYỀN ƯU ĐÃI FPT TELECOM</span>
-        <h2 id="voucher-acquisition-title">Thông tin ưu đãi</h2>
+        <h2 id="voucher-acquisition-title">Chúc mừng! Bạn nhận được ưu đãi</h2>
         <p id="voucher-acquisition-label" class="voucher-acquisition-label"></p>
+      </div>
+
+      <!-- KHỐI SỐ TIỀN ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT BANNER) -->
+      <div class="voucher-hero-discount" id="voucher-hero-discount">
+        <div class="hero-discount-header">
+          <span class="hero-discount-sparkle">✨</span>
+          <span class="hero-discount-prefix" id="voucher-hero-prefix">GIẢM TRỰC TIẾP</span>
+          <span class="hero-discount-sparkle">✨</span>
+        </div>
+        <div class="hero-discount-amount-wrap">
+          <strong id="voucher-hero-amount" class="hero-discount-amount">100.000đ</strong>
+        </div>
+        <p class="hero-discount-sub" id="voucher-hero-sub">Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT</p>
       </div>
 
       <!-- Đường nét đứt chia cuống vé dập lỗ -->
@@ -50,7 +66,7 @@
       </div>
 
       <div class="voucher-ticket-body">
-        <!-- Danh sách quyền lợi nổi bật -->
+        <!-- Danh sách quyền lợi chi tiết -->
         <div id="voucher-acquisition-benefits" class="voucher-acquisition-benefits"></div>
 
         <!-- Khối thẻ Coupon Box VIP -->

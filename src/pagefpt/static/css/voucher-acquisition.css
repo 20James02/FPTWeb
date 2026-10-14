@@ -1,6 +1,5 @@
 /* ===================================================================
-   VOUCHER ACQUISITION — VIP GIFT VOUCHER TICKET & FIREWORKS STAGE
-   Design Aesthetics: Bùng Nổ Thị Giác, Hộp Quà 3D Mở Nắp, Vé Ưu Đãi VIP FPT
+   VOUCHER ACQUISITION — VIP GIFT TICKET, FLYOUT ANIMATION & HERO DISCOUNT
    =================================================================== */
 
 /* Canvas pháo hoa phủ toàn màn hình */
@@ -23,17 +22,230 @@
   border-radius: 28px;
   background: transparent;
   color: #0f172a;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: auto;
   box-shadow: none;
 }
 
 .voucher-acquisition::backdrop {
-  background: rgba(7, 27, 55, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(7, 27, 55, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* Tấm vé Voucher Quà Tặng (VIP Ticket Card) */
+/* ===================================================================
+   GIAI ĐOẠN 1: HỘP QUÀ 3D NỔI LÊN (GIFT BOX INTRO)
+   =================================================================== */
+.voucher-gift-intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 24px;
+  z-index: 20;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.voucher-gift-intro.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  display: none !important;
+}
+
+/* Hào quang vàng xoay tròn tỏa sáng */
+.gift-radial-rays {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.55) 0%, rgba(242, 111, 33, 0.25) 50%, transparent 70%);
+  animation: giftRayRotate 8s linear infinite, giftRayPulse 2s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes giftRayPulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes giftRayRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hộp quà 3D to đẹp nổi bật */
+.gift-box-3d {
+  position: relative;
+  width: 96px;
+  height: 90px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  animation: giftBoxFloat 2s infinite ease-in-out;
+  transition: transform 0.3s ease;
+}
+
+.gift-box-3d:hover {
+  transform: scale(1.08) translateY(-4px);
+}
+
+@keyframes giftBoxFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(-4deg); }
+  75% { transform: translateY(-8px) rotate(4deg); }
+}
+
+/* Nắp hộp quà */
+.gift-lid-group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 96px;
+  height: 26px;
+  z-index: 5;
+  transform-origin: left bottom;
+  transition: all 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gift-lid-cap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(135deg, #f26f21, #dc2626);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Nơ vàng kim 3D hoàng gia */
+.gift-bow {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 22px;
+}
+
+.bow-loop {
+  position: absolute;
+  top: 0;
+  width: 22px;
+  height: 16px;
+  border: 3px solid #fbbf24;
+  border-radius: 50% 50% 0 50%;
+  background: linear-gradient(135deg, #fef08a, #f59e0b);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.bow-left { left: 4px; transform: rotate(-25deg); }
+.bow-right { right: 4px; transform: scaleX(-1) rotate(-25deg); }
+
+.bow-knot {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+/* Dải ruy băng rủ */
+.bow-ribbon {
+  position: absolute;
+  top: 14px;
+  width: 6px;
+  height: 12px;
+  background: #f59e0b;
+  border-radius: 2px;
+}
+.ribbon-left { left: 16px; transform: rotate(15deg); }
+.ribbon-right { right: 16px; transform: rotate(-15deg); }
+
+/* Thân hộp quà */
+.gift-box-body {
+  position: absolute;
+  bottom: 0;
+  left: 6px;
+  width: 84px;
+  height: 66px;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(135deg, #ea580c, #b91c1c);
+  box-shadow: 0 12px 28px rgba(220, 38, 38, 0.4);
+  overflow: hidden;
+}
+
+/* Ruy băng chữ thập */
+.gift-ribbon-v {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 100%;
+  background: linear-gradient(180deg, #fde047, #f59e0b);
+}
+
+.gift-ribbon-h {
+  position: absolute;
+  top: 45%;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(90deg, #fde047, #f59e0b);
+}
+
+/* Luồng sáng vàng lóe lên từ miệng hộp */
+.gift-glow-burst {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #fde047 60%, transparent 80%);
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.gift-intro-hint {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  margin: 18px 0 0;
+  letter-spacing: 0.4px;
+  animation: hintBlink 1.2s infinite alternate;
+}
+
+@keyframes hintBlink {
+  from { opacity: 0.7; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1.02); }
+}
+
+/* Khi hộp quà MỞ NẮP */
+.voucher-gift-intro.is-opening .gift-box-3d {
+  animation: none;
+}
+
+.voucher-gift-intro.is-opening .gift-lid-group {
+  transform: translateY(-55px) rotate(-35deg) scale(0.85);
+  opacity: 0;
+}
+
+.voucher-gift-intro.is-opening .gift-glow-burst {
+  opacity: 1;
+  transform: translateX(-50%) scale(3.5);
+}
+
+/* ===================================================================
+   GIAI ĐOẠN 2: TẤM VÉ VOUCHER BAY RA PHÓNG TO (FLYOUT ANIMATION)
+   =================================================================== */
 .voucher-acquisition-panel {
   position: relative;
   padding: 24px 24px 20px;
@@ -41,26 +253,41 @@
   background: linear-gradient(145deg, #ffffff 0%, #fffbf6 50%, #fff7ed 100%);
   border: 2px solid #f97316;
   border-radius: 26px;
+  box-shadow: 0 25px 80px rgba(242, 111, 33, 0.45), 0 0 45px rgba(245, 158, 11, 0.25);
   overflow: hidden;
-  box-shadow: 0 25px 80px rgba(242, 111, 33, 0.35), 0 0 40px rgba(245, 158, 11, 0.2);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
 }
 
-/* Họa tiết chìm vân chéo sang trọng */
-.voucher-acquisition-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(#f97316 0.75px, transparent 0.75px);
-  background-size: 16px 16px;
-  opacity: 0.05;
+/* Ban đầu tấm vé thu nhỏ chờ hộp quà mở */
+.voucher-acquisition-panel.is-waiting {
+  opacity: 0;
+  transform: scale(0.1) translateY(80px);
   pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  border: none;
+}
+
+/* Khi bay ra phóng to lộng lẫy */
+.voucher-acquisition-panel.is-revealed {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  max-height: unset;
+  animation: ticketPopOut 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes ticketPopOut {
+  0% { opacity: 0; transform: scale(0.15) translateY(120px) rotate(-8deg); }
+  70% { opacity: 1; transform: scale(1.04) translateY(-6px) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
 }
 
 /* 2 Rãnh khoét bán nguyệt (Notches) phong cách vé voucher quà tặng */
 .ticket-notch {
   position: absolute;
-  top: 175px;
+  top: 180px;
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -105,206 +332,6 @@
   transform: rotate(90deg) scale(1.1);
 }
 
-/* ===================================================================
-   SÂN KHẤU HỘP QUÀ 3D MỞ NẮP (GIFT BOX 3D ANIMATION)
-   =================================================================== */
-.voucher-gift-stage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0 6px;
-  margin-bottom: 4px;
-}
-
-/* Hào quang xoay tròn vàng kim */
-.gift-radial-rays {
-  position: absolute;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.45) 0%, rgba(242, 111, 33, 0.15) 50%, transparent 70%);
-  animation: giftRayPulse 3s infinite alternate ease-in-out;
-  pointer-events: none;
-}
-
-@keyframes giftRayPulse {
-  0% { transform: scale(0.85); opacity: 0.6; }
-  100% { transform: scale(1.2); opacity: 1; }
-}
-
-/* Khối hộp quà 3D */
-.gift-box-3d {
-  position: relative;
-  width: 76px;
-  height: 72px;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  animation: giftWobble 2s infinite ease-in-out;
-  transition: transform 0.3s ease;
-}
-
-.gift-box-3d:hover {
-  transform: scale(1.08);
-}
-
-@keyframes giftWobble {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  25% { transform: rotate(-5deg) translateY(-3px); }
-  75% { transform: rotate(5deg) translateY(-3px); }
-}
-
-/* Nắp hộp quà */
-.gift-lid-group {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 76px;
-  height: 22px;
-  z-index: 5;
-  transform-origin: left bottom;
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.gift-lid-cap {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 16px;
-  border-radius: 6px 6px 3px 3px;
-  background: linear-gradient(135deg, #f26f21, #dc2626);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Nơ vàng kim 3D */
-.gift-bow {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 44px;
-  height: 18px;
-}
-
-.bow-loop {
-  position: absolute;
-  top: 0;
-  width: 18px;
-  height: 14px;
-  border: 3px solid #fbbf24;
-  border-radius: 50% 50% 0 50%;
-  background: linear-gradient(135deg, #fef08a, #f59e0b);
-}
-.bow-left { left: 3px; transform: rotate(-25deg); }
-.bow-right { right: 3px; transform: scaleX(-1) rotate(-25deg); }
-
-.bow-knot {
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #f59e0b;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Thân hộp quà */
-.gift-box-body {
-  position: absolute;
-  bottom: 0;
-  left: 5px;
-  width: 66px;
-  height: 52px;
-  border-radius: 0 0 8px 8px;
-  background: linear-gradient(135deg, #ea580c, #b91c1c);
-  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
-  overflow: hidden;
-}
-
-/* Ruy băng chữ thập */
-.gift-ribbon-v {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 14px;
-  height: 100%;
-  background: linear-gradient(180deg, #fde047, #f59e0b);
-}
-
-.gift-ribbon-h {
-  position: absolute;
-  top: 45%;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: linear-gradient(90deg, #fde047, #f59e0b);
-}
-
-/* Luồng sáng vàng lóe lên từ miệng hộp */
-.gift-glow-burst {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0%, #fde047 50%, transparent 70%);
-  opacity: 0;
-  transition: all 0.5s ease;
-  pointer-events: none;
-}
-
-/* Khi hộp quà MỞ NẮP (is-opened) */
-.voucher-gift-stage.is-opened .gift-box-3d {
-  animation: none;
-}
-
-.voucher-gift-stage.is-opened .gift-lid-group {
-  transform: translateY(-42px) rotate(-32deg) scale(0.9);
-  opacity: 0.15;
-}
-
-.voucher-gift-stage.is-opened .gift-glow-burst {
-  opacity: 1;
-  transform: translateX(-50%) scale(2.2);
-}
-
-.gift-tap-hint {
-  font-size: 11px;
-  font-weight: 700;
-  color: #c2410c;
-  margin: 8px 0 0;
-  letter-spacing: 0.3px;
-  animation: hintBlink 1.5s infinite alternate;
-}
-
-@keyframes hintBlink {
-  from { opacity: 0.6; }
-  to { opacity: 1; }
-}
-
-.voucher-gift-stage.is-opened .gift-tap-hint {
-  display: none;
-}
-
-/* ===================================================================
-   CHI TIẾT VÉ VOUCHER (TICKET CONTENT)
-   =================================================================== */
-.voucher-ticket-inner {
-  animation: ticketSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes ticketSlideUp {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
 .voucher-ticket-head {
   padding: 0 4px;
 }
@@ -316,7 +343,7 @@
   font-weight: 800;
   color: #fff;
   background: linear-gradient(90deg, #f26f21, #ea580c);
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 20px;
   margin: 0 0 10px;
   box-shadow: 0 3px 8px rgba(242, 111, 33, 0.25);
@@ -344,6 +371,76 @@
   overflow-wrap: anywhere;
 }
 
+/* ===================================================================
+   KHỐI SỐ TIỀN ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT BANNER)
+   =================================================================== */
+.voucher-hero-discount {
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fed7aa 100%);
+  border: 2px dashed #f59e0b;
+  border-radius: 16px;
+  padding: 14px 12px;
+  margin: 12px 0 14px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+  animation: heroPulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes heroPulse {
+  0% { border-color: #f59e0b; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15); }
+  100% { border-color: #f26f21; box-shadow: 0 6px 20px rgba(242, 111, 33, 0.25); }
+}
+
+.hero-discount-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.hero-discount-sparkle {
+  font-size: 14px;
+  animation: sparkleRotate 2s infinite linear;
+}
+
+@keyframes sparkleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-discount-prefix {
+  font-size: 12px;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* CON SỐ TIỀN SIÊU TO RỰC RỠ */
+.hero-discount-amount-wrap {
+  margin: 2px 0;
+}
+
+.hero-discount-amount {
+  display: inline-block;
+  font-size: clamp(32px, 8.5vw, 42px);
+  font-weight: 900;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #f26f21 0%, #ea580c 50%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(234, 88, 12, 0.25));
+  letter-spacing: -0.5px;
+}
+
+.hero-discount-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #78350f;
+  margin: 4px 0 0;
+  line-height: 1.35;
+}
+
 /* Đường nét đứt chia cuống vé */
 .ticket-perforated-line {
   position: relative;
@@ -363,7 +460,7 @@
   color: #ea580c;
 }
 
-/* Danh sách quyền lợi */
+/* Danh sách quyền lợi chi tiết */
 .voucher-acquisition-benefits {
   display: grid;
   gap: 8px;
@@ -476,7 +573,7 @@
 }
 
 /* ===================================================================
-   NÚT HÀNH ĐỘNG CTA QUÉT SÁNG (SHIMMERING CTA BUTTON)
+   NÚT HÀNH ĐỘNG CTA QUÉT SÁNG
    =================================================================== */
 .voucher-acquisition-use {
   position: relative;
@@ -580,7 +677,6 @@
   font-size: 16px;
 }
 
-/* Focus styles */
 .voucher-acquisition :focus-visible,
 .voucher-acquisition-reminder:focus-visible {
   outline: 3px solid #f26f21;
@@ -590,6 +686,12 @@
 @media (max-width: 380px) {
   .voucher-acquisition-panel {
     padding: 20px 16px 16px;
+  }
+  .voucher-hero-discount {
+    padding: 12px 10px;
+  }
+  .hero-discount-amount {
+    font-size: 30px;
   }
   .voucher-acquisition-ticket {
     grid-template-columns: 1fr;
