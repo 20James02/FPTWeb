@@ -2,7 +2,7 @@
 
 Sinh từ code hiện tại bằng `uv run python tools/export_frontend_contract.py`. Không truy cập tài khoản cloud. Quyền trong bảng là kiểm tra Python; SQL còn kiểm tra scope/assignee/global. Response OpenAPI của phần lớn API chưa có DTO: xem response map trong prompt, không coi schema `{}` là hợp đồng đầy đủ.
 
-Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài OpenAPI.
+Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 
 ## Toàn bộ method, URL, quyền và body
 
@@ -18,6 +18,7 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/admin/landing-pages` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:178` |
 | GET | `/admin/leads` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:104` |
 | GET | `/admin/leads/detail` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:109` |
+| GET | `/admin/link-performance` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:196` |
 | GET | `/admin/login` | public_admin_login | — | — | `src/pagefpt/web/admin_routes.py:76` |
 | GET | `/admin/marketing` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:135` |
 | GET | `/admin/navigation` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:173` |
@@ -91,9 +92,15 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | POST | `/api/v1/admin/leads/{id}/recompute` | intelligence.write | — | — | `src/pagefpt/modules/intelligence/routes.py:23` |
 | POST | `/api/v1/admin/leads/{id}/reveal` | lead.pii | AAL2 | — | `src/pagefpt/modules/leads/admin.py:183` |
 | POST | `/api/v1/admin/leads/{id}/transitions` | lead.write | — | TransitionCommand | `src/pagefpt/modules/leads/admin.py:209` |
-| GET | `/api/v1/admin/leads/{id}/voucher` | lead.write | — | — | `src/pagefpt/modules/vouchers/routes.py:261` |
-| POST | `/api/v1/admin/leads/{id}/voucher/reserve` | lead.write | — | ReserveInput | `src/pagefpt/modules/vouchers/routes.py:267` |
-| POST | `/api/v1/admin/leads/{id}/voucher/{action}` | lead.write | — | ActionInput | `src/pagefpt/modules/vouchers/routes.py:331` |
+| GET | `/api/v1/admin/leads/{id}/voucher` | lead.write | — | — | `src/pagefpt/modules/vouchers/routes.py:269` |
+| POST | `/api/v1/admin/leads/{id}/voucher/reserve` | lead.write | — | ReserveInput | `src/pagefpt/modules/vouchers/routes.py:275` |
+| POST | `/api/v1/admin/leads/{id}/voucher/{action}` | lead.write | — | ActionInput | `src/pagefpt/modules/vouchers/routes.py:342` |
+| GET | `/api/v1/admin/link-performance` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:99` |
+| POST | `/api/v1/admin/link-performance` | marketing.write (global SQL scope) | — | pagefpt__modules__link_analytics__schemas__LinkInput | `src/pagefpt/modules/link_analytics/routes.py:105` |
+| POST | `/api/v1/admin/link-performance/bulk` | marketing.write (global SQL scope) | — | BulkInput | `src/pagefpt/modules/link_analytics/routes.py:126` |
+| GET | `/api/v1/admin/link-performance/options` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:93` |
+| GET | `/api/v1/admin/link-performance/report` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:38` |
+| PUT | `/api/v1/admin/link-performance/{id}` | marketing.write (global SQL scope) | — | LinkUpdate | `src/pagefpt/modules/link_analytics/routes.py:113` |
 | GET | `/api/v1/admin/locations` | catalog.write | — | — | `src/pagefpt/modules/catalog/routes.py:105` |
 | GET | `/api/v1/admin/locations/source` | catalog.write | — | — | `src/pagefpt/modules/catalog/geography_routes.py:29` |
 | POST | `/api/v1/admin/locations/sync` | catalog.write | AAL2 | GeographySyncInput | `src/pagefpt/modules/catalog/geography_routes.py:44` |
@@ -170,7 +177,7 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/api/v1/admin/vouchers/report` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:34` |
 | DELETE | `/api/v1/admin/vouchers/{id}` | marketing.write; pricing.publish | AAL2 | — | `src/pagefpt/modules/vouchers/routes.py:133` |
 | PUT | `/api/v1/admin/vouchers/{id}` | marketing.write | — | VoucherUpdate | `src/pagefpt/modules/vouchers/routes.py:96` |
-| POST | `/api/v1/admin/vouchers/{id}/links` | marketing.write | — | LinkInput | `src/pagefpt/modules/vouchers/routes.py:145` |
+| POST | `/api/v1/admin/vouchers/{id}/links` | marketing.write | — | pagefpt__modules__vouchers__schemas__LinkInput | `src/pagefpt/modules/vouchers/routes.py:145` |
 | POST | `/api/v1/admin/vouchers/{id}/pause` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:121` |
 | POST | `/api/v1/admin/vouchers/{id}/publish` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:109` |
 | GET | `/api/v1/admin/workbench` | lead.read | — | — | `src/pagefpt/modules/leads/admin.py:169` |
@@ -194,6 +201,10 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/api/v1/landing/{slug}/activity` | public | — | — | `src/pagefpt/web/cms_pages.py:24` |
 | POST | `/api/v1/leads` | public | — | LeadRequest | `src/pagefpt/modules/leads/routes.py:11` |
 | POST | `/api/v1/leads/challenges/verify` | public | — | ChallengeInput | `src/pagefpt/modules/abuse/challenges.py:22` |
+| GET | `/api/v1/link-tracking/context` | public | — | — | `src/pagefpt/modules/link_analytics/routes.py:179` |
+| POST | `/api/v1/link-tracking/engagement` | public | — | EngagementInput | `src/pagefpt/modules/link_analytics/routes.py:232` |
+| POST | `/api/v1/link-tracking/revoke` | public | — | RevokeInput | `src/pagefpt/modules/link_analytics/routes.py:245` |
+| POST | `/api/v1/link-tracking/visit` | public | — | pagefpt__modules__link_analytics__schemas__VisitInput | `src/pagefpt/modules/link_analytics/routes.py:197` |
 | GET | `/api/v1/pages/{slug}` | public | — | — | `src/pagefpt/modules/content/routes.py:12` |
 | POST | `/api/v1/quotes` | public | — | QuoteRequest | `src/pagefpt/modules/catalog/routes.py:197` |
 | GET | `/api/v1/redirects/resolve` | public | — | — | `src/pagefpt/modules/content/redirects.py:63` |
@@ -205,10 +216,10 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | GET | `/api/v1/system/display-settings` | public | — | — | `src/pagefpt/modules/content/display_settings.py:229` |
 | POST | `/api/v1/system/display-settings` | content.publish | AAL2 | DisplayPatch | `src/pagefpt/modules/content/display_settings.py:234` |
 | POST | `/api/v1/touches` | public | — | AttributionInput | `src/pagefpt/modules/marketing/routes.py:75` |
-| POST | `/api/v1/visits/assess` | public | — | VisitInput | `src/pagefpt/modules/intelligence/routes.py:37` |
-| DELETE | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:214` |
-| GET | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:208` |
-| POST | `/api/v1/vouchers/context` | public | — | ContextInput | `src/pagefpt/modules/vouchers/routes.py:221` |
+| POST | `/api/v1/visits/assess` | public | — | pagefpt__modules__intelligence__routes__VisitInput | `src/pagefpt/modules/intelligence/routes.py:37` |
+| DELETE | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:222` |
+| GET | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:216` |
+| POST | `/api/v1/vouchers/context` | public | — | ContextInput | `src/pagefpt/modules/vouchers/routes.py:229` |
 | POST | `/api/v1/webhooks/leads/{provider}` | server HMAC signature | — | LeadWebhook | `src/pagefpt/modules/integrations/webhooks.py:27` |
 | GET | `/chinh-sach-bao-mat` | public_html | — | — | `src/pagefpt/web/client_routes.py:85` |
 | GET | `/do-toc-do` | server_guarded_admin_html | — | — | `src/pagefpt/web/client_routes.py:99` |
@@ -217,6 +228,8 @@ Tổng 213 method/path: 208 có trong OpenAPI và 4 route worker/SEO ngoài Open
 | POST | `/internal/jobs/process` | server worker secret | — | ProcessInput | `src/pagefpt/modules/workflow/routes.py:30` |
 | GET | `/internal/jobs/recover` | server worker secret | — | — | `src/pagefpt/modules/workflow/routes.py:44` |
 | GET | `/khuyen-mai` | public_html | — | — | `src/pagefpt/web/client_routes.py:63` |
+| GET | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
+| HEAD | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
 | GET | `/robots.txt` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:40` |
 | GET | `/s/{slug}` | public_html | — | — | `src/pagefpt/modules/vouchers/routes.py:184` |
 | GET | `/san-pham/{slug}` | public_html | — | — | `src/pagefpt/web/client_routes.py:43` |
@@ -548,6 +561,28 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|---|
 | path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
 | path | `action` | True | `{"type":"string","title":"Action"}` |
+
+### GET /api/v1/admin/link-performance/report
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| query | `start` | False | `{"anyOf":[{"type":"string","format":"date"},{"type":"null"}],"title":"Start"}` |
+| query | `end` | False | `{"anyOf":[{"type":"string","format":"date"},{"type":"null"}],"title":"End"}` |
+| query | `platform` | False | `{"type":"string","maxLength":40,"default":"","title":"Platform"}` |
+| query | `creator` | False | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Creator"}` |
+| query | `kind` | False | `{"enum":["","content","voucher"],"type":"string","default":"","title":"Kind"}` |
+| query | `q` | False | `{"type":"string","maxLength":100,"default":"","title":"Q"}` |
+| query | `order` | False | `{"enum":["title","platform","creator_name","created_at","clicks","forms","closed","installed","closed_rate","average_engagement_ms","ranking_score"],"type":"string","default":"created_at","title":"Order"}` |
+| query | `direction` | False | `{"enum":["asc","desc"],"type":"string","default":"desc","title":"Direction"}` |
+| query | `limit` | False | `{"type":"integer","maximum":100,"minimum":1,"default":25,"title":"Limit"}` |
+| query | `offset` | False | `{"type":"integer","maximum":1000000,"minimum":0,"default":0,"title":"Offset"}` |
+| query | `link_id` | False | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Link Id"}` |
+
+### PUT /api/v1/admin/link-performance/{id}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
 
 ### GET /api/v1/admin/locations
 
@@ -925,6 +960,12 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|---|
 | path | `provider` | True | `{"enum":["google","meta","tiktok","crm"],"type":"string","title":"Provider"}` |
 
+### GET /r/{slug}
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `slug` | True | `{"type":"string","title":"Slug"}` |
+
 ### GET /s/{slug}
 
 | Vị trí | Tên | Bắt buộc | Schema/giới hạn |
@@ -1020,6 +1061,20 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|
 | `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 | `id` | Có | `{"type":"string","format":"uuid"}` |
+
+### BulkInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `action` | Có | `{"type":"string","enum":["pause","activate"]}` |
+| `items` | Có | `{"items":{"$ref":"#/components/schemas/BulkItem"},"type":"array","maxItems":50,"minItems":1}` |
+
+### BulkItem
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `id` | Có | `{"type":"string","format":"uuid"}` |
+| `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
 ### BulkPriceInput
 
@@ -1134,6 +1189,16 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `hero_experiment_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
 | `promo_slides` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/PromoSlideInput"},"type":"array","maxItems":12},{"type":"null"}]}` |
 | `plan_categories` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/PlanCategory"},"type":"array","maxItems":3,"minItems":3},{"type":"null"}]}` |
+
+### EngagementInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `visit_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+| `session_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+| `page_id` | Có | `{"type":"string","format":"uuid"}` |
+| `sequence` | Có | `{"type":"integer","maximum":100000.0,"minimum":1.0}` |
+| `total_ms` | Có | `{"type":"integer","maximum":28800000.0,"minimum":0.0}` |
 
 ### Enroll
 
@@ -1354,6 +1419,8 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
+| `link_source_token` | Không | `{"anyOf":[{"type":"string","maxLength":8192},{"type":"null"}]}` |
+| `link_visit_token` | Không | `{"anyOf":[{"type":"string","maxLength":8192},{"type":"null"}]}` |
 | `voucher_code` | Không | `{"anyOf":[{"type":"string","maxLength":40,"pattern":"^(?:[A-Z0-9_-]{3,40})?$"},{"type":"null"}]}` |
 | `voucher_link` | Không | `{"anyOf":[{"type":"string","maxLength":50,"pattern":"^[a-z0-9-]+$"},{"type":"null"}]}` |
 | `phone` | Có | `{"type":"string","maxLength":40,"minLength":5}` |
@@ -1402,15 +1469,20 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `provider_event_id` | Có | `{"type":"string","maxLength":100,"minLength":1,"pattern":"^[a-zA-Z0-9_.:-]+$"}` |
 | `lead` | Có | `{"$ref":"#/components/schemas/LeadRequest"}` |
 
-### LinkInput
+### LinkUpdate
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
+| `title` | Có | `{"type":"string","maxLength":160,"minLength":1}` |
 | `slug` | Có | `{"type":"string","maxLength":50,"minLength":3,"pattern":"^[a-z0-9-]+$"}` |
-| `target` | Không | `{"type":"string","maxLength":110,"default":"/"}` |
-| `channel` | Không | `{"type":"string","maxLength":40,"minLength":1,"pattern":"^[a-zA-Z0-9_-]+$","default":"direct"}` |
-| `employee_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
+| `target` | Không | `{"type":"string","maxLength":120,"pattern":"^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$","default":"/"}` |
+| `platform` | Không | `{"type":"string","maxLength":40,"pattern":"^[a-zA-Z0-9_-]+$","default":"other"}` |
+| `utm_medium` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":"social"}` |
+| `utm_campaign` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":""}` |
+| `utm_content` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":""}` |
+| `content_note` | Không | `{"type":"string","maxLength":2000,"default":""}` |
 | `active` | Không | `{"type":"boolean","default":true}` |
+| `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
 ### LocationHint
 
@@ -1754,6 +1826,12 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `totp` | Không | `{"type":"string","pattern":"^([0-9]{6})?$","default":""}` |
 | `totp_factor_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
 
+### RevokeInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `visit_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+
 ### Rule
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
@@ -1840,12 +1918,6 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|
 | `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
-### VisitInput
-
-| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
-|---|---|---|
-| `session_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
-
 ### VoucherInput
 
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
@@ -1890,4 +1962,44 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `redeem_at` | Không | `{"type":"string","enum":["closed","installed"],"default":"installed"}` |
 | `stackable` | Không | `{"type":"boolean","default":false}` |
 | `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
+
+### pagefpt__modules__intelligence__routes__VisitInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `session_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+
+### pagefpt__modules__link_analytics__schemas__LinkInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `title` | Có | `{"type":"string","maxLength":160,"minLength":1}` |
+| `slug` | Có | `{"type":"string","maxLength":50,"minLength":3,"pattern":"^[a-z0-9-]+$"}` |
+| `target` | Không | `{"type":"string","maxLength":120,"pattern":"^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$","default":"/"}` |
+| `platform` | Không | `{"type":"string","maxLength":40,"pattern":"^[a-zA-Z0-9_-]+$","default":"other"}` |
+| `utm_medium` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":"social"}` |
+| `utm_campaign` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":""}` |
+| `utm_content` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-z0-9_.-]*$","default":""}` |
+| `content_note` | Không | `{"type":"string","maxLength":2000,"default":""}` |
+| `active` | Không | `{"type":"boolean","default":true}` |
+
+### pagefpt__modules__link_analytics__schemas__VisitInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `source_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+| `session_token` | Có | `{"type":"string","maxLength":8192,"minLength":1}` |
+| `visit_token` | Không | `{"anyOf":[{"type":"string","maxLength":8192},{"type":"null"}]}` |
+
+### pagefpt__modules__vouchers__schemas__LinkInput
+
+| Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
+|---|---|---|
+| `title` | Không | `{"type":"string","maxLength":160,"default":""}` |
+| `content_note` | Không | `{"type":"string","maxLength":2000,"default":""}` |
+| `slug` | Có | `{"type":"string","maxLength":50,"minLength":3,"pattern":"^[a-z0-9-]+$"}` |
+| `target` | Không | `{"type":"string","maxLength":110,"default":"/"}` |
+| `channel` | Không | `{"type":"string","maxLength":40,"minLength":1,"pattern":"^[a-zA-Z0-9_-]+$","default":"direct"}` |
+| `employee_id` | Không | `{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}]}` |
+| `active` | Không | `{"type":"boolean","default":true}` |
 

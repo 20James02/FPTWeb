@@ -23,6 +23,7 @@ from pagefpt.modules.leads.appointments import router as appointments_router
 from pagefpt.modules.leads.billing import router as billing_router
 from pagefpt.modules.leads.profile import router as lead_profile_router
 from pagefpt.modules.leads.routes import router as leads_router
+from pagefpt.modules.link_analytics.routes import router as link_analytics_router
 from pagefpt.modules.marketing.routes import router as marketing_router
 from pagefpt.modules.media.routes import router as media_router
 from pagefpt.modules.pricing.imports import router as imports_router
@@ -33,6 +34,7 @@ from pagefpt.modules.workflow.routes import router as jobs_router
 from pagefpt.web.cms_pages import router as cms_router
 
 router = APIRouter()
+router.include_router(link_analytics_router)
 router.include_router(vouchers_router)
 router.include_router(identity_router)
 router.include_router(accounts_router)

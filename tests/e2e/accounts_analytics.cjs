@@ -1,7 +1,8 @@
 const { chromium } = require("playwright"),
   assert = require("node:assert/strict"),
   fs = require("node:fs");
-const origin = "http://127.0.0.1:8098";
+const origin = process.env.PAGEFPT_QA_ORIGIN || "http://127.0.0.1:8098";
+if (!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin)) throw Error("Disposable loopback fixture required");
 (async () => {
   const browser = await chromium.launch({
     executablePath: "/usr/bin/google-chrome",
@@ -13,6 +14,7 @@ const origin = "http://127.0.0.1:8098";
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
+    await context.route('**/*',route=>route.request().url().startsWith(origin+'/')||route.request().url().startsWith('data:')?route.continue():route.abort());
   const errors = [],
     checks = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -151,6 +153,7 @@ const origin = "http://127.0.0.1:8098";
     const employee = await browser.newContext({
       viewport: { width: 390, height: 900 },
     });
+    await employee.route('**/*',route=>route.request().url().startsWith(origin+'/')||route.request().url().startsWith('data:')?route.continue():route.abort());
     const employeePage = await employee.newPage();
     employeePage.on("pageerror", (e) => errors.push(e.message));
     const employeeLogin = await employee.request.post(
@@ -221,7 +224,7 @@ const origin = "http://127.0.0.1:8098";
         .textContent.startsWith("Đã tải kỳ"),
     );
     await page.locator("#analytics-campaign").fill("no-such-campaign");
-    await page.locator("#analytics-filter button").click();
+    await page.locator("#analytics-filter button[type=submit]").click();
     await page.waitForFunction(() =>
       document
         .getElementById("analytics-state")
@@ -231,7 +234,7 @@ const origin = "http://127.0.0.1:8098";
     await inspect("analytics-empty");
     await page.locator("#analytics-campaign").fill("");
     await page.locator("#analytics-start").fill("2025-01-01");
-    await page.locator("#analytics-filter button").click();
+    await page.locator("#analytics-filter button[type=submit]").click();
     await page.waitForFunction(() =>
       document
         .getElementById("analytics-state")

@@ -158,3 +158,13 @@ def test_known_insufficient_budget_does_not_advertise_an_unreservable_discount()
         assert q["voucher"]["status"] == "sold_out"
         assert q["initial_total_vnd"] == 1200000
         assert q["monthly_vnd"] == 200000
+
+
+def test_zero_effect_discount_cannot_be_held_as_an_eligible_benefit():
+    c = campaign()
+    c["rules"][0].update(basis="setup", amount=100000)
+    q = quote()
+    apply_voucher(q, c, ["w"], {"id": "p"}, NOW)
+    assert q["voucher"]["status"] == "no_benefit"
+    assert q["initial_total_vnd"] == 1200000
+    assert "budget_cost_vnd" not in q["voucher"]

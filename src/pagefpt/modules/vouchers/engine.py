@@ -97,6 +97,9 @@ def apply_voucher(quote: dict, campaign: dict, path: list[str], plan: dict, at: 
         discount *= months
     discount = min(service_remaining, discount)
     gift = rule.get("gift")
+    if discount == 0 and not gift:
+        view.update(status="no_benefit", discount_vnd=0)
+        return quote
     budget_cost = discount + (gift["cost_vnd"] if gift else 0)
     if (
         campaign.get("remaining_budget_vnd") is not None

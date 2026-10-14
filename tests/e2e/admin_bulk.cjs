@@ -1,6 +1,7 @@
 const { chromium, request } = require("playwright"),
   assert = require("node:assert/strict");
-const origin = "http://127.0.0.1:8098";
+const origin = process.env.PAGEFPT_QA_ORIGIN || "http://127.0.0.1:8098";
+if (!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin)) throw Error("Disposable loopback fixture required");
 (async () => {
   const b = await chromium.launch({
     executablePath: "/usr/bin/google-chrome",
@@ -11,6 +12,7 @@ const origin = "http://127.0.0.1:8098";
       p = await ctx.newPage(),
       errors = [];
     p.setDefaultTimeout(10000);
+    await ctx.route('**/*',route=>route.request().url().startsWith(origin+'/')||route.request().url().startsWith('data:')?route.continue():route.abort());
     p.on("pageerror", (e) => errors.push(e.message));
     await ctx.request.post(origin + "/api/v1/auth/session", {
       data: {

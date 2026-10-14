@@ -9,6 +9,7 @@ import asyncio
 import inspect
 import json
 import textwrap
+from datetime import date
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -52,7 +53,7 @@ def authorization(endpoint, path):
             if path.startswith("/health/")
             else "public_html"
             if path in {"/", "/san-pham/{slug}", "/khuyen-mai", "/chinh-sach-bao-mat"}
-            or path.startswith("/s/")
+            or path.startswith(("/s/", "/r/"))
             else "public_admin_login"
             if path == "/admin/login"
             else "server_guarded_admin_html",
@@ -87,6 +88,8 @@ def authorization(endpoint, path):
         checks = [{"permission": "marketing.write", "mfa": False}]
         if endpoint.__name__ in {"publish", "pause", "delete", "inventory_save"}:
             checks.append({"permission": "pricing.publish", "mfa": True})
+    elif path.startswith("/api/v1/admin/link-performance"):
+        checks = [{"permission": "marketing.write (global SQL scope)", "mfa": False}]
     elif path.startswith("/api/v1/admin/leads/") and "/voucher" in path:
         checks = [{"permission": "lead.write", "mfa": False}]
     if path == "/api/v1/admin/{kind}/{id}/publish":
@@ -161,7 +164,7 @@ async def main():
     operations.sort(key=lambda item: (item["path"], item["method"]))
     output = {
         "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-        "date": "2026-10-07",
+        "date": date.today().isoformat(),
         "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
         "operations": operations,
         "schemas": definitions,
@@ -174,7 +177,7 @@ async def main():
         "",
         "Sinh từ code hiện tại bằng `uv run python tools/export_frontend_contract.py`. Không truy cập tài khoản cloud. Quyền trong bảng là kiểm tra Python; SQL còn kiểm tra scope/assignee/global. Response OpenAPI của phần lớn API chưa có DTO: xem response map trong prompt, không coi schema `{}` là hợp đồng đầy đủ.",
         "",
-        f"Tổng {len(operations)} method/path: {sum(item['in_openapi'] for item in operations)} có trong OpenAPI và 4 route worker/SEO ngoài OpenAPI.",
+        f"Tổng {len(operations)} method/path: {sum(item['in_openapi'] for item in operations)} có trong OpenAPI và {sum(not item['in_openapi'] for item in operations)} route ngoài OpenAPI.",
         "",
         "## Toàn bộ method, URL, quyền và body",
         "",

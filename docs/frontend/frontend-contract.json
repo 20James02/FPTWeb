@@ -1,6 +1,6 @@
 {
   "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-  "date": "2026-10-07",
+  "date": "2026-10-14",
   "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
   "operations": [
     {
@@ -296,6 +296,34 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/link-performance",
+      "operation_id": "link_performance_admin_link_performance_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 196,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
               }
             }
           }
@@ -4175,7 +4203,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher",
       "operation_id": "lead_voucher_api_v1_admin_leads__id__voucher_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 261,
+      "source_line": 269,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4228,7 +4256,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/reserve",
       "operation_id": "reserve_api_v1_admin_leads__id__voucher_reserve_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 267,
+      "source_line": 275,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4290,7 +4318,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/{action}",
       "operation_id": "action_api_v1_admin_leads__id__voucher__action__post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 331,
+      "source_line": 342,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4329,6 +4357,443 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ActionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/link-performance",
+      "operation_id": "listing_api_v1_admin_link_performance_get",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 99,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/link-performance",
+      "operation_id": "create_api_v1_admin_link_performance_post",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 105,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pagefpt__modules__link_analytics__schemas__LinkInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/link-performance/bulk",
+      "operation_id": "bulk_api_v1_admin_link_performance_bulk_post",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 126,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BulkInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/link-performance/options",
+      "operation_id": "options_api_v1_admin_link_performance_options_get",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 93,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/link-performance/report",
+      "operation_id": "report_api_v1_admin_link_performance_report_get",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 38,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "start",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          }
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          }
+        },
+        {
+          "name": "platform",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 40,
+            "default": "",
+            "title": "Platform"
+          }
+        },
+        {
+          "name": "creator",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creator"
+          }
+        },
+        {
+          "name": "kind",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "",
+              "content",
+              "voucher"
+            ],
+            "type": "string",
+            "default": "",
+            "title": "Kind"
+          }
+        },
+        {
+          "name": "q",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 100,
+            "default": "",
+            "title": "Q"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "title",
+              "platform",
+              "creator_name",
+              "created_at",
+              "clicks",
+              "forms",
+              "closed",
+              "installed",
+              "closed_rate",
+              "average_engagement_ms",
+              "ranking_score"
+            ],
+            "type": "string",
+            "default": "created_at",
+            "title": "Order"
+          }
+        },
+        {
+          "name": "direction",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "default": "desc",
+            "title": "Direction"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 25,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 1000000,
+            "minimum": 0,
+            "default": 0,
+            "title": "Offset"
+          }
+        },
+        {
+          "name": "link_id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/link-performance/{id}",
+      "operation_id": "update_api_v1_admin_link_performance__id__put",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 113,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write (global SQL scope)",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LinkUpdate"
             }
           }
         }
@@ -8587,7 +9052,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/LinkInput"
+              "$ref": "#/components/schemas/pagefpt__modules__vouchers__schemas__LinkInput"
             }
           }
         }
@@ -9783,6 +10248,171 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/link-tracking/context",
+      "operation_id": "context_api_v1_link_tracking_context_get",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 179,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/link-tracking/engagement",
+      "operation_id": "engagement_api_v1_link_tracking_engagement_post",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 232,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EngagementInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/link-tracking/revoke",
+      "operation_id": "revoke_api_v1_link_tracking_revoke_post",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 245,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RevokeInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/link-tracking/visit",
+      "operation_id": "visit_api_v1_link_tracking_visit_post",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 197,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pagefpt__modules__link_analytics__schemas__VisitInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/pages/{slug}",
       "operation_id": "page_api_v1_pages__slug__get",
       "source": "src/pagefpt/modules/content/routes.py",
@@ -10269,7 +10899,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/VisitInput"
+              "$ref": "#/components/schemas/pagefpt__modules__intelligence__routes__VisitInput"
             }
           }
         },
@@ -10303,7 +10933,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "clear_api_v1_vouchers_context_delete",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 214,
+      "source_line": 222,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -10330,7 +10960,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "context_api_v1_vouchers_context_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 208,
+      "source_line": 216,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -10385,7 +11015,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "save_context_api_v1_vouchers_context_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 221,
+      "source_line": 229,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -10665,6 +11295,69 @@
       },
       "response_model_present": false,
       "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/r/{slug}",
+      "operation_id": "redirect_r__slug__get",
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 146,
+      "authorization": {
+        "caller": "public_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Slug"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "HEAD",
+      "path": "/r/{slug}",
+      "operation_id": null,
+      "source": "src/pagefpt/modules/link_analytics/routes.py",
+      "source_line": 146,
+      "authorization": {
+        "caller": "public_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {},
+      "response_model_present": false,
+      "in_openapi": false
     },
     {
       "method": "GET",
@@ -11126,6 +11819,55 @@
         "id"
       ],
       "title": "BulkAssignmentItem"
+    },
+    "BulkInput": {
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "pause",
+            "activate"
+          ],
+          "title": "Action"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/components/schemas/BulkItem"
+          },
+          "type": "array",
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Items"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "action",
+        "items"
+      ],
+      "title": "BulkInput"
+    },
+    "BulkItem": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Id"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "expected_version"
+      ],
+      "title": "BulkItem"
     },
     "BulkPriceInput": {
       "properties": {
@@ -11665,6 +12407,49 @@
         "expected_version"
       ],
       "title": "DisplayPatch"
+    },
+    "EngagementInput": {
+      "properties": {
+        "visit_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Visit Token"
+        },
+        "session_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Session Token"
+        },
+        "page_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Page Id"
+        },
+        "sequence": {
+          "type": "integer",
+          "maximum": 100000.0,
+          "minimum": 1.0,
+          "title": "Sequence"
+        },
+        "total_ms": {
+          "type": "integer",
+          "maximum": 28800000.0,
+          "minimum": 0.0,
+          "title": "Total Ms"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "visit_token",
+        "session_token",
+        "page_id",
+        "sequence",
+        "total_ms"
+      ],
+      "title": "EngagementInput"
     },
     "Enroll": {
       "properties": {
@@ -12792,6 +13577,30 @@
     },
     "LeadRequest": {
       "properties": {
+        "link_source_token": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 8192
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Link Source Token"
+        },
+        "link_visit_token": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 8192
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Link Visit Token"
+        },
         "voucher_code": {
           "anyOf": [
             {
@@ -13124,8 +13933,14 @@
       ],
       "title": "LeadWebhook"
     },
-    "LinkInput": {
+    "LinkUpdate": {
       "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Title"
+        },
         "slug": {
           "type": "string",
           "maxLength": 50,
@@ -13135,42 +13950,64 @@
         },
         "target": {
           "type": "string",
-          "maxLength": 110,
+          "maxLength": 120,
+          "pattern": "^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$",
           "title": "Target",
           "default": "/"
         },
-        "channel": {
+        "platform": {
           "type": "string",
           "maxLength": 40,
-          "minLength": 1,
           "pattern": "^[a-zA-Z0-9_-]+$",
-          "title": "Channel",
-          "default": "direct"
+          "title": "Platform",
+          "default": "other"
         },
-        "employee_id": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "uuid"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Employee Id"
+        "utm_medium": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Medium",
+          "default": "social"
+        },
+        "utm_campaign": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Campaign",
+          "default": ""
+        },
+        "utm_content": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Content",
+          "default": ""
+        },
+        "content_note": {
+          "type": "string",
+          "maxLength": 2000,
+          "title": "Content Note",
+          "default": ""
         },
         "active": {
           "type": "boolean",
           "title": "Active",
           "default": true
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "slug"
+        "title",
+        "slug",
+        "expected_version"
       ],
-      "title": "LinkInput"
+      "title": "LinkUpdate"
     },
     "LocationHint": {
       "properties": {
@@ -15825,6 +16662,22 @@
       ],
       "title": "ResetPassword"
     },
+    "RevokeInput": {
+      "properties": {
+        "visit_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Visit Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "visit_token"
+      ],
+      "title": "RevokeInput"
+    },
     "Rule": {
       "properties": {
         "key": {
@@ -16227,22 +17080,6 @@
       ],
       "title": "VersionCommand"
     },
-    "VisitInput": {
-      "properties": {
-        "session_token": {
-          "type": "string",
-          "maxLength": 8192,
-          "minLength": 1,
-          "title": "Session Token"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "session_token"
-      ],
-      "title": "VisitInput"
-    },
     "VoucherInput": {
       "properties": {
         "code": {
@@ -16544,6 +17381,187 @@
         "expected_version"
       ],
       "title": "VoucherUpdate"
+    },
+    "pagefpt__modules__intelligence__routes__VisitInput": {
+      "properties": {
+        "session_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Session Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "session_token"
+      ],
+      "title": "VisitInput"
+    },
+    "pagefpt__modules__link_analytics__schemas__LinkInput": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Title"
+        },
+        "slug": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 3,
+          "pattern": "^[a-z0-9-]+$",
+          "title": "Slug"
+        },
+        "target": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$",
+          "title": "Target",
+          "default": "/"
+        },
+        "platform": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "title": "Platform",
+          "default": "other"
+        },
+        "utm_medium": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Medium",
+          "default": "social"
+        },
+        "utm_campaign": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Campaign",
+          "default": ""
+        },
+        "utm_content": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9_.-]*$",
+          "title": "Utm Content",
+          "default": ""
+        },
+        "content_note": {
+          "type": "string",
+          "maxLength": 2000,
+          "title": "Content Note",
+          "default": ""
+        },
+        "active": {
+          "type": "boolean",
+          "title": "Active",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "title",
+        "slug"
+      ],
+      "title": "LinkInput"
+    },
+    "pagefpt__modules__link_analytics__schemas__VisitInput": {
+      "properties": {
+        "source_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Source Token"
+        },
+        "session_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Session Token"
+        },
+        "visit_token": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 8192
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Visit Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "source_token",
+        "session_token"
+      ],
+      "title": "VisitInput"
+    },
+    "pagefpt__modules__vouchers__schemas__LinkInput": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 160,
+          "title": "Title",
+          "default": ""
+        },
+        "content_note": {
+          "type": "string",
+          "maxLength": 2000,
+          "title": "Content Note",
+          "default": ""
+        },
+        "slug": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 3,
+          "pattern": "^[a-z0-9-]+$",
+          "title": "Slug"
+        },
+        "target": {
+          "type": "string",
+          "maxLength": 110,
+          "title": "Target",
+          "default": "/"
+        },
+        "channel": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "title": "Channel",
+          "default": "direct"
+        },
+        "employee_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Employee Id"
+        },
+        "active": {
+          "type": "boolean",
+          "title": "Active",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "slug"
+      ],
+      "title": "LinkInput"
     },
     "ProcessInput": {
       "additionalProperties": false,

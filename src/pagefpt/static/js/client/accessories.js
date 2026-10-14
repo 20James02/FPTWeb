@@ -36,13 +36,16 @@
     return { once, monthly };
   }
   function current(plan) {
+    const validSelection = (q) =>
+      valid(q) && (!q.voucher ||
+        JSON.stringify([...(q.accessory_ids || [])].sort()) === JSON.stringify(ids(plan)));
     const q = quotes.get(plan);
     if (q?.status === "not_available") return null;
-    if (q?.billing_months === term(plan) && valid(q)) return q;
+    if (q?.billing_months === term(plan) && validSelection(q)) return q;
     const preview = options
       .get(plan)
       ?.find((o) => o.billing_months === term(plan));
-    return valid(preview) ? preview : null;
+    return validSelection(preview) ? preview : null;
   }
   function total(plan, q = current(plan)) {
     if (!q) return null;

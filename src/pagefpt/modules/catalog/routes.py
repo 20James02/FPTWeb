@@ -264,6 +264,7 @@ async def build_quote(input, request, confirmed_path=None):
             region_path=data.get("region_path"),
         )
         preview["billing_months"] = months
+        with_accessories(preview, devices, months)
         mark_landing(preview, context, at)
         await decorate(request, preview, campaign, voucher_path, input.plan_id, at, voucher_plan)
         billing_options.append(preview)

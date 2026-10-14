@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlencode
 from uuid import UUID
 
 from fastapi import APIRouter, Query, Request
@@ -185,16 +186,39 @@ async def link_qr(slug: str, request: Request):
 async def short_link(slug: str, request: Request):
     if len(slug) > 50:
         raise DomainError("NOT_FOUND", 404)
-    campaign = await resolve(request, link=slug)
+    campaign = await resolve(request, link=slug, record_click=True)
+    from pagefpt.modules.link_analytics.service import preview_bot, sign_source
+
     if not campaign:
-        raise DomainError(
-            "VOUCHER_UNAVAILABLE", 404, "Link ưu đãi đã tạm dừng hoặc không còn hiệu lực."
+        landing = await dispatch(
+            request, "voucher_landing", slug=slug, count_click=True, bot=preview_bot(request)
         )
-    response = RedirectResponse(campaign["link"]["target"], status_code=302)
+        if not landing.get("target"):
+            raise DomainError("VOUCHER_UNAVAILABLE", 404)
+        query = {"pf_offer": slug}
+        if landing.get("id"):
+            query["pf_link_source"] = sign_source(request, landing)
+        response = RedirectResponse(landing["target"] + "?" + urlencode(query), status_code=302)
+        # The new unavailable source must not silently apply a previous campaign.
+        response.delete_cookie(COOKIE, httponly=True, samesite="lax")
+        response.headers["Cache-Control"] = "private, no-store"
+        response.headers["Referrer-Policy"] = "same-origin"
+        return response
+    response = RedirectResponse(
+        campaign["link"]["target"] + "?" + urlencode({"pf_offer": slug}), status_code=302
+    )
     expiry = min(datetime.now(UTC) + timedelta(days=30), datetime.fromisoformat(campaign["end"]))
     response.set_cookie(
         COOKIE,
-        crypto(request).sign({"purpose": "voucher_link", "slug": slug, "exp": expiry.timestamp()}),
+        crypto(request).sign(
+            {
+                "purpose": "voucher_link",
+                "slug": slug,
+                "exp": expiry.timestamp(),
+                "acquired_at": datetime.now(UTC).isoformat(),
+                "tracking_version": campaign.get("tracking_link_version"),
+            }
+        ),
         max_age=max(1, int((expiry - datetime.now(UTC)).total_seconds())),
         httponly=True,
         secure=request.app.state.settings.environment not in {"development", "test"},
@@ -297,6 +321,9 @@ async def reserve(id: UUID, input: ReserveInput, request: Request):
             billing_months=input.billing_months,
             accessory_ids=lead["payload"].get("accessory_ids", []),
             voucher_code=input.code,
+            # This slug comes from the server's stored quote, never a submitted price.
+            # build_quote revalidates the page's current publication and campaign.
+            landing_slug=(lead.get("quote") or {}).get("landing", {}).get("slug"),
         ),
         request,
         confirmed_path=path,

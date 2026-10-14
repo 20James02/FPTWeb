@@ -17,11 +17,11 @@ function showToast(message, type = 'info') {
 
 let pendingLead = null;
 async function submitLeadToBackend(leadData) {
-  leadData = {...leadData, ...(window.PageFPTVoucher?.leadContext?.() || {})};
+  leadData = {...leadData, ...(window.PageFPTVoucher?.leadContext?.() || {}), ...(window.PageFPTLinkTracking?.leadContext?.() || {})};
   const body = JSON.stringify(leadData);
   // Auto-refreshed evidence must not turn an unresolved submission into a new one.
   // User input/consent changes do; preserve the original exact body until resolved.
-  const transient = new Set(['quote_token','session_token','attribution_token','challenge_token']);
+  const transient = new Set(['quote_token','session_token','attribution_token','challenge_token','link_source_token','link_visit_token']);
   const intent = JSON.stringify(Object.fromEntries(Object.entries(leadData)
     .filter(([key])=>!transient.has(key)).sort(([a],[b])=>a.localeCompare(b))));
   if (!pendingLead || pendingLead.intent !== intent) {

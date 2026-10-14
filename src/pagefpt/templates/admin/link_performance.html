@@ -1,0 +1,50 @@
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Hiệu quả link content — PageFPT{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-link-performance.css">{% endblock %}
+{% block breadcrumbs %}Marketing / Hiệu quả link content{% endblock %}
+{% block content %}
+<section class="link-performance">
+<header class="lp-heading"><div><span class="lp-eyebrow">CONTENT → TRAFFIC → KẾT QUẢ BÁN HÀNG</span><h1>Hiệu quả từng link</h1><p>Theo dõi form đã lưu và đơn chốt còn hiệu lực từ nguồn content.</p></div><div class="lp-actions"><button id="lp-guide-btn" class="btn-action-guide" type="button" onclick="window.openAdminGuide('link_performance')">📖 Hướng Dẫn</button>
+<button id="lp-refresh" class="btn-action-detail" type="button">Làm mới</button><button id="lp-new-link" class="btn-action-call" type="button">+ Tạo link content</button></div></header>
+<form id="lp-filter" class="panel-card lp-filter">
+<label for="lp-start">Từ ngày<input id="lp-start" type="date" required></label><label for="lp-end">Đến ngày<input id="lp-end" type="date" required></label>
+<label for="lp-filter-platform">Nền tảng<select id="lp-filter-platform"><option value="">Tất cả nền tảng</option></select></label>
+<label for="lp-filter-creator">Người tạo<select id="lp-filter-creator"><option value="">Tất cả người tạo</option></select></label>
+<label for="lp-filter-kind">Loại link<select id="lp-filter-kind"><option value="">Content &amp; voucher</option><option value="content">Content</option><option value="voucher">Voucher</option></select></label>
+<label for="lp-search">Tìm tên, link, note<input id="lp-search" maxlength="100" placeholder="Ví dụ: video camera"></label>
+<button class="btn-action-call" type="submit">Xem kết quả</button></form>
+<p id="lp-status" role="status" aria-live="polite"></p>
+<div class="lp-kpis">
+<article><span>Click sau lọc bot</span><strong id="lp-kpi-clicks">—</strong><small id="lp-kpi-click-note">Lượt truy cập hợp lệ</small></article>
+<article><span>Form đã lưu</span><strong id="lp-kpi-forms">—</strong><small>Đã lưu thành công</small></article>
+<article><span>Đơn chốt thành công</span><strong id="lp-kpi-closed">—</strong><small>Đã chốt hoặc đã lắp; trừ đơn hủy</small></article>
+<article><span>Đã lắp đặt</span><strong id="lp-kpi-installed">—</strong><small>Kết quả nghiệm thu từ CRM</small></article>
+</div>
+<div class="lp-chart-grid"><section class="panel-card"><h2>Xu hướng theo ngày nguồn</h2><p class="lp-muted">Kết quả có thể tăng khi nhân viên xử lý khách từ những ngày trước.</p><div id="lp-trend" class="lp-trend"></div><div class="lp-legend"><span class="lp-dot-blue">Click</span><span class="lp-dot-orange">Form</span><span class="lp-dot-green">Chốt</span></div></section>
+<section class="panel-card"><h2>Từ traffic đến đơn thành công</h2><div id="lp-funnel"></div><p class="lp-muted">Click không phải người duy nhất. Chỉ số chốt được lấy từ CRM, không lấy từ nút bấm.</p></section></div>
+<section class="panel-card lp-results"><header class="lp-list-heading"><div><h2>Danh sách link</h2><p id="lp-range" class="lp-muted"></p></div><button id="lp-csv" class="btn-action-detail" type="button">Xuất bảng đang xem</button></header>
+<div class="lp-bulk"><span id="lp-selected">Chưa chọn link</span><button id="lp-bulk-pause" type="button" class="btn-action-detail" disabled>Tạm dừng đã chọn</button><button id="lp-bulk-activate" type="button" class="btn-action-detail" disabled>Bật đã chọn</button></div>
+<div class="lp-table-scroll" tabindex="0" aria-label="Bảng kết quả, cuộn ngang để xem thêm chỉ số">
+<table id="lp-table" data-managed-list="true"><thead><tr>
+<th><input id="lp-select-all" type="checkbox" aria-label="Chọn các link trên trang này"></th><th data-order="title" aria-sort="none"><button type="button">Link &amp; nội dung</button></th><th data-order="platform" aria-sort="none"><button type="button">Nguồn</button></th><th data-order="creator_name" aria-sort="none"><button type="button">Người tạo</button></th><th data-order="created_at" aria-sort="descending"><button type="button">Ngày tạo</button></th>
+<th data-order="clicks" aria-sort="none"><button type="button">Click</button></th><th data-order="forms" aria-sort="none"><button type="button">Form</button></th><th data-order="closed" aria-sort="none"><button type="button">Chốt</button></th><th data-order="installed" aria-sort="none"><button type="button">Lắp</button></th><th data-order="closed_rate" aria-sort="none"><button type="button">Chốt / form</button></th><th data-order="average_engagement_ms" aria-sort="none"><button type="button">Thời gian TB</button></th><th data-order="ranking_score" aria-sort="none"><button type="button">Độ chắc chắn</button></th>
+</tr></thead><tbody id="lp-rows"></tbody></table></div>
+<div class="lp-pagination"><button id="lp-prev" class="btn-action-detail" type="button">Trang trước</button><span id="lp-page-info"></span><button id="lp-next" class="btn-action-detail" type="button">Trang sau</button></div>
+<details class="lp-definitions"><summary>Cách đọc chỉ số và dữ liệu chưa đo được</summary><p>Form là hồ sơ đã lưu thành công. Chốt là hồ sơ hiện Đã chốt/Đã lắp; đơn hủy được trừ. Tỷ lệ chốt/form là tỷ lệ trên hồ sơ, không phải trên người duy nhất. Click đã lọc các bot/preview nhận dạng được; vẫn có thể còn bot không nhận diện.</p><p>Thời gian TB chỉ tính các phiên đồng ý phân tích, khi tab hiển thị và có tương tác trong 60 giây gần nhất. Không có mẫu thì hiển thị “Chưa đo”. Số phiên đo và độ phủ được ghi cạnh chỉ số; không suy ra thời gian của toàn bộ khách.</p><p>Xếp hạng dùng cận dưới Wilson của tỷ lệ chốt trên phiên đo, với ít nhất 30 mẫu đã có 7 ngày để phát sinh kết quả. Đây là chỉ số hỗ trợ so sánh, không chứng minh content tạo ra tác động nhân quả. Click/thời gian trước ngày bắt đầu đo không được khôi phục giả.</p><p>Nguồn theo dõi chiến dịch được giữ ổn định sau khi có dữ liệu. Mỗi nền tảng/content mới nên có một link riêng. Dữ liệu đã được ẩn danh bảo mật thông tin cá nhân; không còn tên hay số khách.</p></details>
+</section>
+</section>
+<dialog id="lp-editor" class="lp-dialog"><form id="lp-editor-form"><header><div><h2 id="lp-editor-title">Tạo link content</h2><p>Đặt tên dễ nhận biết, mỗi content một link.</p></div><button class="btn-action-detail" id="lp-close" type="button" aria-label="Đóng thiết lập link">Đóng</button></header>
+<p id="lp-editor-error" class="lp-error" role="alert" hidden></p>
+<div class="lp-editor-grid"><label for="lp-title">Tên nội dung / link *<input id="lp-title" required maxlength="160" placeholder="Video camera — gia đình — A"></label><label for="lp-slug">Mã link ngắn *<input id="lp-slug" required pattern="[a-z0-9-]{3,50}" maxlength="50" placeholder="camera-gia-dinh-a"></label>
+<label for="lp-target">Trang đích *<input id="lp-target" required list="lp-targets" value="/" placeholder="/ hoặc /ten-landing"><datalist id="lp-targets"><option value="/"><option value="/khuyen-mai"><option value="/do-toc-do"><option value="/san-pham/internet-gia-dinh"><option value="/san-pham/internet-doanh-nghiep"><option value="/san-pham/fpt-play"><option value="/san-pham/combo-fpt-play"><option value="/san-pham/camera-fpt"></datalist></label>
+<label for="lp-platform">Nền tảng *<select id="lp-platform" required></select></label>
+<label for="lp-utm-medium">Kênh truy cập (Medium)<input id="lp-utm-medium" pattern="[a-z0-9_.-]*" maxlength="100" value="social" placeholder="social / cpc / referral"></label>
+<label for="lp-utm-campaign">Mã chiến dịch<input id="lp-utm-campaign" pattern="[a-z0-9_.-]*" maxlength="100" placeholder="camera_october"></label>
+<label for="lp-utm-content">Mã content / phiên bản<input id="lp-utm-content" pattern="[a-z0-9_.-]*" maxlength="100" placeholder="video_hook_a"></label>
+<label class="lp-check" for="lp-active"><input id="lp-active" type="checkbox" checked>Cho phép sử dụng link</label>
+<label class="lp-wide" for="lp-content-note">Ghi chú content<textarea id="lp-content-note" maxlength="2000" rows="3" placeholder="Hook, thông điệp, đối tượng, bài đăng dùng link này…"></textarea></label></div>
+<p id="lp-editor-owner" class="lp-muted">Người tạo và thời điểm được lưu tự động từ tài khoản của bạn.</p><div class="lp-link-preview"><span>Link chia sẻ</span><output id="lp-preview"></output><button id="lp-copy" type="button" class="btn-action-detail">Sao chép</button></div>
+<footer><p class="lp-muted" id="lp-editor-help">Đích phải là trang công khai. Không đưa số điện thoại khách vào UTM.</p><button id="lp-save" class="btn-action-call" type="submit">Lưu link</button></footer></form></dialog>
+<dialog id="lp-detail" class="lp-dialog"><div class="lp-detail-content"><header><div><h2 id="lp-detail-title">Chuyển đổi từ link</h2><p id="lp-detail-source" class="lp-muted"></p></div><button id="lp-detail-close" type="button" class="btn-action-detail">Đóng</button></header><p id="lp-detail-state" role="status" aria-live="polite"></p><div class="lp-kpis"><article><span>Form đã lưu</span><strong id="lp-detail-form-count">—</strong></article><article><span>Chốt thành công</span><strong id="lp-detail-closed-count">—</strong></article><article><span>Đã lắp đặt</span><strong id="lp-detail-installed-count">—</strong></article><article><span>Chốt / form</span><strong id="lp-detail-rate">—</strong></article></div><section class="lp-detail-section"><h3>Nhân viên chốt đơn từ link này</h3><div id="lp-detail-closers"></div></section><section class="lp-detail-section"><h3>Chất lượng và độ phủ dữ liệu</h3><div id="lp-detail-quality"></div><p class="lp-muted">Dữ liệu khách hàng đã được ẩn danh bảo mật; không còn đối chiếu tên nhân viên hoặc hồ sơ khách. Các chỉ số phản ánh nguồn được gán, không chứng minh tác động nhân quả.</p></section></div></dialog>
+{% endblock %}
+{% block extra_scripts %}<script src="/static/js/admin/link_performance.js"></script>{% endblock %}

@@ -1,0 +1,70 @@
+[
+  {
+    "kind": "security",
+    "http_status": 200,
+    "verified": true,
+    "levels": {
+      "INFO": 47,
+      "WARN": 1
+    },
+    "types": {
+      "rls_enabled_no_policy": 47,
+      "auth_leaked_password_protection": 1
+    },
+    "warnings": [
+      {
+        "name": "auth_leaked_password_protection",
+        "title": "Leaked Password Protection Disabled",
+        "level": "WARN",
+        "metadata": {
+          "entity": "Auth",
+          "type": "auth"
+        }
+      }
+    ]
+  },
+  {
+    "kind": "performance",
+    "http_status": 200,
+    "verified": true,
+    "levels": {
+      "INFO": 25,
+      "WARN": 2
+    },
+    "types": {
+      "unindexed_foreign_keys": 5,
+      "unused_index": 20,
+      "duplicate_index": 2
+    },
+    "warnings": [
+      {
+        "name": "duplicate_index",
+        "title": "Duplicate Index",
+        "level": "WARN",
+        "metadata": {
+          "schema": "private",
+          "name": "leads",
+          "type": "table",
+          "indexes": [
+            "lead_assignee_created",
+            "leads_assignee_created_admin_idx"
+          ]
+        }
+      },
+      {
+        "name": "duplicate_index",
+        "title": "Duplicate Index",
+        "level": "WARN",
+        "metadata": {
+          "schema": "private",
+          "name": "leads",
+          "type": "table",
+          "indexes": [
+            "lead_branch_created",
+            "leads_branch_created_admin_idx"
+          ]
+        }
+      }
+    ]
+  }
+]

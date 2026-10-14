@@ -5,12 +5,14 @@
     link = null,
     generation = 0,
     hasContext = false,
-    controller = null;
+    controller = null,
+    mutations = Promise.resolve();
   const money = (n) => new Intl.NumberFormat("vi-VN").format(n || 0) + "đ";
   const labels = {
     gift_unavailable: "Quà tặng cần xác nhận lại.",
     gift_incompatible: "Quà không áp dụng cho gói này.",
     gift_selected: "Bỏ chọn thiết bị trả phí trùng quà tặng để nhận ưu đãi.",
+    no_benefit: "Mã không có khoản giảm hoặc quà tặng cho báo giá này.",
     eligible: "Ưu đãi dự kiến; nhân viên xác nhận và giữ suất.",
     unavailable: "Mã không còn khả dụng.",
     address_required: "Chọn địa bàn để xem ưu đãi.",
@@ -63,7 +65,7 @@
 
     // Head: compact row shown when voucher is active
     const head = node("header", "", "client-voucher-head");
-    const badge = node("span", "ĐÃ ÁP DỤNG", "client-voucher-hero-tag");
+    const badge = node("span", "CHỜ XÁC NHẬN", "client-voucher-hero-tag");
     badge.id = "client-voucher-badge";
     badge.hidden = true;
 
@@ -78,23 +80,25 @@
     clear.id = "client-voucher-clear";
     clear.type = "button";
     clear.onclick = async () => {
-      ++generation;
-      controller?.abort();
+      const seq = ++generation;
+      controller?.abort(); // Only read requests use this controller.
       try {
-        const r = await fetch("/api/v1/vouchers/context", { method: "DELETE" });
-        if (!r.ok) throw Error();
+        await mutateContext({ method: "DELETE" });
+        code = "";
+        voucher = null;
+        link = null;
+        hasContext = false;
+        if (seq !== generation) return;
+        render();
+        window.dispatchEvent(new CustomEvent('pagefpt-voucher-change'));
+        refresh();
       } catch (_) {
+        if (seq !== generation) return;
+        render();
+        document.getElementById("client-voucher-message").hidden = false;
         document.getElementById("client-voucher-message").textContent =
           "Chưa bỏ được mã. Vui lòng thử lại.";
-        return;
       }
-      code = "";
-      voucher = null;
-      link = null;
-      hasContext = false;
-      box.hidden = true;
-      render();
-      refresh();
     };
     head.append(badge, title, urgency, clear);
 
@@ -202,7 +206,7 @@
     if (rec) {
       if (voucher && (voucher.status === "area_mismatch" || voucher.status === "area_excluded")) {
         rec.replaceChildren();
-        const t = node("div", "💡 Mã ưu đãi " + voucher.name + " dành riêng cho một số khu vực. FPT vẫn có combo quà tặng và chính sách giá tốt nhất cho địa chỉ của bạn.");
+        const t = node("div", "💡 Mã ưu đãi " + voucher.name + " dành riêng cho một số khu vực. Nhân viên sẽ kiểm tra gói và ưu đãi phù hợp với địa chỉ của bạn.");
         const b = node("button", "Đăng ký tư vấn khu vực của bạn", "client-voucher-recovery-cta");
         b.type = "button";
         b.onclick = () => {
@@ -251,25 +255,19 @@
     const marqueeText = document.getElementById("voucher-marquee-text");
     const marqueeDup = document.getElementById("voucher-marquee-text-dup");
 
-    if (voucher) {
-      if (marqueeBtn) marqueeBtn.classList.add("active");
-      if (marqueeBtnLabel) marqueeBtnLabel.textContent = voucher.code ? "Đang áp dụng: " + voucher.code : "Đã kích hoạt ưu đãi";
-      if (marqueeText) {
-        const disc = voucher.discount_vnd ? "Giảm -" + money(voucher.discount_vnd) : "";
-        const gift = voucher.gift ? " + Tặng " + voucher.gift.name : "";
-        const urg = voucher.end ? " &bull; ⏳ " + formatUrgency(voucher.end) : "";
-        const activeHtml = `🎉 <strong class="voucher-marquee-highlight">ĐÃ KÍCH HOẠT:</strong> ${voucher.name} &bull; ${disc}${gift}${urg} &bull; Nhấp để xem chi tiết điều kiện & giữ suất!`;
-        marqueeText.innerHTML = activeHtml;
-        if (marqueeDup) marqueeDup.innerHTML = activeHtml;
-      }
-    } else {
-      if (marqueeBtn) marqueeBtn.classList.remove("active");
-      if (marqueeBtnLabel) marqueeBtnLabel.textContent = "Nhập mã ưu đãi";
-      if (marqueeText) {
-        const defaultHtml = `🔥 <strong class="voucher-marquee-highlight">ƯU ĐÃI ĐẶC QUYỀN:</strong> Nhập mã voucher giảm ngay cước lắp đặt &bull; Tặng Modem Wi-Fi 6 thế hệ mới &bull; Miễn phí hòa mạng 100% &bull; Giữ suất ưu đãi trong 48h! &bull; Hotline: 0868.247.625`;
-        marqueeText.innerHTML = defaultHtml;
-        if (marqueeDup) marqueeDup.innerHTML = defaultHtml;
-      }
+    if (marqueeBtn) marqueeBtn.classList.toggle("active", Boolean(voucher));
+    if (marqueeBtnLabel) marqueeBtnLabel.textContent = voucher
+      ? "Xem mã: " + voucher.code
+      : "Nhập mã ưu đãi";
+    // Campaign names and gift names are plain text, including when they contain HTML.
+    const status = voucher && (voucher.sold_out ? "sold_out" : voucher.status);
+    const heading = voucher ? "MÃ ƯU ĐÃI:" : "ƯU ĐÃI THEO ĐỊA BÀN:";
+    const copy = voucher
+      ? " " + voucher.name + " · " + (labels[status] || "Nhân viên xác nhận điều kiện và giữ suất.") +
+        (voucher.end ? " · " + formatUrgency(voucher.end) : "")
+      : " Nhập mã nếu có; giá, quà tặng và điều kiện được xác nhận theo địa chỉ lắp đặt.";
+    for (const target of [marqueeText, marqueeDup]) {
+      if (target) target.replaceChildren(node("strong", heading, "voucher-marquee-highlight"), document.createTextNode(copy));
     }
   }
 
@@ -279,36 +277,60 @@
     if (typeof refreshActiveQuote === "function") refreshActiveQuote();
   }
 
+  async function timedContext(options) {
+    const active = new AbortController();
+    const timer = setTimeout(() => active.abort(), 4000);
+    try {
+      const r = await fetch("/api/v1/vouchers/context", { ...options, signal: active.signal });
+      if (!r.ok) throw Error();
+      return r.status === 204 ? null : await r.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Aborting a UI render cannot undo a Set-Cookie response. Finish context writes in
+  // intent order, so an older DELETE never clears the cookie of a newer POST.
+  function mutateContext(options) {
+    const job = mutations.then(() => timedContext(options));
+    mutations = job.catch(() => {});
+    return job;
+  }
+
   async function load(next) {
     const seq = ++generation;
     controller?.abort();
-    const active = new AbortController();
-    controller = active;
-    const timer = setTimeout(() => active.abort(), 4000);
+    let timer;
     try {
-      const r = await fetch("/api/v1/vouchers/context", {
-        signal: active.signal,
-        ...(next
-          ? {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ code: next }),
-            }
-          : {}),
-      });
-      if (!r.ok) throw Error();
-      const data = await r.json();
+      let data;
+      if (next) {
+        data = await mutateContext({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: next }),
+        });
+      } else {
+        const active = new AbortController();
+        controller = active;
+        timer = setTimeout(() => active.abort(), 4000);
+        const r = await fetch("/api/v1/vouchers/context", { signal: active.signal });
+        if (!r.ok) throw Error();
+        data = await r.json();
+        if (seq !== generation) return;
+      }
       if (seq !== generation) return;
       voucher = data.voucher;
       hasContext = Boolean(data.has_context || voucher);
       code = next || voucher?.code || null;
       link = voucher?.link?.slug || null;
-      render();
+      if (seq === generation) { render(); window.dispatchEvent(new CustomEvent('pagefpt-voucher-change')); }
     } catch (_) {
       if (seq !== generation) return;
+      render();
       document.getElementById("client-voucher-message").textContent =
         "Chưa tải được ưu đãi. Bạn vẫn có thể gửi yêu cầu tư vấn.";
       document.getElementById("client-voucher-message").hidden = false;
+      window.dispatchEvent(new CustomEvent('pagefpt-voucher-change'));
     } finally {
       clearTimeout(timer);
     }
@@ -323,6 +345,7 @@
   }
 
   window.PageFPTVoucher = {
+    current: () => voucher,
     quoteContext: () => (code === null ? {} : { voucher_code: code }),
     leadContext: () => ({
       ...(code === null ? {} : { voucher_code: code }),

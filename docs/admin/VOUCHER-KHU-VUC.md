@@ -99,3 +99,13 @@ Module chưa tạo voucher cá nhân hoặc chương trình giới thiệu nhi�
 5. Kiểm tra trang chủ/landing, link 302/cookie, lưu lead, scope nhân viên và hủy/giữ lại trên staging trước khi công bố chiến dịch production.
 
 Không có migration production, push Git hoặc triển khai cloud nào được thực hiện trong phần tạo dựng này. Hướng dẫn triển khai chung: `docs/deploy/HUONG-DAN-VERCEL-SUPABASE-R2.md`.
+
+## Sau khi cập nhật ngày 13/10/2026
+
+Trang đích chia sẻ phải là trang đã công bố hoặc `/`, `/khuyen-mai`, `/do-toc-do`. Link tới landing đã ngừng không chuyển hướng. Mã/slug trùng trả lỗi xung đột rõ ràng, không ghi đè chiến dịch khác.
+
+Không công bố voucher chỉ giảm giá với mức hoặc trần bằng 0. Khi báo giá có mức giảm thực tế 0 và không có quà, hệ thống không giữ suất. Quà cần phụ kiện công bố, tính một lần.
+
+Khi xóa thông tin cá nhân khách: suất đang giữ được trả lại; suất đã dùng, giá vốn quà và chi phí vẫn nằm trong sổ ẩn danh. Báo cáo nhóm `erased` không còn khách, kênh hay nhân viên; không diễn giải nhóm này thành khách đang xử lý. Báo cáo hiện không phải toàn bộ lịch sử chuyển chiến dịch theo sự kiện.
+
+Kiểm chứng mới: `docs/qa/2026-10-13/voucher-deep-audit.md`.

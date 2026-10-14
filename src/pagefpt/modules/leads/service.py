@@ -26,7 +26,15 @@ async def submit_lead(request, input, key, crypt, durable=False):
         if previous.get("replayed"):
             return previous
     pii = {k: semantic.pop(k) for k in ("phone", "name", "installation_address", "notes")}
-    for k in ("quote_token", "session_token", "attribution_token", "challenge_token", "website"):
+    for k in (
+        "quote_token",
+        "session_token",
+        "attribution_token",
+        "challenge_token",
+        "website",
+        "link_source_token",
+        "link_visit_token",
+    ):
         semantic.pop(k, None)
     quote_id, session_id = None, None
     for token, purpose in [(input.quote_token, "quote"), (input.session_token, "session")]:
@@ -102,6 +110,11 @@ async def submit_lead(request, input, key, crypt, durable=False):
     semantic["risk_evidence"] = {"honeypot": bool(input.website)}
     semantic["risk_source"] = "intake-v1"
     semantic["session_id"] = session_id
+    from pagefpt.modules.link_analytics.service import lead_source
+
+    source = await lead_source(request, input, crypt, now)
+    if source:
+        semantic["link_attribution"] = source
     semantic["ip_ciphertext"] = crypt.encrypt(raw_ip) if raw_ip else None
     from pagefpt.modules.workflow.sla import compute_sla
 

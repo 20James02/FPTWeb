@@ -20,7 +20,9 @@ window.autoFillInstallationAddress = function (addressStr, isEstimated = false) 
 
   const notice = document.getElementById("speed-auto-address-notice");
   if (notice) {
-    notice.innerHTML = `📍 <strong>Vị trí đã xác định:</strong> ${addressStr} &bull; <em>Đã tự động điền vào Địa chỉ lắp đặt khi gửi yêu cầu!</em>`;
+    notice.textContent = isEstimated
+      ? `📍 Ước tính khu vực: ${addressStr}. Vui lòng kiểm tra và nhập địa chỉ lắp đặt đầy đủ.`
+      : `📍 Vị trí: ${addressStr}. Vui lòng kiểm tra địa chỉ lắp đặt trước khi gửi.`;
     notice.hidden = false;
   }
 };

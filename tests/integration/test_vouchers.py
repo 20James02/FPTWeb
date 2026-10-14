@@ -106,7 +106,7 @@ async def test_voucher_draft_live_snapshot_quote_and_link_get_do_not_consume(adm
     )
     assert link.status_code == 201, link.text
     opened = await admin.get("/s/qa-offer")
-    assert opened.status_code == 302 and opened.headers["location"] == "/"
+    assert opened.status_code == 302 and opened.headers["location"] == "/?pf_offer=qa-offer"
     assert "HttpOnly" in opened.headers["set-cookie"]
     q = (
         await admin.post("/api/v1/quotes", json=dict(plan_id=plan["id"], region_id=region["id"]))
@@ -316,6 +316,15 @@ async def test_held_snapshot_survives_pause_but_scope_edits_are_blocked(admin, g
 
 async def test_qr_and_safe_landing_target_and_public_payload(admin, gateway):
     await setup(admin, gateway)
+    page = await admin.post(
+        "/api/v1/admin/pages", json={"title": "QA landing", "slug": "qa-landing", "blocks": []}
+    )
+    assert page.status_code == 201, page.text
+    published = await admin.post(
+        f"/api/v1/admin/pages/{page.json()['id']}/publish",
+        json={"expected_version": page.json()["version"]},
+    )
+    assert published.status_code == 200, published.text
     v = await create(admin)
     r = await admin.post(
         f"/api/v1/admin/vouchers/{v['id']}/links",

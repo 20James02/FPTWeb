@@ -1,6 +1,6 @@
 # Voucher: rà soát và luồng đấu nối cho Antigravity
 
-Ngày rà soát: **13/10/2026** — phạm vi: voucher khu vực, link/QR, thẻ gói, form lead và CRM liên quan. Đây là tài liệu bàn giao thiết kế dựa trên mã nguồn local; không phải xác nhận phiên bản này đã chạy trên production.
+Ngày rà soát: **13/10/2026** — phạm vi: voucher khu vực, link/QR, thẻ gói, form lead và CRM liên quan. Tài liệu cập nhật theo đợt sửa lỗi ngày 13/10/2026. Trạng thái triển khai và bằng chứng mới xem `../qa/2026-10-13/voucher-deep-audit.md`; không dùng điểm tham chiếu dưới đây làm cam kết đã kiểm chứng mọi môi trường.
 
 Đọc kèm:
 - `PROMPT-ANTIGRAVITY-VOUCHER.md`: prompt giao việc thiết kế.
@@ -15,17 +15,17 @@ Phân loại: **UI** = làm được với API hiện có; **BE** = cần nâng 
 | Hạng mục, điểm tham chiếu | Kiểm tra thực tế | Công việc cần làm | Loại / ưu tiên |
 |---|---|---|---|
 | Điều kiện áp dụng — 9,0 | Có ưu tiên xã → tỉnh → toàn quốc và loại trừ. Preview chỉ mô tả, chưa giải thích quy tắc nào thắng trong một tình huống cụ thể. | Minh họa thứ tự ưu tiên; thêm mô phỏng có giải thích từ engine server. | UI + BE / P1 |
-| Tính giá — 8,8 | Engine tính số nguyên, có trần; schema vẫn chấp nhận `cap_vnd=0` cho giảm phần trăm, khiến mức giảm bằng 0. | Cảnh báo trần 0, hiển thị mức giảm thực; quyết định validation server trước công bố. Không tự đổi chính sách đang có. | UI + BE / P1 |
+| Tính giá — 8,8 | Engine tính số nguyên, có trần. Đã chặn giảm đơn thuần với mức/trần 0; mức giảm thực tế bằng 0 và không có quà trả `no_benefit`. | Hiển thị lỗi cạnh trường và giải thích `no_benefit`; giữ validation server trước công bố. | UI + BE / P1 |
 | Hạn mức/tồn kho — 9,0 | Chống oversell và hết hạn đã có test; GET inventory trả **tổng tồn kho**, chưa trả đủ số đang giữ/đã dùng/còn lại. | Dashboard capacity, cảnh báo gần cạn và thời gian giữ. Cần dữ liệu server để hiển thị số suất/quà còn thật. | BE + UI / P1 |
 | Bảo mật — 8,5 | API kiểm tra quyền, MFA và scope; contact limit không chứng minh người dùng duy nhất. Intake đã có chống abuse theo phone/session/IP. | Giữ nguyên bảo vệ; kiểm tra bổ sung abuse cho context/quote/link và xác minh theo rủi ro nếu cần. Không thêm OTP đại trà chỉ vì thiết kế. | BE + QA / P2 |
 | CRM — 8,5 | Có trạng thái, giữ/hủy/dùng; nhân viên vẫn phải tự hiểu các điều kiện trước thao tác. | Checklist: địa chỉ → gói/kỳ → trạng thái → giữ → nghiệm thu. Dẫn tới form đang có; hiển thị lý do nút bị khóa. | UI / P1 |
 | Admin — 7,5 | Form dài; lỗi validation chủ yếu hiển thị chung. Tìm/sort chỉ trên các voucher đã tải; batch pause chạy từng request. | Wizard, lỗi cạnh trường, mẫu cấu hình, nhân bản qua POST create. Ghi “trong N mục đã tải”; tìm/sort toàn bộ cần server. | UI; BE cho tìm/sort / P1 |
 | Client — 8,0 | Có cookie, nhập/bỏ mã, quote và tổng tiền. Phần benefit chưa có thiết kế ưu tiên rõ so với các thông tin khác. | Nhãn lợi ích gọn, tiền gói/tháng và tổng kỳ tách rõ, quà/thiết bị trả phí phân biệt, giữ form ba trường. | UI / P1 |
-| Link/QR — 7,8 | Validator giới hạn đường dẫn nội bộ nhưng chấp nhận `/not-existing-landing`. List trả tối đa 500 link toàn hệ thống. Không có endpoint xóa link; tắt bằng `active=false`. | Preview đích, kiểm tra trang công khai; validate server, phân trang link và chống ghi đè khi hai Admin sửa cùng lúc. | UI + BE / P1 |
+| Link/QR — 7,8 | Server đã kiểm tra trang đích công khai khi tạo link và khi chuyển hướng; trang không tồn tại/chưa công bố bị chặn. Slug không thể bị voucher khác ghi đè khi tạo đồng thời. List trả tối đa 500 link toàn hệ thống. Không có endpoint xóa link; tắt bằng `active=false`. | UI kiểm tra `/api/v1/pages/{slug}`; ba trang hệ thống `/`, `/khuyen-mai`, `/do-toc-do` hợp lệ. Phân trang link và version khi cùng sửa một link vẫn là cải tiến riêng. | UI + BE / P1 |
 | Báo cáo — 6,8 | `/report` không nhận query ngày; có tổng/kênh/nhân viên/khu vực nhưng chưa có series thời gian hoặc doanh thu. | Biểu đồ nhóm từ dữ liệu thật hiện có; date filter/trend/ROI cần thêm hợp đồng backend. | UI + BE / P1–P2 |
 | Hiệu năng — 6,8 | `voucher_live` đếm capacity theo từng rule; report tổng hợp trực tiếp; chưa có load test p95/p99. | EXPLAIN/đo tải với nhiều rule và nhiều redemption, phân trang phía server, giới hạn concurrency. Cache preview không thay kiểm tra capacity trong transaction. | BE + QA / P2 |
 | Kiểm thử — 8,5 | Lượt trước toàn dự án 446 Python + 26 JS đạt. Lượt bàn giao này chạy lại 29 test voucher, đạt 14,48 giây. | Safari/iPhone thật, screen reader, staging/MFA thật, phục hồi và tải cao còn cần kiểm chứng. | QA / P1 |
-| Production — 5,0 | Chưa push/apply migration/deploy module mới trong phần tạo dựng. | Kiểm tra Supabase đúng project, migration pending, deploy đồng bộ và smoke staging. | Vận hành / P1 |
+| Production — 5,0 | Thiếu schema voucher production đã được xác định và bổ sung; kiểm chứng tạo bản nháp trong giao dịch rollback. Trạng thái migration sửa sâu và deploy xem báo cáo QA mới. | Kiểm tra Supabase đúng project, migration pending, deploy đồng bộ và smoke staging. | Vận hành / P1 |
 
 ### Các điểm cần sửa lại trong cách diễn giải dữ liệu
 
@@ -220,11 +220,11 @@ sequenceDiagram
 - `POST quotes` body: `{plan_id,region_id,billing_months,accessory_ids,landing_slug?,voucher_code?}`. Khi thay một lựa chọn, request mới được tính server; abort/fence phản hồi cũ.
 - `quote.status`: confirmed / needs_confirmation / not_available. Không có giá phù hợp thì “Cần tư vấn”, không 0đ, không giá thấp nhất vùng khác.
 - Quote main gồm `monthly_vnd`, `billing_months`, `initial_total_vnd`, `line_items`, `accessory_snapshot`, `accessory_once_vnd`, `accessory_monthly_vnd`, `revision`, `expires_at`, `quote_token` khi confirmed, và voucher khi có.
-- `voucher.status`: eligible/address_required/area_excluded/area_mismatch/plan_mismatch/term_mismatch/promotion_conflict/sold_out/expired/not_started/gift_unavailable/gift_incompatible/gift_selected/unavailable.
+- `voucher.status`: eligible/address_required/area_excluded/area_mismatch/plan_mismatch/term_mismatch/promotion_conflict/sold_out/expired/not_started/gift_unavailable/gift_incompatible/gift_selected/no_benefit/unavailable.
 - Eligible là ưu đãi **dự kiến**, chưa giữ suất. Banner/name/label không được hiểu là đã được nhận quà.
 - `discount_vnd` là tổng giảm của lần thanh toán/kỳ. Với basis=monthly, số này đã nhân số tháng, không phải giảm mỗi tháng; monthly_vnd đã điều chỉnh.
 - `initial_total_vnd` là tổng theo lựa chọn hiện tại. Không cộng thêm accessory/voucher lần nữa vào giá server.
-- `billing_options` 1/6/12 là preview, không có quote_token và hiện chưa bao gồm đầy đủ phụ kiện được chọn. Đổi kỳ có phụ kiện phải lấy main quote mới.
+- `billing_options` 1/6/12 là preview không có quote_token, đã gồm phụ kiện được chọn và điều kiện quà trùng thiết bị. Đổi kỳ vẫn phải lấy main quote mới để dùng token. Khi đổi checkbox, browser bỏ quote voucher có `accessory_ids` không khớp ngay; không tái dùng ưu đãi cũ trong khi chờ request hoặc khi request lỗi.
 - Gift trùng phụ kiện khách mua → gift_selected; yêu cầu bỏ chọn rõ ràng, không âm thầm xóa thiết bị hoặc tự tính free.
 - Giữ form Tên/Số/Địa chỉ cụ thể; consent liên hệ và phân tích riêng theo luồng có sẵn. Không buộc nhập mã/chọn ward để gửi lead.
 - `submitLeadToBackend()` giữ body/key khi kết quả commit chưa rõ; đừng đổi thành request mới mỗi retry. Success chỉ sau receipt/event_id thật. Không gửi billing_months ngoài schema, tiền client, contact_id hoặc source tự dựng.
@@ -299,3 +299,13 @@ Nếu đổi IDs/data attributes, cập nhật tất cả selectors, listeners v
 6. Alert qua queue + dedupe/idempotency; chưa gửi Telegram/SMS/email từ frontend. Kiểm thử tải và cảnh báo đạt ngưỡng chỉ sau phép đo.
 
 Không coi các đề xuất này là đã triển khai chỉ vì có màn hình thiết kế.
+
+## Bổ sung sau rà soát sâu 13/10/2026
+
+- Context POST/DELETE được xếp hàng để cookie và mã hiển thị không lệch khi bấm Bỏ mã rồi nhập mã mới. Render dùng generation; không dựng thêm listener bỏ qua hàng đợi này.
+- Tên chiến dịch/quà/địa chỉ ước tính được đưa vào DOM bằng textContent; không nhúng HTML từ dữ liệu nhập. CSV escape dấu nháy và trung hòa ô công thức.
+- Giữ voucher dựa trên slug landing trong quote đã lưu ở server. Giá chiến dịch được tính lại và publication/version được xác nhận trong transaction. `QUOTE_STALE` cần lấy báo giá mới; không lấy giá client gửi.
+- Quà phải là phụ kiện đã công bố, tính một lần. Đổi sản phẩm thành phí theo tháng khiến quà chưa giữ không còn hợp lệ.
+- Xóa PII không hoàn tồn kho/quota/ngân sách đã dùng. Ledger đã dùng được ẩn danh, không còn lead/contact/link/lý do/quote token/địa chỉ. Suất đang giữ được giải phóng.
+- Báo cáo nhóm `erased` giữ chi phí/suất đã dùng, không giữ nguồn hay nhân viên của khách đã xóa. `requested` ở nhóm này là lịch sử sử dụng ưu đãi ẩn danh, không phải lead đang tồn tại hoặc lượt mở link. Tổng không phải funnel sự kiện đầy đủ cho khách đổi nhiều chiến dịch.
+- Lỗi mới: `INVALID_LINK_TARGET` (422), `INVALID_VOUCHER_BENEFIT` (422), `LINK_SLUG_EXISTS`/`VOUCHER_CODE_EXISTS` (409). HTTP 200 context với voucher=null vẫn là mã không áp dụng, không báo thành công.

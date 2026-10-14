@@ -1,0 +1,69 @@
+{
+  "tables": {
+    "expected": 47,
+    "present": 47,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "columns": {
+    "expected": 309,
+    "present": 309,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "functions": {
+    "expected": 80,
+    "present": 80,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "indexes": {
+    "expected": 98,
+    "present": 98,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "constraints": {
+    "expected": 119,
+    "present": 119,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "triggers": {
+    "expected": 6,
+    "present": 6,
+    "missing": [],
+    "extra": [],
+    "drift": []
+  },
+  "migrations": {
+    "local_count": 24,
+    "remote_count": 24,
+    "missing": [],
+    "extra": [],
+    "latest": "20261013103126"
+  },
+  "queues": {
+    "expected": [
+      "conversions",
+      "lead_external",
+      "lead_local",
+      "maintenance",
+      "notifications"
+    ],
+    "present": [
+      "conversions",
+      "lead_external",
+      "lead_local",
+      "maintenance",
+      "notifications"
+    ],
+    "match": true
+  },
+  "drift_categories": []
+}

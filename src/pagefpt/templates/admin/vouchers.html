@@ -14,6 +14,7 @@
       <p>Tạo ưu đãi khu vực, kiểm soát hạn mức suất và theo dõi chuyển đổi từ hồ sơ khách hàng thực tế.</p>
     </div>
     <div class="voucher-header-actions">
+      <button class="btn-action-guide" type="button" onclick="window.openAdminGuide('vouchers')" title="Xem hướng dẫn quy trình voucher">📖 Hướng Dẫn</button>
       <button class="btn-action-call" id="voucher-new" type="button">+ Tạo voucher</button>
       <button class="btn-action-detail" id="voucher-refresh" type="button" title="Làm mới danh sách và báo cáo">↻ Làm mới</button>
     </div>
@@ -327,7 +328,7 @@
         <p id="v-draft-state" role="status" class="voucher-draft-label"></p>
         <div class="voucher-toolbar">
           <button id="voucher-save" class="btn-action-call" type="submit">💾 Lưu bản nháp</button>
-          <button id="voucher-publish" class="btn-action-detail" type="button" disabled title="Chỉ công bố khi đã lưu và có quyền AAL2">🚀 Công bố chiến dịch</button>
+          <button id="voucher-publish" class="btn-action-detail" type="button" disabled title="Chỉ công bố khi đã lưu và có quyền quản trị (Xác thực 2 bước)">🚀 Công bố chiến dịch</button>
           <button id="voucher-pause" class="btn-action-detail" type="button" disabled>⏸ Tạm dừng</button>
           <button id="voucher-delete" class="btn-action-detail btn-danger" type="button" disabled>🗑 Xóa bản nháp</button>
         </div>
@@ -345,9 +346,9 @@
       <form id="voucher-link-form">
         <div class="voucher-fields">
           <label>
-            Tên link ngắn (slug) <span class="v-req">*</span>
+            Mã đường dẫn rút gọn <span class="v-req">*</span>
             <input id="v-link-slug" required pattern="[a-z0-9-]{3,50}" placeholder="VD: vungtau-camera-zalo" autocomplete="off">
-            <small class="v-help">Đường dẫn: <code>fpt.vn/s/[slug]</code></small>
+            <small class="v-help">Đường dẫn: <code>fpt.vn/s/[ma-duong-dan]</code></small>
           </label>
 
           <label>

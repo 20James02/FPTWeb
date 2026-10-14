@@ -5,6 +5,7 @@ const fs=require('node:fs');
 const origin=process.env.PAGEFPT_QA_ORIGIN||'http://127.0.0.1:8000';
 if(!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))throw new Error('Loopback fixture required');
 const output='docs/qa/2026-10-02/admin-upgrade';
+fs.mkdirSync(output,{recursive:true});
 (async()=>{
  const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
  const context=await browser.newContext({viewport:{width:1440,height:950},timezoneId:'Asia/Ho_Chi_Minh',reducedMotion:'reduce'});
@@ -53,7 +54,7 @@ const output='docs/qa/2026-10-02/admin-upgrade';
  await page.goto(origin+'/admin/operations');
  await check('jobs, audit, memberships and export screens use scoped APIs',async()=>{for(const tab of ['jobs','audit','memberships','exports','privacy']){await page.locator('[data-tab='+tab+']').click();await page.waitForFunction(()=>!document.getElementById('workspace-state').textContent.includes('Đang tải'));assert.match(await page.locator('#workspace-state').textContent(),/bản ghi/);}});
  await page.goto(origin+'/admin/reports');
- await check('report date filter shows cohort definition and unknown CPL',async()=>{await page.locator('#report-campaign').fill(campaignCode);await page.locator('#report-cohort-form button').click();await page.waitForFunction(()=>document.getElementById('report-cohort-results').textContent.includes('123.000'));assert.match(await page.locator('#report-cohort-results').textContent(),/Chưa có dữ liệu/);});
+ await check('report date filter shows cohort definition and unknown CPL',async()=>{await page.locator('#analytics-campaign').fill(campaignCode);await page.locator('#analytics-filter button[type=submit]').click();await page.waitForFunction(()=>document.getElementById('analytics-campaigns').textContent.includes('123.000'));assert.match(await page.locator('#analytics-campaigns').textContent(),/Chưa có dữ liệu/);});
  const paths=['dashboard','leads','leads/detail?id='+leadId,'pricing','reports','settings','marketing','content','operations'];
  for(const width of [1440,768,390,360])for(const path of paths){await page.setViewportSize({width,height:900});const response=await page.goto(origin+'/admin/'+path);assert.equal(response.status(),200);await page.waitForTimeout(150);const layout=await page.evaluate(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth}));result.layouts.push({width,path,...layout,pass:layout.scroll<=layout.viewport+1});if(width===390&&['settings','leads','marketing','operations'].includes(path))await page.screenshot({path:output+'/'+path+'-390.png',fullPage:true});}
  await check('36 responsive layouts do not overflow document',async()=>assert.deepEqual(result.layouts.filter(item=>!item.pass),[]));

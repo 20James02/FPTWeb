@@ -23,7 +23,7 @@ async function crmRequest(path, method = "GET", body = null) {
   if (!response.ok) {
     const err = new Error(
       value.code === "PERMISSION_DENIED"
-        ? "Bạn chưa có quyền hoặc cần xác thực 2 lớp (MFA/AAL2) cho thao tác này."
+        ? "Bạn chưa có quyền hoặc cần xác thực 2 bước bảo mật cho thao tác này."
         : value.code === "VERSION_CONFLICT"
           ? "Dữ liệu vừa thay đổi trên máy chủ. Đang tải lại thông tin mới nhất..."
           : value.code === "INVALID_TRANSITION"
@@ -219,7 +219,7 @@ function renderMobileLead(container, lead) {
       "p",
       overdue
         ? "Quá thời gian liên hệ"
-        : `SLA: ${lead.sla_due_at ? PageFPTDates.format(lead.sla_due_at) : "Chưa có"}`,
+        : `Hạn xử lý: ${lead.sla_due_at ? PageFPTDates.format(lead.sla_due_at) : "Chưa có"}`,
       overdue ? "sla-overdue" : "",
     ),
   );
@@ -283,7 +283,7 @@ function renderLeadTableRow(tbody, lead) {
     new Date(lead.sla_due_at) < new Date();
   if (isOverdue) {
     const timeSpan = adminNode("div", timeFormatted);
-    const overdueSpan = adminNode("span", "⚠️ Quá hạn SLA", "badge-sla-overdue");
+    const overdueSpan = adminNode("span", "⚠️ Quá hạn xử lý", "badge-sla-overdue");
     tdTime.append(timeSpan, overdueSpan);
   } else {
     tdTime.textContent = timeFormatted;
@@ -601,3 +601,55 @@ function crmSelectVisible(checked = true) {
     }
   });
 }
+
+
+function toggleCrmAdvancedFilters() {
+  const panel = document.getElementById("crm-advanced-filters-panel");
+  const btnText = document.getElementById("btn-toggle-filters-text");
+  if (!panel) return;
+  const isHidden = panel.hasAttribute("hidden") || panel.style.display === "none";
+  if (isHidden) {
+    panel.removeAttribute("hidden");
+    panel.style.display = "block";
+    if (btnText) btnText.textContent = "Thu Gọn Bộ Lọc ▴";
+  } else {
+    panel.setAttribute("hidden", "");
+    panel.style.display = "none";
+    if (btnText) btnText.textContent = "Bộ Lọc Chi Tiết ▾";
+  }
+}
+
+function updateCrmFilterActiveDot() {
+  const branch = document.getElementById("filter-branch")?.value;
+  const assignee = document.getElementById("filter-assignee")?.value;
+  const region = document.getElementById("filter-region")?.value;
+  const start = document.getElementById("filter-start")?.value;
+  const end = document.getElementById("filter-end")?.value;
+  const overdue = document.getElementById("filter-overdue")?.checked;
+  const dot = document.getElementById("crm-filter-active-dot");
+  if (dot) {
+    const hasActive = !!(branch || assignee || region || start || end || overdue);
+    dot.hidden = !hasActive;
+  }
+}
+
+function crmResetAdvancedFilters() {
+  const branch = document.getElementById("filter-branch");
+  const assignee = document.getElementById("filter-assignee");
+  const region = document.getElementById("filter-region");
+  const start = document.getElementById("filter-start");
+  const end = document.getElementById("filter-end");
+  const overdue = document.getElementById("filter-overdue");
+  if (branch) branch.value = "";
+  if (assignee) assignee.value = "";
+  if (region) region.value = "";
+  if (start) start.value = "";
+  if (end) end.value = "";
+  if (overdue) overdue.checked = false;
+  updateCrmFilterActiveDot();
+  if (typeof reloadCrmData === "function") reloadCrmData();
+}
+
+window.toggleCrmAdvancedFilters = toggleCrmAdvancedFilters;
+window.updateCrmFilterActiveDot = updateCrmFilterActiveDot;
+window.crmResetAdvancedFilters = crmResetAdvancedFilters;

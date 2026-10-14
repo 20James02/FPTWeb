@@ -22,7 +22,7 @@ class Rule(Command):
     def benefit(self):
         if self.discount_kind == "percent" and (self.amount > 10000 or self.cap_vnd is None):
             raise ValueError("Giảm phần trăm cần mức 0–10000 BPS và trần tiền")
-        if self.amount == 0 and not self.gift_product_id:
+        if (self.amount == 0 or self.cap_vnd == 0) and not self.gift_product_id:
             raise ValueError("Cần mức giảm hoặc quà tặng")
         return self
 
@@ -76,6 +76,8 @@ class VoucherUpdate(VoucherInput):
 
 
 class LinkInput(Command):
+    title: str = Field(default="", max_length=160)
+    content_note: str = Field(default="", max_length=2000)
     slug: str = Field(min_length=3, max_length=50, pattern=r"^[a-z0-9-]+$")
     target: str = Field(default="/", max_length=110)
     channel: str = Field(default="direct", min_length=1, max_length=40, pattern=r"^[a-zA-Z0-9_-]+$")

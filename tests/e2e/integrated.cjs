@@ -10,6 +10,14 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
  const context=await browser.newContext({viewport:{width:1440,height:900},timezoneId:'Asia/Ho_Chi_Minh',reducedMotion:'reduce'});
  const report={environment:'Local Chrome + disposable PostgreSQL; Supabase Auth HTTP simulated; no cloud calls',checks:[],page_errors:[],api_errors:[],viewports:[]};
  let leadId, priceId, planId, regionId;
+ fs.mkdirSync(require('node:path').dirname(output),{recursive:true});
+ async function assertAnalytics(){
+  await page.waitForFunction(()=>document.querySelectorAll('#analytics-kpis .kpi-value').length===4);
+  const params=await page.evaluate(()=>new URLSearchParams({start:document.getElementById('analytics-start').value,end:document.getElementById('analytics-end').value}).toString());
+  const data=await api('/api/v1/admin/reports/analytics?'+params);
+  assert.equal(data.status,200);
+  assert.equal(await page.locator('#analytics-kpis .kpi-value').first().textContent(),data.json.totals.leads.toLocaleString('vi-VN'));
+ }
  await context.route('**/*',route=>route.request().url().startsWith(origin+'/') || route.request().url().startsWith('data:') ? route.continue() : route.abort());
  const page=await context.newPage(); page.setDefaultTimeout(10000);
  page.on('pageerror',error=>report.page_errors.push({path:new URL(page.url()).pathname,message:error.message.slice(0,200)}));
@@ -39,7 +47,7 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
  await check('MFA UI login creates HttpOnly cookie and dashboard hydration',async()=>{
   await page.evaluate(()=>{document.querySelectorAll('.otp-digit-input').forEach((input,i)=>input.value='123456'[i]);});
   await page.locator('#btn-verify-otp').click(); await page.waitForURL('**/admin/dashboard');
-  await page.waitForFunction(()=>document.getElementById('kpi-total-leads')?.textContent==='35');
+  await assertAnalytics();
   assert.equal((await context.cookies()).find(c=>c.name==='pagefpt_admin_session')?.httpOnly,true);
   assert.equal((await api('/api/v1/admin/me')).json.aal,'aal2');
   assert.equal(await page.evaluate(()=>localStorage.getItem('pagefpt_admin_token')),null);
@@ -55,8 +63,9 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
   assert.match(await page.locator('#crm-table-tbody').textContent(),/\*\*\*/);
  });
  await check('CRM pagination loads remaining leads',async()=>{
-  await page.locator('#btn-load-more').click(); await page.waitForFunction(()=>crmLoadedLeads.length===35);
-  assert.equal(await page.evaluate(()=>crmLoadedLeads.length),35);
+  const count=(await api('/api/v1/admin/lead-counts')).json.total;
+  await page.locator('#btn-load-more').click(); await page.waitForFunction(total=>crmLoadedLeads.length===total,count);
+  assert.equal(await page.evaluate(()=>crmLoadedLeads.length),count);
  });
  await check('CRM filter returns real empty state',async()=>{
   await page.evaluate(()=>loadCrmLeads('installed')); assert.match(await page.locator('#crm-table-tbody').textContent(),/Chưa có/);
@@ -134,10 +143,13 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
  });
  await page.goto(origin+'/admin/reports');
  await check('report funnel is hydrated from real API',async()=>{
-  await page.waitForFunction(()=>document.getElementById('rep-total-leads')?.textContent==='35');
+  await assertAnalytics();
  });
  await check('daily rebuild produces daily metrics and renders rows',async()=>{
-  await page.evaluate(()=>rebuildTodayReport());assert.ok((await api('/api/v1/admin/reports/daily')).json.items.length>0);
+  const day=await page.evaluate(()=>document.getElementById('analytics-end').value);
+  assert.equal((await api('/api/v1/admin/reports/rebuild','POST',{day})).status,200);
+  assert.ok((await api('/api/v1/admin/reports/daily')).json.items.length>0);
+  await page.locator('#analytics-filter button[type=submit]').click();await assertAnalytics();
  });
  await page.goto(origin+'/admin/settings');
  await check('display settings persist with CSRF and expected version',async()=>{

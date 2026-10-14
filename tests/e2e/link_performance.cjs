@@ -1,0 +1,66 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
+const origin=process.env.PAGEFPT_QA_ORIGIN;
+if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(origin||''))throw Error('Disposable loopback only');
+(async()=>{const browser=await chromium.launch({executablePath:process.env.PAGEFPT_CHROME_BINARY,args:['--no-sandbox']});
+ const ctx=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+ await ctx.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+ const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ fs.mkdirSync('.local/qa/link-performance',{recursive:true});
+ try{
+ assert.equal((await ctx.request.post(origin+'/api/v1/auth/session',{data:{email:'qa-admin@example.test',password:'qa-only-password',otp:'123456'}})).status(),200);
+ const res=await page.goto(origin+'/admin/link-performance');assert.equal(res.status(),200);
+ await page.locator('#lp-new-link').click();
+ await page.locator('#lp-title').fill('Video camera QA');await page.locator('#lp-slug').fill('qa-video-camera');
+ await page.locator('#lp-platform').selectOption('facebook');await page.locator('#lp-content-note').fill('QA content: <img src=x onerror=alert(1)>');
+ const write=page.waitForResponse(r=>r.url().endsWith('/api/v1/admin/link-performance')&&r.request().method()==='POST');
+ await page.locator('#lp-save').click();assert.equal((await write).status(),201);
+ await page.getByRole('button',{name:'Video camera QA',exact:true}).waitFor();
+ assert.equal(await page.locator('#lp-table img').count(),0);
+ const csrf=(await ctx.cookies()).find(c=>c.name==='pagefpt_csrf').value;
+ const data=(await (await ctx.request.get(origin+'/api/v1/admin/link-performance')).json()).items.find(x=>x.slug==='qa-video-camera');
+ // Actual redirect, page source and committed form, not a synthetic conversion event.
+ await page.goto(origin+'/r/qa-video-camera');
+ await page.waitForFunction(()=>!!window.PageFPTLinkTracking?.leadContext().link_source_token);
+ await page.locator('button[aria-controls="mega-internet"]').click();
+ await page.locator('a[href^="/san-pham/internet-gia-dinh"]:visible').first().click();
+ await page.waitForFunction(()=>location.pathname==='/san-pham/internet-gia-dinh'&&!!window.PageFPTLinkTracking?.leadContext().link_source_token);
+ const src=await page.evaluate(()=>window.PageFPTLinkTracking.leadContext());
+ const lead=await ctx.request.post(origin+'/api/v1/leads',{headers:{'Idempotency-Key':'qa-browser-'+Date.now()},data:{phone:'0981234567',consent_version:'qa',...src}});
+ assert.equal(lead.status(),201,await lead.text());
+ await page.goto(origin+'/admin/link-performance');
+ await page.waitForFunction(()=>document.getElementById('lp-kpi-forms').textContent==='1');
+ assert.equal(await page.locator('#lp-kpi-clicks').textContent(),'1');
+ const leads=(await (await ctx.request.get(origin+'/api/v1/admin/leads?limit=100')).json()).items;
+ let target=leads[0];
+ for(const status of ['assigned','contacting','contacted','qualified','closed']){
+  const changed=await ctx.request.post(origin+'/api/v1/admin/leads/'+target.id+'/transitions',{headers:{'X-CSRF-Token':csrf},data:{expected_version:target.version,status}});
+  assert.equal(changed.status(),200,await changed.text());target=await changed.json();
+ }
+ await page.locator('#lp-refresh').click();
+ await page.waitForFunction(()=>document.getElementById('lp-kpi-closed').textContent==='1');
+ await page.getByRole('button',{name:'Chuyển đổi: Video camera QA',exact:true}).click();
+ await page.waitForFunction(()=>document.getElementById('lp-detail-closed-count').textContent==='1');
+ assert.ok((await page.locator('#lp-detail-closers').textContent()).includes('1 đơn'));
+ await page.locator('#lp-detail-close').click();
+ await page.getByRole('button',{name:'Video camera QA',exact:true}).click();
+ await page.locator('#lp-content-note').fill('Second note');
+ await page.locator('#lp-save').click();
+ await page.waitForFunction(()=>!document.getElementById('lp-editor').open);
+ await page.locator('input[data-link-select]').first().check();
+ await page.locator('#lp-bulk-pause').click();
+ await page.waitForFunction(()=>document.getElementById('lp-status').textContent.includes('1/1'));
+ assert.equal((await ctx.request.get(origin+'/r/qa-video-camera',{maxRedirects:0})).status(),404);
+ for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:900});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Overflow '+width);
+  await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(80);if(width===390||width===1440)await page.screenshot({path:'.local/qa/link-performance/admin-'+width+'.png',fullPage:true});}
+ await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));
+ const dark=await page.locator('.lp-kpis article').first().evaluate(el=>getComputedStyle(el).backgroundColor);
+ assert.notEqual(dark,'rgb(255, 255, 255)','KPI must inherit the Admin dark surface');
+ assert.notEqual(dark,'rgba(0, 0, 0, 0)','KPI needs an opaque readable surface');
+ await page.screenshot({path:'.local/qa/link-performance/admin-dark.png',fullPage:true});
+ assert.deepEqual(errors,[]);
+ const response=await ctx.request.get(origin+'/api/v1/admin/link-performance/report?order=forms&direction=desc');assert.equal(response.status(),200);
+ assert.equal((await response.json()).items.find(x=>x.id===data.id).forms,1);
+ fs.writeFileSync('.local/qa/link-performance/browser-result.json',JSON.stringify({passed:true,widths:[320,390,768,1440],sourceToForm:true,metadata:true,bulk:true,errors},null,2));
+ console.log('Link performance browser: real source→form, metadata, bulk pause, sorted report and four layouts passed');
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

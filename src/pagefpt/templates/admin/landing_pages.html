@@ -15,6 +15,7 @@
       <p>Tạo landing page chuyển đổi cao, nhân bản chạy đồng thời nhiều chiến dịch, tùy biến giao diện trực quan và xem trước đa thiết bị.</p>
     </div>
     <div class="lp-admin-header-actions">
+      <button class="pricing-btn" id="lp-admin-guide-btn" type="button" onclick="window.openAdminGuide('landing_pages')">📖 Hướng Dẫn</button>
       <button class="pricing-btn" id="lp-admin-refresh" type="button">Làm mới danh sách</button>
       <button class="pricing-btn" id="lp-admin-open-templates-btn" type="button" style="background: linear-gradient(135deg, #005a9e, #f37021); color: #fff; border: 0; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.25); font-weight: 700;">🎨 Kho Mẫu FPT Sẵn Có (8 Mẫu)</button>
       <button class="pricing-btn btn-action-call" id="lp-admin-new" type="button">+ Tạo landing page</button>
@@ -28,7 +29,7 @@
         <span class="lp-admin-badge" id="lp-admin-count-badge">0 trang</span>
       </div>
       <div class="lp-admin-filter-bar">
-        <input type="search" id="lp-admin-list-search" placeholder="Tìm theo tên trang, slug..." aria-label="Tìm kiếm trang landing">
+        <input type="search" id="lp-admin-list-search" placeholder="Tìm theo tên trang, đường dẫn..." aria-label="Tìm kiếm trang landing">
         <div class="lp-admin-filter-chips" role="radiogroup" aria-label="Lọc theo trạng thái">
           <button type="button" class="lp-filter-chip active" data-filter="all">Tất cả</button>
           <button type="button" class="lp-filter-chip" data-filter="published">Đã công bố</button>

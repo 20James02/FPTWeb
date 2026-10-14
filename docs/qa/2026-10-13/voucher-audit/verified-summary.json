@@ -1,0 +1,190 @@
+{
+  "python": {
+    "passed": 457,
+    "seconds": 157.33
+  },
+  "javascript_contracts": 27,
+  "browser_matrix": {
+    "passed": true,
+    "suite_count": 16,
+    "suites": [
+      {
+        "script": "vouchers",
+        "passed": true
+      },
+      {
+        "script": "admin_quality",
+        "passed": true
+      },
+      {
+        "script": "profile_consent",
+        "passed": true
+      },
+      {
+        "script": "pricing_bulk",
+        "passed": true
+      },
+      {
+        "script": "home_mobile",
+        "passed": true
+      },
+      {
+        "script": "navbar_pages",
+        "passed": true
+      },
+      {
+        "script": "integrated",
+        "passed": true
+      },
+      {
+        "script": "admin_bulk",
+        "passed": true
+      },
+      {
+        "script": "lead_billing",
+        "passed": true
+      },
+      {
+        "script": "landing_studio",
+        "passed": true
+      },
+      {
+        "script": "telecom_landing",
+        "passed": true
+      },
+      {
+        "script": "accounts_analytics",
+        "passed": true
+      },
+      {
+        "script": "voucher_audit",
+        "passed": true
+      },
+      {
+        "script": "reference_cards",
+        "passed": true
+      },
+      {
+        "script": "speedtest_mobile",
+        "passed": true
+      },
+      {
+        "script": "speed_cards",
+        "passed": true
+      }
+    ]
+  },
+  "production_migration": {
+    "project": "ryfdlhmbytabinsbxbup",
+    "migration": "20261013103126_voucher_audit_integrity.sql",
+    "sha256": "f9e0476682a741917d61578a5b4b3be99d1f0f081b51eacf186d2b21d6213276",
+    "applied": true
+  },
+  "production_schema": [
+    {
+      "applied": true,
+      "anonymous_ledger": true,
+      "retained_entitlements": true,
+      "erasure_trigger": true,
+      "targets_guarded": true,
+      "private_dispatch": true,
+      "private_ledger": true
+    }
+  ],
+  "draft_smoke": {
+    "passed": true,
+    "rollback_only": true
+  },
+  "production_http": {
+    "deployment": "dpl_DkfS6w9JXpj2aCQhV2TWzJcW4dDY",
+    "origin": "https://fpt-vungtau.com",
+    "passed": true,
+    "checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/admin/login",
+        "status": 200,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/do-toc-do",
+        "status": 200,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/catalog",
+        "status": 200,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/vouchers/context?code=QA-DIAGNOSTIC-NONEXISTENT",
+        "status": 200,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/admin/vouchers",
+        "status": 401,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/admin/vouchers/report",
+        "status": 401,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/admin/me",
+        "status": 401,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/api/v1/pages/qa-diagnostic-not-published",
+        "status": 404,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/s/qa-diagnostic-not-published",
+        "status": 404,
+        "asset_hash_verified": false
+      },
+      {
+        "path": "/static/js/admin/vouchers.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/js/client/vouchers.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/js/client/accessories.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/js/client/bottom_sheet.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/js/client/speedtest.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/js/admin/analytics.js",
+        "status": 200,
+        "asset_hash_verified": true
+      },
+      {
+        "path": "/static/css/client-mobile-home.css",
+        "status": 200,
+        "asset_hash_verified": true
+      }
+    ]
+  }
+}

@@ -34,7 +34,7 @@
 
   const errors = {
     VERSION_CONFLICT: "Dữ liệu đã thay đổi bởi người khác. Vui lòng tải lại trước khi lưu.",
-    PERMISSION_DENIED: "Cần đúng quyền quản trị viên (marketing.write / pricing.publish) và xác minh MFA 2 bước.",
+    PERMISSION_DENIED: "Cần đúng quyền quản trị viên và xác thực 2 bước.",
     FORBIDDEN: "Bạn không có quyền thực hiện thao tác này.",
     UNAUTHENTICATED: "Phiên đăng nhập đã hết hạn hoặc chưa xác thực. Vui lòng tải lại trang và đăng nhập lại.",
     CSRF_INVALID: "Phiên bảo mật (CSRF) đã hết hạn. Vui lòng làm mới trang.",
@@ -47,10 +47,13 @@
     VOUCHER_CODE_IMMUTABLE: "Mã đã tạo không được thay đổi; hãy tạo voucher mới.",
     VOUCHER_ARCHIVE_REQUIRED: "Voucher đã công bố, có link hoặc đã dùng. Hãy tạm dừng để giữ lịch sử.",
     INVALID_GIFT: "Quà cần là phụ kiện công bố, tính một lần và đã thiết lập tồn kho.",
+    INVALID_LINK_TARGET: "Chọn trang chủ, ưu đãi, đo tốc độ hoặc một landing đã công bố.",
+    INVALID_VOUCHER_BENEFIT: "Quy tắc cần khoản giảm thực tế hoặc quà tặng hợp lệ.",
+    CSRF_FAILED: "Phiên bảo mật đã hết hạn. Vui lòng tải lại trang.",
     VOUCHER_EXPIRED: "Ngày kết thúc chiến dịch đã qua.",
     VOUCHER_LIMIT_BELOW_COMMITTED: "Hạn mức/ngân sách thấp hơn số đã dùng hoặc đang giữ.",
     INVENTORY_BELOW_COMMITTED: "Tồn kho không được nhỏ hơn số đã dùng/giữ.",
-    LINK_SLUG_EXISTS: "Tên link ngắn (slug) này đã được sử dụng. Vui lòng chọn tên khác.",
+    LINK_SLUG_EXISTS: "Mã đường dẫn rút gọn này đã được sử dụng. Vui lòng chọn tên khác.",
     INVALID_SITE_ORIGIN: "Nguồn trang web không hợp lệ.",
   };
 
@@ -75,7 +78,7 @@
         throw Error("Phiên đăng nhập đã hết hạn. Vui lòng tải lại trang và đăng nhập lại.");
       }
       if (r.status === 403 || d.code === "PERMISSION_DENIED" || d.code === "FORBIDDEN") {
-        throw Error("Tài khoản chưa đủ quyền thực hiện thao tác này (Cần quyền quản trị hoặc xác thực 2 bước MFA).");
+        throw Error("Tài khoản chưa đủ quyền thực hiện thao tác này (Cần quyền quản trị và xác thực 2 bước).");
       }
       if (d.code === "CSRF_INVALID" || d.code === "CSRF_MISSING") {
         throw Error("Phiên bảo mật (CSRF) đã hết hạn. Vui lòng tải lại trang.");
@@ -144,7 +147,7 @@
     }
     toast.className = `voucher-floating-toast show ${type}`;
     const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
-    toast.innerHTML = `<span class="toast-icon">${icon}</span> <span class="toast-msg">${msg}</span>`;
+    toast.replaceChildren(el("span", icon, "toast-icon"), el("span", msg, "toast-msg"));
 
     if (window._voucherToastTimeout) clearTimeout(window._voucherToastTimeout);
     window._voucherToastTimeout = setTimeout(() => {
@@ -1004,6 +1007,14 @@
         el("code", location.origin + "/s/" + link.slug),
         el("span", link.channel + " · " + (link.active ? "Đang bật" : "Đã tắt")),
       );
+      const published = selected?.published_payload;
+      const ready = link.active && selected?.status === "published" &&
+        Date.parse(published?.start) <= Date.now() && Date.now() < Date.parse(published?.end);
+      const readiness = el("p", ready ? "Khách tới trang đích → xem ưu đãi → gửi form." :
+        "Voucher chưa công bố hoặc ngoài lịch hiệu lực. Khách vẫn tới trang đích và có thể gửi tư vấn, nhưng chưa được áp dụng ưu đãi.",
+        "voucher-link-readiness");
+      readiness.setAttribute("role", "status");
+      line.append(readiness);
       const copy = el("button", "Sao chép link", "btn-action-detail");
       copy.type = "button";
       copy.onclick = async () => {
@@ -1018,6 +1029,7 @@
       };
       const copyMsg = el("button", "📋 Copy tin nhắn", "btn-action-detail");
       copyMsg.type = "button";
+      copyMsg.disabled = !ready;
       copyMsg.title = "Sao chép mẫu tin nhắn marketing gửi Zalo / Messenger cho khách";
       copyMsg.onclick = async () => {
         const url = location.origin + "/s/" + link.slug;
@@ -1087,8 +1099,8 @@
     if (box) {
       box.replaceChildren();
       const kpiDefs = [
-        ["requested", "Yêu cầu ưu đãi", "Số lượt gửi lead hoặc mở link ưu đãi của khách hàng."],
-        ["eligible", "Đủ điều kiện", "Số lượt hồ sơ đã vượt qua kiểm tra quy tắc chiến dịch."],
+        ["requested", "Yêu cầu ưu đãi", "Số hồ sơ khách có yêu cầu voucher; không tính lượt xem trang."],
+        ["eligible", "Đã giữ suất", "Số hồ sơ từng được giữ suất, gồm cả suất đã dùng, hết hạn hoặc đã trả."],
         ["held", "Đang giữ suất", "Số suất ưu đãi đang được nhân viên tạm giữ trong thời hạn."],
         ["redeemed", "Đã dùng", "Số suất đã được nghiệm thu hoàn tất sử dụng."],
         ["installed", "Đã lắp đặt", "Số khách yêu cầu voucher đã triển khai lắp đặt thành công."],
@@ -1141,7 +1153,7 @@
             el("strong", label),
             el(
               "p",
-              `Yêu cầu ${x.requested} · Đủ điều kiện ${x.eligible} · Đang giữ ${x.held} · Đã dùng ${x.redeemed} · Đã lắp ${x.installed} · ${money(x.cost_vnd)}${x.employee_id ? " · " + (employees.find((e) => e.id === x.employee_id)?.name || x.employee_id) : ""}`,
+              `Yêu cầu ${x.requested} · Đã giữ suất ${x.eligible} · Đang giữ ${x.held} · Đã dùng ${x.redeemed} · Đã lắp ${x.installed} · ${money(x.cost_vnd)}${x.employee_id ? " · " + (employees.find((e) => e.id === x.employee_id)?.name || x.employee_id) : ""}`,
             ),
           );
           const bar = el("progress");
@@ -1162,11 +1174,19 @@
   function exportReportCsv() {
     if (!lastReportData) return status("Chưa có dữ liệu báo cáo để xuất.");
     const lines = [
-      "Loại dữ liệu,Tên/Kênh/Khu vực,Yêu cầu,Đủ điều kiện,Đang giữ,Đã dùng,Đã lắp đặt,Chi phí (VND)",
+      "Loại dữ liệu,Tên/Kênh/Khu vực,Yêu cầu,Đã giữ suất,Đang giữ,Đã dùng,Đã lắp đặt,Chi phí (VND)",
     ];
+    const cell = value => {
+      if (typeof value === "number") return String(value);
+      let text = String(value ?? "");
+      if (/^\s*[=+\-@]|^[\t\r\n]/.test(text)) text = "'" + text;
+      return '"' + text.replaceAll('"', '""') + '"';
+    };
+    const row = (kind, name, item) => [kind, name, item.requested, item.eligible,
+      item.held, item.redeemed, item.installed, item.cost_vnd].map(cell).join(",");
     for (const item of lastReportData.campaigns || []) {
       lines.push(
-        `"Chiến dịch","${item.name || item.code || ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+        row("Chiến dịch", item.name || item.code || "", item),
       );
     }
     for (const item of lastReportData.channels || []) {
@@ -1174,12 +1194,12 @@
         ? employees.find((e) => e.id === item.employee_id)?.name || item.employee_id
         : "";
       lines.push(
-        `"Kênh / Nhân viên","${item.channel || ""}${emp ? " (" + emp + ")" : ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+        row("Kênh / Nhân viên", (item.channel || "") + (emp ? " (" + emp + ")" : ""), item),
       );
     }
     for (const item of lastReportData.regions || []) {
       lines.push(
-        `"Khu vực / Quy tắc","${item.rule_key || ""}",${item.requested},${item.eligible},${item.held},${item.redeemed},${item.installed},${item.cost_vnd}`,
+        row("Khu vực / Quy tắc", item.rule_key || "", item),
       );
     }
     const blob = new Blob(["﻿" + lines.join("\n")], {
@@ -1276,36 +1296,47 @@
   // Verify target URL button
   const verifyTargetBtn = $("v-link-verify-target");
   if (verifyTargetBtn) {
+    let targetCheckSequence = 0;
     verifyTargetBtn.onclick = async () => {
+      const sequence = ++targetCheckSequence;
       const targetInput = $("v-link-target");
       const statusEl = $("v-link-target-status");
       const targetVal = targetInput?.value.trim() || "";
       if (!statusEl) return;
-      if (!targetVal.startsWith("/")) {
-        statusEl.textContent = "⚠️ Trang đích nên bắt đầu bằng dấu gạch chéo (/ hoặc /ten-landing).";
+      if (!/^\/(?:[a-z0-9][a-z0-9-]{0,99})?$/.test(targetVal)) {
+        statusEl.textContent = "⚠️ Nhập / hoặc /ten-landing, không kèm tên miền hay đường dẫn phụ.";
         statusEl.style.color = "#dc2626";
         return;
       }
-      if (targetVal === "/") {
-        statusEl.textContent = "✅ Trang đích là Trang chủ (hợp lệ).";
+      if (["/", "/khuyen-mai", "/do-toc-do"].includes(targetVal)) {
+        statusEl.textContent = "✅ Trang đích công khai hợp lệ.";
         statusEl.style.color = "#16a34a";
         return;
       }
-      const slug = targetVal.replace(/^\/+/, "").split("/")[0];
-      statusEl.textContent = "Đang kiểm tra trang đích  + slug + ...";
+      const slug = targetVal.slice(1);
+      statusEl.textContent = "Đang kiểm tra trang đích " + slug + "…";
       statusEl.style.color = "#64748b";
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 5000);
       try {
-        const res = await adminFetch("/api/v1/admin/pages/" + encodeURIComponent(slug));
+        const res = await fetch("/api/v1/pages/" + encodeURIComponent(slug), {
+          credentials: "same-origin",
+          signal: controller.signal,
+        });
+        if (sequence !== targetCheckSequence || targetInput.value.trim() !== targetVal) return;
         if (res.ok) {
           statusEl.textContent = "✅ Trang đích công khai hợp lệ (tìm thấy trang).";
           statusEl.style.color = "#16a34a";
         } else {
-          statusEl.textContent = "ℹ️ Kiểm tra UI: Chưa tìm thấy landing page  + slug + . Hãy đảm bảo trang đã tạo.";
+          statusEl.textContent = "⚠️ Trang " + slug + " chưa được công bố hoặc đã ngừng.";
           statusEl.style.color = "#d97706";
         }
       } catch (_) {
-        statusEl.textContent = "ℹ️ Kiểm tra UI: Không thể xác minh trang lúc này (bạn vẫn có thể tạo link).";
+        if (sequence !== targetCheckSequence || targetInput.value.trim() !== targetVal) return;
+        statusEl.textContent = "ℹ️ Chưa thể xác minh trang. Thử lại khi kết nối ổn định.";
         statusEl.style.color = "#64748b";
+      } finally {
+        clearTimeout(timer);
       }
     };
   }
@@ -1450,7 +1481,7 @@
         slug = slug.replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
         if (!slug || slug.length < 3 || slug.length > 50) {
           showNotice(
-            "Tên link ngắn (slug) cần từ 3 đến 50 ký tự (chỉ gồm chữ thường a-z, số 0-9 và dấu gạch ngang).",
+            "Mã đường dẫn rút gọn cần từ 3 đến 50 ký tự (chỉ gồm chữ thường a-z, số 0-9 và dấu gạch ngang).",
             "error",
           );
           $("v-link-slug")?.focus();

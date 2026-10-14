@@ -1,0 +1,298 @@
+{
+  "verified_at_utc": "2026-10-14T05:29:02.442282+00:00",
+  "python": {
+    "passed": 485,
+    "failures": 0
+  },
+  "js_contracts": {
+    "passed": 28,
+    "failures": 0
+  },
+  "lint": "passed",
+  "format_files": 191,
+  "typecheck_source_files": 112,
+  "architecture": "passed",
+  "browser_suites": [
+    "link_performance",
+    "voucher_audit",
+    "integrated",
+    "accounts_analytics",
+    "admin_bulk",
+    "telecom_landing",
+    "reference_cards",
+    "landing_studio"
+  ],
+  "viewports": [
+    320,
+    390,
+    768,
+    1440
+  ],
+  "independent_review": "All five material findings fixed, fresh 28 backend + tracking contract passed",
+  "supabase": {
+    "project": "ryfdlhmbytabinsbxbup",
+    "version": "20261014034406",
+    "sha256": "28ec16517417fdaebb8ffa07503503f37a667d690f140e1658e40de37db0edc4",
+    "schema": {
+      "migrations": 25,
+      "new_tables": 6,
+      "rls": true,
+      "public_read_revoked": true
+    },
+    "rollback_smoke": [
+      {
+        "rollback_registry_and_report_smoke": true
+      }
+    ]
+  },
+  "schema_proof": {
+    "source_md5": "67f611142656d9d63918321341723073",
+    "links": 0,
+    "attributed_forms": 0,
+    "anonymous_current_closed": "0",
+    "rollback_artifacts": 0,
+    "publicly_executable_private_functions": 0,
+    "source_match": true
+  },
+  "candidate": {
+    "deployment": "dpl_7geHoEojjXz9ay3CQZcgwQYNAcNa",
+    "checks": [
+      {
+        "path": "/health/live",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sdk_present": true
+      },
+      {
+        "path": "/admin/login",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/admin/link-performance",
+        "status": 303,
+        "expected": 303,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance/report",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance/options",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/link-tracking/context",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "no_anonymous_source_cookie": true
+      },
+      {
+        "path": "/r/qa-no-such-link-20261014",
+        "status": 404,
+        "expected": 404,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/catalog",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/static/js/client/link_tracking.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "9265add9474b774c2556019ba0880d9e97686c9be76d653655b3801b68e77493",
+        "hash_match": true
+      },
+      {
+        "path": "/static/js/client/api.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "5243f34925c4edaf4bb36b12bc8030d2d1eed4be518a673198c734bf2269a505",
+        "hash_match": true
+      },
+      {
+        "path": "/static/js/admin/link_performance.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "a7c01582034d226b4d45cec8d4016245f603a29aedc9f79a4e3329ce724982a7",
+        "hash_match": true
+      },
+      {
+        "path": "/static/css/admin-link-performance.css",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "97bad009bb22c2a008ae23ebf32c7c0256d90179ed6ddeb2b80c44c2de86193a",
+        "hash_match": true
+      }
+    ],
+    "passed": true
+  },
+  "live": {
+    "deployment": "dpl_7geHoEojjXz9ay3CQZcgwQYNAcNa",
+    "checks": [
+      {
+        "path": "/health/live",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sdk_present": true
+      },
+      {
+        "path": "/admin/login",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/admin/link-performance",
+        "status": 303,
+        "expected": 303,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance/report",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/link-performance/options",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/link-tracking/context",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "no_anonymous_source_cookie": true
+      },
+      {
+        "path": "/r/qa-no-such-link-20261014",
+        "status": 404,
+        "expected": 404,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/catalog",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/static/js/client/link_tracking.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "9265add9474b774c2556019ba0880d9e97686c9be76d653655b3801b68e77493",
+        "hash_match": true
+      },
+      {
+        "path": "/static/js/client/api.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "5243f34925c4edaf4bb36b12bc8030d2d1eed4be518a673198c734bf2269a505",
+        "hash_match": true
+      },
+      {
+        "path": "/static/js/admin/link_performance.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "a7c01582034d226b4d45cec8d4016245f603a29aedc9f79a4e3329ce724982a7",
+        "hash_match": true
+      },
+      {
+        "path": "/static/css/admin-link-performance.css",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "sha256": "97bad009bb22c2a008ae23ebf32c7c0256d90179ed6ddeb2b80c44c2de86193a",
+        "hash_match": true
+      }
+    ],
+    "passed": true
+  },
+  "production_fake_leads_created": 0,
+  "unverified": [
+    "physical mobile devices",
+    "large concurrent production load",
+    "Ads/provider delivery",
+    "cost/revenue allocation"
+  ],
+  "browser_results": [
+    {
+      "script": "link_performance",
+      "passed": true
+    },
+    {
+      "script": "voucher_audit",
+      "passed": true
+    },
+    {
+      "script": "integrated",
+      "passed": true
+    },
+    {
+      "script": "accounts_analytics",
+      "passed": true
+    },
+    {
+      "script": "admin_bulk",
+      "passed": true
+    },
+    {
+      "script": "telecom_landing",
+      "passed": true
+    },
+    {
+      "script": "reference_cards",
+      "passed": true
+    },
+    {
+      "script": "landing_studio",
+      "passed": true
+    }
+  ]
+}

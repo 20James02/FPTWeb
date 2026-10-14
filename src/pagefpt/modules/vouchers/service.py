@@ -23,7 +23,7 @@ def link_cookie(request):
     return cookie_context(request).get("slug")
 
 
-async def resolve(request, code=None, link=None):
+async def resolve(request, code=None, link=None, record_click=False):
     if code == "":
         return None
     stored = cookie_context(request)
@@ -32,7 +32,19 @@ async def resolve(request, code=None, link=None):
         code = stored.get("code")
     if not code and not slug:
         return None
-    result = await dispatch(request, "voucher_resolve", code=code, slug=slug)
+    if record_click:
+        from pagefpt.modules.link_analytics.service import preview_bot
+
+        result = await dispatch(
+            request,
+            "voucher_resolve",
+            code=code,
+            slug=slug,
+            record_click=True,
+            bot=preview_bot(request),
+        )
+    else:
+        result = await dispatch(request, "voucher_resolve", code=code, slug=slug)
     if code and slug:
         source = await dispatch(request, "voucher_resolve", slug=slug)
         if source.get("id") == result.get("id") and source.get("link"):
@@ -56,6 +68,19 @@ def public_view(data):
         for k in ("id", "code", "name", "label", "terms", "start", "end", "link", "sold_out")
         if k in data
     }
+    view["benefits"] = [
+        {
+            **{
+                k: rule[k]
+                for k in ("region_name", "discount_kind", "amount", "basis", "cap_vnd", "sold_out")
+                if k in rule
+            },
+            "gift_name": (rule.get("gift") or {}).get("name"),
+        }
+        for rule in data.get("rules", [])
+    ]
+    view["services"] = data.get("services", [])
+    view["billing_months"] = data.get("billing_months", [])
     at = datetime.now(UTC)
     view["status"] = (
         "expired"

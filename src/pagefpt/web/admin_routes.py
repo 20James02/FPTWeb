@@ -191,3 +191,10 @@ async def admin_landing_pages(request: Request):
 @router.get("/vouchers", response_class=HTMLResponse)
 async def vouchers(request: Request):
     return await render_admin(request, "admin/vouchers.html", "vouchers", ("marketing.write",))
+
+
+@router.get("/link-performance", response_class=HTMLResponse)
+async def link_performance(request: Request):
+    return await render_admin(
+        request, "admin/link_performance.html", "link-performance", ("marketing.write",)
+    )

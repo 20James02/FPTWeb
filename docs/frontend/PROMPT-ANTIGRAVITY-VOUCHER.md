@@ -68,7 +68,7 @@ Tổ chức thành bốn vùng dễ đọc: tổng quan, danh sách, thiết l�
 - Ưu đãi tự nhận qua link; chưa có mã thì chỉ hiển thị mục “Có mã ưu đãi?” gọn. Có mã thì nhãn benefit, điều kiện rút gọn, hạn thật và Bỏ mã.
 - Giữ cấu trúc thẻ gói hiện có: ảnh, tên, tốc độ, giá/tháng, kỳ 1/6/12, quyền lợi/thiết bị, CTA đăng ký, chi tiết. Thẻ trong cùng nhóm đồng bộ kích thước; ảnh không méo; CTA không bị nội dung dài đẩy mất.
 - Tách cước/tháng, phụ kiện một lần/theo tháng, tổng kỳ và giảm voucher. `monthly_vnd`/`initial_total_vnd` từ main quote; không tự tính lại ưu đãi rồi cộng/trừ lần hai.
-- Đổi địa bàn/kỳ/phụ kiện/mã phải refresh quote server và bỏ response cũ. `billing_options` là preview không có token, chưa có đầy đủ phụ kiện; khi đổi kỳ phải lấy main quote mới trước dùng tổng tiền/token.
+- Đổi địa bàn/kỳ/phụ kiện/mã phải refresh quote server và bỏ response cũ. `billing_options` là preview không có token, đã gồm phụ kiện và kiểm tra quà trùng thiết bị; khi đổi kỳ phải lấy main quote mới trước dùng tổng tiền/token.
 - `voucher.status=eligible` là ưu đãi dự kiến; không ghi “Đã giữ quà” khi khách chỉ mở link. Gift trùng thiết bị trả phí cần người dùng bỏ chọn rõ ràng, không tự xóa phụ kiện.
 - Form chỉ Tên/Số/Địa chỉ cụ thể, thông tin gói được giữ từ CTA; consent theo luồng sẵn có. Không bắt nhập mã hoặc chọn xã trước khi gửi.
 - LeadRequest **không có billing_months**. Dùng quote_token/notes hiện có và `submitLeadToBackend`; retry giữ body/key, chỉ báo thành công sau receipt/event_id thật.
@@ -89,7 +89,7 @@ Tổ chức thành bốn vùng dễ đọc: tổng quan, danh sách, thiết l�
 
 - Responsive 320/360/390/430/768/1024/1440px và landscape; không scale cả trang để ép vừa màn hình. Mobile các thanh action gọn, không che nội dung/focus.
 - Controls ưu tiên 44px, input rõ, focus ring, label thật, contrast; Tab/Enter/Space/Escape, screen-reader announcements, reduced-motion.
-- Thiết kế đủ loading/empty/error/retry/permission/MFA/version-conflict/quote-stale/paused/expired/sold-out/gift-unavailable.
+- Thiết kế đủ loading/empty/error/retry/permission/MFA/version-conflict/quote-stale/paused/expired/sold-out/gift-unavailable/no-benefit/invalid-link-target.
 - Giữ helper adminFetch và CSRF, helpers quyền/Auth, PageFPTDates, PageFPTVoucher, PageFPTAccessories, region/quote/form hooks. Nếu đổi selector phải cập nhật code và tests toàn bộ; không có hai submit listeners hoặc hai banner.
 - Smoke không gửi notification/conversion QA ra production. Dùng fixtures. Lệnh/tests và runtime xem workflow hiện có; không tự cài package chỉ để sửa hình thức.
 - Chạy kiểm tra phù hợp: voucher Python tests, JS contracts, browser vouchers/reference_cards/landing_studio/home_mobile/admin_list_tools khi phần liên quan thay đổi. Báo đúng exit code và hạn chế Safari/mobile thật chưa kiểm chứng.

@@ -132,3 +132,10 @@ assert.equal(
   "New catalog revision invalidates orphan period previews",
 );
 console.log("Authoritative availability and orphan preview invalidation PASS");
+
+const voucherQuote = { ...base, revision: 13, voucher: { status: 'eligible', discount_vnd: 100000 } };
+a.acceptQuote('voucher-plan', { ...voucherQuote, plan_id: 'voucher-plan', billing_options: [{ ...voucherQuote, plan_id: 'voucher-plan', billing_months: 1 }] });
+context.fetch = () => new Promise(() => {});
+handlers.change({ target: { matches: s => s === '[data-accessory-id]', dataset: { planId: 'voucher-plan', accessoryId: 'device' }, checked: true } });
+assert.equal(a.current('voucher-plan'), null, 'Changed devices must not reuse a voucher eligibility result for a different selection');
+console.log('Voucher device changes invalidate both quote and period eligibility');

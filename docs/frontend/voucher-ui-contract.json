@@ -1,5 +1,5 @@
 {
-  "review_date": "13/10/2026",
+  "review_date": "14/10/2026",
   "timezone": "Asia/Saigon",
   "scope": "Voucher UI handoff, current local implementation",
   "generated_from": "create_app(Settings(environment=test,_env_file=None)).openapi()",
@@ -627,7 +627,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 261
+      "source_line": 269
     },
     {
       "path": "/api/v1/admin/leads/{id}/voucher/reserve",
@@ -687,7 +687,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 267
+      "source_line": 275
     },
     {
       "path": "/api/v1/admin/leads/{id}/voucher/{action}",
@@ -756,7 +756,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 331,
+      "source_line": 342,
       "allowed_action_values": [
         "redeem",
         "release"
@@ -1263,7 +1263,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/LinkInput"
+              "$ref": "#/components/schemas/pagefpt__modules__vouchers__schemas__LinkInput"
             }
           }
         }
@@ -1722,7 +1722,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 214,
+      "source_line": 222,
       "runtime_success": {
         "status": 204,
         "type": "empty body"
@@ -1779,7 +1779,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 208
+      "source_line": 216
     },
     {
       "path": "/api/v1/vouchers/context",
@@ -1823,7 +1823,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 221
+      "source_line": 229
     },
     {
       "path": "/s/{slug}",
@@ -1899,6 +1899,140 @@
         ],
         "title": "ActionInput"
       },
+      "ActivityCommand": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "call",
+              "note",
+              "appointment",
+              "complaint",
+              "resolved"
+            ],
+            "title": "Kind"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Notes",
+            "default": ""
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "ActivityCommand"
+      },
+      "ApplyInput": {
+        "properties": {
+          "csv": {
+            "type": "string",
+            "maxLength": 262144,
+            "title": "Csv"
+          },
+          "approval_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Approval Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "csv",
+          "approval_token"
+        ],
+        "title": "ApplyInput"
+      },
+      "AppointmentCreate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "due_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Due At"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "callback",
+              "survey",
+              "installation"
+            ],
+            "title": "Kind",
+            "default": "callback"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "due_at"
+        ],
+        "title": "AppointmentCreate"
+      },
+      "AppointmentUpdate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "status"
+        ],
+        "title": "AppointmentUpdate"
+      },
       "AssignmentCommand": {
         "properties": {
           "expected_version": {
@@ -1926,6 +2060,392 @@
         ],
         "title": "AssignmentCommand"
       },
+      "AttributionInput": {
+        "properties": {
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Session Token"
+          },
+          "utm_source": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9_.-]*$",
+            "title": "Utm Source",
+            "default": ""
+          },
+          "utm_medium": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9_.-]*$",
+            "title": "Utm Medium",
+            "default": ""
+          },
+          "utm_campaign": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9_.-]*$",
+            "title": "Utm Campaign",
+            "default": ""
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 30,
+            "pattern": "^(|google|meta|tiktok|zalo|seo|referral)$",
+            "title": "Platform",
+            "default": ""
+          },
+          "click_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[a-zA-Z0-9_-]*$",
+            "title": "Click Id",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_token"
+        ],
+        "title": "AttributionInput"
+      },
+      "Block": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "heading",
+              "cta",
+              "image",
+              "pricing",
+              "faq"
+            ],
+            "title": "Type"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "title": "Text",
+            "default": ""
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "media_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "Block"
+      },
+      "BulkAssignmentCommand": {
+        "properties": {
+          "assignee_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assignee Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BulkAssignmentItem"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "assignee_id",
+          "items"
+        ],
+        "title": "BulkAssignmentCommand"
+      },
+      "BulkAssignmentItem": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "id"
+        ],
+        "title": "BulkAssignmentItem"
+      },
+      "BulkInput": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "pause",
+              "activate"
+            ],
+            "title": "Action"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BulkItem"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "items"
+        ],
+        "title": "BulkInput"
+      },
+      "BulkItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "expected_version"
+        ],
+        "title": "BulkItem"
+      },
+      "BulkPriceInput": {
+        "properties": {
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/PriceInput"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Rows"
+          },
+          "publish": {
+            "type": "boolean",
+            "title": "Publish",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rows"
+        ],
+        "title": "BulkPriceInput"
+      },
+      "CampaignInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "google",
+              "meta",
+              "tiktok",
+              "zalo",
+              "seo",
+              "referral"
+            ],
+            "title": "Platform"
+          },
+          "utm_campaign": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Utm Campaign"
+          },
+          "branch_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branch Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "platform",
+          "utm_campaign"
+        ],
+        "title": "CampaignInput"
+      },
+      "CampaignPrice": {
+        "properties": {
+          "billing_months": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ],
+            "title": "Billing Months"
+          },
+          "monthly_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Monthly Vnd"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "billing_months",
+          "monthly_vnd"
+        ],
+        "title": "CampaignPrice"
+      },
+      "CardLabels": {
+        "properties": {
+          "badge": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Badge",
+            "default": "Gói đang cung cấp"
+          },
+          "speed": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Speed",
+            "default": "Tốc độ"
+          },
+          "offers": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Offers",
+            "default": "Ưu đãi đi kèm"
+          },
+          "equipment": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Equipment",
+            "default": "Thiết bị"
+          },
+          "register": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Register",
+            "default": "Đăng ký gói"
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Details",
+            "default": "Chi tiết gói"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CardLabels"
+      },
+      "ChallengeInput": {
+        "properties": {
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Session Token"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Phone"
+          },
+          "provider_token": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Provider Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_token",
+          "phone",
+          "provider_token"
+        ],
+        "title": "ChallengeInput"
+      },
+      "Code": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$",
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "Code"
+      },
       "ConfirmQuote": {
         "properties": {
           "expected_version": {
@@ -1948,6 +2468,64 @@
         ],
         "title": "ConfirmQuote"
       },
+      "ConsentInput": {
+        "properties": {
+          "analytics": {
+            "type": "boolean",
+            "title": "Analytics",
+            "default": false
+          },
+          "marketing": {
+            "type": "boolean",
+            "title": "Marketing",
+            "default": false
+          },
+          "consent_version": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Consent Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "consent_version"
+        ],
+        "title": "ConsentInput"
+      },
+      "ConsentUpdate": {
+        "properties": {
+          "analytics": {
+            "type": "boolean",
+            "title": "Analytics",
+            "default": false
+          },
+          "marketing": {
+            "type": "boolean",
+            "title": "Marketing",
+            "default": false
+          },
+          "consent_version": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Consent Version"
+          },
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Session Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "consent_version",
+          "session_token"
+        ],
+        "title": "ConsentUpdate"
+      },
       "ContextInput": {
         "properties": {
           "code": {
@@ -1964,6 +2542,34 @@
           "code"
         ],
         "title": "ContextInput"
+      },
+      "CostInput": {
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Campaign Id"
+          },
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "cost_vnd": {
+            "type": "integer",
+            "maximum": 100000000000.0,
+            "minimum": 0.0,
+            "title": "Cost Vnd"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "campaign_id",
+          "day",
+          "cost_vnd"
+        ],
+        "title": "CostInput"
       },
       "DealSave": {
         "properties": {
@@ -2003,6 +2609,567 @@
         ],
         "title": "DealSave"
       },
+      "DisplayPatch": {
+        "properties": {
+          "navigation_items": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/NavigationItem"
+                },
+                "type": "array",
+                "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Navigation Items"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Version"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "fpt_anim": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fpt Anim"
+          },
+          "fpt_anim_style": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "wave",
+                  "bounce",
+                  "glow"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fpt Anim Style"
+          },
+          "runline_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runline Enabled"
+          },
+          "runline_speed": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "slow",
+                  "normal",
+                  "fast"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runline Speed"
+          },
+          "runline_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runline Text"
+          },
+          "banner_zones": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "boolean"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Banner Zones"
+          },
+          "lenis_scroll": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lenis Scroll"
+          },
+          "tilt_parallax": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tilt Parallax"
+          },
+          "hero_experiment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Experiment Id"
+          },
+          "promo_slides": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PromoSlideInput"
+                },
+                "type": "array",
+                "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promo Slides"
+          },
+          "plan_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PlanCategory"
+                },
+                "type": "array",
+                "maxItems": 3,
+                "minItems": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Categories"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "DisplayPatch"
+      },
+      "EngagementInput": {
+        "properties": {
+          "visit_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Visit Token"
+          },
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Session Token"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Page Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "total_ms": {
+            "type": "integer",
+            "maximum": 28800000.0,
+            "minimum": 0.0,
+            "title": "Total Ms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "visit_token",
+          "session_token",
+          "page_id",
+          "sequence",
+          "total_ms"
+        ],
+        "title": "EngagementInput"
+      },
+      "Enroll": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Enroll"
+      },
+      "EventBatch": {
+        "properties": {
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Session Token"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventInput"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_token",
+          "events"
+        ],
+        "title": "EventBatch"
+      },
+      "EventInput": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "view_plan",
+              "select_plan",
+              "select_region",
+              "compare_plans",
+              "start_form",
+              "view_cost",
+              "click_call",
+              "click_zalo",
+              "return_visit",
+              "experiment_exposure",
+              "view_landing"
+            ],
+            "title": "Name"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "variant": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant"
+          },
+          "experiment_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Version"
+          },
+          "landing_slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Landing Slug"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "EventInput"
+      },
+      "ExperimentInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/Variant"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 2,
+            "title": "Variants"
+          },
+          "salt": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 32,
+            "title": "Salt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "variants",
+          "salt"
+        ],
+        "title": "ExperimentInput"
+      },
+      "ExportInput": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "const": "csv",
+            "title": "Format",
+            "default": "csv"
+          },
+          "branch_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branch Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ExportInput"
+      },
+      "FeedbackInput": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "Token"
+          },
+          "rating": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Comment",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "token",
+          "rating"
+        ],
+        "title": "FeedbackInput"
+      },
+      "FollowupInput": {
+        "properties": {
+          "lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lead Id"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "call",
+              "sms",
+              "email",
+              "zalo"
+            ],
+            "title": "Channel"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "service",
+              "marketing",
+              "upsell"
+            ],
+            "title": "Purpose",
+            "default": "service"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lead_id",
+          "channel",
+          "scheduled_at"
+        ],
+        "title": "FollowupInput"
+      },
+      "FooterGroup": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Links"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "FooterGroup"
+      },
+      "GeographySyncInput": {
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Branch Id"
+          },
+          "province_codes": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Province Codes"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "live",
+              "bundled"
+            ],
+            "title": "Source",
+            "default": "live"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "branch_id"
+        ],
+        "title": "GeographySyncInput"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -2015,6 +3182,59 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImportInput": {
+        "properties": {
+          "csv": {
+            "type": "string",
+            "maxLength": 262144,
+            "title": "Csv"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "csv"
+        ],
+        "title": "ImportInput"
+      },
+      "IntegrationInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "google",
+              "meta",
+              "tiktok",
+              "notification"
+            ],
+            "title": "Platform"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "platform"
+        ],
+        "title": "IntegrationInput"
       },
       "InventoryInput": {
         "properties": {
@@ -2051,8 +3271,724 @@
         ],
         "title": "InventoryInput"
       },
+      "LandingCampaign": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Title",
+            "default": "Ưu đãi đăng ký"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "gift_label": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Gift Label",
+            "default": ""
+          },
+          "conditions": {
+            "type": "string",
+            "maxLength": 1200,
+            "title": "Conditions",
+            "default": ""
+          },
+          "stock_total": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Total"
+          },
+          "stock_remaining": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Remaining"
+          },
+          "show_countdown": {
+            "type": "boolean",
+            "title": "Show Countdown",
+            "default": true
+          },
+          "show_activity": {
+            "type": "boolean",
+            "title": "Show Activity",
+            "default": false
+          },
+          "inherit_promotions": {
+            "type": "boolean",
+            "title": "Inherit Promotions",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LandingCampaign"
+      },
+      "LandingFAQ": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 180,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "LandingFAQ"
+      },
+      "LandingFeature": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Text",
+            "default": ""
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "wifi",
+              "support",
+              "install",
+              "play",
+              "camera",
+              "users",
+              "building",
+              "award",
+              "shield"
+            ],
+            "title": "Icon",
+            "default": "wifi"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "LandingFeature"
+      },
+      "LandingReview": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Location",
+            "default": ""
+          },
+          "quote": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Quote"
+          },
+          "rating": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating",
+            "default": 5
+          },
+          "avatar_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Image Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "quote"
+        ],
+        "title": "LandingReview"
+      },
+      "LandingSettings": {
+        "properties": {
+          "campaign": {
+            "$ref": "#/components/schemas/LandingCampaign"
+          },
+          "contact_phone": {
+            "type": "string",
+            "maxLength": 24,
+            "title": "Contact Phone",
+            "default": ""
+          },
+          "zalo_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Zalo Url",
+            "default": ""
+          },
+          "messenger_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Messenger Url",
+            "default": ""
+          },
+          "contact_label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Contact Label",
+            "default": "Liên hệ tư vấn"
+          },
+          "contact_icon": {
+            "type": "string",
+            "enum": [
+              "support",
+              "phone",
+              "message"
+            ],
+            "title": "Contact Icon",
+            "default": "support"
+          },
+          "show_contact_popup": {
+            "type": "boolean",
+            "title": "Show Contact Popup",
+            "default": true
+          },
+          "footer_groups": {
+            "items": {
+              "$ref": "#/components/schemas/FooterGroup"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Footer Groups"
+          },
+          "hero_eyebrow": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Hero Eyebrow",
+            "default": "INTERNET CÁP QUANG FPT TELECOM"
+          },
+          "hero_title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Hero Title",
+            "default": "Đăng Ký Lắp Đặt Internet"
+          },
+          "hero_highlight": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Hero Highlight",
+            "default": "Tốc Độ Cao FPT"
+          },
+          "hero_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Hero Subtitle",
+            "default": "Kết nối theo nhu cầu – Tư vấn gói phù hợp"
+          },
+          "hero_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Image Id"
+          },
+          "hero_mobile_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hero Mobile Image Id"
+          },
+          "promo_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promo Image Id"
+          },
+          "closing_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closing Image Id"
+          },
+          "logo_image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Image Id"
+          },
+          "form_title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Form Title",
+            "default": "NHẬN TƯ VẤN GÓI INTERNET FPT"
+          },
+          "form_subtitle": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Form Subtitle",
+            "default": "Miễn phí tư vấn – Gói phù hợp – Giá rõ ràng"
+          },
+          "form_cta": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Form Cta",
+            "default": "Nhận tư vấn ngay"
+          },
+          "form_privacy": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Form Privacy",
+            "default": "Thông tin được dùng để liên hệ tư vấn"
+          },
+          "cta_label": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Cta Label",
+            "default": "Đăng ký ngay"
+          },
+          "plans_title": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Plans Title",
+            "default": "ĐA DẠNG GÓI CƯỚC – PHÙ HỢP MỌI NHU CẦU"
+          },
+          "plans_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Plans Subtitle",
+            "default": "Internet, truyền hình và camera – Chọn khu vực để xem giá áp dụng"
+          },
+          "compare_title": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Compare Title",
+            "default": "SO SÁNH NHANH CÁC GÓI CƯỚC"
+          },
+          "promo_title": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Promo Title",
+            "default": "ƯU ĐÃI ĐĂNG KÝ"
+          },
+          "promo_subtitle": {
+            "type": "string",
+            "maxLength": 180,
+            "title": "Promo Subtitle",
+            "default": "Được xác nhận theo gói, khu vực và thời gian"
+          },
+          "benefits_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Benefits Title",
+            "default": "VÌ SAO NÊN CHỌN INTERNET FPT TELECOM?"
+          },
+          "stats_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Stats Title",
+            "default": "ĐỒNG HÀNH CÙNG KHÁCH HÀNG"
+          },
+          "reviews_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Reviews Title",
+            "default": "KHÁCH HÀNG NÓI GÌ VỀ DỊCH VỤ?"
+          },
+          "faq_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Faq Title",
+            "default": "CÂU HỎI THƯỜNG GẶP"
+          },
+          "closing_title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Closing Title",
+            "default": "ĐĂNG KÝ ĐỂ ĐƯỢC TƯ VẤN GÓI PHÙ HỢP"
+          },
+          "closing_subtitle": {
+            "type": "string",
+            "maxLength": 240,
+            "title": "Closing Subtitle",
+            "default": "Chọn gói, kiểm tra địa bàn và xác nhận lịch lắp đặt"
+          },
+          "footer_text": {
+            "type": "string",
+            "maxLength": 800,
+            "title": "Footer Text",
+            "default": "Tư vấn Internet, truyền hình và camera theo nhu cầu và địa bàn lắp đặt."
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 24,
+            "title": "Plan Ids"
+          },
+          "plan_presentations": {
+            "items": {
+              "$ref": "#/components/schemas/PlanPresentation"
+            },
+            "type": "array",
+            "maxItems": 24,
+            "title": "Plan Presentations"
+          },
+          "billing_months": {
+            "type": "integer",
+            "enum": [
+              1,
+              6,
+              12
+            ],
+            "title": "Billing Months",
+            "default": 6
+          },
+          "desktop_columns": {
+            "type": "integer",
+            "enum": [
+              0,
+              3,
+              4,
+              5,
+              6
+            ],
+            "title": "Desktop Columns",
+            "default": 0
+          },
+          "hero_features": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Hero Features"
+          },
+          "benefits": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Benefits"
+          },
+          "promo_items": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFeature"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "title": "Promo Items"
+          },
+          "stats": {
+            "items": {
+              "$ref": "#/components/schemas/LandingStat"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Stats"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/LandingReview"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Reviews"
+          },
+          "faqs": {
+            "items": {
+              "$ref": "#/components/schemas/LandingFAQ"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "title": "Faqs"
+          },
+          "nav_items": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Nav Items"
+          },
+          "footer_links": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Footer Links"
+          },
+          "show_comparison": {
+            "type": "boolean",
+            "title": "Show Comparison",
+            "default": true
+          },
+          "show_promo": {
+            "type": "boolean",
+            "title": "Show Promo",
+            "default": true
+          },
+          "show_benefits": {
+            "type": "boolean",
+            "title": "Show Benefits",
+            "default": true
+          },
+          "show_stats": {
+            "type": "boolean",
+            "title": "Show Stats",
+            "default": true
+          },
+          "show_reviews": {
+            "type": "boolean",
+            "title": "Show Reviews",
+            "default": true
+          },
+          "show_faq": {
+            "type": "boolean",
+            "title": "Show Faq",
+            "default": true
+          },
+          "show_closing": {
+            "type": "boolean",
+            "title": "Show Closing",
+            "default": true
+          },
+          "theme_preset": {
+            "type": "string",
+            "enum": [
+              "fpt_standard",
+              "blue_trust",
+              "orange_vibrant",
+              "modern_dark",
+              "emerald_fresh"
+            ],
+            "title": "Theme Preset",
+            "default": "fpt_standard"
+          },
+          "theme_radius": {
+            "type": "string",
+            "enum": [
+              "rounded",
+              "soft",
+              "pill"
+            ],
+            "title": "Theme Radius",
+            "default": "rounded"
+          },
+          "hero_layout": {
+            "type": "string",
+            "enum": [
+              "split",
+              "centered",
+              "minimal"
+            ],
+            "title": "Hero Layout",
+            "default": "split"
+          },
+          "plans_layout": {
+            "type": "string",
+            "enum": [
+              "grid",
+              "carousel",
+              "list"
+            ],
+            "title": "Plans Layout",
+            "default": "grid"
+          },
+          "section_order": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "hero",
+                "plans",
+                "campaign",
+                "compare",
+                "promo",
+                "benefits",
+                "stats",
+                "reviews",
+                "faq",
+                "closing"
+              ]
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Section Order"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LandingSettings"
+      },
+      "LandingStat": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "wifi",
+              "support",
+              "install",
+              "play",
+              "camera",
+              "users",
+              "building",
+              "award",
+              "shield"
+            ],
+            "title": "Icon",
+            "default": "users"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "LandingStat"
+      },
       "LeadRequest": {
         "properties": {
+          "link_source_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8192
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Source Token"
+          },
+          "link_visit_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8192
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Visit Token"
+          },
           "voucher_code": {
             "anyOf": [
               {
@@ -2242,30 +4178,33 @@
         ],
         "title": "LeadRequest"
       },
-      "LinkInput": {
+      "LeadViewFilters": {
         "properties": {
-          "slug": {
-            "type": "string",
-            "maxLength": 50,
-            "minLength": 3,
-            "pattern": "^[a-z0-9-]+$",
-            "title": "Slug"
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
           },
-          "target": {
-            "type": "string",
-            "maxLength": 110,
-            "title": "Target",
-            "default": "/"
+          "q": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q"
           },
-          "channel": {
-            "type": "string",
-            "maxLength": 40,
-            "minLength": 1,
-            "pattern": "^[a-zA-Z0-9_-]+$",
-            "title": "Channel",
-            "default": "direct"
-          },
-          "employee_id": {
+          "branch_id": {
             "anyOf": [
               {
                 "type": "string",
@@ -2275,20 +4214,2230 @@
                 "type": "null"
               }
             ],
-            "title": "Employee Id"
+            "title": "Branch Id"
           },
-          "active": {
+          "assignee_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignee Id"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "overdue": {
             "type": "boolean",
-            "title": "Active",
-            "default": true
+            "title": "Overdue",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LeadViewFilters"
+      },
+      "LeadViewInput": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/LeadViewFilters"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "slug"
+          "expected_version",
+          "name",
+          "filters"
         ],
-        "title": "LinkInput"
+        "title": "LeadViewInput"
+      },
+      "LeadWebhook": {
+        "properties": {
+          "provider_event_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.:-]+$",
+            "title": "Provider Event Id"
+          },
+          "lead": {
+            "$ref": "#/components/schemas/LeadRequest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "provider_event_id",
+          "lead"
+        ],
+        "title": "LeadWebhook"
+      },
+      "LinkUpdate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 3,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Slug"
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 120,
+            "pattern": "^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$",
+            "title": "Target",
+            "default": "/"
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Platform",
+            "default": "other"
+          },
+          "utm_medium": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Medium",
+            "default": "social"
+          },
+          "utm_campaign": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Campaign",
+            "default": ""
+          },
+          "utm_content": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Content",
+            "default": ""
+          },
+          "content_note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Content Note",
+            "default": ""
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "slug",
+          "expected_version"
+        ],
+        "title": "LinkUpdate"
+      },
+      "LocationHint": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "estimated"
+            ],
+            "title": "Status",
+            "default": "unknown"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "vercel",
+                  "geoip"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "province_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province Name"
+          },
+          "subdivision_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subdivision Code"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "accuracy_radius_km": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accuracy Radius Km"
+          },
+          "ward_id": {
+            "type": "null",
+            "title": "Ward Id"
+          },
+          "address_confirmed": {
+            "type": "boolean",
+            "const": false,
+            "title": "Address Confirmed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "LocationHint"
+      },
+      "Login": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Password"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^([0-9]{6})?$",
+            "title": "Otp",
+            "default": ""
+          },
+          "factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "Login"
+      },
+      "MembershipInput": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Display Name",
+            "default": ""
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Branch Id"
+          },
+          "permissions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "*",
+                "identity.manage",
+                "catalog.write",
+                "pricing.write",
+                "pricing.publish",
+                "content.write",
+                "content.publish",
+                "lead.read",
+                "lead.write",
+                "lead.all",
+                "lead.assign",
+                "lead.pii",
+                "intelligence.write",
+                "marketing.write",
+                "care.write",
+                "care.approve",
+                "report.read",
+                "governance.write",
+                "governance.delete",
+                "governance.export",
+                "governance.audit",
+                "workflow.manage"
+              ]
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Permissions"
+          },
+          "capacity": {
+            "type": "integer",
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Capacity",
+            "default": 20
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          },
+          "shift": {
+            "$ref": "#/components/schemas/Shift"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "branch_id",
+          "permissions"
+        ],
+        "title": "MembershipInput"
+      },
+      "NavigationItem": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Href"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Id"
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "play",
+              "camera",
+              "smart-home",
+              "speedtest",
+              "promotions",
+              "custom"
+            ],
+            "title": "Preset",
+            "default": "custom"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/NavigationLink"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Children"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "href",
+          "id"
+        ],
+        "title": "NavigationItem"
+      },
+      "NavigationLink": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Href"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "href"
+        ],
+        "title": "NavigationLink"
+      },
+      "ObservationCommand": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "otp",
+              "contacted",
+              "needs_confirmed",
+              "need",
+              "region",
+              "infrastructure",
+              "home_isp",
+              "phone_carrier"
+            ],
+            "title": "Field"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "inferred",
+              "unknown"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Evidence Ref"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "field",
+          "value",
+          "evidence_ref"
+        ],
+        "title": "ObservationCommand"
+      },
+      "OperationalSettings": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Version"
+          },
+          "sla_minutes": {
+            "type": "integer",
+            "maximum": 240.0,
+            "minimum": 1.0,
+            "title": "Sla Minutes",
+            "default": 10
+          },
+          "sound_alert": {
+            "type": "boolean",
+            "title": "Sound Alert",
+            "default": true
+          },
+          "shift": {
+            "$ref": "#/components/schemas/Shift"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "OperationalSettings"
+      },
+      "PageInput": {
+        "$defs": {
+          "Block": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "text",
+                  "heading",
+                  "cta",
+                  "image",
+                  "pricing",
+                  "faq"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "text": {
+                "default": "",
+                "maxLength": 5000,
+                "title": "Text",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "maxLength": 1000,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "media_id": {
+                "anyOf": [
+                  {
+                    "maxLength": 100,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Media Id"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Block",
+            "type": "object"
+          },
+          "CampaignPrice": {
+            "additionalProperties": false,
+            "properties": {
+              "billing_months": {
+                "enum": [
+                  1,
+                  6,
+                  12
+                ],
+                "title": "Billing Months",
+                "type": "integer"
+              },
+              "monthly_vnd": {
+                "maximum": 1000000000,
+                "minimum": 0,
+                "title": "Monthly Vnd",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "billing_months",
+              "monthly_vnd"
+            ],
+            "title": "CampaignPrice",
+            "type": "object"
+          },
+          "FooterGroup": {
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "maxLength": 60,
+                "minLength": 1,
+                "title": "Title",
+                "type": "string"
+              },
+              "links": {
+                "items": {
+                  "$ref": "#/$defs/NavigationLink"
+                },
+                "maxItems": 12,
+                "title": "Links",
+                "type": "array"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "FooterGroup",
+            "type": "object"
+          },
+          "LandingCampaign": {
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "default": false,
+                "title": "Enabled",
+                "type": "boolean"
+              },
+              "title": {
+                "default": "Ưu đãi đăng ký",
+                "maxLength": 100,
+                "title": "Title",
+                "type": "string"
+              },
+              "start": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Start"
+              },
+              "end": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "End"
+              },
+              "gift_label": {
+                "default": "",
+                "maxLength": 160,
+                "title": "Gift Label",
+                "type": "string"
+              },
+              "conditions": {
+                "default": "",
+                "maxLength": 1200,
+                "title": "Conditions",
+                "type": "string"
+              },
+              "stock_total": {
+                "anyOf": [
+                  {
+                    "maximum": 1000000,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Stock Total"
+              },
+              "stock_remaining": {
+                "anyOf": [
+                  {
+                    "maximum": 1000000,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Stock Remaining"
+              },
+              "show_countdown": {
+                "default": true,
+                "title": "Show Countdown",
+                "type": "boolean"
+              },
+              "show_activity": {
+                "default": false,
+                "title": "Show Activity",
+                "type": "boolean"
+              },
+              "inherit_promotions": {
+                "default": false,
+                "title": "Inherit Promotions",
+                "type": "boolean"
+              }
+            },
+            "title": "LandingCampaign",
+            "type": "object"
+          },
+          "LandingFAQ": {
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "maxLength": 180,
+                "minLength": 1,
+                "title": "Question",
+                "type": "string"
+              },
+              "answer": {
+                "maxLength": 1200,
+                "minLength": 1,
+                "title": "Answer",
+                "type": "string"
+              }
+            },
+            "required": [
+              "question",
+              "answer"
+            ],
+            "title": "LandingFAQ",
+            "type": "object"
+          },
+          "LandingFeature": {
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "maxLength": 80,
+                "minLength": 1,
+                "title": "Title",
+                "type": "string"
+              },
+              "text": {
+                "default": "",
+                "maxLength": 240,
+                "title": "Text",
+                "type": "string"
+              },
+              "icon": {
+                "default": "wifi",
+                "enum": [
+                  "speed",
+                  "wifi",
+                  "support",
+                  "install",
+                  "play",
+                  "camera",
+                  "users",
+                  "building",
+                  "award",
+                  "shield"
+                ],
+                "title": "Icon",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "LandingFeature",
+            "type": "object"
+          },
+          "LandingReview": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 80,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "location": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Location",
+                "type": "string"
+              },
+              "quote": {
+                "maxLength": 500,
+                "minLength": 1,
+                "title": "Quote",
+                "type": "string"
+              },
+              "rating": {
+                "default": 5,
+                "maximum": 5,
+                "minimum": 1,
+                "title": "Rating",
+                "type": "integer"
+              },
+              "avatar_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Avatar Image Id"
+              }
+            },
+            "required": [
+              "name",
+              "quote"
+            ],
+            "title": "LandingReview",
+            "type": "object"
+          },
+          "LandingSettings": {
+            "additionalProperties": false,
+            "properties": {
+              "campaign": {
+                "$ref": "#/$defs/LandingCampaign"
+              },
+              "contact_phone": {
+                "default": "",
+                "maxLength": 24,
+                "title": "Contact Phone",
+                "type": "string"
+              },
+              "zalo_url": {
+                "default": "",
+                "maxLength": 300,
+                "title": "Zalo Url",
+                "type": "string"
+              },
+              "messenger_url": {
+                "default": "",
+                "maxLength": 300,
+                "title": "Messenger Url",
+                "type": "string"
+              },
+              "contact_label": {
+                "default": "Liên hệ tư vấn",
+                "maxLength": 40,
+                "minLength": 1,
+                "title": "Contact Label",
+                "type": "string"
+              },
+              "contact_icon": {
+                "default": "support",
+                "enum": [
+                  "support",
+                  "phone",
+                  "message"
+                ],
+                "title": "Contact Icon",
+                "type": "string"
+              },
+              "show_contact_popup": {
+                "default": true,
+                "title": "Show Contact Popup",
+                "type": "boolean"
+              },
+              "footer_groups": {
+                "items": {
+                  "$ref": "#/$defs/FooterGroup"
+                },
+                "maxItems": 6,
+                "title": "Footer Groups",
+                "type": "array"
+              },
+              "hero_eyebrow": {
+                "default": "INTERNET CÁP QUANG FPT TELECOM",
+                "maxLength": 100,
+                "title": "Hero Eyebrow",
+                "type": "string"
+              },
+              "hero_title": {
+                "default": "Đăng Ký Lắp Đặt Internet",
+                "maxLength": 160,
+                "minLength": 1,
+                "title": "Hero Title",
+                "type": "string"
+              },
+              "hero_highlight": {
+                "default": "Tốc Độ Cao FPT",
+                "maxLength": 100,
+                "title": "Hero Highlight",
+                "type": "string"
+              },
+              "hero_subtitle": {
+                "default": "Kết nối theo nhu cầu – Tư vấn gói phù hợp",
+                "maxLength": 240,
+                "title": "Hero Subtitle",
+                "type": "string"
+              },
+              "hero_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Hero Image Id"
+              },
+              "hero_mobile_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Hero Mobile Image Id"
+              },
+              "promo_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Promo Image Id"
+              },
+              "closing_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Closing Image Id"
+              },
+              "logo_image_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Logo Image Id"
+              },
+              "form_title": {
+                "default": "NHẬN TƯ VẤN GÓI INTERNET FPT",
+                "maxLength": 100,
+                "title": "Form Title",
+                "type": "string"
+              },
+              "form_subtitle": {
+                "default": "Miễn phí tư vấn – Gói phù hợp – Giá rõ ràng",
+                "maxLength": 160,
+                "title": "Form Subtitle",
+                "type": "string"
+              },
+              "form_cta": {
+                "default": "Nhận tư vấn ngay",
+                "maxLength": 48,
+                "minLength": 1,
+                "title": "Form Cta",
+                "type": "string"
+              },
+              "form_privacy": {
+                "default": "Thông tin được dùng để liên hệ tư vấn",
+                "maxLength": 180,
+                "title": "Form Privacy",
+                "type": "string"
+              },
+              "cta_label": {
+                "default": "Đăng ký ngay",
+                "maxLength": 48,
+                "minLength": 1,
+                "title": "Cta Label",
+                "type": "string"
+              },
+              "plans_title": {
+                "default": "ĐA DẠNG GÓI CƯỚC – PHÙ HỢP MỌI NHU CẦU",
+                "maxLength": 180,
+                "title": "Plans Title",
+                "type": "string"
+              },
+              "plans_subtitle": {
+                "default": "Internet, truyền hình và camera – Chọn khu vực để xem giá áp dụng",
+                "maxLength": 240,
+                "title": "Plans Subtitle",
+                "type": "string"
+              },
+              "compare_title": {
+                "default": "SO SÁNH NHANH CÁC GÓI CƯỚC",
+                "maxLength": 120,
+                "title": "Compare Title",
+                "type": "string"
+              },
+              "promo_title": {
+                "default": "ƯU ĐÃI ĐĂNG KÝ",
+                "maxLength": 100,
+                "title": "Promo Title",
+                "type": "string"
+              },
+              "promo_subtitle": {
+                "default": "Được xác nhận theo gói, khu vực và thời gian",
+                "maxLength": 180,
+                "title": "Promo Subtitle",
+                "type": "string"
+              },
+              "benefits_title": {
+                "default": "VÌ SAO NÊN CHỌN INTERNET FPT TELECOM?",
+                "maxLength": 160,
+                "title": "Benefits Title",
+                "type": "string"
+              },
+              "stats_title": {
+                "default": "ĐỒNG HÀNH CÙNG KHÁCH HÀNG",
+                "maxLength": 160,
+                "title": "Stats Title",
+                "type": "string"
+              },
+              "reviews_title": {
+                "default": "KHÁCH HÀNG NÓI GÌ VỀ DỊCH VỤ?",
+                "maxLength": 160,
+                "title": "Reviews Title",
+                "type": "string"
+              },
+              "faq_title": {
+                "default": "CÂU HỎI THƯỜNG GẶP",
+                "maxLength": 160,
+                "title": "Faq Title",
+                "type": "string"
+              },
+              "closing_title": {
+                "default": "ĐĂNG KÝ ĐỂ ĐƯỢC TƯ VẤN GÓI PHÙ HỢP",
+                "maxLength": 160,
+                "title": "Closing Title",
+                "type": "string"
+              },
+              "closing_subtitle": {
+                "default": "Chọn gói, kiểm tra địa bàn và xác nhận lịch lắp đặt",
+                "maxLength": 240,
+                "title": "Closing Subtitle",
+                "type": "string"
+              },
+              "footer_text": {
+                "default": "Tư vấn Internet, truyền hình và camera theo nhu cầu và địa bàn lắp đặt.",
+                "maxLength": 800,
+                "title": "Footer Text",
+                "type": "string"
+              },
+              "plan_ids": {
+                "items": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "maxItems": 24,
+                "title": "Plan Ids",
+                "type": "array"
+              },
+              "plan_presentations": {
+                "items": {
+                  "$ref": "#/$defs/PlanPresentation"
+                },
+                "maxItems": 24,
+                "title": "Plan Presentations",
+                "type": "array"
+              },
+              "billing_months": {
+                "default": 6,
+                "enum": [
+                  1,
+                  6,
+                  12
+                ],
+                "title": "Billing Months",
+                "type": "integer"
+              },
+              "desktop_columns": {
+                "default": 0,
+                "enum": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "title": "Desktop Columns",
+                "type": "integer"
+              },
+              "hero_features": {
+                "items": {
+                  "$ref": "#/$defs/LandingFeature"
+                },
+                "maxItems": 6,
+                "title": "Hero Features",
+                "type": "array"
+              },
+              "benefits": {
+                "items": {
+                  "$ref": "#/$defs/LandingFeature"
+                },
+                "maxItems": 8,
+                "title": "Benefits",
+                "type": "array"
+              },
+              "promo_items": {
+                "items": {
+                  "$ref": "#/$defs/LandingFeature"
+                },
+                "maxItems": 4,
+                "title": "Promo Items",
+                "type": "array"
+              },
+              "stats": {
+                "items": {
+                  "$ref": "#/$defs/LandingStat"
+                },
+                "maxItems": 6,
+                "title": "Stats",
+                "type": "array"
+              },
+              "reviews": {
+                "items": {
+                  "$ref": "#/$defs/LandingReview"
+                },
+                "maxItems": 12,
+                "title": "Reviews",
+                "type": "array"
+              },
+              "faqs": {
+                "items": {
+                  "$ref": "#/$defs/LandingFAQ"
+                },
+                "maxItems": 16,
+                "title": "Faqs",
+                "type": "array"
+              },
+              "nav_items": {
+                "items": {
+                  "$ref": "#/$defs/NavigationLink"
+                },
+                "maxItems": 8,
+                "title": "Nav Items",
+                "type": "array"
+              },
+              "footer_links": {
+                "items": {
+                  "$ref": "#/$defs/NavigationLink"
+                },
+                "maxItems": 12,
+                "title": "Footer Links",
+                "type": "array"
+              },
+              "show_comparison": {
+                "default": true,
+                "title": "Show Comparison",
+                "type": "boolean"
+              },
+              "show_promo": {
+                "default": true,
+                "title": "Show Promo",
+                "type": "boolean"
+              },
+              "show_benefits": {
+                "default": true,
+                "title": "Show Benefits",
+                "type": "boolean"
+              },
+              "show_stats": {
+                "default": true,
+                "title": "Show Stats",
+                "type": "boolean"
+              },
+              "show_reviews": {
+                "default": true,
+                "title": "Show Reviews",
+                "type": "boolean"
+              },
+              "show_faq": {
+                "default": true,
+                "title": "Show Faq",
+                "type": "boolean"
+              },
+              "show_closing": {
+                "default": true,
+                "title": "Show Closing",
+                "type": "boolean"
+              },
+              "theme_preset": {
+                "default": "fpt_standard",
+                "enum": [
+                  "fpt_standard",
+                  "blue_trust",
+                  "orange_vibrant",
+                  "modern_dark",
+                  "emerald_fresh"
+                ],
+                "title": "Theme Preset",
+                "type": "string"
+              },
+              "theme_radius": {
+                "default": "rounded",
+                "enum": [
+                  "rounded",
+                  "soft",
+                  "pill"
+                ],
+                "title": "Theme Radius",
+                "type": "string"
+              },
+              "hero_layout": {
+                "default": "split",
+                "enum": [
+                  "split",
+                  "centered",
+                  "minimal"
+                ],
+                "title": "Hero Layout",
+                "type": "string"
+              },
+              "plans_layout": {
+                "default": "grid",
+                "enum": [
+                  "grid",
+                  "carousel",
+                  "list"
+                ],
+                "title": "Plans Layout",
+                "type": "string"
+              },
+              "section_order": {
+                "items": {
+                  "enum": [
+                    "hero",
+                    "plans",
+                    "campaign",
+                    "compare",
+                    "promo",
+                    "benefits",
+                    "stats",
+                    "reviews",
+                    "faq",
+                    "closing"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 10,
+                "title": "Section Order",
+                "type": "array"
+              }
+            },
+            "title": "LandingSettings",
+            "type": "object"
+          },
+          "LandingStat": {
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "maxLength": 32,
+                "minLength": 1,
+                "title": "Value",
+                "type": "string"
+              },
+              "label": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Label",
+                "type": "string"
+              },
+              "icon": {
+                "default": "users",
+                "enum": [
+                  "speed",
+                  "wifi",
+                  "support",
+                  "install",
+                  "play",
+                  "camera",
+                  "users",
+                  "building",
+                  "award",
+                  "shield"
+                ],
+                "title": "Icon",
+                "type": "string"
+              }
+            },
+            "required": [
+              "value",
+              "label"
+            ],
+            "title": "LandingStat",
+            "type": "object"
+          },
+          "NavigationLink": {
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "maxLength": 40,
+                "minLength": 1,
+                "title": "Label",
+                "type": "string"
+              },
+              "href": {
+                "maxLength": 300,
+                "minLength": 1,
+                "title": "Href",
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "href"
+            ],
+            "title": "NavigationLink",
+            "type": "object"
+          },
+          "PlanPresentation": {
+            "additionalProperties": false,
+            "properties": {
+              "plan_id": {
+                "format": "uuid",
+                "title": "Plan Id",
+                "type": "string"
+              },
+              "subtitle": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Subtitle",
+                "type": "string"
+              },
+              "badge": {
+                "default": "",
+                "maxLength": 40,
+                "title": "Badge",
+                "type": "string"
+              },
+              "accent": {
+                "default": "blue",
+                "enum": [
+                  "blue",
+                  "orange"
+                ],
+                "title": "Accent",
+                "type": "string"
+              },
+              "features": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 8,
+                "title": "Features",
+                "type": "array"
+              },
+              "card_labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "badge",
+                    "speed",
+                    "offers",
+                    "equipment",
+                    "register",
+                    "details"
+                  ]
+                },
+                "title": "Card Labels",
+                "type": "object"
+              },
+              "campaign_prices": {
+                "items": {
+                  "$ref": "#/$defs/CampaignPrice"
+                },
+                "maxItems": 3,
+                "title": "Campaign Prices",
+                "type": "array"
+              }
+            },
+            "required": [
+              "plan_id"
+            ],
+            "title": "PlanPresentation",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "blocks": {
+            "items": {
+              "$ref": "#/$defs/Block"
+            },
+            "maxItems": 100,
+            "title": "Blocks",
+            "type": "array"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Description",
+            "type": "string"
+          },
+          "canonical_path": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "pattern": "^/[a-z0-9/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Canonical Path"
+          },
+          "template": {
+            "default": "blocks",
+            "enum": [
+              "blocks",
+              "telecom"
+            ],
+            "title": "Template",
+            "type": "string"
+          },
+          "landing": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/LandingSettings"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "title",
+          "slug",
+          "blocks"
+        ],
+        "title": "PageInput",
+        "type": "object"
+      },
+      "PasswordChange": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Current Password"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^([0-9]{6})?$",
+            "title": "Otp",
+            "default": ""
+          },
+          "factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "current_password",
+          "password"
+        ],
+        "title": "PasswordChange"
+      },
+      "PaymentCollect": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "create_next": {
+            "type": "boolean",
+            "title": "Create Next",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "PaymentCollect"
+      },
+      "PaymentCreate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "payment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Id"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date"
+          },
+          "amount_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 1.0,
+            "title": "Amount Vnd"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "payment_id",
+          "due_date",
+          "amount_vnd"
+        ],
+        "title": "PaymentCreate"
+      },
+      "PaymentUpdate": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "cancelled"
+            ],
+            "title": "Status",
+            "default": "pending"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "amount_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Vnd"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "PaymentUpdate"
+      },
+      "PlanCategory": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "short_name": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 1,
+            "title": "Short Name"
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Plan Ids"
+          },
+          "services": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "internet",
+                "business",
+                "combo",
+                "play",
+                "camera"
+              ]
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Services"
+          },
+          "all_plans": {
+            "type": "boolean",
+            "title": "All Plans",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "short_name"
+        ],
+        "title": "PlanCategory"
+      },
+      "PlanInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "combo",
+              "camera",
+              "business",
+              "play"
+            ],
+            "title": "Service"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Code"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Description",
+            "default": ""
+          },
+          "card_labels": {
+            "$ref": "#/components/schemas/CardLabels"
+          },
+          "speed_mbps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Mbps"
+          },
+          "upload_speed_mbps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upload Speed Mbps"
+          },
+          "equipment": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Equipment"
+          },
+          "applicable_region_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "title": "Applicable Region Ids"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Image Alt",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "service",
+          "code"
+        ],
+        "title": "PlanInput"
+      },
+      "PlanPresentation": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "subtitle": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Subtitle",
+            "default": ""
+          },
+          "badge": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Badge",
+            "default": ""
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "blue",
+              "orange"
+            ],
+            "title": "Accent",
+            "default": "blue"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Features"
+          },
+          "card_labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "badge",
+                "speed",
+                "offers",
+                "equipment",
+                "register",
+                "details"
+              ]
+            },
+            "type": "object",
+            "title": "Card Labels"
+          },
+          "campaign_prices": {
+            "items": {
+              "$ref": "#/components/schemas/CampaignPrice"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Campaign Prices"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan_id"
+        ],
+        "title": "PlanPresentation"
+      },
+      "PreferencesInput": {
+        "properties": {
+          "marketing_allowed": {
+            "type": "boolean",
+            "title": "Marketing Allowed",
+            "default": false
+          },
+          "service_contact_allowed": {
+            "type": "boolean",
+            "title": "Service Contact Allowed",
+            "default": true
+          },
+          "complaint_open": {
+            "type": "boolean",
+            "title": "Complaint Open",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PreferencesInput"
+      },
+      "PriceInput": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "scope_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scope Id"
+          },
+          "scope_kind": {
+            "type": "string",
+            "enum": [
+              "region",
+              "group",
+              "default"
+            ],
+            "title": "Scope Kind"
+          },
+          "billing_months": {
+            "type": "integer",
+            "maximum": 36.0,
+            "minimum": 1.0,
+            "title": "Billing Months"
+          },
+          "monthly_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Monthly Vnd"
+          },
+          "monthly_coefficient": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,4}0*$"
+              }
+            ],
+            "title": "Monthly Coefficient",
+            "default": "1"
+          },
+          "setup_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Setup Vnd",
+            "default": 0
+          },
+          "equipment_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Equipment Vnd",
+            "default": 0
+          },
+          "vat_included": {
+            "type": "boolean",
+            "title": "Vat Included",
+            "default": true
+          },
+          "vat_bps": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Vat Bps",
+            "default": 0
+          },
+          "gift_months": {
+            "type": "integer",
+            "maximum": 36.0,
+            "minimum": 0.0,
+            "title": "Gift Months",
+            "default": 0
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan_id",
+          "scope_id",
+          "scope_kind",
+          "billing_months",
+          "monthly_vnd",
+          "start",
+          "source"
+        ],
+        "title": "PriceInput"
+      },
+      "PrivacyInput": {
+        "properties": {
+          "lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lead Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "delete",
+              "stop_marketing"
+            ],
+            "title": "Action"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lead_id",
+          "action",
+          "reason"
+        ],
+        "title": "PrivacyInput"
+      },
+      "ProductInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Code"
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "internet",
+              "combo",
+              "camera",
+              "business",
+              "play"
+            ],
+            "title": "Service"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Description",
+            "default": ""
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Plan Ids"
+          },
+          "price_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Vnd"
+          },
+          "original_price_vnd": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Price Vnd"
+          },
+          "offer_label": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Offer Label",
+            "default": ""
+          },
+          "billing_mode": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly"
+            ],
+            "title": "Billing Mode",
+            "default": "one_time"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Image Alt",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "code",
+          "service"
+        ],
+        "title": "ProductInput"
       },
       "ProfileInput": {
         "properties": {
@@ -2352,6 +6501,172 @@
           "ward_code"
         ],
         "title": "ProfileInput"
+      },
+      "PromoSlideInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Description",
+            "default": ""
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id"
+          },
+          "image_alt": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Image Alt",
+            "default": ""
+          },
+          "cta_label": {
+            "type": "string",
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Cta Label",
+            "default": "Nhận tư vấn"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Href",
+            "default": ""
+          },
+          "video_url": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Video Url",
+            "default": ""
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "PromoSlideInput"
+      },
+      "PromotionInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "discount_vnd": {
+            "type": "integer",
+            "maximum": 1000000000.0,
+            "minimum": 0.0,
+            "title": "Discount Vnd"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 1000.0,
+            "minimum": 0.0,
+            "title": "Priority",
+            "default": 0
+          },
+          "group": {
+            "type": "string",
+            "maxLength": 60,
+            "title": "Group",
+            "default": "exclusive"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Plan Ids"
+          },
+          "region_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Region Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "discount_vnd",
+          "start",
+          "end"
+        ],
+        "title": "PromotionInput"
       },
       "QuoteRequest": {
         "properties": {
@@ -2423,6 +6738,232 @@
         ],
         "title": "QuoteRequest"
       },
+      "RebuildInput": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "day"
+        ],
+        "title": "RebuildInput"
+      },
+      "ReconcileConversion": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "failed",
+              "retry"
+            ],
+            "title": "State"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Evidence Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "evidence_ref"
+        ],
+        "title": "ReconcileConversion"
+      },
+      "ReconcileInput": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "failed",
+              "retry"
+            ],
+            "title": "State"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Evidence Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "evidence_ref"
+        ],
+        "title": "ReconcileInput"
+      },
+      "RecoveryEmail": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "RecoveryEmail"
+      },
+      "RedirectInput": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 250,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 250,
+            "minLength": 1,
+            "title": "Target"
+          },
+          "status_code": {
+            "type": "integer",
+            "enum": [
+              301,
+              302,
+              307,
+              308
+            ],
+            "title": "Status Code",
+            "default": 301
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "target"
+        ],
+        "title": "RedirectInput"
+      },
+      "ReferralInput": {
+        "properties": {
+          "referrer_lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referrer Lead Id"
+          },
+          "referred_lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referred Lead Id"
+          },
+          "installation_reference": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Installation Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "referrer_lead_id",
+          "referred_lead_id",
+          "installation_reference"
+        ],
+        "title": "ReferralInput"
+      },
+      "RegionInput": {
+        "properties": {
+          "zone_id": {
+            "type": "string",
+            "enum": [
+              "mien_bac",
+              "mien_trung",
+              "mien_nam",
+              "khac"
+            ],
+            "title": "Zone Id",
+            "default": "khac"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Branch Id"
+          },
+          "price_group_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Group Id"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Aliases"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "province",
+              "ward"
+            ],
+            "title": "Level",
+            "default": "province"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "code",
+          "branch_id"
+        ],
+        "title": "RegionInput"
+      },
       "ReserveInput": {
         "properties": {
           "expected_version": {
@@ -2455,6 +6996,75 @@
           "code"
         ],
         "title": "ReserveInput"
+      },
+      "ResetPassword": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 8,
+            "title": "Password"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$",
+            "title": "Otp"
+          },
+          "challenge_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Challenge Id"
+          },
+          "totp": {
+            "type": "string",
+            "pattern": "^([0-9]{6})?$",
+            "title": "Totp",
+            "default": ""
+          },
+          "totp_factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Totp Factor Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "otp",
+          "challenge_id"
+        ],
+        "title": "ResetPassword"
+      },
+      "RevokeInput": {
+        "properties": {
+          "visit_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Visit Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "visit_token"
+        ],
+        "title": "RevokeInput"
       },
       "Rule": {
         "properties": {
@@ -2556,6 +7166,110 @@
         ],
         "title": "Rule"
       },
+      "ScheduleInput": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "publish_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Publish At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "publish_at"
+        ],
+        "title": "ScheduleInput"
+      },
+      "Shift": {
+        "properties": {
+          "weekdays": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Weekdays",
+            "default": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "start": {
+            "type": "string",
+            "format": "time",
+            "title": "Start",
+            "default": "08:00:00"
+          },
+          "end": {
+            "type": "string",
+            "format": "time",
+            "title": "End",
+            "default": "18:00:00"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Shift"
+      },
+      "StaffCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Display Name"
+          },
+          "branch_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Branch Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "sales",
+              "support",
+              "marketing",
+              "editor",
+              "manager"
+            ],
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "display_name",
+          "branch_id",
+          "role"
+        ],
+        "title": "StaffCreate"
+      },
       "TransitionCommand": {
         "properties": {
           "expected_version": {
@@ -2610,6 +7324,39 @@
         ],
         "title": "TransitionCommand"
       },
+      "UploadInput": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Filename"
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp"
+            ],
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 10485760.0,
+            "minimum": 1.0,
+            "title": "Size Bytes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "filename",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "UploadInput"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -2649,6 +7396,62 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "Variant": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Name"
+          },
+          "weight": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Weight"
+          },
+          "cta_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 24,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cta Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "weight"
+        ],
+        "title": "Variant"
+      },
+      "VariantRequest": {
+        "properties": {
+          "session_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8192
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VariantRequest"
       },
       "VersionCommand": {
         "properties": {
@@ -2966,6 +7769,206 @@
           "expected_version"
         ],
         "title": "VoucherUpdate"
+      },
+      "pagefpt__modules__intelligence__routes__VisitInput": {
+        "properties": {
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Session Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_token"
+        ],
+        "title": "VisitInput"
+      },
+      "pagefpt__modules__link_analytics__schemas__LinkInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 3,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Slug"
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 120,
+            "pattern": "^/(?:[a-z0-9-]+(?:/[a-z0-9-]+)?)?$",
+            "title": "Target",
+            "default": "/"
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Platform",
+            "default": "other"
+          },
+          "utm_medium": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Medium",
+            "default": "social"
+          },
+          "utm_campaign": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Campaign",
+            "default": ""
+          },
+          "utm_content": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9_.-]*$",
+            "title": "Utm Content",
+            "default": ""
+          },
+          "content_note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Content Note",
+            "default": ""
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "slug"
+        ],
+        "title": "LinkInput"
+      },
+      "pagefpt__modules__link_analytics__schemas__VisitInput": {
+        "properties": {
+          "source_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Source Token"
+          },
+          "session_token": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Session Token"
+          },
+          "visit_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8192
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visit Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_token",
+          "session_token"
+        ],
+        "title": "VisitInput"
+      },
+      "pagefpt__modules__vouchers__schemas__LinkInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Title",
+            "default": ""
+          },
+          "content_note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Content Note",
+            "default": ""
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 3,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Slug"
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 110,
+            "title": "Target",
+            "default": "/"
+          },
+          "channel": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Channel",
+            "default": "direct"
+          },
+          "employee_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employee Id"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "slug"
+        ],
+        "title": "LinkInput"
+      },
+      "ProcessInput": {
+        "additionalProperties": false,
+        "properties": {
+          "queue": {
+            "default": "lead_local",
+            "enum": [
+              "lead_local",
+              "lead_external",
+              "conversions",
+              "notifications",
+              "maintenance"
+            ],
+            "title": "Queue",
+            "type": "string"
+          }
+        },
+        "title": "ProcessInput",
+        "type": "object"
       }
     }
   },
@@ -3018,23 +8021,34 @@
     "report_held": "current unexpired holds",
     "report_installed": "requested voucher leads with installed status, independent of redeemed",
     "report_cost_vnd": "redeemed voucher discount + frozen gift cost; not ad spend/revenue",
-    "billing_options": "period previews, no token; main quote required for selected accessories"
+    "billing_options": "period previews include selected accessories and gift checks; no token; refresh main quote before submission"
   },
   "current_test_evidence": {
-    "voucher_tests": 29,
+    "python_project_tests": 457,
+    "javascript_contracts": 27,
     "result": "passed",
-    "duration_seconds": 14.48,
-    "command": "env -u PAGEFPT_TEST_DSN .venv/bin/python -m pytest -q tests/integration/test_vouchers.py tests/unit/test_voucher_engine.py tests/unit/test_voucher_contract_export.py"
+    "duration_seconds": 157.33,
+    "command": "env -u PAGEFPT_TEST_DSN .venv/bin/python -m pytest -q",
+    "deep_audit_report": "../qa/2026-10-13/voucher-deep-audit.md"
   },
   "source_sha256": {
-    "src/pagefpt/modules/vouchers/routes.py": "5420fb6d5169337c5ef249ce9f05accc837ed32b714cfa40706e549bd65b77b9",
-    "src/pagefpt/modules/vouchers/schemas.py": "ad83e70fe4e7c42afbcda2053f94959e8d5071c821bd941ff4a2a311d054080d",
-    "src/pagefpt/modules/vouchers/engine.py": "350fddd9ba2f21881c4048de1d3d5b0b0615dcbeee445baeaa4f64a223bc238d",
-    "src/pagefpt/modules/vouchers/service.py": "d77cd28177223b4d3da2081736612ff4cb4b777f4b0f2319057aa712a96d6265",
+    "src/pagefpt/modules/vouchers/routes.py": "b73178ef0de129101c8a08ec32c822d14a82c2c527e7bf953465174d55b68327",
+    "src/pagefpt/modules/vouchers/schemas.py": "ca1f3cd1108dbe4b6bdf0c47a6ca24b82400291d9662c96c7bff2d6c458de39b",
+    "src/pagefpt/modules/vouchers/engine.py": "e4d7e863f7d047d47ad0dcca860aa7269d0c4c232d3fd36b1dab1415c56241f8",
+    "src/pagefpt/modules/vouchers/service.py": "29e9b24fa324826516d6cc96f3504c7ca0b522c6ba30e2ac41b93a74eb402182",
     "src/pagefpt/modules/leads/profile.py": "61e43ef629ac98afb199c2986ba298833cf0b845d9a06fc737bc62f06ab88907",
     "src/pagefpt/modules/leads/billing.py": "44b27896e85f1f3b62e148cd4381c8b99735aeec8c30da3cf5c0f556e07a63aa",
     "src/pagefpt/modules/pricing/schemas.py": "b652d2672df74b211efb05942ee21899a8d47ca3ec7531717b1497a3127c7aea",
-    "src/pagefpt/modules/leads/schemas.py": "c88cc3fe336928a8171e57daeeaae25a1fd7f2f84f1f54e5afb04ea4ecbd36ee",
-    "supabase/migrations/20261013030159_regional_vouchers.sql": "41c57644f1099d486ca19974f49ac33823414bbd88a965d78efca153e26ae931"
+    "src/pagefpt/modules/leads/schemas.py": "7e71e34a9eabd8d388ffb7dcddb33ea12075ba18039a71504dd911c75a588673",
+    "supabase/migrations/20261013030159_regional_vouchers.sql": "41c57644f1099d486ca19974f49ac33823414bbd88a965d78efca153e26ae931",
+    "supabase/migrations/20261013103126_voucher_audit_integrity.sql": "f9e0476682a741917d61578a5b4b3be99d1f0f081b51eacf186d2b21d6213276"
+  },
+  "audit_notes": {
+    "billing_options": "Period previews include selected accessory_ids and gift conflict checks, but have no quote token; refresh main quote before submission.",
+    "voucher_status_no_benefit": "Effective discount is zero and no gift; not eligible for reservation.",
+    "target_check": "GET /api/v1/pages/{slug}; built-in targets /, /khuyen-mai, /do-toc-do. Server revalidates on link save and resolution.",
+    "erased_ledger": "Consumed entitlements/cost survive PII erasure anonymously; no exact historical attribution or event funnel.",
+    "context_mutations": "Serialize POST and DELETE to preserve cookie order; fence rendering by generation.",
+    "link_performance": "Creator/title/note + anonymous click/form/current-closed performance tracked by dedicated module; see LINK-PERFORMANCE-LUONG-DU-LIEU.md. Prior exact funnels are not fabricated."
   }
 }
