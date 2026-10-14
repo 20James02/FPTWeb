@@ -254,16 +254,58 @@
     reminder.hidden = !(marker || v?.link) || completedFor === (v?.id || marker);
   }
 
+  let prevHtmlOverflow = null;
+  let prevBodyOverflow = null;
+
+  function lockScroll() {
+    if (typeof document === 'undefined') return;
+    if (document.documentElement && document.documentElement.style) {
+      if (prevHtmlOverflow === null) prevHtmlOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      if (document.documentElement.classList && typeof document.documentElement.classList.add === 'function') {
+        document.documentElement.classList.add('voucher-modal-open');
+      }
+    }
+    if (document.body && document.body.style) {
+      if (prevBodyOverflow === null) prevBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      if (document.body.classList && typeof document.body.classList.add === 'function') {
+        document.body.classList.add('voucher-modal-open');
+      }
+    }
+  }
+
+  function unlockScroll() {
+    if (typeof document === 'undefined') return;
+    if (document.documentElement && document.documentElement.style) {
+      document.documentElement.style.overflow = prevHtmlOverflow || '';
+      prevHtmlOverflow = null;
+      if (document.documentElement.classList && typeof document.documentElement.classList.remove === 'function') {
+        document.documentElement.classList.remove('voucher-modal-open');
+      }
+    }
+    if (document.body && document.body.style) {
+      document.body.style.overflow = prevBodyOverflow || '';
+      prevBodyOverflow = null;
+      if (document.body.classList && typeof document.body.classList.remove === 'function') {
+        document.body.classList.remove('voucher-modal-open');
+      }
+    }
+  }
+
   function show() {
     render();
     if (dialog.open) return true;
     if (document.querySelector('dialog[open], .bottom-sheet-backdrop.active')) return false;
     dialog.showModal();
+    lockScroll();
     get('voucher-acquisition-use').focus();
     triggerGiftSequence();
     return true;
   }
 
+  dialog.addEventListener('close', unlockScroll);
+  dialog.addEventListener('cancel', unlockScroll);
   get('voucher-acquisition-close').addEventListener('click', () => dialog.close());
   get('voucher-acquisition-later').addEventListener('click', () => dialog.close());
   reminder.addEventListener('click', show);
