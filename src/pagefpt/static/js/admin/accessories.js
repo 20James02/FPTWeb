@@ -63,10 +63,6 @@
           `${p.price_vnd === null || p.price_vnd === undefined ? "Chưa thiết lập giá" : money.format(p.price_vnd) + "đ"} · ${p.billing_mode === "monthly" ? "Theo tháng" : "Một lần"} · ${{ draft: "Nháp", published: "Đã công bố", retired: "Đã ngừng" }[row.status] || row.status}`,
         ),
       );
-      const edit = node("button", "Sửa", "pricing-btn");
-      edit.type = "button";
-      edit.onclick = () => open(row);
-      box.append(edit);
       if (p.original_price_vnd != null)
         box.append(
           node(
@@ -74,6 +70,11 @@
             `Giá gốc ${money.format(p.original_price_vnd)}đ${p.offer_label ? " · " + p.offer_label : ""}`,
           ),
         );
+      const actions = node("div", "", "pricing-actions");
+      const edit = node("button", "Sửa", "pricing-btn");
+      edit.type = "button";
+      edit.onclick = () => open(row);
+      actions.append(edit);
       if (row.status !== "retired")
         for (const [op, label] of [
           ["publish", "Công bố"],
@@ -104,8 +105,9 @@
               btn.disabled = false;
             }
           };
-          box.append(btn);
+          actions.append(btn);
         }
+      box.append(actions);
       list.append(box);
     }
     if (!list.children.length)

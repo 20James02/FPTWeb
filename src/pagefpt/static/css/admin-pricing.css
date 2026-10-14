@@ -623,3 +623,55 @@
   margin-right: 6px;
   margin-top: 8px;
 }
+
+
+/* ===================================================================
+   SAAS LENIS HOVER-TO-REVEAL CHO GÓI CƯỚC & PHỤ KIỆN
+   Mặc định chỉ hiện thông tin sạch sẽ, rê chuột mới trượt hiện nút thao tác
+   =================================================================== */
+
+/* Gói cước (#plans-list) */
+.pricing-list-row .pricing-actions {
+  opacity: 0 !important;
+  transform: translateY(8px) !important;
+  pointer-events: none !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.pricing-list-row:hover .pricing-actions,
+.pricing-list-row:focus-within .pricing-actions {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Phụ kiện (#accessory-list) */
+#accessory-list article.pricing-list-card .pricing-actions {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  opacity: 0 !important;
+  transform: translateY(8px) !important;
+  pointer-events: none !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#accessory-list article.pricing-list-card:hover .pricing-actions,
+#accessory-list article.pricing-list-card:focus-within .pricing-actions {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+@media (hover: none) {
+  .pricing-list-row .pricing-actions,
+  #accessory-list article.pricing-list-card .pricing-actions {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+}

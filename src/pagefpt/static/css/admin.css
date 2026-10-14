@@ -1603,3 +1603,38 @@ body.admin-body {
   background: var(--bg-surface-elevated, #f1f5f9);
   border-color: #cbd5e1;
 }
+
+
+/* ===================================================================
+   LENIS SMOOTH FEEL & SAAS MICRO-INTERACTIONS
+   =================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242, 111, 33, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(242, 111, 33, 0.25);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(242, 111, 33, 0.5);
+}
+
+/* Nút bấm có active micro-scale */
+button:active,
+.btn-action-call:active,
+.btn-action-detail:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.1s ease !important;
+}

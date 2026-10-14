@@ -1742,3 +1742,31 @@
   gap: 8px !important;
   justify-content: flex-end;
 }
+
+
+/* ===================================================================
+   SAAS LENIS HOVER-TO-REVEAL CHO VOUCHER
+   Mặc định chỉ hiện thông tin voucher gọn gàng, hover mới hiện nút Thiết lập, Nhân bản
+   =================================================================== */
+
+#voucher-table tbody td:last-child > div {
+  opacity: 0 !important;
+  transform: translateY(8px) !important;
+  pointer-events: none !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#voucher-table tbody tr:hover td:last-child > div,
+#voucher-table tbody tr:focus-within td:last-child > div {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+@media (hover: none) {
+  #voucher-table tbody td:last-child > div {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+}
