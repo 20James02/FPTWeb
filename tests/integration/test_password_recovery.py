@@ -33,6 +33,8 @@ async def recovery_backend(admin, gateway):
     s.telegram_recovery_accounts = {EMAIL: "123456789"}
     token = admin.headers.pop("Authorization")[7:]
     subject = jwt.decode(token, options={"verify_signature": False})["sub"]
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("INSERT INTO auth.users(id,email) VALUES(%s,%s)", [subject, EMAIL])
     return admin, token, subject
 
 
@@ -228,6 +230,131 @@ async def test_unknown_unbound_email_is_generic_and_sends_nothing(recovery_backe
     assert not respx.calls
 
 
+@pytest.mark.parametrize("condition", ["missing", "inactive", "deleted", "banned", "changed_email"])
+@respx.mock
+async def test_bound_ineligible_account_never_creates_provider_proof_or_code(
+    recovery_backend, gateway, condition
+):
+    client, _, subject = recovery_backend
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        if condition == "missing":
+            db.execute("DELETE FROM auth.users WHERE id=%s", [subject])
+        elif condition == "inactive":
+            db.execute("UPDATE private.memberships SET active=false WHERE user_id=%s", [subject])
+        elif condition == "deleted":
+            db.execute("UPDATE auth.users SET deleted_at=now() WHERE id=%s", [subject])
+        elif condition == "banned":
+            db.execute(
+                "UPDATE auth.users SET banned_until=now()+interval '1 hour' WHERE id=%s", [subject]
+            )
+        else:
+            db.execute("UPDATE auth.users SET email='changed@example.test' WHERE id=%s", [subject])
+    generated = respx.post(URL + "admin/generate_link").mock(
+        return_value=httpx.Response(200, json=generate_response(subject))
+    )
+    response = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert response.status_code == 202
+    assert response.json()["accepted"] is True and response.json()["challenge_id"]
+    assert not generated.called
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.telegram_recovery").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+
+
+@respx.mock
+async def test_generate_cannot_substitute_another_active_admin(recovery_backend, gateway):
+    client, _, _ = recovery_backend
+    other = str(uuid4())
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute(
+            "INSERT INTO private.memberships(user_id,branch_id,permissions) "
+            "VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['*'])",
+            [other],
+        )
+    respx.post(URL + "admin/generate_link").mock(
+        return_value=httpx.Response(200, json=generate_response(other))
+    )
+    response = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert response.status_code == 503
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+
+
+@respx.mock
+async def test_account_banned_during_provider_call_never_queues_code(recovery_backend, gateway):
+    client, _, subject = recovery_backend
+
+    def generated(request):
+        with psycopg.connect(gateway.dsn, autocommit=True) as db:
+            db.execute(
+                "UPDATE auth.users SET banned_until=now()+interval '1 hour' WHERE id=%s", [subject]
+            )
+        return httpx.Response(200, json=generate_response(subject))
+
+    respx.post(URL + "admin/generate_link").mock(side_effect=generated)
+    response = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert response.status_code == 202
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+        assert db.execute(
+            "SELECT state,code_ciphertext,proof_ciphertext FROM private.telegram_recovery"
+        ).fetchone() == ("cancelled", "", "")
+
+
+@pytest.mark.parametrize("condition", ["missing", "banned"])
+@respx.mock
+async def test_provider_account_revoked_after_issue_cannot_receive_or_use_code(
+    recovery_backend, gateway, condition
+):
+    client, _, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        if condition == "missing":
+            db.execute("DELETE FROM auth.users WHERE id=%s", [subject])
+        else:
+            db.execute(
+                "UPDATE auth.users SET banned_until=now()+interval '1 hour' WHERE id=%s", [subject]
+            )
+    calls = len(respx.calls)
+    worker = Worker(gateway, CRYPT, telegram=client._transport.app.state.telegram)
+    assert (await worker.process("notifications"))["completed"] == 1
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+    assert len(respx.calls) == calls
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute(
+            "SELECT state,code_ciphertext,proof_ciphertext FROM private.telegram_recovery"
+        ).fetchone() == ("cancelled", "", "")
+
+
+@respx.mock
+async def test_banned_account_cannot_reset_even_before_delivery(recovery_backend, gateway):
+    client, _, subject = recovery_backend
+    payload = await issue(recovery_backend, gateway)
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute(
+            "UPDATE auth.users SET banned_until=now()+interval '1 hour' WHERE id=%s", [subject]
+        )
+    calls = len(respx.calls)
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+    assert len(respx.calls) == calls
+
+
+@pytest.mark.parametrize("role", ["anon", "authenticated"])
+def test_recovery_lookup_not_executable_by_browser_roles(gateway, role):
+    with psycopg.connect(gateway.dsn) as db:
+        for function in ["private.recovery_subject(text,uuid)", "api.dispatch(jsonb)"]:
+            assert (
+                db.execute(
+                    "SELECT has_function_privilege(%s,%s,'EXECUTE')", [role, function]
+                ).fetchone()[0]
+                is False
+            )
+        assert (
+            db.execute("SELECT has_table_privilege(%s,'auth.users','SELECT')", [role]).fetchone()[0]
+            is False
+        )
+
+
 @respx.mock
 async def test_challenge_cannot_be_used_for_another_email(recovery_backend, gateway):
     client, _, _ = recovery_backend
@@ -339,15 +466,18 @@ async def test_provider_subject_must_match_challenge(recovery_backend, gateway):
     payload = await issue(recovery_backend, gateway)
     with psycopg.connect(gateway.dsn, autocommit=True) as db:
         other = str(uuid4())
+        db.execute("INSERT INTO auth.users(id,email) VALUES(%s,'other@example.test')", [other])
         db.execute(
             "INSERT INTO private.memberships(user_id,branch_id,permissions) VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['*'])",
             [other],
         )
         db.execute("UPDATE private.telegram_recovery SET subject=%s", [other])
-    respx.post(URL + "verify").mock(
+    verify = respx.post(URL + "verify").mock(
         return_value=httpx.Response(200, json={"access_token": token, "user": {}})
     )
+    update = respx.put(URL + "user").mock(return_value=httpx.Response(200, json={}))
     assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+    assert verify.called and not update.called
 
 
 @respx.mock

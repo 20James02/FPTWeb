@@ -122,6 +122,9 @@ def auth_http(request):
 
 with psycopg.connect(_dsn, autocommit=True) as connection:
     connection.execute(
+        "INSERT INTO auth.users(id,email) VALUES(%s,'qa-admin@example.test')", [SUBJECT]
+    )
+    connection.execute(
         "INSERT INTO private.memberships(user_id,branch_id,permissions,capacity,shift) "
         "VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['*'],100,"
         '\'{"weekdays":[0,1,2,3,4,5,6],"start":"00:00","end":"23:59"}\')',

@@ -59,6 +59,11 @@ async def request_recovery(input: RecoveryEmail, request: Request):
     if not chat:
         # Same response shape for an account without a configured recovery binding.
         return accepted
+    account = await dispatch(request, "telegram_recovery_account", email=input.email)
+    if not account.get("subject"):
+        # Validate provider identity + active membership before generating any proof.
+        # The public response deliberately does not reveal the admin directory.
+        return accepted
     await dispatch(request, "telegram_recovery_reserve", key=key, id=challenge_id)
     auth = request.app.state.auth
     generated = await auth.call(
@@ -77,6 +82,8 @@ async def request_recovery(input: RecoveryEmail, request: Request):
         subject = str(UUID(user["id"]))
     except (KeyError, ValueError, TypeError, AttributeError) as exc:
         raise DomainError("AUTH_UNAVAILABLE", 503) from exc
+    if subject != account["subject"]:
+        raise DomainError("AUTH_UNAVAILABLE", 503)
     code = f"{secrets.randbelow(1000000):06d}"
     await dispatch(
         request,
@@ -84,6 +91,7 @@ async def request_recovery(input: RecoveryEmail, request: Request):
         key=key,
         id=challenge_id,
         subject=subject,
+        email=input.email,
         chat_id=chat,
         code_hash=crypt.match(challenge_id + ":" + code, "telegram-recovery-code"),
         code_ciphertext=crypt.encrypt(code),

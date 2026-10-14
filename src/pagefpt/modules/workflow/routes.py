@@ -2,6 +2,7 @@ import hmac
 from typing import Literal
 
 from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 
 from pagefpt.api.dependencies import crypto
 from pagefpt.core.errors import DomainError
@@ -25,6 +26,22 @@ def verify_job(request):
         hmac.compare_digest(supplied, secret) or hmac.compare_digest(cron, "Bearer " + secret)
     ):
         raise DomainError("UNAUTHENTICATED", 401)
+
+
+@router.get("/internal/jobs/status", include_in_schema=False)
+async def status(request: Request):
+    """Check scheduler credentials and DB reachability without claiming any job."""
+    verify_job(request)
+    health = await request.app.state.db.rpc("health", {"command": {}})
+    settings = request.app.state.settings
+    return JSONResponse(
+        {
+            "ready": health.get("ready") is True,
+            "telegram_enabled": settings.telegram_enabled,
+            "recovery_configured": bool(settings.telegram_recovery_accounts),
+        },
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @router.post("/internal/jobs/process", include_in_schema=False)

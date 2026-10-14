@@ -1,6 +1,6 @@
 # Khôi phục mật khẩu Admin qua Telegram
 
-Ngày cập nhật: 06/10/2026. Thay thế luồng email/link trước đây theo yêu cầu owner.
+Ngày cập nhật: 14/10/2026. Thay thế luồng email/link trước đây theo yêu cầu owner.
 
 ## Cấu hình
 
@@ -22,6 +22,12 @@ Giữ Supabase Auth quản lý mật khẩu, JWT và MFA. Backend dùng API Admi
 Chỉ nhận `otp` đúng 6 chữ số ASCII; giữ số 0 đầu. Không nhận recovery_link hoặc mã 7/8 số. Password 8..1024 ký tự, thêm chính sách Supabase. TOTP trống hoặc 6 số. Form bước 2 chỉ kiểm tra định dạng; proof Telegram và MFA được xác minh khi lưu mật khẩu mới. Browser giữ challenge_id/code trong bộ nhớ và input, không lưu localStorage/sessionStorage. Gửi lại cập nhật challenge_id, xóa input mã cũ. Xóa mọi input mã/mật khẩu khi thành công và yêu cầu đăng nhập lại.
 
 Email chưa liên kết nhận cùng hình dạng response 202 với UUID ngẫu nhiên, không phát sinh provider request/job. Response accepted không khẳng định tồn tại tài khoản hay Telegram đã giao thành công. Không công bố recipient hoặc membership. Throttling HMAC email/IP áp dụng mọi email; gate gửi lại tối thiểu 60 giây cũng áp dụng email chưa liên kết.
+
+Trước reservation/generate_link, backend tra email trong `auth.users` và kiểm tra membership hoạt động. Email không tồn tại, đã đổi, tài khoản bị xóa hoặc đang bị ban không tạo provider proof, mã hoặc job, kể cả khi còn binding Telegram trong cấu hình. Lookup `private.recovery_subject` chỉ service_role được gọi, search_path rỗng và có kiểm tra role; không cấp SELECT Auth cho service_role hoặc client. Provider subject trả về phải khớp subject đã tra cứu. Kiểm tra lại lúc issue/prepare/consume để chặn thu hồi trong lúc provider đang phản hồi hoặc job đang chờ.
+
+`GET /internal/jobs/status` nhận cùng X-Job-Secret/Bearer với worker, trả `{ready,telegram_enabled,recovery_configured}`, Cache-Control no-store. Endpoint này chỉ gọi DB health, không tạo/claim job, không gửi thông báo hoặc trả email/Chat ID/token. Dùng khi chẩn đoán trước khi thử các endpoint xử lý hàng đợi.
+
+Worker origin phải là HTTPS đích trực tiếp, không đi qua chuyển hướng sang hostname khác: Authorization có thể bị loại khi redirect. Lịch dự phòng mỗi phút và timeout pg_net 25 giây phù hợp deadline worker 15–20 giây; trigger wake vẫn gọi ngay sau commit. Không dùng lịch mỗi 5 phút cho mã có hạn 5 phút. Hàng đợi và retry không đảm bảo Telegram luôn giao được trong hạn nếu provider ngừng hoạt động; không kéo dài hạn mã để che lỗi giao tin.
 
 ## Mã và chống lạm dụng
 

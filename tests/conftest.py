@@ -82,6 +82,11 @@ def db_schema():
             conn.execute(
                 "CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$"
             )
+            # Minimal provider-owned Auth schema, only in the disposable test database.
+            conn.execute(
+                "CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,"
+                "deleted_at timestamptz,banned_until timestamptz)"
+            )
             for migration in sorted(Path("supabase/migrations").glob("*.sql")):
                 content = migration.read_text()
                 assert content.strip().endswith("COMMIT;"), (
@@ -97,6 +102,7 @@ def db_schema():
 @pytest.fixture
 async def gateway(db_schema):
     with psycopg.connect(db_schema, autocommit=True) as conn:
+        conn.execute("TRUNCATE auth.users")
         tables = conn.execute(
             "SELECT tablename FROM pg_tables WHERE schemaname='private'"
         ).fetchall()
