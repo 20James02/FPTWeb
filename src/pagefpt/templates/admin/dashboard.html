@@ -5,7 +5,7 @@
 {% block content %}
 <div class="account-heading"><div><h1>Tổng quan kinh doanh</h1><p class="analytics-note">Theo dõi khách hàng, kết quả xử lý và chi phí trong cùng một kỳ báo cáo.</p></div><div class="workspace-item-actions">{% if admin_actor.permits('lead.read') %}<a href="/admin/leads" class="btn-action-call">Xử lý hồ sơ khách hàng</a>{% endif %}{% if admin_actor.permits('catalog.write') or admin_actor.permits('pricing.write') %}<a href="/admin/pricing" class="btn-action-detail">Gói cước & giá</a>{% endif %}</div></div>
 {% if admin_actor.permits('lead.read') %}{% include 'admin/components/workbench.html' %}{% endif %}
-<details class="dashboard-reports"><summary>Phân tích kinh doanh & chi phí</summary>{% include 'admin/components/analytics.html' %}</details>
+<details class="dashboard-reports"><summary class="flux-summary">📊 Phân tích kinh doanh &amp; Biểu đồ trực quan (Flux Admin) <span class="flux-summary-badge">Mở biểu đồ ▾</span></summary>{% include 'admin/components/analytics.html' %}</details>
 {% if admin_actor.permits('lead.read') %}
 <section class="panel-card"><div class="account-heading"><h2>Hồ sơ mới tiếp nhận</h2><a href="/admin/leads" class="btn-action-detail">Xem tất cả hồ sơ</a></div><p class="analytics-note">Các hồ sơ mới nhất trong phạm vi quyền của bạn; danh sách này không giới hạn theo kỳ biểu đồ.</p><div id="recent-leads-list" class="workspace-list" aria-live="polite">Đang tải hồ sơ…</div></section>
 {% endif %}

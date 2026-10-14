@@ -226,6 +226,12 @@
   function render(data, campaigns) {
     const t = data.totals;
     $("analytics-kpis").replaceChildren();
+    const kpiLinks = {
+      "Hồ sơ tiếp nhận": "/admin/leads",
+      "Đã liên hệ": "/admin/leads?status=contacting",
+      "Đủ điều kiện": "/admin/leads?status=qualified",
+      "Đã lắp đặt": "/admin/leads?status=installed",
+    };
     for (const [label, value, sub] of [
       ["Hồ sơ tiếp nhận", number(t.leads), "Trong kỳ đã chọn"],
       [
@@ -245,8 +251,26 @@
       ],
     ]) {
       const card = adminNode("div", "", "kpi-card");
-      card.append(
+      const targetUrl = kpiLinks[label];
+      if (targetUrl) {
+        card.setAttribute("role", "link");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("title", "Bấm để mở danh sách hồ sơ: " + label);
+        card.onclick = () => { window.location.href = targetUrl; };
+        card.onkeydown = (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            window.location.href = targetUrl;
+          }
+        };
+      }
+      const top = adminNode("div", "", "kpi-top");
+      top.append(
         adminNode("div", label, "kpi-label"),
+        adminNode("span", "Xem danh sách ➔", "kpi-action-hint"),
+      );
+      card.append(
+        top,
         adminNode("div", value, "kpi-value"),
         adminNode("div", sub, "kpi-sub"),
       );

@@ -338,3 +338,270 @@
   color: #059669;
   font-weight: 600;
 }
+
+
+/* ===================================================================
+   FLUX ADMIN DASHBOARD & STAFF BLOCK CARDS
+   =================================================================== */
+
+/* Tinh gọn summary và khung báo cáo Flux Admin */
+.dashboard-reports {
+  margin: 14px 0 20px 0;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.dashboard-reports > summary {
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, rgba(242, 111, 33, 0.08) 0%, rgba(242, 111, 33, 0.02) 100%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.dashboard-reports > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-reports > summary:hover {
+  background: linear-gradient(135deg, rgba(242, 111, 33, 0.14) 0%, rgba(242, 111, 33, 0.05) 100%);
+}
+
+.flux-summary-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(242, 111, 33, 0.12);
+  color: #c2410c;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dashboard-reports[open] {
+  border-color: rgba(242, 111, 33, 0.3);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
+}
+
+.dashboard-reports[open] > summary {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Lưới biểu đồ Flux Admin */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px !important;
+  margin: 16px 0 !important;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-grid section.panel-card {
+  padding: 16px 18px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-grid section.panel-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.analytics-grid section.panel-card h2 {
+  font-size: 1.05rem !important;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+/* Danh sách hồ sơ gần đây trên Dashboard hiển thị dạng grid card */
+#recent-leads-list.workspace-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+#recent-leads-list .workspace-item {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+#recent-leads-list .workspace-item:hover {
+  border-color: #f26f21;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(242, 111, 33, 0.1);
+}
+
+/* ===================================================================
+   NHÂN VIÊN & TÀI KHOẢN (#staff-list) DẠNG BLOCK CARD BO GÓC 14PX
+   PHÂN BIỆT MÀU SẮC THEO VAI TRÒ & HIỆU ỨNG HOVER
+   =================================================================== */
+#staff-list.workspace-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 14px;
+}
+
+#staff-list .workspace-item {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: stretch !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  position: relative !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  min-height: 220px;
+}
+
+#staff-list .workspace-item:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Checkbox bulk-select góc trên trái */
+#staff-list .workspace-item .bulk-row-check {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+}
+
+/* Phân loại màu sắc thẻ nhân viên theo vai trò */
+#staff-list .workspace-item.staff-role-admin {
+  border-left: 5px solid #f26f21 !important;
+}
+#staff-list .workspace-item.staff-role-admin:hover {
+  border-color: #f26f21 !important;
+  box-shadow: 0 12px 24px -4px rgba(242, 111, 33, 0.18) !important;
+}
+
+#staff-list .workspace-item.staff-role-coordinator {
+  border-left: 5px solid #2563eb !important;
+}
+#staff-list .workspace-item.staff-role-coordinator:hover {
+  border-color: #2563eb !important;
+  box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.18) !important;
+}
+
+#staff-list .workspace-item.staff-role-sales {
+  border-left: 5px solid #059669 !important;
+}
+#staff-list .workspace-item.staff-role-sales:hover {
+  border-color: #059669 !important;
+  box-shadow: 0 12px 24px -4px rgba(5, 150, 105, 0.18) !important;
+}
+
+#staff-list .workspace-item.staff-role-tech {
+  border-left: 5px solid #7c3aed !important;
+}
+#staff-list .workspace-item.staff-role-tech:hover {
+  border-color: #7c3aed !important;
+  box-shadow: 0 12px 24px -4px rgba(124, 58, 237, 0.18) !important;
+}
+
+/* Trạng thái khóa */
+#staff-list .workspace-item.staff-locked {
+  opacity: 0.8;
+  background: var(--bg-surface-muted) !important;
+  border-left: 5px solid #94a3b8 !important;
+}
+
+.staff-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-left: 28px; /* chừa khoảng cho checkbox */
+}
+
+.staff-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.staff-avatar-admin { background: linear-gradient(135deg, #f26f21, #e11d48); }
+.staff-avatar-coord { background: linear-gradient(135deg, #2563eb, #38bdf8); }
+.staff-avatar-sales { background: linear-gradient(135deg, #059669, #34d399); }
+.staff-avatar-tech { background: linear-gradient(135deg, #7c3aed, #c084fc); }
+
+.staff-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-meta strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.staff-meta p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+}
+
+.staff-badge-role {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+.staff-badge-admin { background: rgba(242, 111, 33, 0.12); color: #c2410c; }
+.staff-badge-coord { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.staff-badge-sales { background: rgba(5, 150, 105, 0.12); color: #047857; }
+.staff-badge-tech { background: rgba(124, 58, 237, 0.12); color: #6d28d9; }
+
+.staff-card-body {
+  margin: 10px 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+}
+
+.staff-card-actions {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+}

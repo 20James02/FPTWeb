@@ -474,3 +474,152 @@
   font-weight: 700;
   color: #334155;
 }
+
+
+/* ===================================================================
+   GÓI CƯỚC (#plans-list) & PHỤ KIỆN (#accessory-list) PROMAX BLOCK CARDS
+   =================================================================== */
+
+/* Container lưới gói cước chiếm trọn không gian */
+#plans-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 14px;
+}
+
+.pricing-list-row {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  position: relative !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  min-height: 200px;
+}
+
+.pricing-list-row:hover {
+  transform: translateY(-4px) !important;
+  border-color: #f26f21 !important;
+  box-shadow: 0 12px 24px -4px rgba(242, 111, 33, 0.16) !important;
+}
+
+/* Checkbox bulk-select góc trên trái */
+.pricing-list-row .bulk-row-check {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+}
+
+.pricing-list-row > div:first-child {
+  padding-left: 28px; /* chừa khoảng cho checkbox */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pricing-list-row strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.pricing-list-row .pricing-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.pricing-list-row .pricing-actions {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Tag trạng thái gói cước */
+.pricing-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+.pricing-status.published {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+.pricing-status.draft {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+.pricing-status.retired {
+  background: rgba(100, 116, 139, 0.12);
+  color: #64748b;
+}
+
+/* LƯỚI PHỤ KIỆN (#accessory-list) DẠNG BLOCK CARD */
+#accessory-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 14px;
+}
+
+#accessory-list article.pricing-list-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  position: relative !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  min-height: 200px;
+}
+
+#accessory-list article.pricing-list-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: #f26f21 !important;
+  box-shadow: 0 12px 24px -4px rgba(242, 111, 33, 0.16) !important;
+}
+
+#accessory-list article.pricing-list-card .bulk-row-check {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+}
+
+#accessory-list article.pricing-list-card h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+  padding-left: 28px; /* chừa khoảng cho checkbox */
+}
+
+#accessory-list article.pricing-list-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin: 4px 0;
+}
+
+#accessory-list article.pricing-list-card button {
+  margin-right: 6px;
+  margin-top: 8px;
+}

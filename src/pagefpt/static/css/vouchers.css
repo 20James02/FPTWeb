@@ -1577,3 +1577,168 @@
   font-size: 13px;
   display: inline-block;
 }
+
+
+/* ===================================================================
+   VOUCHER (#voucher-table) PROMAX BLOCK CARDS
+   PHÂN BIỆT MÀU SẮC TRỰC QUAN & HIỆU ỨNG HOVER
+   =================================================================== */
+
+#voucher-table {
+  display: block !important;
+  width: 100% !important;
+  border: none !important;
+}
+
+/* Header ẩn bớt độ cồng kềnh, chuyển thành thanh toolbar sắp xếp */
+#voucher-table thead {
+  display: flex !important;
+  align-items: center;
+  background: var(--bg-surface-elevated, #f8fafc) !important;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
+  margin-bottom: 16px !important;
+}
+
+#voucher-table thead tr {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+#voucher-table thead th {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 8px !important;
+  font-size: 0.82rem !important;
+}
+
+/* Lưới thẻ Voucher Cards */
+#voucher-table tbody {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+#voucher-table tbody tr {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  background: var(--bg-surface, #ffffff) !important;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  position: relative !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+  min-height: 210px;
+}
+
+#voucher-table tbody tr:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* PHÂN BIỆT MÀU SẮC THEO LOẠI VOUCHER */
+/* 1. Loại Giảm cước tháng -> Cam FPT */
+#voucher-table tbody tr.voucher-type-discount {
+  border-top: 5px solid #f26f21 !important;
+}
+#voucher-table tbody tr.voucher-type-discount:hover {
+  border-color: #f26f21 !important;
+  box-shadow: 0 14px 28px -6px rgba(242, 111, 33, 0.2) !important;
+}
+
+/* 2. Loại Tặng tháng cước -> Xanh lục */
+#voucher-table tbody tr.voucher-type-free-month {
+  border-top: 5px solid #10b981 !important;
+}
+#voucher-table tbody tr.voucher-type-free-month:hover {
+  border-color: #10b981 !important;
+  box-shadow: 0 14px 28px -6px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* 3. Loại Quà tặng / Phụ kiện -> Tím hoàng gia */
+#voucher-table tbody tr.voucher-type-gift {
+  border-top: 5px solid #8b5cf6 !important;
+}
+#voucher-table tbody tr.voucher-type-gift:hover {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 14px 28px -6px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Trạng thái Nháp & Tạm dừng */
+#voucher-table tbody tr.voucher-status-draft {
+  border-top: 5px solid #f59e0b !important;
+}
+#voucher-table tbody tr.voucher-status-paused {
+  border-top: 5px solid #94a3b8 !important;
+  background: var(--bg-surface-muted, #f8fafc) !important;
+}
+
+/* Định dạng các ô trong thẻ voucher */
+#voucher-table tbody td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Checkbox ở góc trên trái */
+#voucher-table tbody td:first-child {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+}
+
+/* Mã voucher (ô thứ 2) */
+#voucher-table tbody td:nth-child(2) {
+  padding-left: 28px !important;
+  font-family: var(--font-family-mono, monospace);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--brand-primary, #f26f21);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+/* Tên chiến dịch (ô thứ 3) */
+#voucher-table tbody td:nth-child(3) {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+/* Trạng thái (ô thứ 4) */
+#voucher-table tbody td:nth-child(4) {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Ngày kết thúc (ô thứ 5) */
+#voucher-table tbody td:nth-child(5) {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Nút thao tác (ô thứ 6) */
+#voucher-table tbody td:last-child {
+  margin-top: auto;
+  padding-top: 12px !important;
+  border-top: 1px dashed var(--border-color, #e2e8f0) !important;
+}
+
+#voucher-table tbody td:last-child > div {
+  display: flex !important;
+  gap: 8px !important;
+  justify-content: flex-end;
+}

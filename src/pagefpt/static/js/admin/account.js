@@ -309,8 +309,26 @@
       (m.display_name + " " + m.email).toLowerCase().includes(q),
     );
     for (const m of visible) {
-      const card = adminNode("article", "", "workspace-item"),
-        info = adminNode("div");
+      const card = adminNode("article", "", "workspace-item");
+      
+      // Xác định vai trò để gắn class màu sắc
+      let roleClass = "staff-role-sales", avatarClass = "staff-avatar-sales", roleLabel = "Nhân viên kinh doanh";
+      if (m.permissions.includes("admin") || m.branch_id === GLOBAL) {
+        roleClass = "staff-role-admin";
+        avatarClass = "staff-avatar-admin";
+        roleLabel = "Quản trị viên";
+      } else if (m.permissions.includes("lead.write") || m.permissions.includes("dispatch")) {
+        roleClass = "staff-role-coordinator";
+        avatarClass = "staff-avatar-coord";
+        roleLabel = "Điều phối viên";
+      } else if (m.permissions.includes("tech") || m.permissions.includes("install")) {
+        roleClass = "staff-role-tech";
+        avatarClass = "staff-avatar-tech";
+        roleLabel = "Kỹ thuật viên";
+      }
+
+      card.className = "workspace-item " + roleClass + (m.active ? " staff-active" : " staff-locked");
+
       window.PageFPTAdminLists?.bindRow(card, {
         id: m.user_id + ":" + m.branch_id,
         version: m.version,
@@ -326,20 +344,39 @@
           shift: m.shift,
         },
       });
-      info.append(
+
+      const header = adminNode("div", "", "staff-card-header");
+      const initials = (m.display_name || m.email || "NV").trim().charAt(0).toUpperCase();
+      const avatar = adminNode("div", initials, "staff-avatar " + avatarClass);
+      avatar.setAttribute("aria-hidden", "true");
+
+      const meta = adminNode("div", "", "staff-meta");
+      meta.append(
         adminNode("strong", m.display_name || "Chưa có tên"),
         adminNode("p", m.email || m.user_id),
+        adminNode("span", roleLabel, "staff-badge-role " + (roleClass === "staff-role-admin" ? "staff-badge-admin" : roleClass === "staff-role-coordinator" ? "staff-badge-coord" : roleClass === "staff-role-tech" ? "staff-badge-tech" : "staff-badge-sales")),
+      );
+      header.append(avatar, meta);
+
+      const body = adminNode("div", "", "staff-card-body");
+      body.append(
         adminNode(
           "p",
-          (m.branch_id === GLOBAL ? "Toàn hệ thống" : m.branch_id) +
+          "📍 " + (m.branch_id === GLOBAL ? "Toàn hệ thống" : "Chi nhánh " + m.branch_id) +
             " · " +
-            (m.active ? "Đang hoạt động" : "Đã khóa"),
+            (m.active ? "🟢 Đang hoạt động" : "🔴 Đã khóa"),
         ),
         adminNode(
           "p",
-          m.permissions.map((p) => permissions[p] || p).join(" · "),
+          "⚡ Sức chứa: " + (m.capacity ? m.capacity + " hồ sơ" : "Không giới hạn"),
+        ),
+        adminNode(
+          "p",
+          "🔑 " + m.permissions.map((p) => permissions[p] || p).join(" · "),
         ),
       );
+
+      const actions = adminNode("div", "", "staff-card-actions");
       const edit = adminNode(
         "button",
         "Sửa quyền & ca làm",
@@ -347,7 +384,9 @@
       );
       edit.type = "button";
       edit.onclick = () => openStaff(m);
-      card.append(info, edit);
+      actions.append(edit);
+
+      card.append(header, body, actions);
       $("staff-list").append(card);
     }
     if (!visible.length)

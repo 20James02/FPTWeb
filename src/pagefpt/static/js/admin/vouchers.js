@@ -929,6 +929,16 @@
       const td = el("td");
       td.append(cb);
 
+      // Nhận diện phân loại voucher để gắn màu sắc
+      const p = row.published_payload || row.payload || {};
+      let typeClass = "voucher-type-discount";
+      if (p.discount_type === "free_month" || p.free_months) {
+        typeClass = "voucher-type-free-month";
+      } else if (p.discount_type === "gift" || p.gift_name) {
+        typeClass = "voucher-type-gift";
+      }
+      tr.className = "voucher-card-item " + typeClass + " voucher-status-" + row.status;
+
       let statusText =
         { draft: "Bản nháp", published: "Đang công bố", paused: "Tạm dừng" }[
           row.status
@@ -947,10 +957,10 @@
 
       tr.append(
         td,
-        el("td", row.code),
+        el("td", "🏷️ " + row.code),
         el("td", row.payload.name),
-        el("td", statusText),
-        el("td", date(row.published_payload?.end || row.payload.end)),
+        el("td", "● " + statusText),
+        el("td", "📅 " + date(row.published_payload?.end || row.payload.end)),
       );
 
       const action = el("td"),
