@@ -494,9 +494,9 @@ Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 | POST | `/api/v1/admin/leads/{id}/recompute` | intelligence.write | — | — | `src/pagefpt/modules/intelligence/routes.py:23` |
 | POST | `/api/v1/admin/leads/{id}/reveal` | lead.pii | AAL2 | — | `src/pagefpt/modules/leads/admin.py:183` |
 | POST | `/api/v1/admin/leads/{id}/transitions` | lead.write | — | TransitionCommand | `src/pagefpt/modules/leads/admin.py:209` |
-| GET | `/api/v1/admin/leads/{id}/voucher` | lead.write | — | — | `src/pagefpt/modules/vouchers/routes.py:269` |
-| POST | `/api/v1/admin/leads/{id}/voucher/reserve` | lead.write | — | ReserveInput | `src/pagefpt/modules/vouchers/routes.py:275` |
-| POST | `/api/v1/admin/leads/{id}/voucher/{action}` | lead.write | — | ActionInput | `src/pagefpt/modules/vouchers/routes.py:342` |
+| GET | `/api/v1/admin/leads/{id}/voucher` | lead.write | — | — | `src/pagefpt/modules/vouchers/routes.py:285` |
+| POST | `/api/v1/admin/leads/{id}/voucher/reserve` | lead.write | — | ReserveInput | `src/pagefpt/modules/vouchers/routes.py:291` |
+| POST | `/api/v1/admin/leads/{id}/voucher/{action}` | lead.write | — | ActionInput | `src/pagefpt/modules/vouchers/routes.py:358` |
 | GET | `/api/v1/admin/link-performance` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:99` |
 | POST | `/api/v1/admin/link-performance` | marketing.write (global SQL scope) | — | pagefpt__modules__link_analytics__schemas__LinkInput | `src/pagefpt/modules/link_analytics/routes.py:105` |
 | POST | `/api/v1/admin/link-performance/bulk` | marketing.write (global SQL scope) | — | BulkInput | `src/pagefpt/modules/link_analytics/routes.py:126` |
@@ -569,19 +569,19 @@ Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 | POST | `/api/v1/admin/staff` | identity.manage; permission | AAL2 | StaffCreate | `src/pagefpt/modules/identity/accounts.py:321` |
 | GET | `/api/v1/admin/staff/branches` | identity.manage | AAL2 | — | `src/pagefpt/modules/identity/accounts.py:312` |
 | GET | `/api/v1/admin/staff/roles` | identity.manage | AAL2 | — | `src/pagefpt/modules/identity/accounts.py:288` |
-| GET | `/api/v1/admin/vouchers` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:80` |
-| POST | `/api/v1/admin/vouchers` | marketing.write | — | VoucherInput | `src/pagefpt/modules/vouchers/routes.py:88` |
-| GET | `/api/v1/admin/vouchers/employees` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:57` |
-| GET | `/api/v1/admin/vouchers/inventory` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:63` |
-| PUT | `/api/v1/admin/vouchers/inventory` | marketing.write; pricing.publish | AAL2 | InventoryInput | `src/pagefpt/modules/vouchers/routes.py:69` |
-| GET | `/api/v1/admin/vouchers/links/{slug}/qr` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:157` |
-| GET | `/api/v1/admin/vouchers/options` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:40` |
-| GET | `/api/v1/admin/vouchers/report` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:34` |
-| DELETE | `/api/v1/admin/vouchers/{id}` | marketing.write; pricing.publish | AAL2 | — | `src/pagefpt/modules/vouchers/routes.py:133` |
-| PUT | `/api/v1/admin/vouchers/{id}` | marketing.write | — | VoucherUpdate | `src/pagefpt/modules/vouchers/routes.py:96` |
-| POST | `/api/v1/admin/vouchers/{id}/links` | marketing.write | — | pagefpt__modules__vouchers__schemas__LinkInput | `src/pagefpt/modules/vouchers/routes.py:145` |
-| POST | `/api/v1/admin/vouchers/{id}/pause` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:121` |
-| POST | `/api/v1/admin/vouchers/{id}/publish` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:109` |
+| GET | `/api/v1/admin/vouchers` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:81` |
+| POST | `/api/v1/admin/vouchers` | marketing.write | — | VoucherInput | `src/pagefpt/modules/vouchers/routes.py:89` |
+| GET | `/api/v1/admin/vouchers/employees` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:58` |
+| GET | `/api/v1/admin/vouchers/inventory` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:64` |
+| PUT | `/api/v1/admin/vouchers/inventory` | marketing.write; pricing.publish | AAL2 | InventoryInput | `src/pagefpt/modules/vouchers/routes.py:70` |
+| GET | `/api/v1/admin/vouchers/links/{slug}/qr` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:158` |
+| GET | `/api/v1/admin/vouchers/options` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:41` |
+| GET | `/api/v1/admin/vouchers/report` | marketing.write | — | — | `src/pagefpt/modules/vouchers/routes.py:35` |
+| DELETE | `/api/v1/admin/vouchers/{id}` | marketing.write; pricing.publish | AAL2 | — | `src/pagefpt/modules/vouchers/routes.py:134` |
+| PUT | `/api/v1/admin/vouchers/{id}` | marketing.write | — | VoucherUpdate | `src/pagefpt/modules/vouchers/routes.py:97` |
+| POST | `/api/v1/admin/vouchers/{id}/links` | marketing.write | — | pagefpt__modules__vouchers__schemas__LinkInput | `src/pagefpt/modules/vouchers/routes.py:146` |
+| POST | `/api/v1/admin/vouchers/{id}/pause` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:122` |
+| POST | `/api/v1/admin/vouchers/{id}/publish` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:110` |
 | GET | `/api/v1/admin/workbench` | lead.read | — | — | `src/pagefpt/modules/leads/admin.py:169` |
 | GET | `/api/v1/admin/workspace/{kind}` | RESOURCE_PERMISSIONS[kind] | — | — | `src/pagefpt/modules/administration/routes.py:105` |
 | POST | `/api/v1/admin/{kind}/{id}/publish` | prices:pricing.publish; pages:content.publish; experiments:marketing.write; plans/products/regions/promotions:catalog.write | AAL2 | VersionCommand | `src/pagefpt/modules/catalog/routes.py:141` |
@@ -619,9 +619,9 @@ Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 | POST | `/api/v1/system/display-settings` | content.publish | AAL2 | DisplayPatch | `src/pagefpt/modules/content/display_settings.py:234` |
 | POST | `/api/v1/touches` | public | — | AttributionInput | `src/pagefpt/modules/marketing/routes.py:75` |
 | POST | `/api/v1/visits/assess` | public | — | pagefpt__modules__intelligence__routes__VisitInput | `src/pagefpt/modules/intelligence/routes.py:37` |
-| DELETE | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:222` |
-| GET | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:216` |
-| POST | `/api/v1/vouchers/context` | public | — | ContextInput | `src/pagefpt/modules/vouchers/routes.py:229` |
+| DELETE | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:238` |
+| GET | `/api/v1/vouchers/context` | public | — | — | `src/pagefpt/modules/vouchers/routes.py:232` |
+| POST | `/api/v1/vouchers/context` | public | — | ContextInput | `src/pagefpt/modules/vouchers/routes.py:245` |
 | POST | `/api/v1/webhooks/leads/{provider}` | server HMAC signature | — | LeadWebhook | `src/pagefpt/modules/integrations/webhooks.py:27` |
 | GET | `/chinh-sach-bao-mat` | public_html | — | — | `src/pagefpt/web/client_routes.py:85` |
 | GET | `/do-toc-do` | server_guarded_admin_html | — | — | `src/pagefpt/web/client_routes.py:99` |
@@ -633,7 +633,7 @@ Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 | GET | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
 | HEAD | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
 | GET | `/robots.txt` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:40` |
-| GET | `/s/{slug}` | public_html | — | — | `src/pagefpt/modules/vouchers/routes.py:184` |
+| GET | `/s/{slug}` | public_html | — | — | `src/pagefpt/modules/vouchers/routes.py:185` |
 | GET | `/san-pham/{slug}` | public_html | — | — | `src/pagefpt/web/client_routes.py:43` |
 | GET | `/sitemap.xml` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:18` |
 

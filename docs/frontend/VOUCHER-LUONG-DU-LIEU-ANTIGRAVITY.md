@@ -86,7 +86,7 @@ Các path sau là endpoint hiện có. Dynamic `{action}` chỉ nhận `redeem` 
 | Tạo/sửa/tắt link | POST `/api/v1/admin/vouchers/{id}/links` | `{slug,target,channel,employee_id,active}`; upsert theo slug; 201 |
 | QR | GET `/api/v1/admin/vouchers/links/{slug}/qr` | SVG, cần phiên/quyền; không gọi dịch vụ QR ngoài |
 | Báo cáo | GET `/api/v1/admin/vouchers/report` | `{totals,campaigns,channels,regions}`; không có filter ngày |
-| Khách mở link | GET `/s/{slug}` | 302 + cookie HttpOnly → target; lỗi không khả dụng 404 |
+| Khách mở link | GET `/s/{slug}` | 302 → target + pf_offer; live ghi cookie HttpOnly và popup. Chưa live chỉ popup tư vấn và signed source, không áp dụng voucher. Link không tồn tại/tắt hoặc đích không công khai vẫn404 |
 | Đọc mã đang áp dụng | GET `/api/v1/vouchers/context` | `{voucher,has_context}`; voucher có thể null nhưng has_context=true |
 | Khách nhập mã | POST `/api/v1/vouchers/context` | `{code}` → `{voucher}` và cookie; HTTP 200 + voucher=null vẫn là mã không khả dụng |
 | Bỏ mã | DELETE `/api/v1/vouchers/context` | 204, không parse JSON; xóa cookie rồi refresh quote |
@@ -309,3 +309,6 @@ Không coi các đề xuất này là đã triển khai chỉ vì có màn hình
 - Xóa PII không hoàn tồn kho/quota/ngân sách đã dùng. Ledger đã dùng được ẩn danh, không còn lead/contact/link/lý do/quote token/địa chỉ. Suất đang giữ được giải phóng.
 - Báo cáo nhóm `erased` giữ chi phí/suất đã dùng, không giữ nguồn hay nhân viên của khách đã xóa. `requested` ở nhóm này là lịch sử sử dụng ưu đãi ẩn danh, không phải lead đang tồn tại hoặc lượt mở link. Tổng không phải funnel sự kiện đầy đủ cho khách đổi nhiều chiến dịch.
 - Lỗi mới: `INVALID_LINK_TARGET` (422), `INVALID_VOUCHER_BENEFIT` (422), `LINK_SLUG_EXISTS`/`VOUCHER_CODE_EXISTS` (409). HTTP 200 context với voucher=null vẫn là mã không áp dụng, không báo thành công.
+
+
+Cập nhật14/10/2026: shared `voucher_acquisition.html`, `voucher-acquisition.css`, `voucher_acquisition.js` dùng ở client_base và standalone telecom_landing. Tham số `pf_offer` chỉ biểu thị ý định mở popup; quyền lợi lấy từ public voucher context đã công bố. Xem `docs/admin/VOUCHER-POPUP-FORM.md`; không tự công bố voucher khi tạo link.

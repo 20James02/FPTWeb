@@ -70,7 +70,7 @@ Module chưa tạo voucher cá nhân hoặc chương trình giới thiệu nhi�
 
 | Endpoint | Chức năng |
 |---|---|
-| `GET /s/{slug}` | 302 đến trang nội bộ, ghi cookie ký; không giữ suất |
+| `GET /s/{slug}` | 302 đến trang nội bộ kèm popup: live ghi cookie ký; chưa live chỉ tư vấn, không áp dụng/giữ suất |
 | `GET /api/v1/vouchers/context` | Đọc ngữ cảnh công khai, `voucher`, `has_context` |
 | `POST /api/v1/vouchers/context` | `{code}` để áp dụng và giữ mã nhập trực tiếp |
 | `DELETE /api/v1/vouchers/context` | Bỏ cookie ưu đãi |
@@ -109,3 +109,6 @@ Không công bố voucher chỉ giảm giá với mức hoặc trần bằng 0. 
 Khi xóa thông tin cá nhân khách: suất đang giữ được trả lại; suất đã dùng, giá vốn quà và chi phí vẫn nằm trong sổ ẩn danh. Báo cáo nhóm `erased` không còn khách, kênh hay nhân viên; không diễn giải nhóm này thành khách đang xử lý. Báo cáo hiện không phải toàn bộ lịch sử chuyển chiến dịch theo sự kiện.
 
 Kiểm chứng mới: `docs/qa/2026-10-13/voucher-deep-audit.md`.
+
+
+Luồng popup mới ngày14/10/2026: xem `VOUCHER-POPUP-FORM.md`. Link đang bật khác với voucher đã công bố: bản nháp vẫn dẫn trang đích nhưng popup không chúc mừng hoặc áp dụng ưu đãi.

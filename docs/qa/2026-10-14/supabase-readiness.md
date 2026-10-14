@@ -40,3 +40,6 @@ CLI advisors không hoàn tất (hết thời gian kết nối); đã chuyển s
 
 
 Cập nhật sau audit: migration `20261014034406_link_performance` đã triển khai, nâng history lên25 migrations và thêm6 bảng private. RLS/revoke/hàm và rollback-only registry/report đã xác minh; xem `link-performance.md` và `link-performance/verified-summary.json`. Kết quả compare24 migrations phía trên là snapshot trước feature này; các giới hạn Auth vẫn giữ nguyên.
+
+
+Sau đó bổ sung `20261014054834_voucher_acquisition_flow` (history26 migrations, không thêm bảng), kiểm chứng checksum/execute privileges và public target fallback. Xem `voucher-acquisition.md` và summary kèm theo.

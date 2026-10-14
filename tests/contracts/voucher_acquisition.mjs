@@ -43,3 +43,6 @@ console.log('Voucher acquisition: live, unavailable, source match, form context,
 
 const capped=fixture();capped.change({...live,benefits:[{amount:100000,cap_vnd:50000,discount_kind:'fixed',basis:'initial',region_name:'Toàn quốc'}]});
 assert.ok(capped.elements['voucher-acquisition-benefits'].children[0].textContent.includes('50.000đ'),'Fixed cap must match the pricing engine');
+
+const exhausted=fixture();exhausted.change({...live,benefits:[{amount:100000,discount_kind:'fixed',sold_out:true}]});
+assert.ok(!exhausted.elements['voucher-acquisition-title'].textContent.includes('Chúc mừng'),'Exhausted regional benefits must not claim an available reward');

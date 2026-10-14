@@ -1,16 +1,92 @@
-<dialog id="voucher-acquisition" class="voucher-acquisition" aria-labelledby="voucher-acquisition-title" aria-describedby="voucher-acquisition-label">
-  <div class="voucher-acquisition-panel">
-    <button id="voucher-acquisition-close" class="voucher-acquisition-close" type="button" aria-label="Đóng thông tin ưu đãi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
-    <div class="voucher-acquisition-art" aria-hidden="true"><svg width="68" height="68" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="12" y="26" width="40" height="27" rx="4"/><path d="M9 21h46v10H9zM32 21v32"/><path d="M32 21c-18 0-22-15-12-15 8 0 12 15 12 15Zm0 0C50 21 54 6 44 6 36 6 32 21 32 21Z"/></svg></div>
-    <p class="voucher-acquisition-eyebrow">ƯU ĐÃI DÀNH CHO BẠN</p>
-    <h2 id="voucher-acquisition-title">Thông tin ưu đãi</h2>
-    <p id="voucher-acquisition-label" class="voucher-acquisition-label"></p>
-    <div id="voucher-acquisition-benefits" class="voucher-acquisition-benefits"></div>
-    <div class="voucher-acquisition-ticket"><span>Mã ưu đãi<strong id="voucher-acquisition-code">—</strong></span><span>Thời hạn<strong id="voucher-acquisition-end">—</strong></span></div>
-    <details class="voucher-acquisition-conditions"><summary>Điều kiện áp dụng</summary><p id="voucher-acquisition-terms"></p></details>
-    <button id="voucher-acquisition-use" class="voucher-acquisition-use" type="button">Sử dụng ngay <span aria-hidden="true">→</span></button>
-    <p class="voucher-acquisition-reassurance">Chỉ cần số điện thoại và địa chỉ để được kiểm tra ưu đãi phù hợp. Chưa cần thanh toán.</p>
-    <button id="voucher-acquisition-later" class="voucher-acquisition-later" type="button">Xem các gói trước</button>
+<dialog id="voucher-acquisition" class="voucher-acquisition voucher-ticket-modal" aria-labelledby="voucher-acquisition-title" aria-describedby="voucher-acquisition-label">
+  <!-- Canvas pháo hoa bùng nổ hiệu năng cao 60fps -->
+  <canvas id="voucher-confetti-canvas" class="voucher-confetti-canvas" aria-hidden="true"></canvas>
+
+  <div class="voucher-acquisition-panel voucher-ticket-card">
+    <!-- Nút đóng tinh tế -->
+    <button id="voucher-acquisition-close" class="voucher-acquisition-close" type="button" aria-label="Đóng thông tin ưu đãi">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+
+    <!-- Rãnh khoét bán nguyệt tạo hình vé voucher 2 bên hông -->
+    <div class="ticket-notch ticket-notch-left" aria-hidden="true"></div>
+    <div class="ticket-notch ticket-notch-right" aria-hidden="true"></div>
+
+    <!-- Sân khấu Hộp Quà 3D bung mở lộng lẫy -->
+    <div class="voucher-gift-stage" id="voucher-gift-stage" aria-hidden="true">
+      <div class="gift-radial-rays"></div>
+      <div class="gift-box-3d" id="voucher-gift-box" title="Nhấn để mở quà ngay">
+        <!-- Nắp hộp quà với nơ vàng kim hoàng gia -->
+        <div class="gift-lid-group">
+          <div class="gift-bow">
+            <span class="bow-loop bow-left"></span>
+            <span class="bow-loop bow-right"></span>
+            <span class="bow-knot"></span>
+          </div>
+          <div class="gift-lid-cap"></div>
+        </div>
+        <!-- Thân hộp quà đỏ cam FPT đính ruy băng chữ thập vàng -->
+        <div class="gift-box-body">
+          <div class="gift-ribbon-v"></div>
+          <div class="gift-ribbon-h"></div>
+        </div>
+        <!-- Luồng sáng vàng lóe lên từ miệng hộp -->
+        <div class="gift-glow-burst"></div>
+      </div>
+      <p class="gift-tap-hint" id="voucher-gift-hint">🎁 Nhấn vào hộp quà để mở ưu đãi!</p>
+    </div>
+
+    <!-- Nội dung Tấm Vé Ưu Đãi Hoàng Gia -->
+    <div class="voucher-ticket-inner" id="voucher-ticket-inner">
+      <div class="voucher-ticket-head">
+        <span class="voucher-acquisition-eyebrow">🎁 ĐẶC QUYỀN ƯU ĐÃI FPT TELECOM</span>
+        <h2 id="voucher-acquisition-title">Thông tin ưu đãi</h2>
+        <p id="voucher-acquisition-label" class="voucher-acquisition-label"></p>
+      </div>
+
+      <!-- Đường nét đứt chia cuống vé dập lỗ -->
+      <div class="ticket-perforated-line" aria-hidden="true">
+        <span class="ticket-cut-icon">✂</span>
+      </div>
+
+      <div class="voucher-ticket-body">
+        <!-- Danh sách quyền lợi nổi bật -->
+        <div id="voucher-acquisition-benefits" class="voucher-acquisition-benefits"></div>
+
+        <!-- Khối thẻ Coupon Box VIP -->
+        <div class="voucher-acquisition-ticket">
+          <div class="ticket-code-zone">
+            <span class="ticket-field-label">MÃ ƯU ĐÃI ĐỘC QUYỀN</span>
+            <div class="ticket-code-row">
+              <strong id="voucher-acquisition-code">—</strong>
+              <button type="button" id="voucher-copy-btn" class="btn-copy-code" title="Sao chép mã ưu đãi">📋 Sao chép</button>
+            </div>
+          </div>
+          <div class="ticket-date-zone">
+            <span class="ticket-field-label">THỜI HẠN ÁP DỤNG</span>
+            <strong id="voucher-acquisition-end">—</strong>
+          </div>
+        </div>
+
+        <details class="voucher-acquisition-conditions">
+          <summary>Điều kiện &amp; Quy định áp dụng ▾</summary>
+          <p id="voucher-acquisition-terms"></p>
+        </details>
+      </div>
+
+      <!-- Chân vé: Nút hành động quét sáng rực rỡ -->
+      <div class="voucher-ticket-foot">
+        <button id="voucher-acquisition-use" class="voucher-acquisition-use" type="button">
+          <span>NHẬN QUÀ &amp; SỬ DỤNG NGAY</span>
+          <span class="use-arrow-icon" aria-hidden="true">➔</span>
+        </button>
+        <p class="voucher-acquisition-reassurance">🔒 Chỉ cần Số điện thoại &amp; Địa chỉ để giữ suất. Nhân viên liên hệ xác nhận, chưa cần thanh toán.</p>
+        <button id="voucher-acquisition-later" class="voucher-acquisition-later" type="button">Để sau, tôi muốn xem các gói trước</button>
+      </div>
+    </div>
   </div>
 </dialog>
-<button id="voucher-acquisition-reminder" class="voucher-acquisition-reminder" type="button" hidden><span aria-hidden="true">＋</span><span id="voucher-acquisition-reminder-label">Ưu đãi của bạn</span></button>
+<button id="voucher-acquisition-reminder" class="voucher-acquisition-reminder" type="button" hidden>
+  <span class="reminder-gift-icon" aria-hidden="true">🎁</span>
+  <span id="voucher-acquisition-reminder-label">Ưu đãi của bạn</span>
+</button>

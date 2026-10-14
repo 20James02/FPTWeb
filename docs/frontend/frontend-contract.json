@@ -4203,7 +4203,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher",
       "operation_id": "lead_voucher_api_v1_admin_leads__id__voucher_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 269,
+      "source_line": 285,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4256,7 +4256,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/reserve",
       "operation_id": "reserve_api_v1_admin_leads__id__voucher_reserve_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 275,
+      "source_line": 291,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4318,7 +4318,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/{action}",
       "operation_id": "action_api_v1_admin_leads__id__voucher__action__post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 342,
+      "source_line": 358,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8548,7 +8548,7 @@
       "path": "/api/v1/admin/vouchers",
       "operation_id": "list_vouchers_api_v1_admin_vouchers_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 80,
+      "source_line": 81,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8608,7 +8608,7 @@
       "path": "/api/v1/admin/vouchers",
       "operation_id": "create_api_v1_admin_vouchers_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 88,
+      "source_line": 89,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8659,7 +8659,7 @@
       "path": "/api/v1/admin/vouchers/employees",
       "operation_id": "employees_api_v1_admin_vouchers_employees_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 57,
+      "source_line": 58,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8691,7 +8691,7 @@
       "path": "/api/v1/admin/vouchers/inventory",
       "operation_id": "inventory_list_api_v1_admin_vouchers_inventory_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 63,
+      "source_line": 64,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8723,7 +8723,7 @@
       "path": "/api/v1/admin/vouchers/inventory",
       "operation_id": "inventory_save_api_v1_admin_vouchers_inventory_put",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 69,
+      "source_line": 70,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8778,7 +8778,7 @@
       "path": "/api/v1/admin/vouchers/links/{slug}/qr",
       "operation_id": "link_qr_api_v1_admin_vouchers_links__slug__qr_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 157,
+      "source_line": 158,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8830,7 +8830,7 @@
       "path": "/api/v1/admin/vouchers/options",
       "operation_id": "options_api_v1_admin_vouchers_options_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 40,
+      "source_line": 41,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8862,7 +8862,7 @@
       "path": "/api/v1/admin/vouchers/report",
       "operation_id": "report_api_v1_admin_vouchers_report_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 34,
+      "source_line": 35,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8894,7 +8894,7 @@
       "path": "/api/v1/admin/vouchers/{id}",
       "operation_id": "delete_api_v1_admin_vouchers__id__delete",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 133,
+      "source_line": 134,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -8961,7 +8961,7 @@
       "path": "/api/v1/admin/vouchers/{id}",
       "operation_id": "update_api_v1_admin_vouchers__id__put",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 96,
+      "source_line": 97,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -9023,7 +9023,7 @@
       "path": "/api/v1/admin/vouchers/{id}/links",
       "operation_id": "share_api_v1_admin_vouchers__id__links_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 145,
+      "source_line": 146,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -9085,7 +9085,7 @@
       "path": "/api/v1/admin/vouchers/{id}/pause",
       "operation_id": "pause_api_v1_admin_vouchers__id__pause_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 121,
+      "source_line": 122,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -9151,7 +9151,7 @@
       "path": "/api/v1/admin/vouchers/{id}/publish",
       "operation_id": "publish_api_v1_admin_vouchers__id__publish_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 109,
+      "source_line": 110,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -10933,7 +10933,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "clear_api_v1_vouchers_context_delete",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 222,
+      "source_line": 238,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -10960,7 +10960,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "context_api_v1_vouchers_context_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 216,
+      "source_line": 232,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -11015,7 +11015,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "save_context_api_v1_vouchers_context_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 229,
+      "source_line": 245,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -11381,7 +11381,7 @@
       "path": "/s/{slug}",
       "operation_id": "short_link_s__slug__get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 184,
+      "source_line": 185,
       "authorization": {
         "caller": "public_html",
         "permission": null,

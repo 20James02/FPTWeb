@@ -627,7 +627,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 269
+      "source_line": 285
     },
     {
       "path": "/api/v1/admin/leads/{id}/voucher/reserve",
@@ -687,7 +687,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 275
+      "source_line": 291
     },
     {
       "path": "/api/v1/admin/leads/{id}/voucher/{action}",
@@ -756,7 +756,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 342,
+      "source_line": 358,
       "allowed_action_values": [
         "redeem",
         "release"
@@ -843,7 +843,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 80
+      "source_line": 81
     },
     {
       "path": "/api/v1/admin/vouchers",
@@ -892,7 +892,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 88
+      "source_line": 89
     },
     {
       "path": "/api/v1/admin/vouchers/employees",
@@ -922,7 +922,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 57
+      "source_line": 58
     },
     {
       "path": "/api/v1/admin/vouchers/inventory",
@@ -952,7 +952,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 63
+      "source_line": 64
     },
     {
       "path": "/api/v1/admin/vouchers/inventory",
@@ -1005,7 +1005,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 69
+      "source_line": 70
     },
     {
       "path": "/api/v1/admin/vouchers/links/{slug}/qr",
@@ -1055,7 +1055,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 157
+      "source_line": 158
     },
     {
       "path": "/api/v1/admin/vouchers/options",
@@ -1085,7 +1085,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 40
+      "source_line": 41
     },
     {
       "path": "/api/v1/admin/vouchers/report",
@@ -1115,7 +1115,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 34
+      "source_line": 35
     },
     {
       "path": "/api/v1/admin/vouchers/{id}",
@@ -1180,7 +1180,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 133
+      "source_line": 134
     },
     {
       "path": "/api/v1/admin/vouchers/{id}",
@@ -1240,7 +1240,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 96
+      "source_line": 97
     },
     {
       "path": "/api/v1/admin/vouchers/{id}/links",
@@ -1300,7 +1300,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 145
+      "source_line": 146
     },
     {
       "path": "/api/v1/admin/vouchers/{id}/pause",
@@ -1364,7 +1364,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 121
+      "source_line": 122
     },
     {
       "path": "/api/v1/admin/vouchers/{id}/publish",
@@ -1428,7 +1428,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 109
+      "source_line": 110
     },
     {
       "path": "/api/v1/catalog",
@@ -1722,7 +1722,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 222,
+      "source_line": 238,
       "runtime_success": {
         "status": 204,
         "type": "empty body"
@@ -1779,7 +1779,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 216
+      "source_line": 232
     },
     {
       "path": "/api/v1/vouchers/context",
@@ -1823,7 +1823,7 @@
         "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 229
+      "source_line": 245
     },
     {
       "path": "/s/{slug}",
@@ -1867,7 +1867,7 @@
         "mfa": false
       },
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 184,
+      "source_line": 185,
       "runtime_success": {
         "status": 302,
         "type": "redirect",
@@ -8032,16 +8032,17 @@
     "deep_audit_report": "../qa/2026-10-13/voucher-deep-audit.md"
   },
   "source_sha256": {
-    "src/pagefpt/modules/vouchers/routes.py": "b73178ef0de129101c8a08ec32c822d14a82c2c527e7bf953465174d55b68327",
+    "src/pagefpt/modules/vouchers/routes.py": "61260db9844552fe9f87e29c0c0298b91cb441ef27366596ee9952790e25ccab",
     "src/pagefpt/modules/vouchers/schemas.py": "ca1f3cd1108dbe4b6bdf0c47a6ca24b82400291d9662c96c7bff2d6c458de39b",
     "src/pagefpt/modules/vouchers/engine.py": "e4d7e863f7d047d47ad0dcca860aa7269d0c4c232d3fd36b1dab1415c56241f8",
-    "src/pagefpt/modules/vouchers/service.py": "29e9b24fa324826516d6cc96f3504c7ca0b522c6ba30e2ac41b93a74eb402182",
+    "src/pagefpt/modules/vouchers/service.py": "95b59859ef83baea0c30e2c286887589917106e23ae59b91a8d649f1170c7948",
     "src/pagefpt/modules/leads/profile.py": "61e43ef629ac98afb199c2986ba298833cf0b845d9a06fc737bc62f06ab88907",
     "src/pagefpt/modules/leads/billing.py": "44b27896e85f1f3b62e148cd4381c8b99735aeec8c30da3cf5c0f556e07a63aa",
     "src/pagefpt/modules/pricing/schemas.py": "b652d2672df74b211efb05942ee21899a8d47ca3ec7531717b1497a3127c7aea",
     "src/pagefpt/modules/leads/schemas.py": "7e71e34a9eabd8d388ffb7dcddb33ea12075ba18039a71504dd911c75a588673",
     "supabase/migrations/20261013030159_regional_vouchers.sql": "41c57644f1099d486ca19974f49ac33823414bbd88a965d78efca153e26ae931",
-    "supabase/migrations/20261013103126_voucher_audit_integrity.sql": "f9e0476682a741917d61578a5b4b3be99d1f0f081b51eacf186d2b21d6213276"
+    "supabase/migrations/20261013103126_voucher_audit_integrity.sql": "f9e0476682a741917d61578a5b4b3be99d1f0f081b51eacf186d2b21d6213276",
+    "supabase/migrations/20261014054834_voucher_acquisition_flow.sql": "21ca9553fef789d2c3d8d449473bbb24222e72c1adccac6b4a52a7268971dfd2"
   },
   "audit_notes": {
     "billing_options": "Period previews include selected accessory_ids and gift conflict checks, but have no quote token; refresh main quote before submission.",
@@ -8049,6 +8050,7 @@
     "target_check": "GET /api/v1/pages/{slug}; built-in targets /, /khuyen-mai, /do-toc-do. Server revalidates on link save and resolution.",
     "erased_ledger": "Consumed entitlements/cost survive PII erasure anonymously; no exact historical attribution or event funnel.",
     "context_mutations": "Serialize POST and DELETE to preserve cookie order; fence rendering by generation.",
-    "link_performance": "Creator/title/note + anonymous click/form/current-closed performance tracked by dedicated module; see LINK-PERFORMANCE-LUONG-DU-LIEU.md. Prior exact funnels are not fabricated."
+    "link_performance": "Creator/title/note + anonymous click/form/current-closed performance tracked by dedicated module; see LINK-PERFORMANCE-LUONG-DU-LIEU.md. Prior exact funnels are not fabricated.",
+    "acquisition": "Enabled known link reaches public target with pf_offer intent. Live publishes safe benefits and cookie. Non-live clears cookie, uses source-only form context and consultation popup. See VOUCHER-POPUP-FORM.md."
   }
 }

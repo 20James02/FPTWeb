@@ -1,0 +1,222 @@
+{
+  "verified_at_utc": "2026-10-14T08:55:50.813855+00:00",
+  "python_passed": 487,
+  "js_contracts_passed": 29,
+  "lint": "passed",
+  "formatted_files": 192,
+  "typechecked_source_files": 112,
+  "architecture": "passed",
+  "browser_suites": [
+    "voucher_acquisition",
+    "voucher_audit",
+    "telecom_landing",
+    "link_performance"
+  ],
+  "viewports": [
+    320,
+    390,
+    768,
+    1440
+  ],
+  "fixture_actual_form_and_crm": {
+    "passed": true,
+    "draftFallback": true,
+    "livePopup": true,
+    "escaped": true,
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "popupToForm": true,
+    "source": true,
+    "actualFormCommitted": true,
+    "crmVoucher": true,
+    "errors": []
+  },
+  "independent_review": "3findings fixed, fresh32backend + Chromium cap/focus/reminder/Tab/Escape passed; no actionablefindings",
+  "database": {
+    "migration_md5": "5a9b919c44bfd33dce53956563d4090a",
+    "migrations": 26,
+    "public_rpc_revoked": true,
+    "old_rpc_revoked": true,
+    "campaign_status": "published",
+    "known_target_resolves": true,
+    "unknown_link_rejected": true
+  },
+  "candidate": {
+    "deployment": "dpl_DtW56GZs2Ykjq9MNUUoz9rRF3SWk",
+    "checks": [
+      {
+        "path": "/health/live",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "popup_present": true
+      },
+      {
+        "path": "/s/salethang10",
+        "status": 302,
+        "expected": 302,
+        "passed": true,
+        "target": "/",
+        "intent_matches": true,
+        "cookie_set": true
+      },
+      {
+        "path": "/api/v1/vouchers/context",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/vouchers",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/admin/vouchers",
+        "status": 303,
+        "expected": 303,
+        "passed": true
+      },
+      {
+        "path": "/static/js/client/voucher_acquisition.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "ee31ff81a5172820db7a4373c1f7f745fa391ac38f9f2b672a602e432b265292"
+      },
+      {
+        "path": "/static/css/voucher-acquisition.css",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "56c6ef30ee3cbd494115fa52ff2425e7786a4f2b1d40d37c8547e8da79242d77"
+      },
+      {
+        "path": "/static/js/client/vouchers.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "ae71c145af36f67e7b8be380f41e879ea5150677985da9483d2fa9c5e8bd55e6"
+      },
+      {
+        "path": "/static/js/admin/vouchers.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "19b80321f28e23ab40d6a6adcbbb8d92e37ff1c42389dac545a143fe6f65edba"
+      }
+    ],
+    "passed": true
+  },
+  "live": {
+    "deployment": "dpl_DtW56GZs2Ykjq9MNUUoz9rRF3SWk",
+    "checks": [
+      {
+        "path": "/health/live",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "popup_present": true
+      },
+      {
+        "path": "/s/salethang10",
+        "status": 302,
+        "expected": 302,
+        "passed": true,
+        "target": "/",
+        "intent_matches": true,
+        "cookie_set": true
+      },
+      {
+        "path": "/api/v1/vouchers/context",
+        "status": 200,
+        "expected": 200,
+        "passed": true
+      },
+      {
+        "path": "/api/v1/admin/vouchers",
+        "status": 401,
+        "expected": 401,
+        "passed": true
+      },
+      {
+        "path": "/admin/vouchers",
+        "status": 303,
+        "expected": 303,
+        "passed": true
+      },
+      {
+        "path": "/static/js/client/voucher_acquisition.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "ee31ff81a5172820db7a4373c1f7f745fa391ac38f9f2b672a602e432b265292"
+      },
+      {
+        "path": "/static/css/voucher-acquisition.css",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "56c6ef30ee3cbd494115fa52ff2425e7786a4f2b1d40d37c8547e8da79242d77"
+      },
+      {
+        "path": "/static/js/client/vouchers.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "ae71c145af36f67e7b8be380f41e879ea5150677985da9483d2fa9c5e8bd55e6"
+      },
+      {
+        "path": "/static/js/admin/vouchers.js",
+        "status": 200,
+        "expected": 200,
+        "passed": true,
+        "hash_match": true,
+        "sha256": "19b80321f28e23ab40d6a6adcbbb8d92e37ff1c42389dac545a143fe6f65edba"
+      }
+    ],
+    "passed": true
+  },
+  "live_browser": {
+    "passed": true,
+    "target": "/",
+    "popup": true,
+    "formOpened": true,
+    "voucherSummary": true,
+    "mobileNoOverflow": true,
+    "noProductionLeadSubmitted": true,
+    "errors": []
+  },
+  "production_fake_leads": 0,
+  "publication_performed_by_agent": false,
+  "unverified": [
+    "physical devices",
+    "large concurrent load",
+    "conversion lift / A-B",
+    "Ads delivery"
+  ]
+}
