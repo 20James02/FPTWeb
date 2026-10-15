@@ -31,6 +31,7 @@ app.state.settings.telegram_enabled = True
 app.state.settings.telegram_bot_token = __import__("pydantic").SecretStr("123456789:" + "a" * 35)
 app.state.settings.telegram_chat_id = "-999999"
 app.state.settings.telegram_recovery_accounts = {"qa-admin@example.test": "123456789"}
+app.state.settings.telegram_recovery_chat_id = "123456789"
 app.state.verifier.url = app.state.settings.supabase_url
 app.state.verifier.keys = {"browser-test": _jwk}
 app.state.verifier.expires = time.monotonic() + 3600

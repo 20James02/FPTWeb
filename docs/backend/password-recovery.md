@@ -1,14 +1,16 @@
 # Khôi phục mật khẩu Admin qua Telegram
 
-Ngày cập nhật: 14/10/2026. Thay thế luồng email/link trước đây theo yêu cầu owner.
+Ngày cập nhật: 15/10/2026. Mọi tài khoản đang được cấp quyền dùng chung bot nhận mã theo cấu hình quản trị.
 
 ## Cấu hình
 
 Giữ Supabase Auth quản lý mật khẩu, JWT và MFA. Backend dùng API Admin generate_link loại recovery để tạo proof **không gửi email**, rồi giữ hashed_token được mã hóa phía server. Mã khách nhập là mã ngẫu nhiên 6 số độc lập với email_otp của Supabase.
 
-`PAGEFPT_TELEGRAM_RECOVERY_ACCOUNTS` là JSON server-only ánh xạ email đã chuẩn hóa sang **Chat ID riêng dương**, đã xác minh từ lệnh có marker do owner gửi trong chat riêng. Ví dụ `{"admin@example.com":"123456789"}`. Không chấp nhận Chat ID nhóm âm. Không tự đăng ký liên kết qua API public. Owner cần thêm từng admin đã xác minh vào cấu hình triển khai; admin chưa liên kết không tự khôi phục qua Telegram.
+`PAGEFPT_TELEGRAM_RECOVERY_CHAT_ID` là **Chat ID riêng dương** đã xác minh của bot nhận mã chung. Khi cấu hình, mọi email tồn tại trong Supabase Auth, chưa bị xóa/ban và có membership hoạt động đều có thể yêu cầu mã, bao gồm nhân viên tạo mới sau này. Không cần thêm từng email vào danh sách Telegram. Người quản lý bot đối chiếu mã yêu cầu trên web và tin Telegram trước khi hỗ trợ nhân viên nhận mã.
 
-`PAGEFPT_TELEGRAM_CHAT_ID` vẫn là nhóm nhận thông báo lead. Recovery code gửi đến binding riêng, không dùng nhóm này. Telegram enabled và bot token phải hợp lệ. Khóa Supabase Admin/bot chỉ tồn tại server; API/browser không được nhận action_link, hashed_token, email_otp hoặc provider session.
+`PAGEFPT_TELEGRAM_RECOVERY_ACCOUNTS` là cấu hình cũ ánh xạ email sang chat riêng, chỉ được dùng khi chat nhận chung chưa cấu hình. Chat chung có ưu tiên tuyệt đối; worker không gửi mã đến recipient cũ khác chat chung. Không nhận Chat ID nhóm âm, không lấy đích từ request của trình duyệt và không dùng nhóm nhận lead làm nơi gửi mã.
+
+`PAGEFPT_TELEGRAM_CHAT_ID` vẫn là nhóm nhận thông báo lead. Telegram enabled và bot token phải hợp lệ. Khóa Supabase Admin/bot chỉ tồn tại server; API/browser không được nhận action_link, hashed_token, email_otp hoặc provider session.
 
 Áp dụng đầy đủ migration theo thứ tự; migration mới `telegram_recovery_codes` tạo bảng private có RLS và RPC chỉ service_role được gọi. Schema mới tương thích ứng dụng trước; phát hành code và env cùng một deployment rồi promote.
 
@@ -21,11 +23,13 @@ Giữ Supabase Auth quản lý mật khẩu, JWT và MFA. Backend dùng API Admi
 
 Chỉ nhận `otp` đúng 6 chữ số ASCII; giữ số 0 đầu. Không nhận recovery_link hoặc mã 7/8 số. Password 8..1024 ký tự, thêm chính sách Supabase. TOTP trống hoặc 6 số. Form bước 2 chỉ kiểm tra định dạng; proof Telegram và MFA được xác minh khi lưu mật khẩu mới. Browser giữ challenge_id/code trong bộ nhớ và input, không lưu localStorage/sessionStorage. Gửi lại cập nhật challenge_id, xóa input mã cũ. Xóa mọi input mã/mật khẩu khi thành công và yêu cầu đăng nhập lại.
 
-Email chưa liên kết nhận cùng hình dạng response 202 với UUID ngẫu nhiên, không phát sinh provider request/job. Response accepted không khẳng định tồn tại tài khoản hay Telegram đã giao thành công. Không công bố recipient hoặc membership. Throttling HMAC email/IP áp dụng mọi email; gate gửi lại tối thiểu 60 giây cũng áp dụng email chưa liên kết.
+Email không tồn tại hoặc không đủ điều kiện nhận cùng hình dạng response 202 với UUID ngẫu nhiên, không phát sinh provider request/job. Response accepted không khẳng định tồn tại tài khoản hay Telegram đã giao thành công. Không công bố recipient hoặc membership. Throttling HMAC email/IP áp dụng mọi email; gate gửi lại tối thiểu 60 giây cũng áp dụng email không hợp lệ. Chỉ ở chế độ cũ, email thiếu binding riêng mới không được gửi.
+
+Mã yêu cầu là 8 ký tự cuối của challenge UUID, viết hoa. Browser và tin bot hiển thị cùng mã yêu cầu; đây chỉ là nhãn đối chiếu khi nhiều người cùng khôi phục, không phải mã xác thực. Gửi lại thay challenge và nhãn, xóa input mã cũ. Mã 6 số vẫn gắn HMAC với toàn bộ challenge và email account key; không dùng chéo giữa nhân viên được.
 
 Trước reservation/generate_link, backend tra email trong `auth.users` và kiểm tra membership hoạt động. Email không tồn tại, đã đổi, tài khoản bị xóa hoặc đang bị ban không tạo provider proof, mã hoặc job, kể cả khi còn binding Telegram trong cấu hình. Lookup `private.recovery_subject` chỉ service_role được gọi, search_path rỗng và có kiểm tra role; không cấp SELECT Auth cho service_role hoặc client. Provider subject trả về phải khớp subject đã tra cứu. Kiểm tra lại lúc issue/prepare/consume để chặn thu hồi trong lúc provider đang phản hồi hoặc job đang chờ.
 
-`GET /internal/jobs/status` nhận cùng X-Job-Secret/Bearer với worker, trả `{ready,telegram_enabled,recovery_configured}`, Cache-Control no-store. Endpoint này chỉ gọi DB health, không tạo/claim job, không gửi thông báo hoặc trả email/Chat ID/token. Dùng khi chẩn đoán trước khi thử các endpoint xử lý hàng đợi.
+`GET /internal/jobs/status` nhận cùng X-Job-Secret/Bearer với worker, trả `{ready,telegram_enabled,recovery_configured,recovery_shared}`, Cache-Control no-store. `recovery_shared:true` xác nhận runtime đang bật chat chung cho mọi tài khoản hợp lệ. Endpoint này chỉ gọi DB health, không tạo/claim job, không gửi thông báo hoặc trả email/Chat ID/token. Dùng khi chẩn đoán trước khi thử các endpoint xử lý hàng đợi.
 
 Worker origin phải là HTTPS đích trực tiếp, không đi qua chuyển hướng sang hostname khác: Authorization có thể bị loại khi redirect. Lịch dự phòng mỗi phút và timeout pg_net 25 giây phù hợp deadline worker 15–20 giây; trigger wake vẫn gọi ngay sau commit. Không dùng lịch mỗi 5 phút cho mã có hạn 5 phút. Hàng đợi và retry không đảm bảo Telegram luôn giao được trong hạn nếu provider ngừng hoạt động; không kéo dài hạn mã để che lỗi giao tin.
 

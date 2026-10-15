@@ -1,4 +1,4 @@
-"""Admin alerts and explicitly bound private-chat six-digit recovery codes."""
+"""Admin alerts and six-digit recovery codes to the configured private recipient."""
 
 import re
 from datetime import UTC, datetime
@@ -23,18 +23,23 @@ class TelegramAdapter:
             if (
                 not re.fullmatch(r"[0-9]{6}", code)
                 or not re.fullmatch(r"[1-9][0-9]{0,19}", chat_id)
-                or chat_id not in self.settings.telegram_recovery_accounts.values()
+                or chat_id not in self.settings.recovery_chat_ids
             ):
                 return DeliveryResult(DeliveryState.FAILED, "RECOVERY_UNCONFIGURED")
             expires = datetime.fromisoformat(notice["expires_at"])
             if expires <= datetime.now(UTC):
                 return DeliveryResult(DeliveryState.DISABLED, "RECOVERY_EXPIRED")
             until = expires.astimezone(ZoneInfo("Asia/Ho_Chi_Minh")).strftime("%H:%M:%S")
+            reference = notice.get("reference", "")
+            request_label = (
+                f"Yêu cầu: {reference}\n" if re.fullmatch(r"[A-F0-9]{8}", reference) else ""
+            )
             payload = {
                 "chat_id": chat_id,
                 "text": (
                     f"Mã khôi phục mật khẩu Admin: {code}\n"
-                    f"Hết hạn lúc {until} (UTC+7). Mã chỉ dùng một lần.\n"
+                    + request_label
+                    + f"Hết hạn lúc {until} (UTC+7). Mã chỉ dùng một lần.\n"
                     "Nhập mã tại trang Admin đang mở. Không chia sẻ mã này."
                 ),
                 "protect_content": True,

@@ -18,3 +18,21 @@ for(const proof of ['123456','1234567','https://project.supabase.co/auth/v1/veri
  assert.equal(nodes['forgot-otp-code'].value,'');
 }
 console.log('Recovery requires six Telegram digits and a server challenge; no links.');
+
+{
+ const nodes=Object.fromEntries(['forgot-account','btn-forgot-step1-submit','forgot-otp-code','recovery-code-help'].map(id=>[id,{value:'',textContent:''}]));
+ nodes['forgot-account'].value='staff@example.test';
+ const toasts=[];let requestCount=0;
+ const context=vm.createContext({document:{getElementById:id=>nodes[id]},showToast:text=>toasts.push(text),goToForgotStep(){},startForgotOtpCountdown(){},currentForgotAccount:'',recoveryRequest:async()=>({accepted:true,challenge_id:requestCount++===0?'11111111-1111-4111-8111-1111abcdef12':'22222222-2222-4222-8222-222212345678'})});
+ vm.runInContext(fs.readFileSync('src/pagefpt/static/js/admin/recovery.js','utf8'),context);
+ await context.handleForgotStep1();
+ assert.match(nodes['recovery-code-help'].textContent,/ABCDEF12/);
+ assert.match(nodes['recovery-code-help'].textContent,/quản trị/);
+ nodes['forgot-otp-code'].value='123456';
+ await context.resendForgotOtp();
+ assert.match(nodes['recovery-code-help'].textContent,/12345678/);
+ assert.ok(!nodes['recovery-code-help'].textContent.includes('ABCDEF12'));
+ assert.equal(nodes['forgot-otp-code'].value,'');
+ assert.ok(toasts.every(text=>!text.includes('đã liên kết')));
+}
+console.log('Shared Telegram recovery shows a matching request reference and updates it on resend.');

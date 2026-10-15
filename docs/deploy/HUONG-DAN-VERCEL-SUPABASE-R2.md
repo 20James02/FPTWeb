@@ -160,7 +160,7 @@ Ví dụ đã kiểm tra cú pháp và đối chiếu REST contract; chưa chạ
 
 ### Telegram recovery
 
-Từ 06/10/2026, recovery dùng mã 6 số gửi vào chat riêng đã xác minh; không gửi email/link. Cấu hình PAGEFPT_TELEGRAM_RECOVERY_ACCOUNTS JSON server-only ánh xạ email admin sang Chat ID riêng dương, cùng Telegram bot config. Không dùng nhóm nhận lead làm kênh nhận mã. Áp dụng migration telegram_recovery_codes; xem docs/backend/password-recovery.md. Giữ MFA đã có, hạn 5 phút, tối đa 5 lần sai, gửi lại sau 60 giây. Không thay SMTP/template để phục vụ luồng này.
+Recovery dùng mã 6 số gửi vào chat riêng đã xác minh; không gửi email/link. Từ 15/10/2026, cấu hình PAGEFPT_TELEGRAM_RECOVERY_CHAT_ID server-only để mọi tài khoản Admin/nhân viên hợp lệ gửi mã về cùng bot nhận chung. Không cần thêm email nhân viên mới; PAGEFPT_TELEGRAM_RECOVERY_ACCOUNTS chỉ dành cho cấu hình cũ khi chưa có chat chung. Không dùng nhóm nhận lead làm kênh nhận mã. Áp dụng các migration recovery hiện có; xem docs/backend/password-recovery.md. Giữ MFA đã có, hạn 5 phút, tối đa 5 lần sai, gửi lại sau 60 giây. Không thay SMTP/template để phục vụ luồng này.
 
 
 ## 5. Cloudflare R2

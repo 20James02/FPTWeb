@@ -1,6 +1,13 @@
 /** Six-digit Telegram code and MFA proof are consumed on final submit. */
 let recoveryBusy = false;
 let currentRecoveryChallenge = "";
+function showRecoveryReference() {
+  const help = document.getElementById("recovery-code-help");
+  if (help)
+    help.textContent =
+      "Mã yêu cầu: " + currentRecoveryChallenge.slice(-8).toUpperCase() +
+      ". Nhận mã 6 số từ bot Telegram đã thiết lập hoặc liên hệ quản trị viên. Mã có hiệu lực 5 phút; gửi lại sẽ vô hiệu mã cũ.";
+}
 async function handleForgotStep1(e) {
   if (e) e.preventDefault();
   if (recoveryBusy) return;
@@ -19,8 +26,9 @@ async function handleForgotStep1(e) {
     currentRecoveryChallenge = result.challenge_id;
     currentForgotAccount = account;
     document.getElementById("forgot-otp-code").value = "";
+    showRecoveryReference();
     showToast(
-      "Nếu tài khoản đã liên kết Telegram, mã 6 số sẽ gửi vào chat riêng với bot. Mã có hiệu lực 5 phút.",
+      "Nếu email thuộc tài khoản đang hoạt động, mã 6 số sẽ gửi đến bot Telegram đã thiết lập. Liên hệ quản trị viên nếu cần nhận mã.",
       "info",
     );
     goToForgotStep(2);
@@ -97,8 +105,9 @@ async function resendForgotOtp() {
       throw new Error("Chưa xác nhận gửi mã mới.");
     currentRecoveryChallenge = result.challenge_id;
     document.getElementById("forgot-otp-code").value = "";
+    showRecoveryReference();
     showToast(
-      "Mã 6 số mới sẽ được gửi vào chat riêng Telegram nếu tài khoản đã liên kết. Mã cũ hết hiệu lực.",
+      "Nếu email hợp lệ, mã mới sẽ gửi đến bot Telegram đã thiết lập. Dùng mã yêu cầu mới để nhận đúng mã 6 số. Mã cũ hết hiệu lực.",
       "info",
     );
     startForgotOtpCountdown();

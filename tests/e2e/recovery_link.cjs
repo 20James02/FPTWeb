@@ -15,6 +15,7 @@ if(!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))throw Error('Loopback
   await page.click('#btn-forgot-step1-submit');
   const challengeId=(await (await requested).json()).challenge_id;
   await page.locator('#forgot-step-2').waitFor();
+  assert.ok((await page.locator('#recovery-code-help').textContent()).includes(challengeId.slice(-8).toUpperCase()));
   // Read the encrypted synthetic fixture code using the test DB credentials.
   // No fixed/randomness override or test endpoints in production code.
   const code=execFileSync('.venv/bin/python',['-c',`

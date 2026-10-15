@@ -495,7 +495,7 @@
          ============================================== -->
     <div id="form-forgot-password" style="display: none;">
       
-      <!-- BƯỚC 1: Nhập Email quản trị đã liên kết Telegram -->
+      <!-- BƯỚC 1: Nhập email tài khoản đang được cấp quyền -->
       <form id="forgot-step-1" onsubmit="handleForgotStep1(event)">
         <div style="margin-bottom: 16px;">
           <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Khôi Phục Mật Khẩu</h2>
@@ -526,7 +526,7 @@
         <div style="margin-bottom: 16px;">
           <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Xác Minh Mã Telegram</h2>
           <div style="font-size: 0.8rem; color: #94A3B8; line-height: 1.45;">
-            Bước 2/3: Nhập mã 6 số gửi vào chat riêng Telegram đã liên kết với <strong id="forgot-target-account" style="color: #38BDF8;">...</strong>
+            Bước 2/3: Nhập mã 6 số từ bot Telegram đã thiết lập để khôi phục <strong id="forgot-target-account" style="color: #38BDF8;">...</strong>
           </div>
         </div>
 
@@ -535,7 +535,7 @@
           <div class="login-input-wrap">
             <input type="text" id="forgot-otp-code" placeholder="123456" maxlength="6" minlength="6" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" spellcheck="false" autocapitalize="none" aria-describedby="recovery-code-help">
           </div>
-          <p id="recovery-code-help" style="font-size: 0.78rem; color: #94A3B8; margin-top: 8px; line-height: 1.5;">Mở chat riêng với bot Telegram để lấy mã. Mã hết hạn sau 5 phút, chỉ dùng một lần; gửi lại sẽ vô hiệu mã cũ.</p>
+          <p id="recovery-code-help" style="font-size: 0.78rem; color: #94A3B8; margin-top: 8px; line-height: 1.5;">Nhận mã từ bot Telegram đã thiết lập hoặc liên hệ quản trị viên. Mã hết hạn sau 5 phút, chỉ dùng một lần; gửi lại sẽ vô hiệu mã cũ.</p>
         </div>
 
         <div class="countdown-timer-box" style="margin-bottom: 14px;">
@@ -601,7 +601,7 @@
     </div>
 
     <div style="text-align: center; margin-top: 24px; font-size: 0.72rem; color: #64748B;">
-      Chỉ dành cho người được cấp quyền. Mã khôi phục gửi vào chat Telegram riêng đã liên kết.
+      Chỉ dành cho người được cấp quyền. Mã khôi phục gửi đến bot Telegram do quản trị viên thiết lập.
     </div>
   </div>
 

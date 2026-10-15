@@ -47,7 +47,7 @@ async def throttle(request, email):
 async def request_recovery(input: RecoveryEmail, request: Request):
     same_origin(request)
     settings = request.app.state.settings
-    if not settings.telegram_enabled or not settings.telegram_recovery_accounts:
+    if not settings.telegram_enabled or not settings.recovery_chat_ids:
         raise DomainError("RECOVERY_UNCONFIGURED", 503)
     await throttle(request, input.email)
     crypt = crypto(request)
@@ -55,7 +55,7 @@ async def request_recovery(input: RecoveryEmail, request: Request):
     await dispatch(request, "telegram_recovery_request_gate", key=key)
     challenge_id = str(uuid4())
     accepted = {"accepted": True, "challenge_id": challenge_id}
-    chat = settings.telegram_recovery_accounts.get(input.email)
+    chat = settings.recovery_chat_for(input.email)
     if not chat:
         # Same response shape for an account without a configured recovery binding.
         return accepted
@@ -108,7 +108,7 @@ async def reset_password(input: ResetPassword, request: Request):
     grant = await dispatch(
         request,
         "telegram_recovery_consume",
-        chat_id=request.app.state.settings.telegram_recovery_accounts.get(input.email, ""),
+        chat_id=request.app.state.settings.recovery_chat_for(input.email),
         key=crypt.match(input.email, "telegram-recovery-email"),
         id=str(input.challenge_id),
         code_hash=crypt.match(str(input.challenge_id) + ":" + input.otp, "telegram-recovery-code"),

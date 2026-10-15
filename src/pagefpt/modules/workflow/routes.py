@@ -38,7 +38,8 @@ async def status(request: Request):
         {
             "ready": health.get("ready") is True,
             "telegram_enabled": settings.telegram_enabled,
-            "recovery_configured": bool(settings.telegram_recovery_accounts),
+            "recovery_configured": bool(settings.recovery_chat_ids),
+            "recovery_shared": bool(settings.telegram_recovery_chat_id),
         },
         headers={"Cache-Control": "no-store"},
     )

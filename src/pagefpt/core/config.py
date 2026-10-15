@@ -40,7 +40,18 @@ class Settings(BaseSettings):
     telegram_bot_token: SecretStr = SecretStr("")
     telegram_chat_id: str = ""
     telegram_admin_origin: str = ""
+    telegram_recovery_chat_id: str = ""
     telegram_recovery_accounts: dict[str, str] = {}
+
+    def recovery_chat_for(self, email: str) -> str:
+        """The shared recipient takes precedence over legacy per-email bindings."""
+        return self.telegram_recovery_chat_id or self.telegram_recovery_accounts.get(email, "")
+
+    @property
+    def recovery_chat_ids(self) -> set[str]:
+        if self.telegram_recovery_chat_id:
+            return {self.telegram_recovery_chat_id}
+        return set(self.telegram_recovery_accounts.values())
 
     @model_validator(mode="after")
     def validate_production(self):
@@ -92,7 +103,11 @@ class Settings(BaseSettings):
                 raise ValueError("Recovery requires unique emails bound to private Telegram IDs")
             normalized[email_key] = chat_id
         self.telegram_recovery_accounts = normalized
-        if normalized and not self.telegram_enabled:
+        if self.telegram_recovery_chat_id and not re.fullmatch(
+            r"[1-9][0-9]{0,19}", self.telegram_recovery_chat_id
+        ):
+            raise ValueError("Shared recovery requires a private Telegram chat ID")
+        if (normalized or self.telegram_recovery_chat_id) and not self.telegram_enabled:
             raise ValueError("Telegram recovery requires Telegram enabled")
         if self.notification_url and (
             not self.notification_url.startswith("https://")

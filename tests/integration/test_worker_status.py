@@ -17,6 +17,7 @@ async def test_worker_status_is_readonly_and_accepts_scheduler_auth(client, gate
         "ready": True,
         "telegram_enabled": False,
         "recovery_configured": False,
+        "recovery_shared": False,
     }
     assert secret not in response.text
     assert not respx.calls

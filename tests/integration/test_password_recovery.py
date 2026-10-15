@@ -429,10 +429,13 @@ async def test_revoked_member_cannot_receive_or_use_recovery(recovery_backend, g
 
 @respx.mock
 @pytest.mark.parametrize("code,expected", [("", 403), ("654321", 401), ("123456", 200)])
+@pytest.mark.parametrize("shared", [False, True])
 async def test_mfa_required_and_verified_before_password_write(
-    recovery_backend, gateway, code, expected
+    recovery_backend, gateway, code, expected, shared
 ):
     client, token, subject = recovery_backend
+    if shared:
+        client._transport.app.state.settings.telegram_recovery_chat_id = "222222222"
     payload = await issue(recovery_backend, gateway)
     update, pair = reset_provider(token, subject, mfa=True)
     factor = URL + "factors/e69808c7-760e-4e1a-9a1b-bee4ea891443"
@@ -673,3 +676,171 @@ async def test_concurrent_request_only_generates_one_challenge(recovery_backend,
             ).fetchone()[0]
             == 1
         )
+
+
+@respx.mock
+async def test_any_active_staff_recovers_via_shared_chat_without_email_binding(
+    recovery_backend, gateway
+):
+    from datetime import UTC, datetime, timedelta
+
+    from cryptography.hazmat.primitives.asymmetric import ec
+
+    client, _, _ = recovery_backend
+    app = client._transport.app
+    app.state.settings.telegram_recovery_accounts = {}
+    object.__setattr__(app.state.settings, "telegram_recovery_chat_id", "222222222")
+    staff, email = str(uuid4()), "staff@example.test"
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        db.execute("INSERT INTO auth.users(id,email) VALUES(%s,%s)", [staff, email])
+        db.execute(
+            "INSERT INTO private.memberships(user_id,branch_id,permissions) "
+            "VALUES(%s,'00000000-0000-0000-0000-000000000000',ARRAY['lead.read','lead.write'])",
+            [staff],
+        )
+    generated = {**generate_response(staff), "email": email}
+    respx.post(URL + "admin/generate_link").mock(return_value=httpx.Response(200, json=generated))
+    response = await client.post("/api/v1/auth/recovery", json={"email": email.upper()})
+    assert response.status_code == 202, response.text
+    challenge = response.json()["challenge_id"]
+    with psycopg.connect(gateway.dsn) as db:
+        row = db.execute(
+            "SELECT code_ciphertext,chat_id FROM private.telegram_recovery WHERE id=%s", [challenge]
+        ).fetchone()
+    code = CRYPT.decrypt(row[0])
+    assert row[1] == "222222222"
+
+    def delivered(request):
+        body = json.loads(request.content)
+        assert body["chat_id"] == "222222222" and body["protect_content"]
+        assert code in body["text"] and challenge[-8:].upper() in body["text"]
+        assert (
+            email not in body["text"] and EMAIL not in body["text"] and "a" * 64 not in body["text"]
+        )
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": 456}})
+
+    sent = respx.post("https://api.telegram.org/bot" + BOT + "/sendMessage").mock(
+        side_effect=delivered
+    )
+    assert (await Worker(gateway, CRYPT, telegram=app.state.telegram).process("notifications"))[
+        "completed"
+    ] == 1
+    assert sent.called
+    key = ec.generate_private_key(ec.SECP256R1())
+    jwk = json.loads(jwt.algorithms.ECAlgorithm.to_jwk(key.public_key()))
+    jwk.update(kid="staff-test", alg="ES256")
+    app.state.verifier.keys["staff-test"] = jwk
+    token = jwt.encode(
+        {
+            "sub": staff,
+            "iss": "https://test.supabase.co/auth/v1",
+            "aud": "authenticated",
+            "iat": datetime.now(UTC),
+            "exp": datetime.now(UTC) + timedelta(minutes=10),
+            "aal": "aal1",
+        },
+        key,
+        algorithm="ES256",
+        headers={"kid": "staff-test"},
+    )
+    update, _ = reset_provider(token, staff)
+    payload = {
+        "email": email,
+        "challenge_id": challenge,
+        "otp": code,
+        "password": "QA-new-staff-password-123",
+    }
+    calls = len(respx.calls)
+    assert (
+        await client.post("/api/v1/auth/recovery/reset", json={**payload, "email": EMAIL})
+    ).status_code == 401
+    assert len(respx.calls) == calls
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 200
+    assert update.call_count == 1
+    assert (await client.post("/api/v1/auth/recovery/reset", json=payload)).status_code == 401
+
+
+@pytest.mark.parametrize("condition", ["missing", "banned", "inactive"])
+@respx.mock
+async def test_shared_chat_does_not_generate_for_ineligible_email(
+    recovery_backend, gateway, condition
+):
+    client, _, subject = recovery_backend
+    client._transport.app.state.settings.telegram_recovery_accounts = {}
+    object.__setattr__(
+        client._transport.app.state.settings, "telegram_recovery_chat_id", "222222222"
+    )
+    with psycopg.connect(gateway.dsn, autocommit=True) as db:
+        if condition == "missing":
+            db.execute("DELETE FROM auth.users WHERE id=%s", [subject])
+        elif condition == "banned":
+            db.execute(
+                "UPDATE auth.users SET banned_until=now()+interval '1 hour' WHERE id=%s", [subject]
+            )
+        else:
+            db.execute("UPDATE private.memberships SET active=false WHERE user_id=%s", [subject])
+    response = await client.post("/api/v1/auth/recovery", json={"email": EMAIL})
+    assert response.status_code == 202 and response.json()["accepted"]
+    assert not respx.calls
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT count(*) FROM private.telegram_recovery").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM private.jobs").fetchone()[0] == 0
+
+
+@pytest.mark.parametrize("chat", ["-12345", "0", "@group", "abcdef"])
+def test_shared_recovery_setting_rejects_non_private_chat(chat):
+    from pagefpt.core.config import Settings
+
+    with pytest.raises(ValueError, match="Shared recovery requires a private"):
+        Settings(
+            _env_file=None,
+            telegram_enabled=True,
+            telegram_bot_token=SecretStr(BOT),
+            telegram_chat_id="-999999",
+            telegram_admin_origin="https://admin.example.test",
+            telegram_recovery_chat_id=chat,
+        )
+
+
+def test_shared_recipient_overrides_all_legacy_bindings():
+    from pagefpt.core.config import Settings
+
+    settings = Settings(
+        _env_file=None,
+        telegram_enabled=True,
+        telegram_bot_token=SecretStr(BOT),
+        telegram_chat_id="-999999",
+        telegram_admin_origin="https://admin.example.test",
+        telegram_recovery_chat_id="222222222",
+        telegram_recovery_accounts={EMAIL: "123456789"},
+    )
+    assert settings.recovery_chat_for(EMAIL) == "222222222"
+    assert settings.recovery_chat_for("future-staff@example.test") == "222222222"
+    assert settings.recovery_chat_ids == {"222222222"}
+
+
+@respx.mock
+async def test_shared_mode_will_not_deliver_legacy_queued_recipient(recovery_backend):
+    from datetime import UTC, datetime, timedelta
+
+    client, _, _ = recovery_backend
+    app = client._transport.app
+    app.state.settings.telegram_recovery_chat_id = "222222222"
+    result = await app.state.telegram.deliver(
+        {
+            "kind": "recovery_code",
+            "code": "123456",
+            "chat_id": "123456789",
+            "expires_at": (datetime.now(UTC) + timedelta(minutes=5)).isoformat(),
+        }
+    )
+    assert result.code == "RECOVERY_UNCONFIGURED" and not respx.calls
+
+
+async def test_shared_chat_alone_is_visible_to_readonly_worker_probe(recovery_backend):
+    client, _, _ = recovery_backend
+    client._transport.app.state.settings.telegram_recovery_chat_id = "222222222"
+    client._transport.app.state.settings.telegram_recovery_accounts = {}
+    response = await client.get("/internal/jobs/status", headers={"X-Job-Secret": "j" * 32})
+    assert response.status_code == 200 and response.json()["recovery_configured"] is True
+    assert response.json().get("recovery_shared") is True

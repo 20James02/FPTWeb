@@ -43,6 +43,7 @@ class Worker:
             notice = command["notice"]
             if operation == "telegram_recovery":
                 notice["code"] = self.crypt.decrypt(notice.pop("code_ciphertext"))
+                notice["reference"] = str(job["entity_id"])[-8:].upper()
             result = (
                 await self.telegram.deliver(notice)
                 if self.telegram
