@@ -1,10 +1,12 @@
 import json
+from datetime import date
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Query, Request
 
 from pagefpt.api.dependencies import crypto, dispatch
 from pagefpt.modules.content.cache import public_json
+from pagefpt.modules.measurement import reporting
 from pagefpt.modules.measurement.policy import authorize
 from pagefpt.modules.measurement.releases import effective, validate_config
 from pagefpt.modules.measurement.schemas import (
@@ -215,3 +217,12 @@ async def deliveries(request: Request):
 async def retry_delivery(id: UUID, request: Request):
     actor = await authorize(request, "measurement.replay", mfa=True)
     return await dispatch(request, "measurement_delivery_retry", actor=actor.user_id, id=str(id))
+
+
+router.add_api_route("/cost-imports/preview", reporting.preview, methods=["POST"])
+router.add_api_route("/cost-imports/apply", reporting.apply, methods=["POST"])
+
+
+@router.get("/reports")
+async def measurement_report(request: Request, start: date, end: date):
+    return await reporting.report(request, start, end)

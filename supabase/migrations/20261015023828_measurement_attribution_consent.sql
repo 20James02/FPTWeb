@@ -27,6 +27,7 @@ BEGIN
   UPDATE private.sessions SET advertising=coalesce((command->>'advertising')::bool,false) AND analytics AND marketing,
    personalization=coalesce((command->>'personalization')::bool,false) AND coalesce((command->>'advertising')::bool,false) AND analytics AND marketing
    WHERE id=(command->>'id')::uuid;
+  IF NOT coalesce((command->>'advertising')::bool,false) THEN UPDATE private.touches SET payload=payload-'provider_ids_ciphertext' WHERE session_id=(command->>'id')::uuid;END IF;
  END IF;
  RETURN result;
 END $$;

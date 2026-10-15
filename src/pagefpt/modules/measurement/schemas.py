@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 from uuid import UUID, uuid4
 
@@ -173,3 +173,36 @@ class CredentialsInput(VersionInput):
         if self.expires_at and self.expires_at.tzinfo is None:
             raise ValueError("Thời hạn cần múi giờ")
         return self
+
+
+class CostRow(Command):
+    day: date
+    campaign_id: str = Field(min_length=1, max_length=40, pattern=r"^[0-9]+$")
+    adgroup_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    ad_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    cost_vnd: int = Field(ge=0, le=100000000000)
+    clicks: int | None = Field(default=None, ge=0, le=1000000000)
+    impressions: int | None = Field(default=None, ge=0, le=1000000000)
+
+
+class CostImport(Command):
+    connection_id: UUID
+    rows: list[CostRow] = Field(min_length=1, max_length=50)
+
+    @model_validator(mode="after")
+    def unique_grain(self):
+        keys = [(r.day, r.campaign_id, r.adgroup_id, r.ad_id) for r in self.rows]
+        if len(set(keys)) != len(keys):
+            raise ValueError("Một kỳ và nhóm quảng cáo chỉ có một dòng chi phí")
+        grains = {}
+        for row in self.rows:
+            key = (row.day, row.campaign_id)
+            grain = "ad" if row.ad_id else "group" if row.adgroup_id else "campaign"
+            if key in grains and grains[key] != grain:
+                raise ValueError("Không cộng cả tổng chiến dịch và các quảng cáo con")
+            grains[key] = grain
+        return self
+
+
+class CostApply(CostImport):
+    preview_token: str = Field(max_length=8192)
