@@ -1,6 +1,6 @@
-/** 
+/**
  * PAGEFPT ENTERPRISE ADMIN ANALYTICS & SAAS DASHBOARD
- * Powered by ApexCharts & Modern Responsive Metric Components
+ * Powered by Apache ECharts & Modern Responsive Metric Components
  */
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -20,25 +20,42 @@
   let sequence = 0,
     timer,
     resizeTimer,
-    trendRows = null;
+    trendRows = null,
+    currentTrendData = null,
+    currentSourcesData = null,
+    currentSourcesTotal = 0,
+    sourcesChartStyle = "rose";
 
-  // Cache các instance ApexCharts để destroy trước khi render mới
-  const apexCharts = {};
+  // Cache instance ECharts
+  const echartsInstances = {};
 
-  function destroyChart(id) {
-    if (apexCharts[id]) {
+  function disposeChart(id) {
+    if (echartsInstances[id]) {
       try {
-        apexCharts[id].destroy();
+        echartsInstances[id].dispose();
       } catch (e) {
         /* ignore */
       }
-      apexCharts[id] = null;
+      echartsInstances[id] = null;
     }
   }
 
-  function destroyAllCharts() {
-    for (const key of Object.keys(apexCharts)) {
-      destroyChart(key);
+  function disposeAllCharts() {
+    for (const key of Object.keys(echartsInstances)) {
+      disposeChart(key);
+    }
+  }
+
+  function resizeAllCharts() {
+    for (const key of Object.keys(echartsInstances)) {
+      const inst = echartsInstances[key];
+      if (inst && typeof inst.resize === "function") {
+        try {
+          inst.resize();
+        } catch (e) {
+          /* ignore */
+        }
+      }
     }
   }
 
@@ -91,7 +108,7 @@
   }
 
   /* ===================================================================
-     FALLBACK BARS & SVG (Dùng khi ApexCharts chưa tải hoặc môi trường test)
+     FALLBACK BARS & SVG (Dùng khi ECharts chưa tải hoặc môi trường test)
      =================================================================== */
   function fallbackBars(id, rows, total) {
     const container = $(id);
@@ -234,16 +251,18 @@
   }
 
   /* ===================================================================
-     RENDER BIỂU ĐỒ APEXCHARTS CAO CẤP
+     HỆ THỐNG BIỂU ĐỒ APACHE ECHARTS CAO CẤP
      =================================================================== */
 
-  // 1. Xu hướng tiếp nhận (Area Spline Chart)
-  function trendApex(rows) {
-    destroyChart("analytics-trend");
+  // 1. Xu hướng tiếp nhận (ECharts Smooth Area Gradient)
+  function trendECharts(rows) {
+    trendRows = rows;
+    currentTrendData = rows;
+    disposeChart("analytics-trend");
     const container = $("analytics-trend");
     container.replaceChildren();
 
-    if (!window.ApexCharts) {
+    if (!window.echarts) {
       fallbackTrend(rows);
       return;
     }
@@ -275,76 +294,147 @@
       }
     });
 
-    const chartWrap = adminNode("div", "", "apex-chart-container");
+    const chartWrap = adminNode("div", "", "echart-canvas-wrap");
     container.append(chartWrap);
 
-    const options = {
-      series: [
-        { name: "Tiếp nhận", data: rows.map((r) => r.leads || 0) },
-        { name: "Đủ điều kiện", data: rows.map((r) => r.qualified || 0) },
-        { name: "Đã lắp đặt", data: rows.map((r) => r.installed || 0) },
-      ],
-      chart: {
-        type: "area",
-        height: 320,
-        toolbar: {
-          show: true,
-          tools: { download: true, zoom: true, reset: true },
-        },
-        animations: { enabled: true, easing: "easeinout", speed: 700 },
-        fontFamily: "'Be Vietnam Pro', -apple-system, sans-serif",
-      },
-      colors: ["#2563eb", "#8b5cf6", "#10b981"],
-      dataLabels: { enabled: false },
-      stroke: { curve: "smooth", width: 2.8 },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.45,
-          opacityTo: 0.05,
-          stops: [0, 90, 100],
-        },
-      },
-      xaxis: {
-        categories: categories,
-        labels: {
-          rotate: -25,
-          rotateAlways: rows.length > 15,
-          style: { fontSize: "11px", colors: "#64748b" },
-        },
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: {
-        labels: {
-          style: { fontSize: "11px", colors: "#64748b" },
-          formatter: (val) => number(Math.round(val)),
-        },
-      },
-      legend: {
-        position: "top",
-        horizontalAlign: "right",
-        labels: { colors: "#334155" },
-        markers: { radius: 12 },
-      },
-      tooltip: {
-        shared: true,
-        intersect: false,
-        y: { formatter: (val) => number(val) + " hồ sơ" },
-      },
-      grid: {
-        borderColor: "rgba(226, 232, 240, 0.8)",
-        strokeDashArray: 4,
-      },
-    };
-
     try {
-      const chart = new ApexCharts(chartWrap, options);
-      chart.render();
-      apexCharts["analytics-trend"] = chart;
+      const myChart = echarts.init(chartWrap);
+      echartsInstances["analytics-trend"] = myChart;
+
+      const option = {
+        color: ["#2563eb", "#8b5cf6", "#10b981"],
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          borderColor: "#334155",
+          borderWidth: 1,
+          textStyle: { color: "#f8fafc", fontSize: 13 },
+          axisPointer: {
+            type: "cross",
+            lineStyle: { color: "#94a3b8", width: 1, type: "dashed" },
+          },
+          formatter: function (params) {
+            let res = `<div style="font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:4px;">📅 ${params[0].name}</div>`;
+            for (const item of params) {
+              res += `<div style="display:flex;align-items:center;justify-content:space-between;gap:18px;margin:3px 0;">
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${item.color};"></span>
+                  ${item.seriesName}
+                </span>
+                <b style="font-size:14px;color:#fff;">${number(item.value)}</b>
+              </div>`;
+            }
+            return res;
+          },
+        },
+        legend: {
+          data: ["Tiếp nhận", "Đủ điều kiện", "Đã lắp đặt"],
+          top: 8,
+          right: 20,
+          textStyle: { color: "#334155", fontWeight: 600 },
+        },
+        toolbox: {
+          show: true,
+          right: "center",
+          top: 6,
+          itemSize: 14,
+          feature: {
+            magicType: {
+              type: ["line", "bar", "stack"],
+              title: { line: "Đường", bar: "Cột", stack: "Xếp chồng" },
+            },
+            restore: { title: "Đặt lại" },
+            saveAsImage: { title: "Lưu ảnh PNG", pixelRatio: 2 },
+          },
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: rows.length > 14 ? "18%" : "10%",
+          top: "16%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: categories,
+          axisLine: { lineStyle: { color: "#cbd5e1" } },
+          axisLabel: {
+            color: "#64748b",
+            fontSize: 11,
+            rotate: rows.length > 15 ? 25 : 0,
+          },
+        },
+        yAxis: {
+          type: "value",
+          splitLine: { lineStyle: { color: "rgba(226, 232, 240, 0.7)", type: "dashed" } },
+          axisLabel: { color: "#64748b", fontSize: 11, formatter: (val) => number(val) },
+        },
+        dataZoom: [
+          {
+            type: "slider",
+            show: rows.length > 12,
+            bottom: 4,
+            height: 16,
+            borderColor: "transparent",
+            backgroundColor: "#f1f5f9",
+            fillerColor: "rgba(37, 99, 235, 0.18)",
+            handleSize: "100%",
+            showDetail: false,
+          },
+        ],
+        series: [
+          {
+            name: "Tiếp nhận",
+            type: "line",
+            smooth: true,
+            showSymbol: rows.length <= 20,
+            symbolSize: 6,
+            lineStyle: { width: 3 },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "rgba(37, 99, 235, 0.35)" },
+                { offset: 1, color: "rgba(37, 99, 235, 0.02)" },
+              ]),
+            },
+            data: rows.map((r) => r.leads || 0),
+          },
+          {
+            name: "Đủ điều kiện",
+            type: "line",
+            smooth: true,
+            showSymbol: rows.length <= 20,
+            symbolSize: 6,
+            lineStyle: { width: 3 },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "rgba(139, 92, 246, 0.35)" },
+                { offset: 1, color: "rgba(139, 92, 246, 0.02)" },
+              ]),
+            },
+            data: rows.map((r) => r.qualified || 0),
+          },
+          {
+            name: "Đã lắp đặt",
+            type: "line",
+            smooth: true,
+            showSymbol: rows.length <= 20,
+            symbolSize: 6,
+            lineStyle: { width: 3 },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "rgba(16, 185, 129, 0.35)" },
+                { offset: 1, color: "rgba(16, 185, 129, 0.02)" },
+              ]),
+            },
+            data: rows.map((r) => r.installed || 0),
+          },
+        ],
+      };
+
+      myChart.setOption(option);
     } catch (e) {
-      console.warn("ApexCharts trend failed, falling back:", e);
+      console.warn("ECharts trend error, fallback:", e);
       fallbackTrend(rows);
       return;
     }
@@ -363,76 +453,79 @@
     );
   }
 
-  // 2. Phễu chuyển đổi (Funnel Bar Chart)
-  function funnelApex(id, items, total) {
-    destroyChart(id);
+  // 2. Phễu chuyển đổi dịch vụ (ECharts Funnel Chart)
+  function funnelECharts(id, items, total) {
+    disposeChart(id);
     const container = $(id);
     container.replaceChildren();
 
-    if (!window.ApexCharts) {
+    if (!window.echarts) {
       fallbackBars(id, items, total);
       return;
     }
 
-    const chartWrap = adminNode("div", "", "apex-chart-container");
+    const chartWrap = adminNode("div", "", "echart-canvas-wrap");
     container.append(chartWrap);
 
-    const categories = items.map((r) => r.label);
-    const values = items.map((r) => r.value || 0);
-
-    const options = {
-      series: [{ name: "Số lượng", data: values }],
-      chart: {
-        type: "bar",
-        height: 240,
-        toolbar: { show: false },
-        animations: { enabled: true, speed: 600 },
-        fontFamily: "'Be Vietnam Pro', -apple-system, sans-serif",
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 8,
-          horizontal: true,
-          distributed: true,
-          barHeight: "52%",
-          dataLabels: { position: "bottom" },
-        },
-      },
-      colors: ["#2563eb", "#7c3aed", "#f59e0b", "#10b981"],
-      dataLabels: {
-        enabled: true,
-        textAnchor: "start",
-        style: { colors: ["#ffffff"], fontSize: "12px", fontWeight: 700 },
-        formatter: function (val, opt) {
-          return opt.w.globals.labels[opt.dataPointIndex] + ": " + number(val) + " (" + percent(val, total) + ")";
-        },
-        offsetX: 10,
-        dropShadow: { enabled: true, top: 1, left: 1, blur: 2, opacity: 0.5 },
-      },
-      xaxis: {
-        categories: categories,
-        labels: {
-          style: { fontSize: "11px", colors: "#64748b" },
-          formatter: (v) => number(v),
-        },
-      },
-      yaxis: { labels: { show: false } },
-      legend: { show: false },
-      tooltip: {
-        y: {
-          formatter: (val) => number(val) + " hồ sơ (" + percent(val, total) + " trên tổng)",
-        },
-      },
-      grid: {
-        borderColor: "rgba(226, 232, 240, 0.6)",
-        strokeDashArray: 4,
-      },
-    };
-
     try {
-      const chart = new ApexCharts(chartWrap, options);
-      chart.render();
-      apexCharts[id] = chart;
+      const myChart = echarts.init(chartWrap);
+      echartsInstances[id] = myChart;
+
+      const funnelData = items.map((r, i) => ({
+        name: r.label,
+        value: r.value || 0,
+        itemStyle: {
+          color: ["#2563eb", "#7c3aed", "#f59e0b", "#10b981"][i % 4],
+          borderColor: "#ffffff",
+          borderWidth: 2,
+          borderRadius: 6,
+        },
+      }));
+
+      const option = {
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          borderColor: "#334155",
+          textStyle: { color: "#fff", fontSize: 13 },
+          formatter: function (params) {
+            return `<b>${params.name}</b><br/>Số lượng: <b>${number(params.value)}</b><br/>Tỷ trọng / Tổng: <b>${percent(params.value, total)}</b>`;
+          },
+        },
+        series: [
+          {
+            name: "Phễu chuyển đổi",
+            type: "funnel",
+            left: "10%",
+            top: 20,
+            bottom: 20,
+            width: "80%",
+            min: 0,
+            max: Math.max(...items.map((r) => r.value), 1),
+            minSize: "20%",
+            maxSize: "100%",
+            sort: "descending",
+            gap: 6,
+            label: {
+              show: true,
+              position: "inside",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "#ffffff",
+              formatter: "{b}: {c}",
+            },
+            labelLine: { show: false },
+            itemStyle: { shadowBlur: 8, shadowColor: "rgba(0,0,0,0.08)" },
+            emphasis: {
+              label: { fontSize: 14, fontWeight: 800 },
+              itemStyle: { shadowBlur: 14, shadowColor: "rgba(0,0,0,0.2)" },
+            },
+            data: funnelData,
+          },
+        ],
+      };
+
+      myChart.setOption(option);
     } catch (e) {
       fallbackBars(id, items, total);
       return;
@@ -451,13 +544,117 @@
     );
   }
 
-  // 3. Cơ cấu & Trạng thái (Donut Charts)
-  function donutApex(id, rows, total, centerLabel = "Tổng số") {
-    destroyChart(id);
+  // 3. Cam kết dịch vụ SLA (ECharts Semi-Circular Progress Gauge)
+  function slaECharts(t) {
+    disposeChart("analytics-sla");
+    const container = $("analytics-sla");
+    container.replaceChildren();
+
+    const awaiting = t.awaiting || 0;
+    const overdue = t.overdue || 0;
+    const onTimeCount = Math.max(0, awaiting - overdue);
+    const onTimePct = awaiting > 0 ? Math.round((onTimeCount / awaiting) * 100) : 100;
+
+    const wrap = adminNode("div", "", "sla-dashboard-layout");
+
+    if (window.echarts) {
+      const chartWrap = adminNode("div", "", "sla-gauge-wrap echart-canvas-wrap");
+      wrap.append(chartWrap);
+
+      try {
+        const myChart = echarts.init(chartWrap);
+        echartsInstances["analytics-sla"] = myChart;
+
+        const gaugeColor = onTimePct >= 80 ? "#10b981" : onTimePct >= 60 ? "#f59e0b" : "#ef4444";
+
+        const option = {
+          series: [
+            {
+              type: "gauge",
+              startAngle: 200,
+              endAngle: -20,
+              min: 0,
+              max: 100,
+              radius: "95%",
+              center: ["50%", "65%"],
+              progress: {
+                show: true,
+                width: 14,
+                itemStyle: {
+                  color: gaugeColor,
+                  borderRadius: 8,
+                },
+              },
+              pointer: { show: false },
+              axisLine: {
+                lineStyle: {
+                  width: 14,
+                  color: [[1, "#f1f5f9"]],
+                },
+              },
+              axisTick: { show: false },
+              splitLine: { show: false },
+              axisLabel: { show: false },
+              detail: {
+                valueAnimation: true,
+                offsetCenter: [0, "-8%"],
+                fontSize: 26,
+                fontWeight: 800,
+                color: gaugeColor,
+                formatter: "{value}%",
+              },
+              title: {
+                offsetCenter: [0, "25%"],
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#64748b",
+              },
+              data: [{ value: onTimePct, name: "ĐÚNG HẠN" }],
+            },
+          ],
+        };
+
+        myChart.setOption(option);
+      } catch (e) {
+        console.warn("ECharts SLA gauge error:", e);
+      }
+    }
+
+    const statBlock = adminNode("div", "", "analytics-sla-stats");
+    for (const [label, value, isAlert] of [
+      ["Đang chờ phản hồi", awaiting, false],
+      ["Đã quá hạn gọi lại", overdue, overdue > 0],
+    ]) {
+      const item = adminNode("div", "", isAlert ? "sla-stat-item alert" : "sla-stat-item");
+      item.append(
+        adminNode("div", number(value), "analytics-stat"),
+        adminNode("p", label),
+      );
+      statBlock.append(item);
+    }
+
+    wrap.append(statBlock);
+    container.append(wrap);
+
+    const note = adminNode(
+      "p",
+      percent(overdue, awaiting) + " hồ sơ đang chờ hiện đã vượt quá hạn SLA.",
+      "analytics-sla-note" + (overdue > 0 ? " text-danger" : " text-success"),
+    );
+    container.append(note);
+  }
+
+  // 4. Cơ cấu nguồn khách hàng (ECharts Nightingale Rose / Donut Chart)
+  function sourcesECharts(id, rows, total, style = "rose") {
+    currentSourcesData = rows;
+    currentSourcesTotal = total;
+    sourcesChartStyle = style;
+
+    disposeChart(id);
     const container = $(id);
     container.replaceChildren();
 
-    if (!window.ApexCharts) {
+    if (!window.echarts) {
       fallbackBars(id, rows, total);
       return;
     }
@@ -489,65 +686,67 @@
       });
     }
 
-    const chartWrap = adminNode("div", "", "apex-chart-container");
+    const chartWrap = adminNode("div", "", "echart-canvas-wrap");
     container.append(chartWrap);
 
-    const series = visible.map((r) => r.value);
-    const labels = visible.map((r) => r.label);
-
-    const options = {
-      series: series,
-      labels: labels,
-      chart: {
-        type: "donut",
-        height: 260,
-        animations: { enabled: true, speed: 600 },
-        fontFamily: "'Be Vietnam Pro', -apple-system, sans-serif",
-      },
-      colors: COLORS,
-      plotOptions: {
-        pie: {
-          donut: {
-            size: "68%",
-            labels: {
-              show: true,
-              total: {
-                show: true,
-                label: centerLabel,
-                fontSize: "13px",
-                fontWeight: 600,
-                color: "#64748b",
-                formatter: () => number(total),
-              },
-              value: {
-                fontSize: "20px",
-                fontWeight: 800,
-                color: "#1e293b",
-                formatter: (val) => number(val),
-              },
-            },
-          },
-        },
-      },
-      dataLabels: { enabled: false },
-      legend: {
-        position: "bottom",
-        horizontalAlign: "center",
-        fontSize: "12px",
-        labels: { colors: "#334155" },
-        markers: { radius: 12 },
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => number(val) + " hồ sơ (" + percent(val, total) + ")",
-        },
-      },
-    };
-
     try {
-      const chart = new ApexCharts(chartWrap, options);
-      chart.render();
-      apexCharts[id] = chart;
+      const myChart = echarts.init(chartWrap);
+      echartsInstances[id] = myChart;
+
+      const pieData = visible.map((r, i) => ({
+        name: r.label,
+        value: r.value,
+        itemStyle: {
+          color: COLORS[i % COLORS.length],
+          borderRadius: 6,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+      }));
+
+      const isRose = style === "rose";
+
+      const option = {
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          borderColor: "#334155",
+          textStyle: { color: "#fff", fontSize: 13 },
+          formatter: "{b}<br/>Số hồ sơ: <b>{c}</b> ({d}%)",
+        },
+        legend: {
+          orient: "horizontal",
+          bottom: 4,
+          left: "center",
+          itemWidth: 10,
+          itemHeight: 10,
+          textStyle: { fontSize: 11, color: "#475569" },
+        },
+        series: [
+          {
+            name: "Nguồn khách hàng",
+            type: "pie",
+            radius: isRose ? [20, 85] : ["44%", "72%"],
+            center: ["50%", "45%"],
+            roseType: isRose ? "radius" : false,
+            itemStyle: {
+              borderRadius: isRose ? 6 : 8,
+              borderColor: "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              formatter: "{b}: {d}%",
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#334155",
+            },
+            data: pieData,
+          },
+        ],
+      };
+
+      myChart.setOption(option);
     } catch (e) {
       fallbackBars(id, rows, total);
       return;
@@ -566,13 +765,135 @@
     );
   }
 
-  // 4. Xếp hạng gói cước & Chi nhánh (Horizontal Ranked Bars)
-  function rankedBarsApex(id, rows, total, barColor = "#f97316") {
-    destroyChart(id);
+  // 5. Phân bổ trạng thái xử lý (ECharts Rounded Donut Chart)
+  function statusesECharts(id, rows, total) {
+    disposeChart(id);
     const container = $(id);
     container.replaceChildren();
 
-    if (!window.ApexCharts) {
+    if (!window.echarts) {
+      fallbackBars(id, rows, total);
+      return;
+    }
+
+    if (!rows.length || !rows.some((r) => r.value > 0)) {
+      container.append(
+        adminNode("p", "Chưa có dữ liệu trong kỳ này.", "analytics-empty"),
+      );
+      container.append(
+        details(
+          ["Trạng thái", "Số hồ sơ", "Tỷ trọng", "Đã lắp đặt"],
+          rows.map((r) => [
+            r.label,
+            number(r.value),
+            percent(r.value, total),
+            r.installed == null ? "—" : number(r.installed),
+          ]),
+        ),
+      );
+      return;
+    }
+
+    const sorted = [...rows].sort((a, b) => b.value - a.value);
+    const visible = sorted.slice(0, 6);
+    if (sorted.length > 6) {
+      visible.push({
+        label: "Khác",
+        value: sorted.slice(6).reduce((a, b) => a + b.value, 0),
+      });
+    }
+
+    const chartWrap = adminNode("div", "", "echart-canvas-wrap");
+    container.append(chartWrap);
+
+    try {
+      const myChart = echarts.init(chartWrap);
+      echartsInstances[id] = myChart;
+
+      const pieData = visible.map((r, i) => ({
+        name: r.label,
+        value: r.value,
+        itemStyle: {
+          color: COLORS[i % COLORS.length],
+          borderRadius: 8,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+      }));
+
+      const option = {
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          borderColor: "#334155",
+          textStyle: { color: "#fff", fontSize: 13 },
+          formatter: "{b}<br/>Số hồ sơ: <b>{c}</b> ({d}%)",
+        },
+        legend: {
+          orient: "horizontal",
+          bottom: 4,
+          left: "center",
+          itemWidth: 10,
+          itemHeight: 10,
+          textStyle: { fontSize: 11, color: "#475569" },
+        },
+        series: [
+          {
+            name: "Trạng thái",
+            type: "pie",
+            radius: ["45%", "72%"],
+            center: ["50%", "45%"],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 8,
+              borderColor: "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: false,
+              position: "center",
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 16,
+                fontWeight: 800,
+                color: "#1e293b",
+                formatter: "{b}\n{d}%",
+              },
+            },
+            labelLine: { show: false },
+            data: pieData,
+          },
+        ],
+      };
+
+      myChart.setOption(option);
+    } catch (e) {
+      fallbackBars(id, rows, total);
+      return;
+    }
+
+    container.append(
+      details(
+        ["Trạng thái", "Số hồ sơ", "Tỷ trọng", "Đã lắp đặt"],
+        rows.map((r) => [
+          r.label,
+          number(r.value),
+          percent(r.value, total),
+          r.installed == null ? "—" : number(r.installed),
+        ]),
+      ),
+    );
+  }
+
+  // 6. Xếp hạng Gói cước & Chi nhánh (ECharts Horizontal Rounded Bars)
+  function rankedBarsECharts(id, rows, total, gradientColors = ["#f26f21", "#ff8c42"]) {
+    disposeChart(id);
+    const container = $(id);
+    container.replaceChildren();
+
+    if (!window.echarts) {
       fallbackBars(id, rows, total);
       return;
     }
@@ -596,64 +917,72 @@
     }
 
     const sorted = [...rows].sort((a, b) => b.value - a.value).slice(0, 7);
-    const chartWrap = adminNode("div", "", "apex-chart-container");
+    const chartWrap = adminNode("div", "", "echart-canvas-wrap");
     container.append(chartWrap);
 
-    const categories = sorted.map((r) => r.label);
-    const values = sorted.map((r) => r.value);
-
-    const options = {
-      series: [{ name: "Hồ sơ", data: values }],
-      chart: {
-        type: "bar",
-        height: 250,
-        toolbar: { show: false },
-        animations: { enabled: true, speed: 600 },
-        fontFamily: "'Be Vietnam Pro', -apple-system, sans-serif",
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 6,
-          horizontal: true,
-          barHeight: "50%",
-          dataLabels: { position: "top" },
-        },
-      },
-      colors: [barColor],
-      dataLabels: {
-        enabled: true,
-        offsetX: 20,
-        style: { fontSize: "11px", colors: ["#334155"], fontWeight: 700 },
-        formatter: (val) => number(val),
-      },
-      xaxis: {
-        categories: categories,
-        labels: {
-          style: { fontSize: "11px", colors: "#64748b" },
-          formatter: (v) => number(v),
-        },
-      },
-      yaxis: {
-        labels: {
-          style: { fontSize: "12px", colors: "#1e293b", fontWeight: 600 },
-          maxWidth: 160,
-        },
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => number(val) + " hồ sơ (" + percent(val, total) + ")",
-        },
-      },
-      grid: {
-        borderColor: "rgba(226, 232, 240, 0.6)",
-        strokeDashArray: 4,
-      },
-    };
-
     try {
-      const chart = new ApexCharts(chartWrap, options);
-      chart.render();
-      apexCharts[id] = chart;
+      const myChart = echarts.init(chartWrap);
+      echartsInstances[id] = myChart;
+
+      const categories = sorted.map((r) => r.label).reverse();
+      const values = sorted.map((r) => r.value).reverse();
+
+      const option = {
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          borderColor: "#334155",
+          axisPointer: { type: "shadow" },
+          textStyle: { color: "#fff", fontSize: 13 },
+          formatter: function (params) {
+            const p = params[0];
+            return `<b>${p.name}</b><br/>Số hồ sơ: <b>${number(p.value)}</b> (${percent(p.value, total)})`;
+          },
+        },
+        grid: {
+          left: "3%",
+          right: "12%",
+          top: "6%",
+          bottom: "6%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "value",
+          splitLine: { lineStyle: { color: "rgba(226, 232, 240, 0.7)", type: "dashed" } },
+          axisLabel: { color: "#64748b", fontSize: 11, formatter: (val) => number(val) },
+        },
+        yAxis: {
+          type: "category",
+          data: categories,
+          axisLine: { lineStyle: { color: "#cbd5e1" } },
+          axisLabel: { color: "#1e293b", fontWeight: 600, fontSize: 12 },
+        },
+        series: [
+          {
+            name: "Hồ sơ",
+            type: "bar",
+            barWidth: 16,
+            itemStyle: {
+              borderRadius: [0, 8, 8, 0],
+              color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                { offset: 0, color: gradientColors[0] },
+                { offset: 1, color: gradientColors[1] },
+              ]),
+            },
+            label: {
+              show: true,
+              position: "right",
+              color: "#334155",
+              fontWeight: 700,
+              fontSize: 12,
+              formatter: (params) => number(params.value),
+            },
+            data: values,
+          },
+        ],
+      };
+
+      myChart.setOption(option);
     } catch (e) {
       fallbackBars(id, rows, total);
       return;
@@ -670,102 +999,6 @@
         ]),
       ),
     );
-  }
-
-  // 5. Cam kết dịch vụ SLA (Radial Gauge & Counters)
-  function slaApex(t) {
-    destroyChart("analytics-sla");
-    const container = $("analytics-sla");
-    container.replaceChildren();
-
-    const awaiting = t.awaiting || 0;
-    const overdue = t.overdue || 0;
-    const onTimeCount = Math.max(0, awaiting - overdue);
-    const onTimePct = awaiting > 0 ? Math.round((onTimeCount / awaiting) * 100) : 100;
-
-    const wrap = adminNode("div", "", "sla-dashboard-layout");
-
-    // Khối biểu đồ tròn Radial Gauge
-    if (window.ApexCharts) {
-      const chartWrap = adminNode("div", "", "sla-gauge-wrap");
-      wrap.append(chartWrap);
-
-      const gaugeColor = onTimePct >= 80 ? "#10b981" : onTimePct >= 60 ? "#f59e0b" : "#ef4444";
-
-      const options = {
-        series: [onTimePct],
-        chart: {
-          height: 190,
-          type: "radialBar",
-          animations: { enabled: true, speed: 700 },
-          fontFamily: "'Be Vietnam Pro', -apple-system, sans-serif",
-        },
-        plotOptions: {
-          radialBar: {
-            startAngle: -135,
-            endAngle: 135,
-            hollow: { size: "65%" },
-            track: {
-              background: "#f1f5f9",
-              strokeWidth: "100%",
-            },
-            dataLabels: {
-              name: {
-                show: true,
-                fontSize: "11px",
-                color: "#64748b",
-                offsetY: -8,
-              },
-              value: {
-                offsetY: 4,
-                fontSize: "22px",
-                fontWeight: 800,
-                color: gaugeColor,
-                formatter: (val) => val + "%",
-              },
-            },
-          },
-        },
-        fill: {
-          type: "solid",
-          colors: [gaugeColor],
-        },
-        stroke: { dashArray: 3 },
-        labels: ["ĐÚNG HẠN"],
-      };
-
-      try {
-        const chart = new ApexCharts(chartWrap, options);
-        chart.render();
-        apexCharts["analytics-sla"] = chart;
-      } catch (e) {
-        console.warn("SLA gauge failed:", e);
-      }
-    }
-
-    // Khối thống kê số lượng
-    const statBlock = adminNode("div", "", "analytics-sla-stats");
-    for (const [label, value, isAlert] of [
-      ["Đang chờ phản hồi", awaiting, false],
-      ["Đã quá hạn gọi lại", overdue, overdue > 0],
-    ]) {
-      const item = adminNode("div", "", isAlert ? "sla-stat-item alert" : "sla-stat-item");
-      item.append(
-        adminNode("div", number(value), "analytics-stat"),
-        adminNode("p", label),
-      );
-      statBlock.append(item);
-    }
-
-    wrap.append(statBlock);
-    container.append(wrap);
-
-    const note = adminNode(
-      "p",
-      percent(overdue, awaiting) + " hồ sơ đang chờ hiện đã vượt quá hạn SLA.",
-      "analytics-sla-note" + (overdue > 0 ? " text-danger" : " text-success"),
-    );
-    container.append(note);
   }
 
   /* ===================================================================
@@ -834,7 +1067,6 @@
         };
       }
 
-      // Header của card
       const top = adminNode("div", "", "kpi-top");
       const iconWrap = adminNode("div", item.icon, `kpi-icon-badge kpi-bg-${item.tone}`);
       const titleGroup = adminNode("div", "", "kpi-header-group");
@@ -844,7 +1076,6 @@
       );
       top.append(iconWrap, titleGroup);
 
-      // Body của card
       const body = adminNode("div", "", "kpi-body");
       body.append(
         adminNode("div", item.value, "kpi-value"),
@@ -855,10 +1086,10 @@
       $("analytics-kpis").append(card);
     }
 
-    // Render các biểu đồ hiện đại
-    trendApex(data.daily);
+    // Vẽ biểu đồ ECharts chất lượng cao
+    trendECharts(data.daily);
 
-    funnelApex(
+    funnelECharts(
       "analytics-funnel",
       [
         { label: "Tiếp nhận", value: t.leads },
@@ -869,27 +1100,26 @@
       t.leads,
     );
 
-    donutApex(
+    sourcesECharts(
       "analytics-sources",
       data.sources.map((r) => ({
         ...r,
         label: r.label === "unattributed" ? "Chưa ghi nhận nguồn" : r.label,
       })),
       t.leads,
-      "Tổng nguồn",
+      sourcesChartStyle,
     );
 
-    donutApex(
+    statusesECharts(
       "analytics-statuses",
       data.statuses.map((r) => ({ ...r, label: adminStatusLabel(r.label) })),
       t.leads,
-      "Tổng hồ sơ",
     );
 
-    rankedBarsApex("analytics-plans", data.plans, t.leads, "#f97316");
-    rankedBarsApex("analytics-branches", data.branches, t.leads, "#0ea5e9");
+    rankedBarsECharts("analytics-plans", data.plans, t.leads, ["#f26f21", "#ff8c42"]);
+    rankedBarsECharts("analytics-branches", data.branches, t.leads, ["#0ea5e9", "#38bdf8"]);
 
-    slaApex(t);
+    slaECharts(t);
 
     // Bảng hiệu quả chiến dịch & chi phí
     $("analytics-campaigns").replaceChildren();
@@ -939,6 +1169,90 @@
   }
 
   /* ===================================================================
+     BỘ LỌC HIỂN THỊ (DISPLAY VIEW & IN-CHART TOGGLES)
+     =================================================================== */
+  function initChartDisplayFilters() {
+    // 1. Bộ lọc hiển thị nhóm biểu đồ (View Tab Filter)
+    const filterContainer = $("analytics-chart-filters");
+    if (filterContainer) {
+      filterContainer.querySelectorAll(".btn-view-tab").forEach((btn) => {
+        btn.onclick = () => {
+          filterContainer.querySelectorAll(".btn-view-tab").forEach((b) => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+
+          const filterGroup = btn.getAttribute("data-chart-filter");
+          const cards = document.querySelectorAll("#analytics-charts-grid .chart-card");
+
+          cards.forEach((card) => {
+            const cardGroup = card.getAttribute("data-chart-group");
+            if (filterGroup === "all" || cardGroup === filterGroup) {
+              card.style.display = "";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          // Resize lại canvas ECharts khi DOM layout thay đổi
+          setTimeout(resizeAllCharts, 80);
+        };
+      });
+    }
+
+    // 2. Bộ lọc chuỗi dữ liệu xu hướng (Trend Metric Toggle)
+    const trendToggle = $("trend-metric-toggle");
+    if (trendToggle) {
+      trendToggle.querySelectorAll(".btn-metric-toggle").forEach((btn) => {
+        btn.onclick = () => {
+          trendToggle.querySelectorAll(".btn-metric-toggle").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const seriesType = btn.getAttribute("data-series");
+          const trendChart = echartsInstances["analytics-trend"];
+          if (trendChart) {
+            if (seriesType === "all") {
+              trendChart.dispatchAction({ type: "legendAllSelect" });
+            } else {
+              const seriesMap = {
+                leads: "Tiếp nhận",
+                qualified: "Đủ điều kiện",
+                installed: "Đã lắp đặt",
+              };
+              const targetName = seriesMap[seriesType];
+              ["Tiếp nhận", "Đủ điều kiện", "Đã lắp đặt"].forEach((name) => {
+                if (name === targetName) {
+                  trendChart.dispatchAction({ type: "legendSelect", name });
+                } else {
+                  trendChart.dispatchAction({ type: "legendUnSelect", name });
+                }
+              });
+            }
+          }
+        };
+      });
+    }
+
+    // 3. Bộ lọc kiểu hiển thị nguồn khách hàng (Rose vs Donut Toggle)
+    const sourcesToggle = $("sources-type-toggle");
+    if (sourcesToggle) {
+      sourcesToggle.querySelectorAll(".btn-metric-toggle").forEach((btn) => {
+        btn.onclick = () => {
+          sourcesToggle.querySelectorAll(".btn-metric-toggle").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const chartStyle = btn.getAttribute("data-chart-style");
+          if (currentSourcesData) {
+            sourcesECharts("analytics-sources", currentSourcesData, currentSourcesTotal, chartStyle);
+          }
+        };
+      });
+    }
+  }
+
+  /* ===================================================================
      DATA FETCHING & FILTER CONTROLLER
      =================================================================== */
   async function load() {
@@ -983,7 +1297,7 @@
     } catch (error) {
       if (current === sequence) {
         trendRows = null;
-        destroyAllCharts();
+        disposeAllCharts();
         $("analytics-state").textContent = error.message;
         $("analytics-state").classList.add("analytics-error");
         $("analytics-asof").textContent = "Chưa cập nhật";
@@ -1040,6 +1354,7 @@
     })
     .catch(() => {});
 
+  initChartDisplayFilters();
   load();
 
   document.addEventListener("admin:data-changed", () => {
@@ -1050,7 +1365,8 @@
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (trendRows && !window.ApexCharts) fallbackTrend(trendRows);
+      if (trendRows && !window.echarts) fallbackTrend(trendRows);
+      resizeAllCharts();
     }, 100);
   });
 })();
