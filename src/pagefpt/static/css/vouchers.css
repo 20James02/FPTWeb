@@ -797,65 +797,189 @@
 }
 
 /* Client Voucher Banner */
-/* Client Voucher Banner - Compact & Modern */
+/* ===================================================================
+   VIP CLIENT VOUCHER BANNER — LUXURY TICKET DESIGN & RICH ANIMATIONS
+   =================================================================== */
 .client-voucher-banner {
-  border: 1.5px solid #fed7aa;
-  background: #ffffff;
-  color: #172554;
-  border-radius: 16px;
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #fffcf8 45%, #fff7ed 100%);
+  border: 1.5px solid #f97316;
+  border-radius: 20px;
   max-width: 520px;
-  margin: 12px auto;
-  padding: 14px 18px;
+  margin: 14px auto;
+  padding: 18px 20px 16px;
   box-sizing: border-box;
   font-size: 14px;
   line-height: 1.5;
-  box-shadow: 0 10px 28px rgba(243, 112, 33, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
-  animation: voucherSlideDown 0.25s ease-out;
+  box-shadow: 0 14px 38px rgba(243, 112, 33, 0.16), 0 3px 10px rgba(0, 0, 0, 0.04);
+  animation: voucherBannerEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1), voucherBorderAura 4s infinite alternate ease-in-out;
+  overflow: visible;
 }
 
-@keyframes voucherSlideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes voucherBannerEntrance {
+  0% { opacity: 0; transform: scale(0.96) translateY(-10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+@keyframes voucherBorderAura {
+  0% {
+    border-color: #f97316;
+    box-shadow: 0 12px 34px rgba(243, 112, 33, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  100% {
+    border-color: #ea580c;
+    box-shadow: 0 16px 44px rgba(234, 88, 12, 0.22), 0 0 18px rgba(251, 191, 36, 0.25);
+  }
+}
+
+/* 2 Rãnh khuyết bán nguyệt (Notches) 2 bên mép voucher */
+.client-voucher-banner::before,
+.client-voucher-banner::after {
+  content: "";
+  position: absolute;
+  top: 50px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-canvas, #f8fafc);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.client-voucher-banner::before {
+  left: -8px;
+  border-right: 1.5px solid #f97316;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.08);
+}
+
+.client-voucher-banner::after {
+  right: -8px;
+  border-left: 1.5px solid #f97316;
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Header hàng đầu */
 .client-voucher-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px dashed #fed7aa;
   flex-wrap: wrap;
 }
 
-.client-voucher-head strong {
-  font-size: 14px;
+/* Badge trạng thái */
+.client-voucher-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  color: #ffffff;
+  font-size: 11px;
   font-weight: 800;
-  color: #9a3412;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-radius: 20px;
+  padding: 4px 12px;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
+  animation: badgeBlink 2.5s infinite ease-in-out;
+}
+
+@keyframes badgeBlink {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.45); }
+}
+
+/* Tên ưu đãi */
+.client-voucher-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  line-height: 1.3;
+  background: linear-gradient(135deg, #9a3412 0%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Hạn dùng */
+.client-voucher-urgency {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Nút Bỏ mã */
+.client-voucher-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(241, 245, 249, 0.9);
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: unset;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+.client-voucher-clear-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+  transform: scale(1.04);
+}
+
+/* Form Controls & Input Group */
+.client-voucher-controls {
+  margin: 0;
 }
 
 .client-voucher-input-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1.5px solid #cbd5e1;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 4px 6px 4px 12px;
   box-sizing: border-box;
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .client-voucher-input-group:focus-within {
   background: #ffffff;
-  border-color: #f37021;
-  box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.15);
+  border-color: #f97316;
+  box-shadow: 0 0 0 3.5px rgba(249, 115, 22, 0.18), 0 3px 10px rgba(249, 115, 22, 0.1);
+  transform: translateY(-1px);
 }
 
 .client-voucher-input-icon {
   font-size: 16px;
   flex-shrink: 0;
+  animation: ticketIconWiggle 4s infinite ease-in-out;
+}
+
+@keyframes ticketIconWiggle {
+  0%, 90%, 100% { transform: rotate(0deg); }
+  93% { transform: rotate(-8deg); }
+  96% { transform: rotate(8deg); }
 }
 
 .client-voucher-input-group input {
@@ -863,14 +987,14 @@
   border: none !important;
   background: transparent !important;
   outline: none !important;
-  padding: 6px 4px !important;
-  min-height: 32px !important;
+  padding: 7px 4px !important;
+  min-height: 34px !important;
   width: auto !important;
   font-size: 14px !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   color: #0f172a !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   min-width: 0;
 }
 
@@ -881,74 +1005,168 @@
   color: #94a3b8;
 }
 
+/* Nút Áp dụng Shimmer */
 .client-voucher-apply-btn {
-  background: #f37021 !important;
+  background: linear-gradient(110deg, #f26f21 0%, #ea580c 45%, #ff8b26 55%, #ea580c 100%) !important;
+  background-size: 200% auto !important;
   color: #ffffff !important;
   border: none !important;
-  border-radius: 8px !important;
-  padding: 6px 18px !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
+  border-radius: 9px !important;
+  padding: 7px 20px !important;
+  font-weight: 800 !important;
+  font-size: 13.5px !important;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   min-height: 36px !important;
-  transition: background 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 4px 14px rgba(242, 111, 33, 0.35) !important;
+  animation: btnApplyShimmer 3.5s infinite linear;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@keyframes btnApplyShimmer {
+  to { background-position: 200% center; }
 }
 
 .client-voucher-apply-btn:hover {
-  background: #ea580c !important;
-  transform: translateY(-1px);
+  transform: translateY(-1.5px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(242, 111, 33, 0.45) !important;
 }
 
-.client-voucher-clear-btn {
-  background: #f1f5f9;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  min-height: unset;
-  line-height: 1.2;
+.client-voucher-apply-btn:active {
+  transform: scale(0.98);
 }
 
-.client-voucher-clear-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
-  border-color: #fca5a5;
-}
-
+/* Thẻ Message trạng thái ưu đãi */
 .client-voucher-msg {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #f97316;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  color: #9a3412;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08);
+  animation: msgFadeIn 0.3s ease-out;
 }
 
+@keyframes msgFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* NÚT CTA XEM BẢNG GIÁ — SIÊU CẤP CHUYÊN NGHIỆP */
+.client-voucher-cta-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none !important;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #0284c7 0%, #0369a1 40%, #38bdf8 50%, #0284c7 100%) !important;
+  background-size: 200% auto !important;
+  color: #ffffff !important;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+  animation: ctaShimmerPulse 3s infinite linear, ctaArrowBounce 2s infinite ease-in-out;
+  transition: all 0.25s ease;
+}
+
+@keyframes ctaShimmerPulse {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes ctaArrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.client-voucher-cta-btn:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 10px 28px rgba(2, 132, 199, 0.45) !important;
+}
+
+.client-voucher-cta-btn:active {
+  transform: scale(0.98) !important;
+}
+
+/* Khối Xem điều kiện */
 .client-voucher-details {
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 12px;
   color: #64748b;
 }
 
 .client-voucher-details summary {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   color: #64748b;
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s ease;
 }
 
 .client-voucher-details summary:hover {
-  color: #f37021;
+  color: #ea580c;
 }
 
 .client-voucher-details p {
-  margin: 4px 0 0;
-  font-size: 12px;
-  line-height: 1.45;
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
   color: #475569;
+}
+
+/* Recovery */
+.client-voucher-recovery {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #2563eb;
+  border-radius: 10px;
+  color: #1e40af;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.client-voucher-recovery-cta {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #ffffff !important;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s ease;
+}
+
+.client-voucher-recovery-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
 
 /* CRM Lead Detail Voucher Panel */
@@ -1107,77 +1325,12 @@
    CRO Enhancements: Hero Voucher Banner, Floating Pill, Sales Scripts
    =================================================================== */
 
+/* Legacy CRO overrides harmonized with main VIP voucher banner */
 .client-voucher-hero-header {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.client-voucher-hero-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, #f37021, #c2410c);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 6px;
-  padding: 3px 8px;
-}
-
-.client-voucher-urgency {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  color: #c2410c;
-  background: rgba(243, 112, 33, 0.1);
-  padding: 2px 8px;
-  border-radius: 6px;
-  margin-top: 4px;
-}
-
-.client-voucher-cta-btn {
-  background: #005a9e;
-  color: #ffffff !important;
-  border: 0 !important;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 90, 158, 0.2);
-  transition: all 0.15s ease;
-}
-
-.client-voucher-cta-btn:hover {
-  background: #f37021 !important;
-  color: #ffffff !important;
-  transform: translateY(-1px);
-}
-
-.client-voucher-recovery {
-  margin-top: 10px;
-  padding: 12px 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  color: #1e40af;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.client-voucher-recovery-cta {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 6px 12px;
-  background: #1d4ed8;
-  color: #ffffff !important;
-  border-radius: 6px;
-  font-weight: 700;
-  text-decoration: none;
-  font-size: 12px;
 }
 
 /* Floating Sticky Voucher Mini-Pill */
