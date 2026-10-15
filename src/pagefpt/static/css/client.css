@@ -849,16 +849,18 @@ img, svg {
 /* Tag Badges: Cơ bản, Phổ biến nhất, Khuyên dùng, Premium, VIP */
 .plan-tag-badge {
   position: absolute;
-  top: -12px;
-  right: var(--space-5);
+  top: 10px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: var(--radius-full);
   z-index: 10;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
 }
 
@@ -5764,26 +5766,63 @@ img, svg {
     overflow: visible !important;
   }
 
-  /* Ẩn hoàn toàn 2 thẻ hai bên trên mobile - loại bỏ hoàn toàn các dải chữ cắt vụn */
-  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-prev,
-  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-next,
-  .plans-3d-stage .plan-card-3d-wrapper.is-hidden {
-    display: none !important;
+  /* Hiển thị thẻ chính giữa kèm viền các thẻ kế bên (peek cards) */
+  .plans-3d-stage.multitask-mode .plans-3d-track {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 6px 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
   }
 
-  /* 1 Thẻ duy nhất hiển thị chính giữa: Đồng đều, Nhỏ gọn, Dễ nhìn */
+  #plans-3d-stage {
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+    min-height: auto !important;
+  }
+
+  /* 1 Thẻ chính giữa hiển thị nổi bật */
   .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-center,
   .plans-3d-stage .plan-card-3d-wrapper.is-center {
     display: flex !important;
-    flex: 0 0 100% !important;
-    width: 100% !important;
+    flex: 0 0 calc(100vw - 72px) !important;
+    width: calc(100vw - 72px) !important;
     max-width: min(335px, 92vw) !important;
-    min-height: 485px !important;
-    height: 100% !important;
-    margin: 0 auto !important;
-    transform: none !important;
+    margin: 0 !important;
+    transform: scale(1) translateZ(0) !important;
     opacity: 1 !important;
     z-index: 10 !important;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease, box-shadow 0.35s ease !important;
+  }
+
+  /* Để lộ viền các gói bên cạnh gói giữa để người xem dễ nhận biết */
+  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-prev,
+  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-next {
+    display: flex !important;
+    flex: 0 0 calc(100vw - 72px) !important;
+    width: calc(100vw - 72px) !important;
+    max-width: min(335px, 92vw) !important;
+    margin: 0 !important;
+    z-index: 4 !important;
+    opacity: 0.52 !important;
+    filter: brightness(0.95) !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease !important;
+  }
+
+  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-prev {
+    transform: scale(0.92) translateX(4px) !important;
+  }
+
+  .plans-3d-stage.multitask-mode .plan-card-3d-wrapper.is-next {
+    transform: scale(0.92) translateX(-4px) !important;
+  }
+
+  .plans-3d-stage .plan-card-3d-wrapper.is-hidden {
+    display: none !important;
   }
 
   /* Viền nổi bật ôm sát bo tròn 20px chuẩn UI/UX Promax */
@@ -5802,7 +5841,7 @@ img, svg {
   }
 
   .card-face {
-    padding: 20px 16px 14px !important;
+    padding: 16px 14px 12px !important;
     border-radius: 20px !important;
     height: 100% !important;
     display: flex !important;
@@ -5811,13 +5850,36 @@ img, svg {
     box-sizing: border-box !important;
   }
 
+  /* Nhãn Nổi bật chính giữa gói */
   .plan-tag-badge {
-    top: -11px !important;
-    left: 16px !important;
-    font-size: 0.66rem !important;
-    padding: 3px 10px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.3px !important;
+    position: absolute !important;
+    top: 10px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    font-size: 0.7rem !important;
+    padding: 4px 14px !important;
+    border-radius: 9999px !important;
+    letter-spacing: 0.4px !important;
+    white-space: nowrap !important;
+    z-index: 10 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Hiệu ứng trượt qua lại giữa các gói cước chuyển động mượt mà */
+  .plans-3d-track.sliding-next .plan-card-3d-wrapper.is-center {
+    animation: cardSlideFromRight 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .plans-3d-track.sliding-prev .plan-card-3d-wrapper.is-center {
+    animation: cardSlideFromLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  @keyframes cardSlideFromRight {
+    0% { transform: translateX(28px) scale(0.96); opacity: 0.75; }
+    100% { transform: translateX(0) scale(1); opacity: 1; }
+  }
+  @keyframes cardSlideFromLeft {
+    0% { transform: translateX(-28px) scale(0.96); opacity: 0.75; }
+    100% { transform: translateX(0) scale(1); opacity: 1; }
   }
 
   .plan-header {

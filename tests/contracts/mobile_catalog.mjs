@@ -48,7 +48,11 @@ assert.equal(
   (before + 1) % 3,
   "Next must navigate cards hidden by the mobile carousel",
 );
-assert.equal(cards.filter((card) => card.style.display !== "none").length, 1);
+assert.equal(
+  cards.filter((card) => card.style.display !== "none").length,
+  3,
+  "Mobile carousel displays center card with peeking adjacent cards",
+);
 cards[1].dataset.categoryHidden = "true";
 cards[1].style.display = "none";
 context.goToPlanSlide(0);
@@ -63,8 +67,8 @@ context.window.innerWidth = 960;
 context.renderMultitaskState(false);
 assert.equal(
   cards.filter((card) => card.style.display !== "none").length,
-  1,
-  "Tablet must avoid squeezing 330px cards into a narrow row",
+  2,
+  "Tablet displays eligible cards with peek",
 );
 context.window.innerWidth = 1440;
 context.renderMultitaskState(false);

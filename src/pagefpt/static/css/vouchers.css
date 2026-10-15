@@ -1061,6 +1061,66 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Khối hiển thị nổi bật mã ưu đãi đang áp dụng */
+.client-voucher-applied-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.client-voucher-applied-badge {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.client-voucher-applied-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.client-voucher-applied-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #ea580c;
+  background: #ffffff;
+  padding: 3px 10px;
+  border: 1.5px dashed #f97316;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(234, 88, 12, 0.12);
+  display: inline-flex;
+  align-items: center;
+}
+.client-voucher-applied-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 3px 9px;
+  border-radius: 9999px;
+}
+.client-voucher-applied-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.client-voucher-applied-label {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #9a3412;
+}
+.client-voucher-applied-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c2410c;
+  opacity: 0.9;
+}
+
 /* NÚT CTA XEM BẢNG GIÁ — SIÊU CẤP CHUYÊN NGHIỆP */
 .client-voucher-cta-btn {
   display: flex !important;

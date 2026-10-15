@@ -88,6 +88,8 @@
         voucher = null;
         link = null;
         hasContext = false;
+        const codeInp = document.getElementById("client-voucher-code");
+        if (codeInp) codeInp.value = "";
         if (seq !== generation) return;
         render();
         window.dispatchEvent(new CustomEvent('pagefpt-voucher-change'));
@@ -219,24 +221,49 @@
       }
     }
 
-    document.getElementById("client-voucher-message").hidden =
-      !voucher && !hasContext && !code;
+    const entryBox = document.getElementById("client-voucher-entry");
+    if (entryBox) {
+      entryBox.hidden = !!voucher;
+    }
+
+    const msgEl = document.getElementById("client-voucher-message");
+    if (msgEl) {
+      msgEl.hidden = !voucher && !hasContext && !code;
+      if (voucher) {
+        if (voucher.status && voucher.status !== "active") {
+          msgEl.textContent = labels[voucher.status] || "Ưu đãi chưa khả dụng.";
+        } else if (voucher.sold_out) {
+          msgEl.textContent = "Ưu đãi đã hết suất.";
+        } else {
+          const appliedCode = voucher.code || code || "ƯU ĐÃI";
+          const dateStr = window.PageFPTDates?.format(voucher.end, false) || "";
+          msgEl.innerHTML = `
+            <div class="client-voucher-applied-box">
+              <div class="client-voucher-applied-badge">
+                <span class="client-voucher-applied-icon" aria-hidden="true">🎟️</span>
+                <span class="client-voucher-applied-code">MÃ: <strong>${appliedCode}</strong></span>
+                <span class="client-voucher-applied-tag">✓ Đang áp dụng</span>
+              </div>
+              <div class="client-voucher-applied-info">
+                <strong class="client-voucher-applied-label">${voucher.label || voucher.name}</strong>
+                <span class="client-voucher-applied-sub">
+                  ${dateStr ? "Hạn dùng: Đến " + dateStr + " · " : ""}Chờ xác nhận địa bàn
+                </span>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        msgEl.textContent = code || hasContext
+          ? "Mã không còn khả dụng. Bạn vẫn có thể gửi yêu cầu tư vấn."
+          : "Nhập mã nếu bạn được giới thiệu một ưu đãi.";
+      }
+    }
+
     document.getElementById("client-voucher-conditions").hidden = !voucher;
     document.getElementById("client-voucher-terms").textContent =
       voucher?.terms ||
       "Giá và ưu đãi được xác nhận theo địa chỉ lắp đặt. Không cần nhập mã để gửi yêu cầu tư vấn.";
-    document.getElementById("client-voucher-message").textContent = voucher
-      ? voucher.status && voucher.status !== "active"
-        ? labels[voucher.status]
-        : voucher.sold_out
-          ? "Ưu đãi đã hết suất."
-          : voucher.label +
-            " · Đến " +
-            window.PageFPTDates?.format(voucher.end, false) +
-            " · Chờ xác nhận địa bàn"
-      : code || hasContext
-        ? "Mã không còn khả dụng. Bạn vẫn có thể gửi yêu cầu tư vấn."
-        : "Nhập mã nếu bạn được giới thiệu một ưu đãi.";
     document.getElementById("client-voucher-clear").hidden =
       !voucher && !code && !hasContext;
 

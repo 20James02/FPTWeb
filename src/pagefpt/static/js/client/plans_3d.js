@@ -63,12 +63,15 @@ function renderMultitaskState(triggerShine = true) {
 
   const isCompact = window.innerWidth < 1100;
 
-  // Mobile and tablet show one full-width card; three 330px cards need a wide viewport.
+  // Mobile and tablet display center active card with peeking adjacent cards
   if (isCompact) {
-    stage.classList.add('slider-active-3d', 'multitask-mode', 'mobile-single-card-mode');
+    stage.classList.add('slider-active-3d', 'multitask-mode', 'mobile-peek-mode');
+    stage.classList.remove('mobile-single-card-mode');
     if (controls) controls.style.display = 'flex';
 
     const centerIdx = currentMultitaskIndex;
+    const prevIdx = (centerIdx - 1 + count) % count;
+    const nextIdx = (centerIdx + 1) % count;
 
     activeCategoryCards.forEach((card, idx) => {
       card.classList.remove('is-center', 'is-prev', 'is-next', 'is-hidden', 'sweep-light');
@@ -78,6 +81,7 @@ function renderMultitaskState(triggerShine = true) {
         card.classList.add('is-center');
         card.style.display = 'flex';
         card.setAttribute('aria-current', 'true');
+        card.style.order = '2';
         card.onclick = null;
 
         if (triggerShine) {
@@ -86,11 +90,36 @@ function renderMultitaskState(triggerShine = true) {
             card.classList.remove('sweep-light');
           }, 800);
         }
+      } else if (idx === prevIdx && count > 1) {
+        card.classList.add('is-prev');
+        card.style.display = 'flex';
+        card.removeAttribute('aria-current');
+        card.style.order = '1';
+        const inner = card.querySelector('.plan-card-3d-inner');
+        if (inner) inner.classList.remove('flipped');
+        card.onclick = (e) => {
+          if (!e.target.closest('button') && !e.target.closest('a')) {
+            slidePlansPrev();
+          }
+        };
+      } else if (idx === nextIdx && count > 1) {
+        card.classList.add('is-next');
+        card.style.display = 'flex';
+        card.removeAttribute('aria-current');
+        card.style.order = '3';
+        const inner = card.querySelector('.plan-card-3d-inner');
+        if (inner) inner.classList.remove('flipped');
+        card.onclick = (e) => {
+          if (!e.target.closest('button') && !e.target.closest('a')) {
+            slidePlansNext();
+          }
+        };
       } else {
         card.classList.add('is-hidden');
         card.style.display = 'none';
         card.removeAttribute('aria-current');
         card.onclick = null;
+        card.style.order = '99';
         const inner = card.querySelector('.plan-card-3d-inner');
         if (inner) inner.classList.remove('flipped');
       }
@@ -214,11 +243,17 @@ function slidePlansPrev() {
 
   isMultitaskAnimating = true;
   currentMultitaskIndex = (currentMultitaskIndex - 1 + count) % count;
+
+  if (track.classList) {
+    track.classList.remove('sliding-next', 'sliding-prev');
+    track.classList.add('sliding-prev');
+  }
   renderMultitaskState(true);
 
   setTimeout(() => {
+    if (track.classList) track.classList.remove('sliding-prev');
     isMultitaskAnimating = false;
-  }, 400);
+  }, 380);
 
   if (typeof trackEvent === 'function') {
     trackEvent('slide_multitask_prev', { newIndex: currentMultitaskIndex });
@@ -239,11 +274,17 @@ function slidePlansNext() {
 
   isMultitaskAnimating = true;
   currentMultitaskIndex = (currentMultitaskIndex + 1) % count;
+
+  if (track.classList) {
+    track.classList.remove('sliding-next', 'sliding-prev');
+    track.classList.add('sliding-next');
+  }
   renderMultitaskState(true);
 
   setTimeout(() => {
+    if (track.classList) track.classList.remove('sliding-next');
     isMultitaskAnimating = false;
-  }, 400);
+  }, 380);
 
   if (typeof trackEvent === 'function') {
     trackEvent('slide_multitask_next', { newIndex: currentMultitaskIndex });
@@ -271,24 +312,43 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!track) return;
 
   let touchStartX = 0;
+  let touchStartY = 0;
   let touchEndX = 0;
+  let touchEndY = 0;
   let mouseStartX = 0;
   let isMouseDown = false;
 
   // Touch gestures (Mobile)
   track.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
+    if (e.changedTouches && e.changedTouches.length) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      touchEndX = touchStartX;
+      touchEndY = touchStartY;
+    }
+  }, { passive: true });
+
+  track.addEventListener('touchmove', (e) => {
+    if (e.changedTouches && e.changedTouches.length) {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+    }
   }, { passive: true });
 
   track.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipeGesture();
+    if (e.changedTouches && e.changedTouches.length) {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipeGesture();
+    }
   }, { passive: true });
 
   function handleSwipeGesture() {
-    const diff = touchStartX - touchEndX;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+    // Dominant horizontal swipe (> 35px, and horizontal > 1.2x vertical)
+    if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
+      if (diffX > 0) {
         slidePlansNext();
       } else {
         slidePlansPrev();

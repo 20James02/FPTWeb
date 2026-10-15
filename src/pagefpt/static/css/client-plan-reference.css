@@ -619,19 +619,209 @@
   flex: 0 0 auto !important;
   gap: 6px !important;
 }
+:is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  )
+  .plan-tag-badge {
+  position: absolute !important;
+  top: 10px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 10 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  padding: 4px 14px !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  max-width: calc(100% - 32px) !important;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #0284c7 !important;
+  border: 1.5px solid #38bdf8 !important;
+}
+
 @media (max-width: 767px) {
-  .plan-card--reference {
-    width: min(330px, calc(100vw - 40px)) !important;
-    flex-basis: min(330px, calc(100vw - 40px)) !important;
+  /* Giảm độ cao thẻ trên mobile để bớt tràn màn hình */
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) {
+    width: min(310px, calc(100vw - 72px)) !important;
+    flex-basis: min(310px, calc(100vw - 72px)) !important;
+    height: 520px !important;
+    min-height: 520px !important;
+    max-height: 520px !important;
   }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .card-face-front {
+    height: 520px !important;
+    min-height: 520px !important;
+    max-height: 520px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-card-3d-inner {
+    height: 520px !important;
+    min-height: 520px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-card-image-wrap {
+    height: 155px !important;
+    min-height: 155px !important;
+    max-height: 155px !important;
+    flex: 0 0 155px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-card-image {
+    height: 155px !important;
+    max-height: 155px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-card-body {
+    padding: 10px 14px !important;
+    gap: 6px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-name {
+    font-size: 17px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-price-box {
+    min-height: 38px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .plan-price-amount {
+    font-size: 20px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .billing-choice {
+    flex: 0 0 84px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .billing-choice select {
+    width: 84px !important;
+    min-height: 36px !important;
+    height: 36px !important;
+    font-size: 13px !important;
+    padding: 4px 6px !important;
+  }
+
+  .plan-speed-panel {
+    flex: 0 0 62px !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .plan-speed-title {
+    font-size: 11px !important;
+  }
+
+  .plan-speed-values {
+    font-size: 12px !important;
+  }
+
+  .plan-speed-gauge-wrap,
+  .plan-speed-gauge {
+    width: 46px !important;
+    height: 36px !important;
+    flex: 0 0 46px !important;
+  }
+
+  .plan-benefits-scroll {
+    min-height: 36px !important;
+    max-height: 48px !important;
+  }
+
+  .plan-features {
+    gap: 4px !important;
+    font-size: 12px !important;
+  }
+
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .btn-select-plan,
+  :is(
+    .plan-card--reference,
+    .telecom-landing .lp-plan-card.plan-card--reference,
+    #plans-3d-stage .plan-card--reference,
+    .plan-card-3d-wrapper
+  ) .btn-flip-trigger {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+  }
+
   .telecom-landing .lp-plan-grid[data-plan-count] {
     justify-content: flex-start;
   }
   .telecom-landing .lp-plan-card.plan-card--reference {
     scroll-snap-align: center;
-  }
-  .plan-card--reference .billing-choice select {
-    font-size: 16px !important;
   }
 }
 @media (max-width: 359px) {
