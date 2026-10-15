@@ -2,10 +2,10 @@
   <div class="account-heading analytics-header-bar">
     <div>
       <div class="analytics-title-group">
-        <span class="analytics-badge-tag">LIVE METRICS</span>
-        <h2>Báo cáo kết quả kinh doanh &amp; Chỉ số chuyển đổi</h2>
+        <span class="analytics-badge-tag">LIVE ECHARTS PRO</span>
+        <h2>Báo cáo kết quả kinh doanh &amp; Phân tích dữ liệu chuyển đổi</h2>
       </div>
-      <p class="analytics-note">Dữ liệu cập nhật theo múi giờ Việt Nam. Các biểu đồ tự động đồng bộ theo bộ lọc kỳ báo cáo và phân quyền chi nhánh.</p>
+      <p class="analytics-note">Dữ liệu thời gian thực theo giờ Việt Nam. Biểu đồ tương tác cao cấp Apache ECharts với bộ lọc linh hoạt.</p>
     </div>
     <div class="analytics-asof-wrap">
       <span class="live-indicator" aria-hidden="true"></span>
@@ -13,7 +13,8 @@
     </div>
   </div>
 
-  <form id="analytics-filter" class="analytics-filter panel-card" aria-label="Bộ lọc báo cáo">
+  {# BỘ LỌC THỜI GIAN & ĐỐI TƯỢNG BÁO CÁO #}
+  <form id="analytics-filter" class="analytics-filter panel-card" aria-label="Bộ lọc báo cáo dữ liệu">
     <div class="filter-field">
       <label for="analytics-start">Từ ngày</label>
       <input id="analytics-start" type="date" required>
@@ -52,92 +53,130 @@
   {# KHUNG CHỈ SỐ KINH DOANH CHÍNH (KPI METRIC CARDS) #}
   <div class="kpi-grid" id="analytics-kpis" aria-label="Các chỉ số chính trong kỳ"></div>
 
-  {# LƯỚI BIỂU ĐỒ ĐỒ HỌA CHUYÊN NGHIỆP #}
-  <div class="analytics-grid">
-    <section class="panel-card analytics-full chart-card">
+  {# BỘ LỌC HIỂN THỊ CÁC NHÓM BIỂU ĐỒ (CHART DISPLAY VIEW FILTER) #}
+  <div id="analytics-chart-filters" class="analytics-view-toolbar" role="tablist" aria-label="Bộ lọc hiển thị nhóm biểu đồ">
+    <div class="toolbar-title-box">
+      <span class="view-toolbar-label">Bộ lọc hiển thị:</span>
+    </div>
+    <div class="toolbar-tabs-box">
+      <button type="button" class="btn-view-tab active" data-chart-filter="all" role="tab" aria-selected="true">
+        <span>📊 Tất cả biểu đồ</span>
+      </button>
+      <button type="button" class="btn-view-tab" data-chart-filter="funnel" role="tab" aria-selected="false">
+        <span>📈 Xu hướng &amp; Phễu</span>
+      </button>
+      <button type="button" class="btn-view-tab" data-chart-filter="channels" role="tab" aria-selected="false">
+        <span>🌐 Nguồn &amp; Trạng thái</span>
+      </button>
+      <button type="button" class="btn-view-tab" data-chart-filter="products" role="tab" aria-selected="false">
+        <span>🏢 Gói cước &amp; Chi nhánh</span>
+      </button>
+      <button type="button" class="btn-view-tab" data-chart-filter="finance" role="tab" aria-selected="false">
+        <span>💰 Chiến dịch &amp; CPL</span>
+      </button>
+    </div>
+  </div>
+
+  {# LƯỚI BIỂU ĐỒ ECHARTS HIỆN ĐẠI BẬC NHẤT #}
+  <div class="analytics-grid" id="analytics-charts-grid">
+    <section class="panel-card analytics-full chart-card" data-chart-group="funnel">
       <div class="chart-card-header">
         <div>
           <h3>📈 Xu hướng tiếp nhận &amp; kết quả theo ngày</h3>
-          <p class="analytics-note">Theo dõi số lượng hồ sơ nhận mới, đánh giá đủ điều kiện và hoàn tất lắp đặt theo từng ngày trong kỳ.</p>
+          <p class="analytics-note">Theo dõi nhịp độ tiếp nhận hồ sơ, đánh giá điều kiện mạng và hợp đồng lắp đặt thành công.</p>
         </div>
-        <span class="chart-type-badge">ApexCharts Area</span>
+        <div class="chart-header-actions">
+          <div class="trend-metric-toggle" id="trend-metric-toggle" role="group" aria-label="Lọc chuỗi dữ liệu xu hướng">
+            <button type="button" class="btn-metric-toggle active" data-series="all">Tất cả</button>
+            <button type="button" class="btn-metric-toggle" data-series="leads">Tiếp nhận</button>
+            <button type="button" class="btn-metric-toggle" data-series="qualified">Đủ điều kiện</button>
+            <button type="button" class="btn-metric-toggle" data-series="installed">Đã lắp đặt</button>
+          </div>
+          <span class="chart-type-badge">ECharts Smooth Area</span>
+        </div>
       </div>
-      <div id="analytics-trend" class="chart-body"></div>
+      <div id="analytics-trend" class="chart-body chart-body-lg"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="funnel">
       <div class="chart-card-header">
         <div>
-          <h3>🎯 Phễu chuyển đổi dịch vụ</h3>
+          <h3>🎯 Phễu chuyển đổi dịch vụ (Funnel)</h3>
           <p class="analytics-note">Tiếp nhận → Đã liên hệ → Đủ điều kiện → Đã lắp đặt.</p>
         </div>
-        <span class="chart-type-badge">Conversion Funnel</span>
+        <span class="chart-type-badge">ECharts Stepped Funnel</span>
       </div>
       <div id="analytics-funnel" class="chart-body"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="funnel">
       <div class="chart-card-header">
         <div>
           <h3>⏱️ Hạn phản hồi khách hàng (SLA)</h3>
-          <p class="analytics-note">Đo lường tồn đọng cuộc gọi và tỷ lệ xử lý đúng cam kết dịch vụ.</p>
+          <p class="analytics-note">Đo lường tồn đọng cuộc gọi và tỷ lệ hoàn thành đúng cam kết.</p>
         </div>
-        <span class="chart-type-badge">SLA Radial</span>
+        <span class="chart-type-badge">ECharts Gauge Progress</span>
       </div>
       <div id="analytics-sla" class="chart-body"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="channels">
       <div class="chart-card-header">
         <div>
           <h3>🌐 Cơ cấu nguồn khách hàng</h3>
           <p class="analytics-note">Phân bổ hồ sơ theo kênh tiếp cận (Google, Facebook, Zalo, Trực tiếp...).</p>
         </div>
-        <span class="chart-type-badge">Donut Share</span>
+        <div class="chart-header-actions">
+          <div class="sources-type-toggle" id="sources-type-toggle" role="group" aria-label="Kiểu biểu đồ nguồn">
+            <button type="button" class="btn-metric-toggle active" data-chart-style="rose" title="Biểu đồ cánh hoa">🌹 Rose</button>
+            <button type="button" class="btn-metric-toggle" data-chart-style="donut" title="Biểu đồ vòng Donut">🍩 Donut</button>
+          </div>
+          <span class="chart-type-badge">Nightingale Rose</span>
+        </div>
       </div>
       <div id="analytics-sources" class="chart-body"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="channels">
       <div class="chart-card-header">
         <div>
           <h3>📊 Phân bổ trạng thái xử lý</h3>
           <p class="analytics-note">Tỷ trọng hồ sơ theo các bước trong quy trình vận hành hiện tại.</p>
         </div>
-        <span class="chart-type-badge">Status Donut</span>
+        <span class="chart-type-badge">ECharts Rounded Donut</span>
       </div>
       <div id="analytics-statuses" class="chart-body"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="products">
       <div class="chart-card-header">
         <div>
           <h3>⚡ Nhu cầu gói cước &amp; dịch vụ</h3>
           <p class="analytics-note">Xếp hạng các gói Internet &amp; Combo được khách hàng đăng ký nhiều nhất.</p>
         </div>
-        <span class="chart-type-badge">Package Ranking</span>
+        <span class="chart-type-badge">FPT Rounded Bars</span>
       </div>
       <div id="analytics-plans" class="chart-body"></div>
     </section>
 
-    <section class="panel-card chart-card">
+    <section class="panel-card chart-card" data-chart-group="products">
       <div class="chart-card-header">
         <div>
           <h3>🏢 Hiệu quả theo từng chi nhánh</h3>
           <p class="analytics-note">Số lượng hồ sơ và tỷ lệ chuyển đổi phân bổ theo các phòng giao dịch.</p>
         </div>
-        <span class="chart-type-badge">Branch Performance</span>
+        <span class="chart-type-badge">Branch Comparison</span>
       </div>
       <div id="analytics-branches" class="chart-body"></div>
     </section>
 
-    <section class="panel-card analytics-full chart-card">
+    <section class="panel-card analytics-full chart-card" data-chart-group="finance">
       <div class="chart-card-header">
         <div>
           <h3>💰 Hiệu quả chiến dịch Marketing &amp; Chi phí (CPL)</h3>
           <p class="analytics-note">Chi phí tiếp cận, chi phí trên mỗi hồ sơ (CPL) và chi phí thực tế trên mỗi hợp đồng lắp đặt thành công.</p>
         </div>
-        <span class="chart-type-badge">Campaigns Financials</span>
+        <span class="chart-type-badge">Financial Ledger</span>
       </div>
       <div id="analytics-campaigns" class="chart-body table-responsive"></div>
     </section>
