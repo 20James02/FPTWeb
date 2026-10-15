@@ -79,3 +79,7 @@ router.include_router(administration_router)
 
 # CMS slug fallback follows every concrete API route.
 router.include_router(cms_router)
+
+from pagefpt.modules.measurement.routes import router as measurement_router
+
+router.include_router(measurement_router)
