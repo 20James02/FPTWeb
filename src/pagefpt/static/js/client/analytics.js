@@ -9,6 +9,8 @@ let flushTimeout = null;
 let analyticsContext = {
   analytics_opt_in: false,
   marketing_opt_in: false,
+  advertising_opt_in: false,
+  personalization_opt_in: false,
   session_token: null,
   attribution_token: null,
 };
@@ -60,7 +62,9 @@ async function initClientSession(restoreChoice = true) {
         body: JSON.stringify({
           analytics: choice?.analytics === true,
           marketing: choice?.marketing === true,
-          consent_version: "2026-10-v2",
+          advertising: choice?.advertising === true,
+          personalization: choice?.personalization === true,
+          consent_version: "2026-10-v3",
         }),
       });
       if (res.ok) {
@@ -70,6 +74,8 @@ async function initClientSession(restoreChoice = true) {
           if (revision === consentRevision) {
             analyticsContext.analytics_opt_in = choice?.analytics === true;
             analyticsContext.marketing_opt_in = choice?.marketing === true;
+            analyticsContext.advertising_opt_in = choice?.advertising === true;
+            analyticsContext.personalization_opt_in = choice?.personalization === true;
           }
           window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
           if (analyticsContext.analytics_opt_in) await initAttribution();
@@ -88,9 +94,14 @@ async function initClientSession(restoreChoice = true) {
 }
 
 // Call only after an explicit user choice in the consent interface.
-async function setAnalyticsConsent(analytics, marketing = false) {
+async function setAnalyticsConsent(analytics, marketing = false, advertising = false, personalization = false) {
   if (analyticsPreview()) throw new Error("Bản xem trước không bật đo lường.");
+  advertising = Boolean(advertising && analytics && marketing);
+  personalization = Boolean(personalization && advertising);
   consentRevision += 1;
+  analyticsContext.advertising_opt_in &&= advertising;
+  analyticsContext.personalization_opt_in &&= personalization;
+  window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
   // Restrict immediately, even offline. Permission increases still require an acknowledgement.
   if (!analytics || (!marketing && analyticsContext.marketing_opt_in)) {
     analyticsContext.analytics_opt_in &&= Boolean(analytics);
@@ -113,7 +124,9 @@ async function setAnalyticsConsent(analytics, marketing = false) {
     body: JSON.stringify({
       analytics: Boolean(analytics),
       marketing: Boolean(marketing),
-      consent_version: "2026-10-v2",
+      advertising,
+      personalization,
+      consent_version: "2026-10-v3",
       ...(previous ? { session_token: previous } : {}),
     }),
   });
@@ -124,12 +137,16 @@ async function setAnalyticsConsent(analytics, marketing = false) {
   analyticsContext = {
     analytics_opt_in: Boolean(analytics),
     marketing_opt_in: Boolean(marketing),
+    advertising_opt_in: advertising,
+    personalization_opt_in: personalization,
     session_token: previous || data.session_token,
     attribution_token: null,
   };
   window.PageFPTConsentPreferences?.write(
     Boolean(analytics),
     Boolean(marketing),
+    advertising,
+    personalization,
   );
   window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
   if (!analytics) {
@@ -144,10 +161,21 @@ async function setAnalyticsConsent(analytics, marketing = false) {
 async function initAttribution() {
   const params = new URLSearchParams(window.location.search);
   const attributes = {};
-  for (const key of ["utm_source", "utm_medium", "utm_campaign"]) {
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     const value = params.get(key) || "";
     if (/^[a-zA-Z0-9_.-]{0,100}$/.test(value)) attributes[key] = value;
   }
+  if (analyticsContext.marketing_opt_in) {
+    for (const key of ["campaign_id", "adgroup_id", "adset_id", "ad_id"]) {
+      const value = params.get(key) || (key === "campaign_id" ? params.get("utm_id") : "") || "";
+      if (/^[0-9]{1,40}$/.test(value)) attributes[key] = value;
+    }
+    for (const [key,platform] of [["gclid","google"],["gbraid","google"],["wbraid","google"],["fbclid","meta"]]) {
+      const value=params.get(key);
+      if (/^[a-zA-Z0-9_-]{1,256}$/.test(value||"")) { attributes.platform=platform; attributes.click_id_type=key; attributes.click_id=value; break; }
+    }
+  }
+  if (/^\/[a-z0-9/-]{0,149}$/.test(window.location.pathname)) attributes.landing_path=window.location.pathname;
   const touch = await fetch("/api/v1/touches", {
     signal: AbortSignal.timeout(3000),
     method: "POST",

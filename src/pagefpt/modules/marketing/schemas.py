@@ -10,7 +10,17 @@ from pagefpt.modules.pricing.schemas import Command
 class ConsentInput(Command):
     analytics: bool = False
     marketing: bool = False
+    advertising: bool = False
+    personalization: bool = False
     consent_version: str = Field(min_length=1, max_length=50)
+
+    @model_validator(mode="after")
+    def separate_purposes(self):
+        if self.advertising and not (self.analytics and self.marketing):
+            raise ValueError("Đo chuyển đổi quảng cáo cần đồng ý phân tích và nguồn tiếp thị")
+        if self.personalization and not self.advertising:
+            raise ValueError("Cá nhân hóa cần lựa chọn quảng cáo")
+        return self
 
 
 class ConsentUpdate(ConsentInput):

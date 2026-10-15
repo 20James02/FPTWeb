@@ -70,6 +70,14 @@ class AttributionInput(Command):
         default="", max_length=30, pattern=r"^(|google|meta|tiktok|zalo|seo|referral)$"
     )
     click_id: str = Field(default="", max_length=256, pattern=r"^[a-zA-Z0-9_-]*$")
+    click_id_type: str = Field(default="", pattern=r"^(|gclid|gbraid|wbraid|fbclid)$")
+    utm_content: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_.-]*$")
+    utm_term: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_.-]*$")
+    campaign_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    adgroup_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    adset_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    ad_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    landing_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
 
 
 @router.post("/touches")
@@ -77,6 +85,7 @@ async def touch(input: AttributionInput, request: Request):
     crypt = crypto(request)
     claims = crypt.verify(input.session_token, "session", datetime.now(UTC))
     payload = input.model_dump(mode="json", exclude={"session_token", "click_id"})
+    payload["environment"] = request.app.state.settings.environment
     permission = await dispatch(request, "session_read", id=claims["id"])
     payload["click_id_ciphertext"] = (
         crypt.encrypt(input.click_id) if input.click_id and permission.get("marketing") else None

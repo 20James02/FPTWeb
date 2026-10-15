@@ -12,6 +12,7 @@
       !!ctx.analytics_opt_in;
     document.getElementById("consent-marketing").checked =
       !!ctx.marketing_opt_in;
+    for (const key of ["advertising", "personalization"]) { const input=document.getElementById("consent-"+key); if(input)input.checked=!!ctx[key+"_opt_in"]; }
     document.getElementById("data-consent-error").textContent = "";
     dialog.showModal();
   }
@@ -86,6 +87,8 @@
       await setAnalyticsConsent(
         document.getElementById("consent-analytics").checked,
         document.getElementById("consent-marketing").checked,
+        document.getElementById("consent-advertising")?.checked || false,
+        document.getElementById("consent-personalization")?.checked || false,
       );
       hideNotice();
       dialog.close();
