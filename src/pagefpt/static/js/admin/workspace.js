@@ -193,6 +193,7 @@ const WS_PERMISSION_NAMES = [
   "lead.pii",
   "intelligence.write",
   "marketing.write",
+  "measurement.read", "measurement.configure", "measurement.publish", "measurement.credentials", "measurement.replay", "measurement.external_write",
   "care.write",
   "care.approve",
   "report.read",

@@ -198,3 +198,10 @@ async def link_performance(request: Request):
     return await render_admin(
         request, "admin/link_performance.html", "link-performance", ("marketing.write",)
     )
+
+
+@router.get("/measurement", response_class=HTMLResponse)
+async def measurement_admin(request: Request):
+    return await render_admin(
+        request, "admin/measurement.html", "measurement", ("measurement.read",)
+    )

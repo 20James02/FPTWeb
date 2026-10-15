@@ -63,6 +63,7 @@
 
       {% if admin_actor.permits('marketing.write') %}<a href="/admin/vouchers" class="nav-link {{ 'active' if active_page == 'vouchers' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8V4h18v4a4 4 0 0 0 0 8v4H3v-4a4 4 0 0 0 0-8Z"/><path d="M14 4v16"/></svg><span>Voucher &amp; Link chia sẻ</span></a>{% endif %}
       <div class="nav-section-title">Phân Tích & Báo Cáo</div>
+      {% if admin_actor.permits("measurement.read") %}<a href="/admin/measurement" class="nav-link {{ 'active' if active_page == 'measurement' }}"><span aria-hidden="true">◎</span><span>Marketing &amp; Đo lường</span></a>{% endif %}
       {% if admin_actor.permits("marketing.write") %}<a href="/admin/link-performance" class="nav-link {{ 'active' if active_page == 'link-performance' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg><span>Hiệu quả link content</span></a>{% endif %}
       {% if admin_actor.permits("report.read") %}
       <a href="/admin/reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">
