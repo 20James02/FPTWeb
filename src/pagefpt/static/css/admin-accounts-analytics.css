@@ -874,3 +874,568 @@
   margin: 0 !important;
   white-space: nowrap !important;
 }
+
+/* ===================================================================
+   BÁO CÁO KINH DOANH & KHUNG CHỈ SỐ SAAS PROMAX (APEXCHARTS DASHBOARD)
+   =================================================================== */
+
+.dashboard-analytics-section {
+  margin: 16px 0 28px 0;
+}
+
+.analytics-dashboard-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.analytics-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.analytics-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.analytics-title-group h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.analytics-badge-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.2) 100%);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.analytics-asof-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.live-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  animation: livePulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  display: inline-block;
+}
+
+@keyframes livePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.analytics-asof-badge {
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+/* Thanh bộ lọc chuyên nghiệp */
+.analytics-filter.panel-card {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px 14px !important;
+  align-items: flex-end !important;
+  padding: 16px 20px !important;
+  border-radius: 16px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 135px;
+}
+
+.filter-field.filter-grow {
+  flex: 1;
+  min-width: 180px;
+}
+
+.filter-field.filter-quick {
+  min-width: 125px;
+}
+
+.filter-field label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.filter-field input,
+.filter-field select {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-elevated, #f8fafc);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  outline: none;
+  border-color: #f26f21;
+  box-shadow: 0 0 0 3px rgba(242, 111, 33, 0.15);
+  background: #ffffff;
+}
+
+.filter-submit-btn {
+  height: 40px;
+  padding: 0 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, #f26f21 0%, #ff8533 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(242, 111, 33, 0.25) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+}
+
+.filter-submit-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 18px rgba(242, 111, 33, 0.35) !important;
+}
+
+.analytics-status-msg {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: -6px 0 4px 0;
+  min-height: 20px;
+}
+
+/* ===================================================================
+   KHUNG CHỈ SỐ KINH DOANH CHÍNH (KPI METRIC CARDS) PROMAX
+   =================================================================== */
+
+.kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  margin: 10px 0 20px 0 !important;
+}
+
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.kpi-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 18px !important;
+  padding: 18px 20px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+.kpi-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  transition: height 0.2s ease !important;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 30px -6px rgba(0, 0, 0, 0.08) !important;
+}
+
+.kpi-card:hover::before {
+  height: 6px !important;
+}
+
+/* Phân loại dải màu 4 chỉ số */
+.kpi-tone-blue::before {
+  background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%) !important;
+}
+.kpi-tone-blue:hover {
+  border-color: rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 16px 30px -6px rgba(37, 99, 235, 0.12) !important;
+}
+
+.kpi-tone-purple::before {
+  background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%) !important;
+}
+.kpi-tone-purple:hover {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 0 16px 30px -6px rgba(124, 58, 237, 0.12) !important;
+}
+
+.kpi-tone-amber::before {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%) !important;
+}
+.kpi-tone-amber:hover {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 16px 30px -6px rgba(245, 158, 11, 0.12) !important;
+}
+
+.kpi-tone-emerald::before {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+}
+.kpi-tone-emerald:hover {
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 16px 30px -6px rgba(16, 185, 129, 0.12) !important;
+}
+
+.kpi-top {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+.kpi-icon-badge {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.25rem !important;
+  flex-shrink: 0 !important;
+}
+
+.kpi-bg-blue {
+  background: rgba(37, 99, 235, 0.1) !important;
+}
+.kpi-bg-purple {
+  background: rgba(124, 58, 237, 0.1) !important;
+}
+.kpi-bg-amber {
+  background: rgba(245, 158, 11, 0.1) !important;
+}
+.kpi-bg-emerald {
+  background: rgba(16, 185, 129, 0.1) !important;
+}
+
+.kpi-header-group {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.kpi-label {
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: var(--text-secondary) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.kpi-action-hint {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+.kpi-card:hover .kpi-action-hint {
+  color: #f26f21 !important;
+  transform: translateX(3px) !important;
+}
+
+.kpi-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.kpi-value {
+  font-size: 2.15rem !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  color: var(--text-primary) !important;
+  margin: 4px 0 6px 0 !important;
+  letter-spacing: -0.02em !important;
+  font-feature-settings: "tnum" !important;
+}
+
+.kpi-sub {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  align-self: flex-start !important;
+}
+
+.kpi-sub.badge-neutral {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+.kpi-sub.badge-purple {
+  background: #f3e8ff !important;
+  color: #6b21a8 !important;
+}
+.kpi-sub.badge-amber {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+}
+.kpi-sub.badge-emerald {
+  background: #d1fae5 !important;
+  color: #047857 !important;
+}
+
+/* ===================================================================
+   LƯỚI BIỂU ĐỒ (CHARTS GRID & CARDS)
+   =================================================================== */
+
+.analytics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  margin: 10px 0 24px 0 !important;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.chart-card {
+  border-radius: 18px !important;
+  padding: 22px !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  position: relative !important;
+  transition: box-shadow 0.2s ease !important;
+}
+
+.chart-card:hover {
+  box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.06) !important;
+}
+
+.chart-card-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-bottom: 14px !important;
+}
+
+.chart-card-header h3 {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  margin: 0 0 4px 0 !important;
+  color: var(--text-primary) !important;
+}
+
+.chart-type-badge {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+  background: var(--bg-surface-elevated, #f1f5f9) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  white-space: nowrap !important;
+}
+
+.chart-body {
+  flex: 1 !important;
+  min-height: 240px !important;
+}
+
+.apex-chart-container {
+  width: 100% !important;
+  min-height: 240px !important;
+}
+
+/* SLA Dashboard Layout */
+.sla-dashboard-layout {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  flex-wrap: wrap !important;
+  gap: 16px !important;
+  margin: 10px 0 !important;
+}
+
+.sla-gauge-wrap {
+  flex: 1 !important;
+  min-width: 160px !important;
+  max-width: 240px !important;
+}
+
+.analytics-sla-stats {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  min-width: 160px !important;
+}
+
+.sla-stat-item {
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+  background: var(--bg-surface-elevated, #f8fafc) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.sla-stat-item.alert {
+  background: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+}
+.sla-stat-item.alert .analytics-stat {
+  color: #e11d48 !important;
+}
+
+.sla-stat-item p {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  margin: 2px 0 0 0 !important;
+}
+
+.analytics-sla-note {
+  font-size: 0.82rem !important;
+  margin-top: 8px !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+}
+.analytics-sla-note.text-danger {
+  color: #e11d48 !important;
+}
+.analytics-sla-note.text-success {
+  color: #059669 !important;
+}
+
+/* Bảng dữ liệu chi tiết ẩn hiện */
+.analytics-table-details {
+  margin-top: 14px !important;
+  border-top: 1px dashed var(--border-subtle) !important;
+  padding-top: 10px !important;
+}
+
+.analytics-table-details summary {
+  cursor: pointer !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  color: var(--text-secondary) !important;
+  user-select: none !important;
+  padding: 4px 0 !important;
+}
+
+.analytics-table-details summary:hover {
+  color: #f26f21 !important;
+}
+
+.analytics-table-scroll {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  margin-top: 10px !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.analytics-table-scroll table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 0.84rem !important;
+}
+
+.analytics-table-scroll th {
+  background: var(--bg-surface-elevated, #f8fafc) !important;
+  padding: 10px 14px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  white-space: nowrap !important;
+}
+
+.analytics-table-scroll td {
+  padding: 10px 14px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
+  white-space: nowrap !important;
+}
+
+.analytics-table-scroll tr:last-child td {
+  border-bottom: none !important;
+}
+
+.analytics-table-scroll tr:hover td {
+  background: rgba(242, 111, 33, 0.04) !important;
+}

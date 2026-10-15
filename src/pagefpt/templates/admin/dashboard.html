@@ -1,16 +1,43 @@
 {% extends 'layouts/admin_base.html' %}
 {% block title %}Tổng quan kinh doanh — PageFPT Admin{% endblock %}
 {% block breadcrumbs %}Tổng quan / Tiếp nhận & chuyển đổi{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="/static/css/admin-accounts-analytics.css">{% endblock %}
+{% block extra_head %}
+<link rel=stylesheet href="/static/css/vendor/apexcharts.css">
+<link rel=stylesheet href="/static/css/admin-accounts-analytics.css">
+{% endblock %}
 {% block content %}
-<div class="account-heading"><div><h1>Tổng quan kinh doanh</h1><p class="analytics-note">Theo dõi khách hàng, kết quả xử lý và chi phí trong cùng một kỳ báo cáo.</p></div><div class="workspace-item-actions">{% if admin_actor.permits('lead.read') %}<a href="/admin/leads" class="btn-action-call">Xử lý hồ sơ khách hàng</a>{% endif %}{% if admin_actor.permits('lead.read') %}<a href="/admin/workbench" class="btn-action-detail">Bàn làm việc</a>{% endif %}{% if admin_actor.permits('catalog.write') or admin_actor.permits('pricing.write') %}<a href="/admin/pricing" class="btn-action-detail">Gói cước & giá</a>{% endif %}</div></div>
+<div class="account-heading">
+  <div>
+    <h1>Tổng quan kinh doanh</h1>
+    <p class="analytics-note">Theo dõi báo cáo kết quả kinh doanh, tốc độ chuyển đổi và hiệu quả xử lý hồ sơ trong cùng một kỳ báo cáo.</p>
+  </div>
+  <div class="workspace-item-actions">
+    {% if admin_actor.permits('lead.read') %}<a href="/admin/leads" class="btn-action-call">Xử lý hồ sơ khách hàng</a>{% endif %}
+    {% if admin_actor.permits('lead.read') %}<a href="/admin/workbench" class="btn-action-detail">Bàn làm việc</a>{% endif %}
+    {% if admin_actor.permits('catalog.write') or admin_actor.permits('pricing.write') %}<a href="/admin/pricing" class="btn-action-detail">Gói cước & giá</a>{% endif %}
+  </div>
+</div>
 
-<details class="dashboard-reports"><summary class="flux-summary">📊 Phân tích kinh doanh &amp; Biểu đồ trực quan (Flux Admin) <span class="flux-summary-badge">Mở biểu đồ ▾</span></summary>{% include 'admin/components/analytics.html' %}</details>
+{# BÁO CÁO KẾT QUẢ KINH DOANH VÀ CÁC BIỂU ĐỒ TRỰC QUAN HIỂN THỊ CÔNG KHAI TRỰC DIỆN TRÊN TRANG TỔNG QUAN #}
+<div class="dashboard-analytics-section">
+  {% include 'admin/components/analytics.html' %}
+</div>
+
 {% if admin_actor.permits('lead.read') %}
-<section class="panel-card"><div class="account-heading"><h2>Hồ sơ mới tiếp nhận</h2><a href="/admin/leads" class="btn-action-detail">Xem tất cả hồ sơ</a></div><p class="analytics-note">Các hồ sơ mới nhất trong phạm vi quyền của bạn; danh sách này không giới hạn theo kỳ biểu đồ.</p><div id="recent-leads-list" class="workspace-list" aria-live="polite">Đang tải hồ sơ…</div></section>
+<section class="panel-card dashboard-leads-panel">
+  <div class="account-heading">
+    <div>
+      <h2>Hồ sơ mới tiếp nhận</h2>
+      <p class="analytics-note">Các hồ sơ mới nhất trong phạm vi quyền của bạn; danh sách này không giới hạn theo kỳ biểu đồ.</p>
+    </div>
+    <a href="/admin/leads" class="btn-action-detail">Xem tất cả hồ sơ</a>
+  </div>
+  <div id="recent-leads-list" class="workspace-list" aria-live="polite">Đang tải hồ sơ…</div>
+</section>
 {% endif %}
 {% endblock %}
 {% block extra_scripts %}
+<script src="/static/js/vendor/apexcharts.min.js"></script>
 <script src="/static/js/admin/analytics.js"></script>
 
 <script>
@@ -24,14 +51,22 @@ async function loadDashboardRealData() {
     container.replaceChildren();
     for (const lead of data.items || []) {
       const card = adminNode('article', '', 'workspace-item');
-      card.append(adminNode('strong', lead.phone_masked || 'Thông tin liên hệ đã ẩn'), adminNode('p', adminStatusLabel(lead.status)), adminNode('p', (lead.labels?.plan || 'Chưa chọn gói') + ' · ' + PageFPTDates.format(lead.created_at)));
+      card.append(
+        adminNode('strong', lead.phone_masked || 'Thông tin liên hệ đã ẩn'),
+        adminNode('p', adminStatusLabel(lead.status)),
+        adminNode('p', (lead.labels?.plan || 'Chưa chọn gói') + ' · ' + PageFPTDates.format(lead.created_at))
+      );
       const link = adminNode('a', 'Mở hồ sơ', 'btn-action-detail');
       link.href = '/admin/leads/detail?id=' + encodeURIComponent(lead.id);
-      card.append(link); container.append(card);
+      card.append(link);
+      container.append(card);
     }
     if (!data.items?.length) container.append(adminNode('p', 'Chưa có hồ sơ trong phạm vi được cấp quyền.'));
     return true;
-  } catch (error) { container.replaceChildren(adminNode('p', error.message, 'workspace-error')); return false; }
+  } catch (error) {
+    container.replaceChildren(adminNode('p', error.message, 'workspace-error'));
+    return false;
+  }
 }
 document.addEventListener('DOMContentLoaded', loadDashboardRealData);
 </script>
