@@ -1,6 +1,6 @@
 {
   "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-  "date": "2026-10-14",
+  "date": "2026-10-15",
   "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
   "operations": [
     {
@@ -366,6 +366,34 @@
       "operation_id": "admin_marketing_admin_marketing_get",
       "source": "src/pagefpt/web/admin_routes.py",
       "source_line": 135,
+      "authorization": {
+        "caller": "server_guarded_admin_html",
+        "permission": null,
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/admin/measurement",
+      "operation_id": "measurement_admin_admin_measurement_get",
+      "source": "src/pagefpt/web/admin_routes.py",
+      "source_line": 203,
       "authorization": {
         "caller": "server_guarded_admin_html",
         "permission": null,
@@ -1790,7 +1818,7 @@
       "path": "/api/v1/admin/experiments/{id}/results",
       "operation_id": "experiment_results_api_v1_admin_experiments__id__results_get",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 133,
+      "source_line": 201,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -3973,7 +4001,7 @@
       "path": "/api/v1/admin/leads/{id}/quotes/confirm",
       "operation_id": "confirm_api_v1_admin_leads__id__quotes_confirm_post",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 98,
+      "source_line": 116,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4489,7 +4517,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/BulkInput"
+              "$ref": "#/components/schemas/pagefpt__modules__link_analytics__schemas__BulkInput"
             }
           }
         },
@@ -5027,6 +5055,1571 @@
           "content": {
             "application/json": {
               "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/bulk",
+      "operation_id": "bulk_api_v1_admin_measurement_bulk_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 301,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pagefpt__modules__measurement__schemas__BulkInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/campaigns",
+      "operation_id": "campaigns_api_v1_admin_measurement_campaigns_get",
+      "source": "src/pagefpt/modules/measurement/campaigns.py",
+      "source_line": 26,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/measurement/campaigns/{id}/mapping",
+      "operation_id": "mapping_api_v1_admin_measurement_campaigns__id__mapping_put",
+      "source": "src/pagefpt/modules/measurement/campaigns.py",
+      "source_line": 33,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CampaignMapping"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/campaigns/{id}/sync-apply",
+      "operation_id": "apply_api_v1_admin_measurement_campaigns__id__sync_apply_post",
+      "source": "src/pagefpt/modules/measurement/external_updates.py",
+      "source_line": 129,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "measurement.external_write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApplyUpdate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/campaigns/{id}/sync-preview",
+      "operation_id": "preview_api_v1_admin_measurement_campaigns__id__sync_preview_post",
+      "source": "src/pagefpt/modules/measurement/external_updates.py",
+      "source_line": 101,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "measurement.external_write",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/campaigns/{id}/tracking",
+      "operation_id": "tracking_api_v1_admin_measurement_campaigns__id__tracking_get",
+      "source": "src/pagefpt/modules/measurement/campaigns.py",
+      "source_line": 60,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "marketing.write",
+            "mfa": false
+          },
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/capabilities",
+      "operation_id": "capabilities_api_v1_admin_measurement_capabilities_get",
+      "source": "src/pagefpt/modules/measurement/accounts.py",
+      "source_line": 62,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/configs",
+      "operation_id": "configs_api_v1_admin_measurement_configs_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 91,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/configs",
+      "operation_id": "config_create_api_v1_admin_measurement_configs_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 97,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConfigInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/measurement/configs/{id}",
+      "operation_id": "config_update_api_v1_admin_measurement_configs__id__put",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 110,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConfigUpdate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/configs/{id}/publish",
+      "operation_id": "config_publish_api_v1_admin_measurement_configs__id__publish_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 172,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/configs/{id}/simulate",
+      "operation_id": "config_simulate_api_v1_admin_measurement_configs__id__simulate_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 142,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SimulationInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/configs/{id}/validate",
+      "operation_id": "config_validate_api_v1_admin_measurement_configs__id__validate_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 135,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/connections",
+      "operation_id": "connections_api_v1_admin_measurement_connections_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 36,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/connections",
+      "operation_id": "create_connection_api_v1_admin_measurement_connections_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 42,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectionInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/measurement/connections/{id}",
+      "operation_id": "update_connection_api_v1_admin_measurement_connections__id__put",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 55,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectionUpdate"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/connections/{id}/check",
+      "operation_id": "check_connection_api_v1_admin_measurement_connections__id__check_post",
+      "source": "src/pagefpt/modules/measurement/accounts.py",
+      "source_line": 74,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/connections/{id}/credentials",
+      "operation_id": "credentials_api_v1_admin_measurement_connections__id__credentials_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 68,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.credentials",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CredentialsInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/connections/{id}/disable",
+      "operation_id": "disable_api_v1_admin_measurement_connections__id__disable_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 204,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/connections/{id}/oauth/start",
+      "operation_id": "oauth_start_api_v1_admin_measurement_connections__id__oauth_start_post",
+      "source": "src/pagefpt/modules/measurement/accounts.py",
+      "source_line": 150,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.credentials",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/cost-imports/apply",
+      "operation_id": "apply_api_v1_admin_measurement_cost_imports_apply_post",
+      "source": "src/pagefpt/modules/measurement/reporting.py",
+      "source_line": 43,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CostApply"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/cost-imports/preview",
+      "operation_id": "preview_api_v1_admin_measurement_cost_imports_preview_post",
+      "source": "src/pagefpt/modules/measurement/reporting.py",
+      "source_line": 22,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CostImport"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/deliveries",
+      "operation_id": "deliveries_api_v1_admin_measurement_deliveries_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 272,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/deliveries/{id}/retry",
+      "operation_id": "retry_delivery_api_v1_admin_measurement_deliveries__id__retry_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 278,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.replay",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/oauth/callback",
+      "operation_id": "oauth_callback_api_v1_admin_measurement_oauth_callback_get",
+      "source": "src/pagefpt/modules/measurement/accounts.py",
+      "source_line": 230,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.credentials",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "state",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 8192,
+            "title": "State"
+          }
+        },
+        {
+          "name": "code",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2048,
+            "title": "Code"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/releases",
+      "operation_id": "releases_api_v1_admin_measurement_releases_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 186,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/releases/{id}/restore",
+      "operation_id": "restore_api_v1_admin_measurement_releases__id__restore_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 192,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/reports",
+      "operation_id": "measurement_report_api_v1_admin_measurement_reports_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 288,
+      "authorization": {
+        "caller": "admin",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "start",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          }
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/measurement/sync-jobs",
+      "operation_id": "sync_jobs_api_v1_admin_measurement_sync_jobs_get",
+      "source": "src/pagefpt/modules/measurement/sync.py",
+      "source_line": 45,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.read",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/measurement/sync-jobs",
+      "operation_id": "create_sync_api_v1_admin_measurement_sync_jobs_post",
+      "source": "src/pagefpt/modules/measurement/sync.py",
+      "source_line": 33,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "measurement.configure",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SyncInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "202": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
             }
           }
         }
@@ -6238,7 +7831,7 @@
       "path": "/api/v1/admin/prices",
       "operation_id": "prices_api_v1_admin_prices_get",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 15,
+      "source_line": 33,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6361,7 +7954,7 @@
       "path": "/api/v1/admin/prices/bulk",
       "operation_id": "bulk_api_v1_admin_prices_bulk_post",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 30,
+      "source_line": 48,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6515,10 +8108,118 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/admin/prices/matrix",
+      "operation_id": "price_matrix_api_v1_admin_prices_matrix_get",
+      "source": "src/pagefpt/modules/pricing/routes.py",
+      "source_line": 15,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "pricing.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/prices/matrix",
+      "operation_id": "save_price_matrix_api_v1_admin_prices_matrix_post",
+      "source": "src/pagefpt/modules/pricing/routes.py",
+      "source_line": 22,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "pricing.write",
+            "mfa": false
+          },
+          {
+            "permission": "pricing.publish",
+            "mfa": true
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/MatrixPriceInput"
+            }
+          }
+        }
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/admin/prices/{id}",
       "operation_id": "price_api_v1_admin_prices__id__get",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 58,
+      "source_line": 76,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6571,7 +8272,7 @@
       "path": "/api/v1/admin/prices/{id}",
       "operation_id": "update_price_api_v1_admin_prices__id__put",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 65,
+      "source_line": 83,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6643,7 +8344,7 @@
       "path": "/api/v1/admin/prices/{id}/replace",
       "operation_id": "replace_api_v1_admin_prices__id__replace_post",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 41,
+      "source_line": 59,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -6719,7 +8420,7 @@
       "path": "/api/v1/admin/prices/{id}/retire",
       "operation_id": "retire_api_v1_admin_prices__id__retire_post",
       "source": "src/pagefpt/modules/pricing/routes.py",
-      "source_line": 81,
+      "source_line": 99,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -9654,7 +11355,7 @@
       "path": "/api/v1/auth/recovery",
       "operation_id": "request_recovery_api_v1_auth_recovery_post",
       "source": "src/pagefpt/modules/identity/recovery.py",
-      "source_line": 46,
+      "source_line": 49,
       "authorization": {
         "caller": "public_same_origin_recovery",
         "permission": "active membership after provider proof on reset",
@@ -9699,7 +11400,7 @@
       "path": "/api/v1/auth/recovery/reset",
       "operation_id": "reset_password_api_v1_auth_recovery_reset_post",
       "source": "src/pagefpt/modules/identity/recovery.py",
-      "source_line": 95,
+      "source_line": 125,
       "authorization": {
         "caller": "public_same_origin_recovery",
         "permission": "active membership after provider proof on reset",
@@ -9711,6 +11412,51 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ResetPassword"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/recovery/verify",
+      "operation_id": "verify_code_api_v1_auth_recovery_verify_post",
+      "source": "src/pagefpt/modules/identity/recovery.py",
+      "source_line": 106,
+      "authorization": {
+        "caller": "public_same_origin_recovery",
+        "permission": "active membership after provider proof on reset",
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RecoveryCode"
             }
           }
         },
@@ -9842,7 +11588,7 @@
       "path": "/api/v1/consent",
       "operation_id": "consent_api_v1_consent_put",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 29,
+      "source_line": 64,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -9885,10 +11631,56 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/consent/revoke",
+      "operation_id": "revoke_session_api_v1_consent_revoke_post",
+      "source": "src/pagefpt/modules/marketing/routes.py",
+      "source_line": 43,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionResume"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/events/batch",
       "operation_id": "events_api_v1_events_batch_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 40,
+      "source_line": 75,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -9934,7 +11726,7 @@
       "path": "/api/v1/experiments/{id}/variant",
       "operation_id": "variant_api_v1_experiments__id__variant_get",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 101,
+      "source_line": 169,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -9998,7 +11790,7 @@
       "path": "/api/v1/experiments/{id}/variant",
       "operation_id": "variant_post_api_v1_experiments__id__variant_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 128,
+      "source_line": 196,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -10413,6 +12205,126 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/measurement/config",
+      "operation_id": "public_config_api_v1_measurement_config_get",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 216,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [
+        {
+          "name": "path",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 150,
+            "pattern": "^/[a-z0-9/-]*$",
+            "default": "/",
+            "title": "Path"
+          }
+        },
+        {
+          "name": "campaign",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[0-9]*$",
+            "default": "",
+            "title": "Campaign"
+          }
+        },
+        {
+          "name": "platform",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^(google|meta|facebook|instagram)?$",
+            "default": "",
+            "title": "Platform"
+          }
+        }
+      ],
+      "request_body": null,
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/measurement/config/session",
+      "operation_id": "session_config_api_v1_measurement_config_session_post",
+      "source": "src/pagefpt/modules/measurement/routes.py",
+      "source_line": 247,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionConfigInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/pages/{slug}",
       "operation_id": "page_api_v1_pages__slug__get",
       "source": "src/pagefpt/modules/content/routes.py",
@@ -10759,6 +12671,52 @@
       "in_openapi": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/sessions/resume",
+      "operation_id": "resume_session_api_v1_sessions_resume_post",
+      "source": "src/pagefpt/modules/marketing/routes.py",
+      "source_line": 33,
+      "authorization": {
+        "caller": "public",
+        "checks": [],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionResume"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
       "method": "GET",
       "path": "/api/v1/system/display-settings",
       "operation_id": "read_api_v1_system_display_settings_get",
@@ -10841,7 +12799,7 @@
       "path": "/api/v1/touches",
       "operation_id": "touch_api_v1_touches_post",
       "source": "src/pagefpt/modules/marketing/routes.py",
-      "source_line": 75,
+      "source_line": 128,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -11230,7 +13188,7 @@
       "path": "/internal/jobs/process",
       "operation_id": null,
       "source": "src/pagefpt/modules/workflow/routes.py",
-      "source_line": 30,
+      "source_line": 48,
       "authorization": {
         "caller": "worker_only",
         "permission": "server worker secret",
@@ -11256,7 +13214,24 @@
       "path": "/internal/jobs/recover",
       "operation_id": null,
       "source": "src/pagefpt/modules/workflow/routes.py",
-      "source_line": 44,
+      "source_line": 63,
+      "authorization": {
+        "caller": "worker_only",
+        "permission": "server worker secret",
+        "mfa": false
+      },
+      "parameters": [],
+      "request_body": null,
+      "declared_responses": {},
+      "response_model_present": false,
+      "in_openapi": false
+    },
+    {
+      "method": "GET",
+      "path": "/internal/jobs/status",
+      "operation_id": null,
+      "source": "src/pagefpt/modules/workflow/routes.py",
+      "source_line": 31,
       "authorization": {
         "caller": "worker_only",
         "permission": "server worker secret",
@@ -11571,6 +13546,27 @@
       ],
       "title": "ApplyInput"
     },
+    "ApplyUpdate": {
+      "properties": {
+        "preview_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "title": "Preview Token"
+        },
+        "confirm": {
+          "type": "boolean",
+          "const": true,
+          "title": "Confirm"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "preview_token",
+        "confirm"
+      ],
+      "title": "ApplyUpdate"
+    },
     "AppointmentCreate": {
       "properties": {
         "expected_version": {
@@ -11713,6 +13709,81 @@
           "pattern": "^[a-zA-Z0-9_-]*$",
           "title": "Click Id",
           "default": ""
+        },
+        "click_id_type": {
+          "type": "string",
+          "pattern": "^(|gclid|gbraid|wbraid|fbclid)$",
+          "title": "Click Id Type",
+          "default": ""
+        },
+        "utm_content": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-zA-Z0-9_.-]*$",
+          "title": "Utm Content",
+          "default": ""
+        },
+        "utm_term": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-zA-Z0-9_.-]*$",
+          "title": "Utm Term",
+          "default": ""
+        },
+        "campaign_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Campaign Id",
+          "default": ""
+        },
+        "adgroup_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Adgroup Id",
+          "default": ""
+        },
+        "adset_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Adset Id",
+          "default": ""
+        },
+        "ad_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Ad Id",
+          "default": ""
+        },
+        "landing_path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Landing Path",
+          "default": "/"
+        },
+        "ga_client_id": {
+          "type": "string",
+          "pattern": "^(|[0-9]{1,20}\\.[0-9]{1,20})$",
+          "title": "Ga Client Id",
+          "default": ""
+        },
+        "fbp": {
+          "type": "string",
+          "maxLength": 300,
+          "pattern": "^(|fb\\.[0-9]+\\.[0-9]{10,16}\\.[a-zA-Z0-9_-]{1,256})$",
+          "title": "Fbp",
+          "default": ""
+        },
+        "fbc": {
+          "type": "string",
+          "maxLength": 300,
+          "pattern": "^(|fb\\.[0-9]+\\.[0-9]{10,16}\\.[a-zA-Z0-9_-]{1,256})$",
+          "title": "Fbc",
+          "default": ""
         }
       },
       "additionalProperties": false,
@@ -11820,55 +13891,6 @@
       ],
       "title": "BulkAssignmentItem"
     },
-    "BulkInput": {
-      "properties": {
-        "action": {
-          "type": "string",
-          "enum": [
-            "pause",
-            "activate"
-          ],
-          "title": "Action"
-        },
-        "items": {
-          "items": {
-            "$ref": "#/components/schemas/BulkItem"
-          },
-          "type": "array",
-          "maxItems": 50,
-          "minItems": 1,
-          "title": "Items"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "action",
-        "items"
-      ],
-      "title": "BulkInput"
-    },
-    "BulkItem": {
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid",
-          "title": "Id"
-        },
-        "expected_version": {
-          "type": "integer",
-          "minimum": 1.0,
-          "title": "Expected Version"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "id",
-        "expected_version"
-      ],
-      "title": "BulkItem"
-    },
     "BulkPriceInput": {
       "properties": {
         "rows": {
@@ -11930,6 +13952,38 @@
             }
           ],
           "title": "Branch Id"
+        },
+        "connection_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Connection Id"
+        },
+        "external_campaign_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "External Campaign Id",
+          "default": ""
+        },
+        "landing_path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Landing Path",
+          "default": "/"
+        },
+        "content_note": {
+          "type": "string",
+          "maxLength": 1000,
+          "title": "Content Note",
+          "default": ""
         }
       },
       "additionalProperties": false,
@@ -11940,6 +13994,47 @@
         "utm_campaign"
       ],
       "title": "CampaignInput"
+    },
+    "CampaignMapping": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Connection Id"
+        },
+        "external_campaign_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]+$",
+          "title": "External Campaign Id"
+        },
+        "landing_path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Landing Path",
+          "default": "/"
+        },
+        "content_note": {
+          "type": "string",
+          "maxLength": 1000,
+          "title": "Content Note",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "connection_id",
+        "external_campaign_id"
+      ],
+      "title": "CampaignMapping"
     },
     "CampaignPrice": {
       "properties": {
@@ -12058,6 +14153,134 @@
       ],
       "title": "Code"
     },
+    "ConfigInput": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "domain",
+            "landing",
+            "campaign"
+          ],
+          "title": "Scope",
+          "default": "global"
+        },
+        "scope_key": {
+          "type": "string",
+          "maxLength": 150,
+          "title": "Scope Key",
+          "default": "*"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "test",
+            "staging",
+            "production"
+          ],
+          "title": "Environment"
+        },
+        "policy": {
+          "$ref": "#/components/schemas/MeasurementPolicy"
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/components/schemas/ConversionRule"
+              },
+              "type": "array",
+              "maxItems": 20
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rules"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "environment"
+      ],
+      "title": "ConfigInput"
+    },
+    "ConfigUpdate": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "domain",
+            "landing",
+            "campaign"
+          ],
+          "title": "Scope",
+          "default": "global"
+        },
+        "scope_key": {
+          "type": "string",
+          "maxLength": 150,
+          "title": "Scope Key",
+          "default": "*"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "test",
+            "staging",
+            "production"
+          ],
+          "title": "Environment"
+        },
+        "policy": {
+          "$ref": "#/components/schemas/MeasurementPolicy"
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/components/schemas/ConversionRule"
+              },
+              "type": "array",
+              "maxItems": 20
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rules"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "environment",
+        "expected_version"
+      ],
+      "title": "ConfigUpdate"
+    },
     "ConfirmQuote": {
       "properties": {
         "expected_version": {
@@ -12080,6 +14303,209 @@
       ],
       "title": "ConfirmQuote"
     },
+    "ConnectionInput": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "ga4",
+            "google_ads",
+            "meta"
+          ],
+          "title": "Provider"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "test",
+            "staging",
+            "production"
+          ],
+          "title": "Environment"
+        },
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "default": false
+        },
+        "settings": {
+          "$ref": "#/components/schemas/ConnectionSettings"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "provider",
+        "environment",
+        "settings"
+      ],
+      "title": "ConnectionInput"
+    },
+    "ConnectionSettings": {
+      "properties": {
+        "measurement_id": {
+          "type": "string",
+          "pattern": "^(G-[A-Z0-9]{3,30})?$",
+          "title": "Measurement Id",
+          "default": ""
+        },
+        "property_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Property Id",
+          "default": ""
+        },
+        "stream_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Stream Id",
+          "default": ""
+        },
+        "tag_id": {
+          "type": "string",
+          "pattern": "^(AW-[0-9]{3,30})?$",
+          "title": "Tag Id",
+          "default": ""
+        },
+        "customer_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Customer Id",
+          "default": ""
+        },
+        "login_customer_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Login Customer Id",
+          "default": ""
+        },
+        "pixel_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Pixel Id",
+          "default": ""
+        },
+        "ad_account_id": {
+          "type": "string",
+          "pattern": "^[0-9]{0,30}$",
+          "title": "Ad Account Id",
+          "default": ""
+        },
+        "api_version": {
+          "type": "string",
+          "pattern": "^(v[0-9]{1,2}\\.0)?$",
+          "title": "Api Version",
+          "default": ""
+        },
+        "ads_api_version": {
+          "type": "string",
+          "pattern": "^(v[0-9]{1,2})?$",
+          "title": "Ads Api Version",
+          "default": ""
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "VND",
+            "USD"
+          ],
+          "title": "Currency",
+          "default": "VND"
+        },
+        "browser_enabled": {
+          "type": "boolean",
+          "title": "Browser Enabled",
+          "default": false
+        },
+        "server_enabled": {
+          "type": "boolean",
+          "title": "Server Enabled",
+          "default": false
+        },
+        "sync_interval_minutes": {
+          "type": "integer",
+          "maximum": 1440.0,
+          "minimum": 0.0,
+          "title": "Sync Interval Minutes",
+          "default": 0
+        },
+        "sync_lookback_days": {
+          "type": "integer",
+          "maximum": 31.0,
+          "minimum": 1.0,
+          "title": "Sync Lookback Days",
+          "default": 3
+        },
+        "test_event_code": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^[a-zA-Z0-9_-]*$",
+          "title": "Test Event Code",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "ConnectionSettings"
+    },
+    "ConnectionUpdate": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "ga4",
+            "google_ads",
+            "meta"
+          ],
+          "title": "Provider"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "test",
+            "staging",
+            "production"
+          ],
+          "title": "Environment"
+        },
+        "enabled": {
+          "type": "boolean",
+          "title": "Enabled",
+          "default": false
+        },
+        "settings": {
+          "$ref": "#/components/schemas/ConnectionSettings"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "provider",
+        "environment",
+        "settings",
+        "expected_version"
+      ],
+      "title": "ConnectionUpdate"
+    },
     "ConsentInput": {
       "properties": {
         "analytics": {
@@ -12090,6 +14516,16 @@
         "marketing": {
           "type": "boolean",
           "title": "Marketing",
+          "default": false
+        },
+        "advertising": {
+          "type": "boolean",
+          "title": "Advertising",
+          "default": false
+        },
+        "personalization": {
+          "type": "boolean",
+          "title": "Personalization",
           "default": false
         },
         "consent_version": {
@@ -12116,6 +14552,16 @@
         "marketing": {
           "type": "boolean",
           "title": "Marketing",
+          "default": false
+        },
+        "advertising": {
+          "type": "boolean",
+          "title": "Advertising",
+          "default": false
+        },
+        "personalization": {
+          "type": "boolean",
+          "title": "Personalization",
           "default": false
         },
         "consent_version": {
@@ -12155,6 +14601,137 @@
       ],
       "title": "ContextInput"
     },
+    "ConversionRule": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Id"
+        },
+        "event": {
+          "type": "string",
+          "enum": [
+            "lead",
+            "qualified",
+            "closed",
+            "installed"
+          ],
+          "title": "Event"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Connection Id"
+        },
+        "provider_event": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Provider Event"
+        },
+        "conversion_label": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-zA-Z0-9_-]*$",
+          "title": "Conversion Label",
+          "default": ""
+        },
+        "conversion_action": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^(customers/[0-9]+/conversionActions/[0-9]+)?$",
+          "title": "Conversion Action",
+          "default": ""
+        },
+        "primary": {
+          "type": "boolean",
+          "title": "Primary",
+          "default": false
+        },
+        "route": {
+          "type": "string",
+          "enum": [
+            "browser",
+            "server",
+            "ga4_import"
+          ],
+          "title": "Route",
+          "default": "browser"
+        },
+        "value_vnd": {
+          "type": "integer",
+          "maximum": 1000000000.0,
+          "minimum": 0.0,
+          "title": "Value Vnd",
+          "default": 0
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "event",
+        "connection_id",
+        "provider_event"
+      ],
+      "title": "ConversionRule"
+    },
+    "CostApply": {
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Connection Id"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/components/schemas/CostRow"
+          },
+          "type": "array",
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Rows"
+        },
+        "preview_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "title": "Preview Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "connection_id",
+        "rows",
+        "preview_token"
+      ],
+      "title": "CostApply"
+    },
+    "CostImport": {
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Connection Id"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/components/schemas/CostRow"
+          },
+          "type": "array",
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Rows"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "connection_id",
+        "rows"
+      ],
+      "title": "CostImport"
+    },
     "CostInput": {
       "properties": {
         "campaign_id": {
@@ -12182,6 +14759,115 @@
         "cost_vnd"
       ],
       "title": "CostInput"
+    },
+    "CostRow": {
+      "properties": {
+        "day": {
+          "type": "string",
+          "format": "date",
+          "title": "Day"
+        },
+        "campaign_id": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[0-9]+$",
+          "title": "Campaign Id"
+        },
+        "adgroup_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Adgroup Id",
+          "default": ""
+        },
+        "ad_id": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[0-9]*$",
+          "title": "Ad Id",
+          "default": ""
+        },
+        "cost_vnd": {
+          "type": "integer",
+          "maximum": 100000000000.0,
+          "minimum": 0.0,
+          "title": "Cost Vnd"
+        },
+        "clicks": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Clicks"
+        },
+        "impressions": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Impressions"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "day",
+        "campaign_id",
+        "cost_vnd"
+      ],
+      "title": "CostRow"
+    },
+    "CredentialsInput": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "values": {
+          "additionalProperties": {
+            "type": "string",
+            "format": "password",
+            "writeOnly": true
+          },
+          "type": "object",
+          "maxProperties": 6,
+          "minProperties": 1,
+          "title": "Values"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expires At"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "values"
+      ],
+      "title": "CredentialsInput"
     },
     "DealSave": {
       "properties": {
@@ -13577,6 +16263,13 @@
     },
     "LeadRequest": {
       "properties": {
+        "measurement_path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Measurement Path",
+          "default": "/"
+        },
         "link_source_token": {
           "anyOf": [
             {
@@ -14145,6 +16838,218 @@
       ],
       "title": "Login"
     },
+    "MatrixPriceInput": {
+      "properties": {
+        "rows": {
+          "items": {
+            "$ref": "#/components/schemas/MatrixPriceRow"
+          },
+          "type": "array",
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Rows"
+        },
+        "publish": {
+          "type": "boolean",
+          "title": "Publish",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "rows"
+      ],
+      "title": "MatrixPriceInput"
+    },
+    "MatrixPriceRow": {
+      "properties": {
+        "price": {
+          "$ref": "#/components/schemas/PriceInput"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Id"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "title": "MatrixPriceRow"
+    },
+    "MeasurementPolicy": {
+      "properties": {
+        "ga4_connection_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ga4 Connection Id"
+        },
+        "ga4_enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ga4 Enabled"
+        },
+        "consent_mode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "basic",
+                "advanced"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Consent Mode"
+        },
+        "consent_title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Consent Title"
+        },
+        "consent_description": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 400,
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Consent Description"
+        },
+        "event_enabled": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "maxItems": 30
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Event Enabled"
+        },
+        "attribution_window_days": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 90.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Attribution Window Days"
+        },
+        "minimum_samples": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 10000.0,
+              "minimum": 30.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Minimum Samples"
+        },
+        "maturity_days": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 90.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maturity Days"
+        },
+        "refresh_seconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 300.0,
+              "minimum": 30.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Refresh Seconds"
+        },
+        "retention_days": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 90.0,
+              "minimum": 1.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retention Days"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "title": "MeasurementPolicy"
+    },
     "MembershipInput": {
       "properties": {
         "expected_version": {
@@ -14193,6 +17098,12 @@
               "lead.pii",
               "intelligence.write",
               "marketing.write",
+              "measurement.read",
+              "measurement.configure",
+              "measurement.publish",
+              "measurement.credentials",
+              "measurement.replay",
+              "measurement.external_write",
               "care.write",
               "care.approve",
               "report.read",
@@ -15854,6 +18765,36 @@
           "title": "Equipment Vnd",
           "default": 0
         },
+        "display_monthly_vnd": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "maximum": 1000000000.0,
+              "minimum": 0.0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Display Monthly Vnd"
+        },
+        "equipment": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              "type": "array",
+              "maxItems": 20
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Equipment"
+        },
         "vat_included": {
           "type": "boolean",
           "title": "Vat Included",
@@ -16417,6 +19358,34 @@
       ],
       "title": "ReconcileInput"
     },
+    "RecoveryCode": {
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 254,
+          "minLength": 3,
+          "title": "Email"
+        },
+        "otp": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$",
+          "title": "Otp"
+        },
+        "challenge_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Challenge Id"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "email",
+        "otp",
+        "challenge_id"
+      ],
+      "title": "RecoveryCode"
+    },
     "RecoveryEmail": {
       "properties": {
         "email": {
@@ -16617,12 +19586,6 @@
           "minLength": 3,
           "title": "Email"
         },
-        "password": {
-          "type": "string",
-          "maxLength": 1024,
-          "minLength": 8,
-          "title": "Password"
-        },
         "otp": {
           "type": "string",
           "pattern": "^[0-9]{6}$",
@@ -16632,6 +19595,12 @@
           "type": "string",
           "format": "uuid",
           "title": "Challenge Id"
+        },
+        "password": {
+          "type": "string",
+          "maxLength": 1024,
+          "minLength": 8,
+          "title": "Password"
         },
         "totp": {
           "type": "string",
@@ -16656,9 +19625,9 @@
       "type": "object",
       "required": [
         "email",
-        "password",
         "otp",
-        "challenge_id"
+        "challenge_id",
+        "password"
       ],
       "title": "ResetPassword"
     },
@@ -16799,6 +19768,43 @@
       ],
       "title": "ScheduleInput"
     },
+    "SessionConfigInput": {
+      "properties": {
+        "session_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "title": "Session Token"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Path",
+          "default": "/"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "session_token"
+      ],
+      "title": "SessionConfigInput"
+    },
+    "SessionResume": {
+      "properties": {
+        "session_token": {
+          "type": "string",
+          "maxLength": 8192,
+          "title": "Session Token"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "session_token"
+      ],
+      "title": "SessionResume"
+    },
     "Shift": {
       "properties": {
         "weekdays": {
@@ -16833,6 +19839,54 @@
       "additionalProperties": false,
       "type": "object",
       "title": "Shift"
+    },
+    "SimulationInput": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^/[a-z0-9/-]*$",
+          "title": "Path",
+          "default": "/"
+        },
+        "event": {
+          "type": "string",
+          "enum": [
+            "lead",
+            "qualified",
+            "closed",
+            "installed"
+          ],
+          "title": "Event",
+          "default": "lead"
+        },
+        "analytics": {
+          "type": "boolean",
+          "title": "Analytics",
+          "default": false
+        },
+        "marketing": {
+          "type": "boolean",
+          "title": "Marketing",
+          "default": false
+        },
+        "advertising": {
+          "type": "boolean",
+          "title": "Advertising",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version"
+      ],
+      "title": "SimulationInput"
     },
     "StaffCreate": {
       "properties": {
@@ -16881,6 +19935,33 @@
         "role"
       ],
       "title": "StaffCreate"
+    },
+    "SyncInput": {
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Connection Id"
+        },
+        "start": {
+          "type": "string",
+          "format": "date",
+          "title": "Start"
+        },
+        "end": {
+          "type": "string",
+          "format": "date",
+          "title": "End"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "connection_id",
+        "start",
+        "end"
+      ],
+      "title": "SyncInput"
     },
     "TransitionCommand": {
       "properties": {
@@ -17079,6 +20160,21 @@
         "expected_version"
       ],
       "title": "VersionCommand"
+    },
+    "VersionInput": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version"
+      ],
+      "title": "VersionInput"
     },
     "VoucherInput": {
       "properties": {
@@ -17398,6 +20494,55 @@
       ],
       "title": "VisitInput"
     },
+    "pagefpt__modules__link_analytics__schemas__BulkInput": {
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "pause",
+            "activate"
+          ],
+          "title": "Action"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/components/schemas/pagefpt__modules__link_analytics__schemas__BulkItem"
+          },
+          "type": "array",
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Items"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "action",
+        "items"
+      ],
+      "title": "BulkInput"
+    },
+    "pagefpt__modules__link_analytics__schemas__BulkItem": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Id"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "expected_version"
+      ],
+      "title": "BulkItem"
+    },
     "pagefpt__modules__link_analytics__schemas__LinkInput": {
       "properties": {
         "title": {
@@ -17502,6 +20647,55 @@
         "session_token"
       ],
       "title": "VisitInput"
+    },
+    "pagefpt__modules__measurement__schemas__BulkInput": {
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "disable",
+            "publish"
+          ],
+          "title": "Action"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/components/schemas/pagefpt__modules__measurement__schemas__BulkItem"
+          },
+          "type": "array",
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Items"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "action",
+        "items"
+      ],
+      "title": "BulkInput"
+    },
+    "pagefpt__modules__measurement__schemas__BulkItem": {
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1.0,
+          "title": "Expected Version"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Id"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "expected_version",
+        "id"
+      ],
+      "title": "BulkItem"
     },
     "pagefpt__modules__vouchers__schemas__LinkInput": {
       "properties": {

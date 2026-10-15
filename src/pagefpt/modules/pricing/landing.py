@@ -58,7 +58,12 @@ def landing_inputs(context, prices, promotions, billing_months):
         return prices, promotions
     amounts = {p["billing_months"]: p["monthly_vnd"] for p in context["overrides"]}
     prices = [
-        dict(p, monthly_vnd=amounts[p["billing_months"]], monthly_coefficient="1")
+        dict(
+            p,
+            monthly_vnd=amounts[p["billing_months"]],
+            monthly_coefficient="1",
+            display_monthly_vnd=None,
+        )
         if p["billing_months"] in amounts
         else p
         for p in prices

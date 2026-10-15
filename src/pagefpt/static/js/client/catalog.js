@@ -18,12 +18,13 @@ function comparePublishedPlan(button) {
   const fee =
     button.closest(".card-face")?.querySelector("[data-quote-plan]")
       ?.textContent || "Cần tư vấn";
+  const periodEquipment = window.PageFPTAccessories?.current(button.dataset.planId)?.equipment;
   toggleCompare(
     button.dataset.planId,
     button.dataset.planName,
     button.dataset.speed,
     fee,
-    button.dataset.equipment || "Cần tư vấn",
+    Array.isArray(periodEquipment) ? (periodEquipment.join(', ') || "Không kèm thiết bị") : button.dataset.equipment || "Cần tư vấn",
   );
 }
 async function refreshCatalogPrices(regionId = null) {
@@ -95,7 +96,7 @@ async function refreshCatalogPrices(regionId = null) {
         }
         if (quote.status !== "confirmed") continue;
         const amount = new Intl.NumberFormat("vi-VN").format(
-          quote.monthly_vnd + (quote.accessory_monthly_vnd || 0),
+          window.PageFPTAccessories?.display(id, quote) ?? ((quote.display_monthly_vnd ?? quote.monthly_vnd) + (quote.accessory_monthly_vnd || 0)),
         );
         const total = new Intl.NumberFormat("vi-VN").format(
           quote.initial_total_vnd,

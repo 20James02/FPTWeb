@@ -20,13 +20,15 @@
         return {
           analytics: value.analytics,
           marketing: value.marketing,
+          advertising: value.advertising === true,
+          personalization: value.personalization === true,
           expires: value.expires,
         };
       } catch (_) {
         return null;
       }
     },
-    write(analytics, marketing) {
+    write(analytics, marketing, advertising = false, personalization = false) {
       try {
         window.localStorage.setItem(
           key,
@@ -34,6 +36,8 @@
             version,
             analytics: analytics === true,
             marketing: marketing === true,
+            advertising: advertising === true && analytics === true && marketing === true,
+            personalization: personalization === true && advertising === true && analytics === true && marketing === true,
             expires: Date.now() + ttl,
           }),
         );

@@ -10,7 +10,17 @@ from pagefpt.modules.pricing.schemas import Command
 class ConsentInput(Command):
     analytics: bool = False
     marketing: bool = False
+    advertising: bool = False
+    personalization: bool = False
     consent_version: str = Field(min_length=1, max_length=50)
+
+    @model_validator(mode="after")
+    def separate_purposes(self):
+        if self.advertising and not (self.analytics and self.marketing):
+            raise ValueError("Đo chuyển đổi quảng cáo cần đồng ý phân tích và nguồn tiếp thị")
+        if self.personalization and not self.advertising:
+            raise ValueError("Cá nhân hóa cần lựa chọn quảng cáo")
+        return self
 
 
 class ConsentUpdate(ConsentInput):
@@ -52,6 +62,10 @@ class CampaignInput(Command):
     platform: Literal["google", "meta", "tiktok", "zalo", "seo", "referral"]
     utm_campaign: str = Field(max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
     branch_id: UUID | None = None
+    connection_id: UUID | None = None
+    external_campaign_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    landing_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
+    content_note: str = Field(default="", max_length=1000)
 
 
 class Variant(Command):

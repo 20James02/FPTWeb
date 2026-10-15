@@ -26,6 +26,41 @@ async def session(input: ConsentInput, request: Request):
     }
 
 
+class SessionResume(Command):
+    session_token: str = Field(max_length=8192)
+
+
+@router.post("/sessions/resume")
+async def resume_session(input: SessionResume, request: Request):
+    claims = crypto(request).verify(input.session_token, "session", datetime.now(UTC))
+    row = await dispatch(request, "session_read", id=claims["id"])
+    return {
+        key: row.get(key) is True
+        for key in ("analytics", "marketing", "advertising", "personalization")
+    }
+
+
+@router.post("/consent/revoke")
+async def revoke_session(input: SessionResume, request: Request):
+    from pagefpt.modules.identity.sessions import same_origin
+
+    same_origin(request)
+    # An expired signed session can only REDUCE its own permissions here.
+    # Every endpoint that reads/tracks data still verifies the real expiry.
+    claims = crypto(request).verify(input.session_token, "session", datetime.fromtimestamp(0, UTC))
+    await dispatch(
+        request,
+        "consent",
+        id=claims["id"],
+        analytics=False,
+        marketing=False,
+        advertising=False,
+        personalization=False,
+        consent_version="2026-10-v3-revoked",
+    )
+    return {"revoked": True}
+
+
 @router.put("/consent")
 async def consent(input: ConsentUpdate, request: Request):
     claims = crypto(request).verify(input.session_token, "session", datetime.now(UTC))
@@ -57,7 +92,10 @@ async def events(input: EventBatch, request: Request):
         request,
         "events",
         session_id=claims["id"],
-        events=[v.model_dump(mode="json") for v in input.events],
+        events=[
+            {**v.model_dump(mode="json"), "environment": request.app.state.settings.environment}
+            for v in input.events
+        ],
     )
 
 
@@ -70,14 +108,44 @@ class AttributionInput(Command):
         default="", max_length=30, pattern=r"^(|google|meta|tiktok|zalo|seo|referral)$"
     )
     click_id: str = Field(default="", max_length=256, pattern=r"^[a-zA-Z0-9_-]*$")
+    click_id_type: str = Field(default="", pattern=r"^(|gclid|gbraid|wbraid|fbclid)$")
+    utm_content: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_.-]*$")
+    utm_term: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_.-]*$")
+    campaign_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    adgroup_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    adset_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    ad_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    landing_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
+    ga_client_id: str = Field(default="", pattern=r"^(|[0-9]{1,20}\.[0-9]{1,20})$")
+    fbp: str = Field(
+        default="", max_length=300, pattern=r"^(|fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256})$"
+    )
+    fbc: str = Field(
+        default="", max_length=300, pattern=r"^(|fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256})$"
+    )
 
 
 @router.post("/touches")
 async def touch(input: AttributionInput, request: Request):
     crypt = crypto(request)
     claims = crypt.verify(input.session_token, "session", datetime.now(UTC))
-    payload = input.model_dump(mode="json", exclude={"session_token", "click_id"})
+    payload = input.model_dump(
+        mode="json", exclude={"session_token", "click_id", "ga_client_id", "fbp", "fbc"}
+    )
+    payload["environment"] = request.app.state.settings.environment
     permission = await dispatch(request, "session_read", id=claims["id"])
+    if (
+        permission.get("analytics")
+        and permission.get("marketing")
+        and permission.get("advertising")
+    ):
+        identifiers = {
+            k: getattr(input, k) for k in ("ga_client_id", "fbp", "fbc") if getattr(input, k)
+        }
+        if identifiers:
+            payload["provider_ids_ciphertext"] = crypt.encrypt(
+                __import__("json").dumps(identifiers)
+            )
     payload["click_id_ciphertext"] = (
         crypt.encrypt(input.click_id) if input.click_id and permission.get("marketing") else None
     )

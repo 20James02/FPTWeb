@@ -193,6 +193,7 @@ const WS_PERMISSION_NAMES = [
   "lead.pii",
   "intelligence.write",
   "marketing.write",
+  "measurement.read", "measurement.configure", "measurement.publish", "measurement.credentials", "measurement.replay", "measurement.external_write",
   "care.write",
   "care.approve",
   "report.read",
@@ -883,7 +884,7 @@ async function openWorkspaceEditor(row = null) {
 }
 function workspacePayload() {
   const def = workspaceDefinition(),
-    data = {};
+    data = workspaceTab === "campaigns" ? {...(workspaceEditing?.payload || {})} : {};
   for (const [key, , type] of def.fields || []) {
     const input = document.getElementById("ws-" + key);
     data[key] =

@@ -7,9 +7,27 @@ from pydantic import Field
 from pagefpt.api.authorization import check, current_actor
 from pagefpt.api.dependencies import crypto, dispatch
 from pagefpt.modules.catalog.schemas import VersionCommand
-from pagefpt.modules.pricing.schemas import BulkPriceInput, PriceInput
+from pagefpt.modules.pricing.schemas import BulkPriceInput, MatrixPriceInput, PriceInput
 
 router = APIRouter(prefix="/api/v1/admin")
+
+
+@router.get("/prices/matrix")
+async def price_matrix(request: Request, id: UUID):
+    actor = await current_actor(request)
+    check(actor, "pricing.write")
+    return await dispatch(request, "price_matrix_read", actor=actor.user_id, id=str(id))
+
+
+@router.post("/prices/matrix")
+async def save_price_matrix(input: MatrixPriceInput, request: Request):
+    actor = await current_actor(request)
+    check(actor, "pricing.write")
+    if input.publish:
+        check(actor, "pricing.publish", mfa=True)
+    return await dispatch(
+        request, "price_matrix_save", actor=actor.user_id, **input.model_dump(mode="json")
+    )
 
 
 @router.get("/prices")

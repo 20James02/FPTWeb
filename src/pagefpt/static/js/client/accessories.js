@@ -58,10 +58,16 @@
       a.monthly * term(plan)
     );
   }
+  function display(plan, q = current(plan)) {
+    if (!q) return null;
+    const monthly = parts(plan).monthly;
+    return q.display_monthly_vnd == null ? q.monthly_vnd + monthly
+      : q.display_monthly_vnd + Math.round(monthly * term(plan) / (q.service_months || term(plan)));
+  }
   function render(plan) {
     const a = parts(plan),
       q = current(plan),
-      amount = q ? money(q.monthly_vnd + a.monthly) : "Cần tư vấn";
+      amount = q ? money(display(plan, q)) : "Cần tư vấn";
     const t = total(plan, q);
     document.querySelectorAll("[data-quote-plan]").forEach((el) => {
       if (el.dataset.quotePlan === plan) el.textContent = amount;
@@ -69,8 +75,21 @@
     document.querySelectorAll("[data-quote-note]").forEach((el) => {
       if (el.dataset.quoteNote === plan)
         el.textContent = q
-          ? `${q.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · Giá mỗi tháng${window.PageFPTVoucher?.summary(q) ? " · " + window.PageFPTVoucher.summary(q) : ""}`
+          ? `${q.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · ${q.display_monthly_vnd == null ? "Giá mỗi tháng" : "Giá bình quân mỗi tháng"} · Trả trước ${q.billing_months} tháng · Sử dụng ${q.service_months || q.billing_months} tháng${window.PageFPTVoucher?.summary(q) ? " · " + window.PageFPTVoucher.summary(q) : ""}`
           : "Chọn khu vực hoặc kỳ có giá để được tư vấn.";
+    });
+    document.querySelectorAll("[data-period-average]").forEach(el => {
+      if (el.dataset.periodAverage !== plan) return;
+      el.hidden = !q || q.display_monthly_vnd == null;
+      el.textContent = "Bình quân/tháng";
+    });
+    const published = typeof getPublishedPlans === 'function' ? getPublishedPlans().find(p => p.id === plan) : null;
+    const equipment = q?.equipment ?? published?.equipment;
+    document.querySelectorAll("[data-period-equipment]").forEach(el => {
+      if (el.dataset.periodEquipment !== plan || !Array.isArray(equipment)) return;
+      el.replaceChildren(...(equipment.length ? equipment : ["Không kèm thiết bị."]).map(text => {
+        const li = document.createElement('li'); li.className = 'plan-feature-item'; li.textContent = text; return li;
+      }));
     });
     document.querySelectorAll("[data-accessory-total]").forEach((el) => {
       if (el.dataset.accessoryTotal !== plan) return;
@@ -85,6 +104,7 @@
       const item = compareItems.find((i) => i.id === plan);
       if (item) {
         item.fee = amount;
+        if (Array.isArray(equipment)) item.modem = equipment.join(', ') || 'Không kèm thiết bị';
         if (typeof renderCompareCards === "function") renderCompareCards();
       }
     }
@@ -199,6 +219,7 @@
     acceptQuote: accept,
     current,
     total,
+    display,
     render,
     clearQuotes: () => {
       quotes.clear();

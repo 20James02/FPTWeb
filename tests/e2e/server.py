@@ -13,6 +13,7 @@ from tests.conftest import LocalGateway, db_schema
 _generator = db_schema.__wrapped__()
 _dsn = next(_generator)
 with psycopg.connect(_dsn, autocommit=True) as connection:
+    connection.execute("SELECT private.measurement_bootstrap('test')")
     fixture_branch = str(uuid4())
     region_payload = {
         "name": "Khu vực kiểm thử",

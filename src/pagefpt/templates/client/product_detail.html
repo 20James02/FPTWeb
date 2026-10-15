@@ -50,7 +50,7 @@
         <p>{{ plan.description or 'Nhận tư vấn cấu hình và điều kiện cung cấp tại địa chỉ lắp đặt.' }}</p>
         <p class="service-plan-price" data-quote-plan="{{ plan.id }}">Cần tư vấn</p>
         <p class="service-plan-note" data-quote-note="{{ plan.id }}">Chọn khu vực để xác nhận giá.</p>
-        {% if plan.equipment %}<ul>{% for equipment in plan.equipment %}<li>{{ equipment }}</li>{% endfor %}</ul>{% endif %}
+        <ul data-period-equipment="{{ plan.id }}">{% for equipment in plan.equipment %}<li>{{ equipment }}</li>{% endfor %}</ul>
         <button type="button" class="btn-select-plan primary" data-analytics-action="select_plan" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="product" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận tư vấn gói này</button>
       </article>
       {% else %}

@@ -46,9 +46,9 @@
     ];
     if (q)
       fields.push(
-        ["Giá gốc mỗi tháng", money(q.base_monthly_vnd ?? q.monthly_vnd)],
-        ["Hệ số kỳ", q.monthly_coefficient || "1"],
-        ["Cước mỗi tháng", money(q.monthly_vnd)],
+        ...(q.display_monthly_vnd == null ? [] : [["Giá bình quân hiển thị / tháng", money(q.display_monthly_vnd)]]),
+        ["Cước tính tiền / tháng", money(q.monthly_vnd)],
+        ["Cước trả trước cả kỳ", money(q.line_items?.term_vnd)],
         ["Phụ kiện mỗi tháng", money(a.monthly)],
         ["Phụ kiện một lần", money(a.once)],
         ["Phí hòa mạng", money(q.line_items?.setup_vnd || 0)],
@@ -69,9 +69,9 @@
       ]),
     );
     $("plan-details-equipment").replaceChildren(
-      ...(plan.equipment?.length
-        ? plan.equipment
-        : ["Xác nhận thiết bị theo địa bàn."]
+      ...((q?.equipment ?? plan.equipment)?.length
+        ? (q?.equipment ?? plan.equipment)
+        : q?.equipment ? ["Không kèm thiết bị."] : ["Xác nhận thiết bị theo địa bàn."]
       ).map((text) => node("li", text)),
     );
     let products = [];
@@ -117,8 +117,8 @@
         plan.id,
         plan.name,
         plan.speed_mbps || "Cần tư vấn",
-        q ? money(q.monthly_vnd + a.monthly) : "Cần tư vấn",
-        (plan.equipment || []).join(", "),
+        q ? money(window.PageFPTAccessories.display(active, q)) : "Cần tư vấn",
+        (q?.equipment ?? plan.equipment ?? []).join(", "),
       );
     };
   }

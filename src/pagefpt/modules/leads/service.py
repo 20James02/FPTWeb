@@ -110,6 +110,8 @@ async def submit_lead(request, input, key, crypt, durable=False):
     semantic["risk_evidence"] = {"honeypot": bool(input.website)}
     semantic["risk_source"] = "intake-v1"
     semantic["session_id"] = session_id
+    semantic["measurement_environment"] = request.app.state.settings.environment
+    semantic["measurement_host"] = request.url.hostname or ""
     from pagefpt.modules.link_analytics.service import lead_source
 
     source = await lead_source(request, input, crypt, now)
@@ -137,6 +139,20 @@ async def submit_lead(request, input, key, crypt, durable=False):
                 "buckets": buckets,
                 "honeypot": bool(input.website),
                 "challenge_id": challenge_id,
+                "measurement_client_ciphertext": crypt.encrypt(
+                    json.dumps(
+                        {
+                            "user_agent": request.headers.get("user-agent", "")[:512],
+                            "source_url": (
+                                request.app.state.settings.public_origin
+                                or str(request.base_url).rstrip("/")
+                            )
+                            + input.measurement_path,
+                        }
+                    )
+                )
+                if input.analytics_opt_in and input.marketing_opt_in and session_id
+                else None,
                 "notify_admin": request.app.state.settings.telegram_enabled,
             }
         },

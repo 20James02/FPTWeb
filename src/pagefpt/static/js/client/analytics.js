@@ -9,6 +9,8 @@ let flushTimeout = null;
 let analyticsContext = {
   analytics_opt_in: false,
   marketing_opt_in: false,
+  advertising_opt_in: false,
+  personalization_opt_in: false,
   session_token: null,
   attribution_token: null,
 };
@@ -43,6 +45,16 @@ function analyticsPreview() {
     return true;
   }
 }
+const sessionStorageKey='pagefpt_analytics_session_v1';
+const pendingRevokeKey='pagefpt_pending_revocations_v1';
+function pendingRevocations(){try{return (JSON.parse(window.localStorage?.getItem(pendingRevokeKey)||'[]')).filter(v=>typeof v.token==='string'&&v.token.length<=8192&&Number.isFinite(v.expiresAt)&&v.expiresAt>Date.now()&&v.expiresAt<=Date.now()+90*86400000).slice(0,8);}catch{return [];}}
+function storeRevocations(rows){try{if(rows.length)window.localStorage?.setItem(pendingRevokeKey,JSON.stringify(rows));else window.localStorage?.removeItem(pendingRevokeKey);}catch{}}
+function queueRevocation(token){if(!token)return;const rows=pendingRevocations();if(!rows.some(v=>v.token===token))rows.push({token,expiresAt:Date.now()+90*86400000});storeRevocations(rows.slice(-8));}
+function acknowledgeRevocation(token){storeRevocations(pendingRevocations().filter(v=>v.token!==token));}
+async function flushPendingRevocations(){for(const entry of pendingRevocations()){try{const response=await fetch('/api/v1/consent/revoke',{signal:AbortSignal.timeout(3000),method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_token:entry.token})});if(!response.ok)return false;acknowledgeRevocation(entry.token);}catch{return false;}}return true;}
+
+function saveAnalyticsSession(){try{if(analyticsContext.analytics_opt_in&&analyticsContext.session_token){window.localStorage?.setItem(sessionStorageKey,JSON.stringify({token:analyticsContext.session_token,expiresAt:Date.now()+30*86400000}));}else window.localStorage?.removeItem(sessionStorageKey);}catch{}}
+function savedAnalyticsSession(){try{const value=JSON.parse(window.localStorage?.getItem(sessionStorageKey)||'null');if(value&&typeof value.token==='string'&&value.token.length<=8192&&Number.isFinite(value.expiresAt)&&value.expiresAt>Date.now()&&value.expiresAt<=Date.now()+30*86400000)return value.token;}catch{}return null;}
 async function initClientSession(restoreChoice = true) {
   if (analyticsPreview()) return null;
   if (analyticsContext.session_token) return analyticsContext.session_token;
@@ -53,6 +65,27 @@ async function initClientSession(restoreChoice = true) {
       ? window.PageFPTConsentPreferences?.read()
       : null;
     try {
+      if(pendingRevocations().length && !await flushPendingRevocations())return null;
+      const saved=choice?.analytics===true?savedAnalyticsSession():null;
+      if(saved){
+        const resumed=await fetch('/api/v1/sessions/resume',{signal:AbortSignal.timeout(3000),method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_token:saved})});
+        if(resumed.ok){
+          const allowed=await resumed.json();
+          analyticsContext.session_token=saved;
+          if(revision===consentRevision){
+            for(const key of ['analytics','marketing','advertising','personalization'])analyticsContext[key+'_opt_in']=choice[key]===true&&allowed[key]===true;
+            // A saved local restriction must reach the server before this session is used.
+            if(['analytics','marketing','advertising','personalization'].some(k=>allowed[k]===true&&!analyticsContext[k+'_opt_in'])){
+              const synced=await fetch('/api/v1/consent',{signal:AbortSignal.timeout(3000),method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_token:saved,analytics:analyticsContext.analytics_opt_in,marketing:analyticsContext.marketing_opt_in,advertising:analyticsContext.advertising_opt_in,personalization:analyticsContext.personalization_opt_in,consent_version:'2026-10-v3'})});
+              if(!synced.ok){analyticsContext.analytics_opt_in=false;analyticsContext.marketing_opt_in=false;analyticsContext.advertising_opt_in=false;analyticsContext.personalization_opt_in=false;}
+            }
+          }
+          saveAnalyticsSession();window.dispatchEvent(new CustomEvent('pagefpt-consent-change'));
+          if(analyticsContext.analytics_opt_in)await initAttribution();
+          return analyticsContext.session_token;
+        }
+        window.localStorage?.removeItem(sessionStorageKey);
+      }
       const res = await fetch("/api/v1/sessions", {
         signal: AbortSignal.timeout(3000),
         method: "POST",
@@ -60,7 +93,9 @@ async function initClientSession(restoreChoice = true) {
         body: JSON.stringify({
           analytics: choice?.analytics === true,
           marketing: choice?.marketing === true,
-          consent_version: "2026-10-v2",
+          advertising: choice?.advertising === true,
+          personalization: choice?.personalization === true,
+          consent_version: "2026-10-v3",
         }),
       });
       if (res.ok) {
@@ -70,7 +105,10 @@ async function initClientSession(restoreChoice = true) {
           if (revision === consentRevision) {
             analyticsContext.analytics_opt_in = choice?.analytics === true;
             analyticsContext.marketing_opt_in = choice?.marketing === true;
+            analyticsContext.advertising_opt_in = choice?.advertising === true;
+            analyticsContext.personalization_opt_in = choice?.personalization === true;
           }
+          saveAnalyticsSession();
           window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
           if (analyticsContext.analytics_opt_in) await initAttribution();
         }
@@ -88,15 +126,22 @@ async function initClientSession(restoreChoice = true) {
 }
 
 // Call only after an explicit user choice in the consent interface.
-async function setAnalyticsConsent(analytics, marketing = false) {
+async function setAnalyticsConsent(analytics, marketing = false, advertising = false, personalization = false) {
   if (analyticsPreview()) throw new Error("Bản xem trước không bật đo lường.");
+  advertising = Boolean(advertising && analytics && marketing);
+  personalization = Boolean(personalization && advertising);
   consentRevision += 1;
+  if(!analytics||!marketing||!advertising||!personalization)queueRevocation(analyticsContext.session_token);
+  if(analyticsContext.advertising_opt_in&&!advertising)window.PageFPTConsentPreferences?.write(analyticsContext.analytics_opt_in,analyticsContext.marketing_opt_in,false,false);
+  analyticsContext.advertising_opt_in &&= advertising;
+  analyticsContext.personalization_opt_in &&= personalization;
+  window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
   // Restrict immediately, even offline. Permission increases still require an acknowledgement.
   if (!analytics || (!marketing && analyticsContext.marketing_opt_in)) {
     analyticsContext.analytics_opt_in &&= Boolean(analytics);
     analyticsContext.marketing_opt_in &&= Boolean(marketing);
     analyticsContext.attribution_token = null;
-    if (!analytics) eventQueue.length = 0;
+    if (!analytics){eventQueue.length = 0;saveAnalyticsSession();}
     window.PageFPTConsentPreferences?.write(
       analyticsContext.analytics_opt_in,
       analyticsContext.marketing_opt_in,
@@ -105,6 +150,7 @@ async function setAnalyticsConsent(analytics, marketing = false) {
   }
   await initClientSession(false);
   const previous = analyticsContext.session_token;
+  if(previous&&(!analytics||!marketing||!advertising||!personalization))queueRevocation(previous);
   const path = previous ? "/api/v1/consent" : "/api/v1/sessions";
   const response = await fetch(path, {
     signal: AbortSignal.timeout(5000),
@@ -113,7 +159,9 @@ async function setAnalyticsConsent(analytics, marketing = false) {
     body: JSON.stringify({
       analytics: Boolean(analytics),
       marketing: Boolean(marketing),
-      consent_version: "2026-10-v2",
+      advertising,
+      personalization,
+      consent_version: "2026-10-v3",
       ...(previous ? { session_token: previous } : {}),
     }),
   });
@@ -121,15 +169,21 @@ async function setAnalyticsConsent(analytics, marketing = false) {
   const data = await response.json();
   if (!(previous || data.session_token))
     throw new Error("Chưa xác nhận được phiên dữ liệu.");
+  if(previous)acknowledgeRevocation(previous);
   analyticsContext = {
     analytics_opt_in: Boolean(analytics),
     marketing_opt_in: Boolean(marketing),
+    advertising_opt_in: advertising,
+    personalization_opt_in: personalization,
     session_token: previous || data.session_token,
     attribution_token: null,
   };
+  saveAnalyticsSession();
   window.PageFPTConsentPreferences?.write(
     Boolean(analytics),
     Boolean(marketing),
+    advertising,
+    personalization,
   );
   window.dispatchEvent(new CustomEvent("pagefpt-consent-change"));
   if (!analytics) {
@@ -144,10 +198,28 @@ async function setAnalyticsConsent(analytics, marketing = false) {
 async function initAttribution() {
   const params = new URLSearchParams(window.location.search);
   const attributes = {};
-  for (const key of ["utm_source", "utm_medium", "utm_campaign"]) {
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     const value = params.get(key) || "";
     if (/^[a-zA-Z0-9_.-]{0,100}$/.test(value)) attributes[key] = value;
   }
+  if (analyticsContext.advertising_opt_in) {
+    const cookies=Object.fromEntries((document.cookie||'').split(';').map(v=>{const pos=v.indexOf('=');return pos<0?['','']:[v.slice(0,pos).trim(),v.slice(pos+1)];}));
+    const ga=/^GA[0-9]+\.[0-9]+\.([0-9]{1,20}\.[0-9]{1,20})$/.exec(cookies._ga||'');
+    if(ga)attributes.ga_client_id=ga[1];
+    for(const [cookie,key] of [['_fbp','fbp'],['_fbc','fbc']])if(/^fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256}$/.test(cookies[cookie]||''))attributes[key]=cookies[cookie];
+  }
+  const actualFbclid=params.get("fbclid");if(actualFbclid&&attributes.fbc&&!attributes.fbc.endsWith("."+actualFbclid))delete attributes.fbc;
+  if (analyticsContext.marketing_opt_in) {
+    for (const key of ["campaign_id", "adgroup_id", "adset_id", "ad_id"]) {
+      const value = params.get(key) || (key === "campaign_id" ? params.get("utm_id") : "") || "";
+      if (/^[0-9]{1,40}$/.test(value)) attributes[key] = value;
+    }
+    for (const [key,platform] of [["gclid","google"],["gbraid","google"],["wbraid","google"],["fbclid","meta"]]) {
+      const value=params.get(key);
+      if (/^[a-zA-Z0-9_-]{1,256}$/.test(value||"")) { attributes.platform=platform; attributes.click_id_type=key; attributes.click_id=value; break; }
+    }
+  }
+  if (/^\/[a-z0-9/-]{0,149}$/.test(window.location.pathname)) attributes.landing_path=window.location.pathname;
   const touch = await fetch("/api/v1/touches", {
     signal: AbortSignal.timeout(3000),
     method: "POST",
@@ -157,8 +229,10 @@ async function initAttribution() {
       ...attributes,
     }),
   });
-  if (touch.ok)
+  if (touch.ok){
     analyticsContext.attribution_token = (await touch.json()).attribution_token;
+    window.dispatchEvent(new CustomEvent("pagefpt-attribution-ready"));
+  }
 }
 
 function getAnalyticsContext() {
@@ -275,6 +349,20 @@ window.addEventListener("pagehide", () => {
       ),
     );
   }
+});
+
+window.addEventListener('online',()=>flushPendingRevocations());
+
+// Cross-tab changes can restrict immediately; permission increases still need server acknowledgement.
+window.addEventListener('storage',event=>{
+  if(event.key!=='pagefpt-data-choice')return;
+  const choice=window.PageFPTConsentPreferences?.read();
+  consentRevision+=1;
+  for(const key of ['analytics','marketing','advertising','personalization'])analyticsContext[key+'_opt_in']&&=choice?.[key]===true;
+  analyticsContext.advertising_opt_in&&=analyticsContext.analytics_opt_in&&analyticsContext.marketing_opt_in;
+  analyticsContext.personalization_opt_in&&=analyticsContext.advertising_opt_in;
+  if(!analyticsContext.analytics_opt_in){eventQueue.length=0;analyticsContext.attribution_token=null;saveAnalyticsSession();}
+  window.dispatchEvent(new CustomEvent('pagefpt-consent-change'));
 });
 
 // Auto-bootstrap session on page load

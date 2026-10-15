@@ -18,6 +18,7 @@ function showToast(message, type = 'info') {
 let pendingLead = null;
 async function submitLeadToBackend(leadData) {
   leadData = {...leadData, ...(window.PageFPTVoucher?.leadContext?.() || {}), ...(window.PageFPTLinkTracking?.leadContext?.() || {})};
+  if (/^\/[a-z0-9/-]{0,149}$/.test(window.location?.pathname||'')) leadData.measurement_path=window.location.pathname;
   const body = JSON.stringify(leadData);
   // Auto-refreshed evidence must not turn an unresolved submission into a new one.
   // User input/consent changes do; preserve the original exact body until resolved.
@@ -55,7 +56,7 @@ async function submitLeadToBackend(leadData) {
       if (pendingLead === submission) pendingLead = null;
       // Only a committed receipt can become a conversion. Never pass contact fields.
       window.dispatchEvent?.(new CustomEvent('pagefpt:lead-accepted', {detail:{
-        event_id:result.event_id, plan_id:leadData.plan_id,
+        event_id:result.event_id, measurement:result.measurement, plan_id:leadData.plan_id,
         billing_months:leadData.billing_months || Number((leadData.notes || '').match(/Kỳ thanh toán quan tâm: (1|6|12) tháng/)?.[1]),
         accessory_count:Array.isArray(leadData.accessory_ids) ? leadData.accessory_ids.length : 0
       }}));

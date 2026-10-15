@@ -1,15 +1,8 @@
-/* Google tag: explicit consent controls storage; advanced mode permits limited cookieless measurement. */
+/* Google tag uses the published runtime release, with the existing consent/PII filters. */
 (() => {
-  if (window.PageFPTGoogle) return;
-  let config;
-  try {
-    config = JSON.parse(
-      document.getElementById("pagefpt-google-config")?.textContent || "{}",
-    );
-  } catch (_) {
-    return;
-  }
-  const id = config.measurement_id;
+  function boot(config) {
+    if (window.PageFPTGoogle) { window.PageFPTGoogle.apply?.(config); return; }
+  let id = config.measurement_id;
   if (
     !/^G-[A-Z0-9]+$/.test(id || "") ||
     config.preview ||
@@ -23,8 +16,8 @@
       window.dataLayer.push(arguments);
     };
   const gtag = window.gtag;
-  const advanced = config.consent_mode === "advanced";
-  const disable = "ga-disable-" + id;
+  let advanced = config.consent_mode === "advanced";
+  let disable = "ga-disable-" + id;
   window[disable] = !advanced;
   gtag("consent", "default", {
     analytics_storage: "denied",
@@ -140,6 +133,7 @@
   }
   function send(name, data = {}) {
     if (
+      (Array.isArray(config.event_enabled) && !config.event_enabled.includes(name)) ||
       !loaded ||
       (!advanced && !context().analytics_opt_in) ||
       window[disable]
@@ -196,6 +190,7 @@
     }
   }
   function updateConsent() {
+    if (!/^G-[A-Z0-9]+$/.test(id || "")) return;
     const allowed = !!context().analytics_opt_in;
     if (allowed && !lastAnalyticsConsent && observer) {
       observer.disconnect?.();
@@ -220,9 +215,9 @@
     });
     gtag("consent", "update", {
       analytics_storage: allowed ? "granted" : "denied",
-      ad_storage: "denied",
-      ad_user_data: "denied",
-      ad_personalization: "denied",
+      ad_storage: context().advertising_opt_in && allowed ? "granted" : "denied",
+      ad_user_data: context().advertising_opt_in && allowed ? "granted" : "denied",
+      ad_personalization: context().advertising_opt_in && context().personalization_opt_in && allowed ? "granted" : "denied",
     });
     if (!advanced && !allowed) return;
     if (loaded)
@@ -243,11 +238,14 @@
         allow_ad_personalization_signals: false,
         ...pageFields(),
       });
+      if (!document.querySelector?.("script[data-pagefpt-google-library]")) {
       const script = document.createElement("script");
       script.async = true;
+      script.dataset && (script.dataset.pagefptGoogleLibrary = "true");
       script.referrerPolicy = "strict-origin";
       script.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
       document.head.appendChild(script);
+      }
     }
     if (!pageViewed) {
       send("page_view");
@@ -256,6 +254,19 @@
     observePlans();
   }
   window.PageFPTGoogle = {
+    apply(next) {
+      if (next.measurement_id !== id) {
+        window[disable] = true;
+        id = next.measurement_id;
+        disable = "ga-disable-" + id;
+        pageViewed = false;
+        loaded = false;
+      }
+      config = next;
+      advanced = config.consent_mode === "advanced";
+      if (!/^G-[A-Z0-9]+$/.test(id || "")) return;
+      updateConsent();
+    },
     track(name, data) {
       if (name === "start_form") name = "form_open";
       if (name === "view_plan" && !uuid(data?.plan_id)) return false;
@@ -341,4 +352,12 @@
     if (send("form_start", { form_location })) startedForms.add(form);
   });
   updateConsent();
+
+  }
+  let config;
+  try { config = JSON.parse(document.getElementById("pagefpt-google-config")?.textContent || "{}"); } catch { return; }
+  if (config.dynamic) {
+    window.addEventListener("pagefpt-measurement-config", e => boot(e.detail));
+    window.PageFPTMeasurement?.ready.then(() => boot(window.PageFPTMeasurement.config));
+  } else boot(config);
 })();
