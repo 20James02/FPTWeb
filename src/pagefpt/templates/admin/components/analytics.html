@@ -1,16 +1,145 @@
-<section id="analytics-dashboard" aria-label="Phân tích theo kỳ">
-<div class="account-heading"><div><h2>Phân tích theo kỳ tiếp nhận</h2><p class="analytics-note">Kết quả hiện tại của các hồ sơ được nhận trong kỳ, theo giờ Việt Nam. Các biểu đồ dùng chung bộ lọc và chỉ phản ánh dữ liệu bạn được phép xem.</p></div><span id="analytics-asof" class="account-badge">Đang tải…</span></div>
-<form id="analytics-filter" class="analytics-filter panel-card"><label for="analytics-start">Từ ngày<input id="analytics-start" type="date" required></label><label for="analytics-end">Đến ngày<input id="analytics-end" type="date" required></label><label for="analytics-branch">Chi nhánh<select id="analytics-branch"><option value="">Tất cả chi nhánh được cấp quyền</option></select></label><label for="analytics-campaign">UTM campaign<input id="analytics-campaign" maxlength="100" placeholder="Tất cả chiến dịch"></label><button class="btn-action-call" type="submit">Áp dụng bộ lọc</button><label for="analytics-period">Chọn nhanh<select id="analytics-period"><option value="7">7 ngày</option><option value="30" selected>30 ngày</option><option value="90">90 ngày</option></select></label></form>
-<p id="analytics-state" role="status" aria-live="polite"></p>
-<div class="kpi-grid" id="analytics-kpis"></div>
-<div class="analytics-grid">
-<section class="panel-card analytics-full"><h2>Xu hướng tiếp nhận và kết quả theo ngày</h2><p class="analytics-note">Ngày là ngày nhận hồ sơ; kết quả được cập nhật đến thời điểm xem báo cáo.</p><div id="analytics-trend"></div></section>
-<section class="panel-card"><h2>Tiếp nhận → Liên hệ → Đủ điều kiện → Lắp đặt</h2><div id="analytics-funnel"></div><p class="analytics-note">Tỷ lệ tính trên tổng hồ sơ của kỳ. “Đủ điều kiện” chưa đồng nghĩa đã ký hợp đồng.</p></section>
-<section class="panel-card"><h2>Hạn phản hồi khách hàng (SLA)</h2><div id="analytics-sla"></div><p class="analytics-note">Quá hạn: còn ở trạng thái mới, đã phân công hoặc đang liên hệ và đã vượt hạn gọi lại. Đây là số tồn của nhóm hồ sơ đã chọn, không phải tỷ lệ cuộc gọi đúng hạn trong lịch sử.</p></section>
-<section class="panel-card"><h2>Nguồn khách hàng</h2><div id="analytics-sources"></div></section>
-<section class="panel-card"><h2>Trạng thái xử lý hiện tại</h2><div id="analytics-statuses"></div></section>
-<section class="panel-card"><h2>Nhu cầu theo gói</h2><div id="analytics-plans"></div></section>
-<section class="panel-card"><h2>Hiệu quả theo chi nhánh</h2><div id="analytics-branches"></div></section>
-<section class="panel-card analytics-full"><h2>Chiến dịch & chi phí</h2><p class="analytics-note">Chi phí dựa trên các khoản đã nhập trong kỳ; chưa bao gồm dữ liệu chưa được nhập hoặc chưa đồng bộ. Thiếu chi phí hiển thị “Chưa có dữ liệu”.</p><div id="analytics-campaigns"></div></section>
-</div>
+<section id="analytics-dashboard" class="analytics-dashboard-wrap" aria-label="Báo cáo kết quả kinh doanh theo kỳ">
+  <div class="account-heading analytics-header-bar">
+    <div>
+      <div class="analytics-title-group">
+        <span class="analytics-badge-tag">LIVE METRICS</span>
+        <h2>Báo cáo kết quả kinh doanh &amp; Chỉ số chuyển đổi</h2>
+      </div>
+      <p class="analytics-note">Dữ liệu cập nhật theo múi giờ Việt Nam. Các biểu đồ tự động đồng bộ theo bộ lọc kỳ báo cáo và phân quyền chi nhánh.</p>
+    </div>
+    <div class="analytics-asof-wrap">
+      <span class="live-indicator" aria-hidden="true"></span>
+      <span id="analytics-asof" class="account-badge analytics-asof-badge">Đang tải dữ liệu…</span>
+    </div>
+  </div>
+
+  <form id="analytics-filter" class="analytics-filter panel-card" aria-label="Bộ lọc báo cáo">
+    <div class="filter-field">
+      <label for="analytics-start">Từ ngày</label>
+      <input id="analytics-start" type="date" required>
+    </div>
+    <div class="filter-field">
+      <label for="analytics-end">Đến ngày</label>
+      <input id="analytics-end" type="date" required>
+    </div>
+    <div class="filter-field filter-grow">
+      <label for="analytics-branch">Chi nhánh</label>
+      <select id="analytics-branch">
+        <option value="">Tất cả chi nhánh được cấp quyền</option>
+      </select>
+    </div>
+    <div class="filter-field filter-grow">
+      <label for="analytics-campaign">UTM Campaign</label>
+      <input id="analytics-campaign" maxlength="100" placeholder="Tất cả chiến dịch marketing">
+    </div>
+    <div class="filter-field filter-actions">
+      <button class="btn-action-call filter-submit-btn" type="submit">
+        <span>Áp dụng bộ lọc</span>
+      </button>
+    </div>
+    <div class="filter-field filter-quick">
+      <label for="analytics-period">Chọn nhanh</label>
+      <select id="analytics-period">
+        <option value="7">7 ngày qua</option>
+        <option value="30" selected>30 ngày qua</option>
+        <option value="90">90 ngày qua</option>
+      </select>
+    </div>
+  </form>
+
+  <p id="analytics-state" role="status" aria-live="polite" class="analytics-status-msg"></p>
+
+  {# KHUNG CHỈ SỐ KINH DOANH CHÍNH (KPI METRIC CARDS) #}
+  <div class="kpi-grid" id="analytics-kpis" aria-label="Các chỉ số chính trong kỳ"></div>
+
+  {# LƯỚI BIỂU ĐỒ ĐỒ HỌA CHUYÊN NGHIỆP #}
+  <div class="analytics-grid">
+    <section class="panel-card analytics-full chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>📈 Xu hướng tiếp nhận &amp; kết quả theo ngày</h3>
+          <p class="analytics-note">Theo dõi số lượng hồ sơ nhận mới, đánh giá đủ điều kiện và hoàn tất lắp đặt theo từng ngày trong kỳ.</p>
+        </div>
+        <span class="chart-type-badge">ApexCharts Area</span>
+      </div>
+      <div id="analytics-trend" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>🎯 Phễu chuyển đổi dịch vụ</h3>
+          <p class="analytics-note">Tiếp nhận → Đã liên hệ → Đủ điều kiện → Đã lắp đặt.</p>
+        </div>
+        <span class="chart-type-badge">Conversion Funnel</span>
+      </div>
+      <div id="analytics-funnel" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>⏱️ Hạn phản hồi khách hàng (SLA)</h3>
+          <p class="analytics-note">Đo lường tồn đọng cuộc gọi và tỷ lệ xử lý đúng cam kết dịch vụ.</p>
+        </div>
+        <span class="chart-type-badge">SLA Radial</span>
+      </div>
+      <div id="analytics-sla" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>🌐 Cơ cấu nguồn khách hàng</h3>
+          <p class="analytics-note">Phân bổ hồ sơ theo kênh tiếp cận (Google, Facebook, Zalo, Trực tiếp...).</p>
+        </div>
+        <span class="chart-type-badge">Donut Share</span>
+      </div>
+      <div id="analytics-sources" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>📊 Phân bổ trạng thái xử lý</h3>
+          <p class="analytics-note">Tỷ trọng hồ sơ theo các bước trong quy trình vận hành hiện tại.</p>
+        </div>
+        <span class="chart-type-badge">Status Donut</span>
+      </div>
+      <div id="analytics-statuses" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>⚡ Nhu cầu gói cước &amp; dịch vụ</h3>
+          <p class="analytics-note">Xếp hạng các gói Internet &amp; Combo được khách hàng đăng ký nhiều nhất.</p>
+        </div>
+        <span class="chart-type-badge">Package Ranking</span>
+      </div>
+      <div id="analytics-plans" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>🏢 Hiệu quả theo từng chi nhánh</h3>
+          <p class="analytics-note">Số lượng hồ sơ và tỷ lệ chuyển đổi phân bổ theo các phòng giao dịch.</p>
+        </div>
+        <span class="chart-type-badge">Branch Performance</span>
+      </div>
+      <div id="analytics-branches" class="chart-body"></div>
+    </section>
+
+    <section class="panel-card analytics-full chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>💰 Hiệu quả chiến dịch Marketing &amp; Chi phí (CPL)</h3>
+          <p class="analytics-note">Chi phí tiếp cận, chi phí trên mỗi hồ sơ (CPL) và chi phí thực tế trên mỗi hợp đồng lắp đặt thành công.</p>
+        </div>
+        <span class="chart-type-badge">Campaigns Financials</span>
+      </div>
+      <div id="analytics-campaigns" class="chart-body table-responsive"></div>
+    </section>
+  </div>
 </section>
