@@ -18,6 +18,7 @@ function showToast(message, type = 'info') {
 let pendingLead = null;
 async function submitLeadToBackend(leadData) {
   leadData = {...leadData, ...(window.PageFPTVoucher?.leadContext?.() || {}), ...(window.PageFPTLinkTracking?.leadContext?.() || {})};
+  if (/^\/[a-z0-9/-]{0,149}$/.test(window.location?.pathname||'')) leadData.measurement_path=window.location.pathname;
   const body = JSON.stringify(leadData);
   // Auto-refreshed evidence must not turn an unresolved submission into a new one.
   // User input/consent changes do; preserve the original exact body until resolved.

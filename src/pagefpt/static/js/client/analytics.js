@@ -165,6 +165,12 @@ async function initAttribution() {
     const value = params.get(key) || "";
     if (/^[a-zA-Z0-9_.-]{0,100}$/.test(value)) attributes[key] = value;
   }
+  if (analyticsContext.advertising_opt_in) {
+    const cookies=Object.fromEntries((document.cookie||'').split(';').map(v=>{const pos=v.indexOf('=');return pos<0?['','']:[v.slice(0,pos).trim(),v.slice(pos+1)];}));
+    const ga=/^GA[0-9]+\.[0-9]+\.([0-9]{1,20}\.[0-9]{1,20})$/.exec(cookies._ga||'');
+    if(ga)attributes.ga_client_id=ga[1];
+    for(const [cookie,key] of [['_fbp','fbp'],['_fbc','fbc']])if(/^fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256}$/.test(cookies[cookie]||''))attributes[key]=cookies[cookie];
+  }
   if (analyticsContext.marketing_opt_in) {
     for (const key of ["campaign_id", "adgroup_id", "adset_id", "ad_id"]) {
       const value = params.get(key) || (key === "campaign_id" ? params.get("utm_id") : "") || "";

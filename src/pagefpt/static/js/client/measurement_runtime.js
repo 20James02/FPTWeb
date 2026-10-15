@@ -22,7 +22,7 @@
     if(window.fbq)return;
     const fbq=function(){fbq.callMethod?fbq.callMethod.apply(fbq,arguments):fbq.queue.push(arguments);};
     fbq.queue=[];fbq.push=fbq;fbq.loaded=true;fbq.version='2.0';window.fbq=fbq;window._fbq=window._fbq||fbq;
-    if(document.head){const script=document.createElement('script');script.async=true;script.src='https://connect.facebook.net/en_US/fbevents.js';script.referrerPolicy='strict-origin';document.head.appendChild(script);}
+    if(document.head){const script=document.createElement('script');script.async=true;script.onload=()=>setTimeout(()=>{if(advertising()&&typeof initAttribution==='function')initAttribution().catch(()=>{});},1000);script.src='https://connect.facebook.net/en_US/fbevents.js';script.referrerPolicy='strict-origin';document.head.appendChild(script);}
   }
   function updateProviders(){
     if(!advertising()){window.fbq?.('consent','revoke');return;}

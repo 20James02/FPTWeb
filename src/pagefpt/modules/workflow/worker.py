@@ -20,14 +20,20 @@ class Worker:
         notifications=None,
         conversions=None,
         telegram=None,
+        provider_http=None,
     ):
         self.db, self.crypt, self.geoip = db, crypt, geoip
         self.storage = storage
         self.notifications = notifications
         self.conversions = conversions
+        self.provider_http = provider_http
         self.telegram = telegram
 
     async def handle(self, job):
+        if job["kind"] == "measurement_conversion":
+            from pagefpt.modules.measurement.worker import process
+
+            return await process(self.db, self.crypt, self.provider_http, job)
         if job["kind"] in {"admin_notice", "telegram_recovery"}:
             from pagefpt.modules.integrations.base import DeliveryResult, DeliveryState
 

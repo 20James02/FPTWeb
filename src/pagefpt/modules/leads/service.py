@@ -110,6 +110,8 @@ async def submit_lead(request, input, key, crypt, durable=False):
     semantic["risk_evidence"] = {"honeypot": bool(input.website)}
     semantic["risk_source"] = "intake-v1"
     semantic["session_id"] = session_id
+    semantic["measurement_environment"] = request.app.state.settings.environment
+    semantic["measurement_host"] = request.url.hostname or ""
     from pagefpt.modules.link_analytics.service import lead_source
 
     source = await lead_source(request, input, crypt, now)

@@ -8,6 +8,7 @@ from pagefpt.modules.pricing.schemas import Command
 
 
 class LeadRequest(Command):
+    measurement_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
     link_source_token: str | None = Field(default=None, max_length=8192)
     link_visit_token: str | None = Field(default=None, max_length=8192)
     voucher_code: str | None = Field(

@@ -78,15 +78,36 @@ class AttributionInput(Command):
     adset_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
     ad_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
     landing_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
+    ga_client_id: str = Field(default="", pattern=r"^(|[0-9]{1,20}\.[0-9]{1,20})$")
+    fbp: str = Field(
+        default="", max_length=300, pattern=r"^(|fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256})$"
+    )
+    fbc: str = Field(
+        default="", max_length=300, pattern=r"^(|fb\.[0-9]+\.[0-9]{10,16}\.[a-zA-Z0-9_-]{1,256})$"
+    )
 
 
 @router.post("/touches")
 async def touch(input: AttributionInput, request: Request):
     crypt = crypto(request)
     claims = crypt.verify(input.session_token, "session", datetime.now(UTC))
-    payload = input.model_dump(mode="json", exclude={"session_token", "click_id"})
+    payload = input.model_dump(
+        mode="json", exclude={"session_token", "click_id", "ga_client_id", "fbp", "fbc"}
+    )
     payload["environment"] = request.app.state.settings.environment
     permission = await dispatch(request, "session_read", id=claims["id"])
+    if (
+        permission.get("analytics")
+        and permission.get("marketing")
+        and permission.get("advertising")
+    ):
+        identifiers = {
+            k: getattr(input, k) for k in ("ga_client_id", "fbp", "fbc") if getattr(input, k)
+        }
+        if identifiers:
+            payload["provider_ids_ciphertext"] = crypt.encrypt(
+                __import__("json").dumps(identifiers)
+            )
     payload["click_id_ciphertext"] = (
         crypt.encrypt(input.click_id) if input.click_id and permission.get("marketing") else None
     )

@@ -203,3 +203,15 @@ async def public_config(
     response = public_json(request, data)
     response.headers["Cache-Control"] = "public,max-age=0,s-maxage=30,must-revalidate"
     return response
+
+
+@router.get("/deliveries")
+async def deliveries(request: Request):
+    actor = await authorize(request)
+    return await dispatch(request, "measurement_delivery_list", actor=actor.user_id)
+
+
+@router.post("/deliveries/{id}/retry")
+async def retry_delivery(id: UUID, request: Request):
+    actor = await authorize(request, "measurement.replay", mfa=True)
+    return await dispatch(request, "measurement_delivery_retry", actor=actor.user_id, id=str(id))

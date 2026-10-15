@@ -9,9 +9,11 @@ BEGIN
  IF NOT FOUND THEN RETURN '{}'; END IF;
  SELECT * INTO previous FROM private.touches WHERE session_id=sid AND created_at>now()-interval '30 days' ORDER BY created_at DESC,touches.id DESC LIMIT 1;
  IF coalesce(p->>'utm_source','')='' AND coalesce(p->>'utm_campaign','')='' AND coalesce(p->>'platform','')='' AND coalesce(p->>'campaign_id','')='' AND coalesce(p->>'click_id_ciphertext','')='' THEN
-  RETURN jsonb_build_object('id',previous.id);
+  IF previous.id IS NOT NULL AND p ? 'provider_ids_ciphertext' THEN UPDATE private.touches SET payload=payload||jsonb_build_object('provider_ids_ciphertext',p->'provider_ids_ciphertext') WHERE touches.id=previous.id; END IF;
+  IF previous.id IS NOT NULL OR NOT p ? 'provider_ids_ciphertext' THEN RETURN jsonb_build_object('id',previous.id); END IF;
  END IF;
- IF previous.id IS NOT NULL AND previous.created_at>now()-interval '30 minutes' AND previous.payload-'click_id_ciphertext'=p-'click_id_ciphertext' THEN RETURN jsonb_build_object('id',previous.id); END IF;
+ IF previous.id IS NOT NULL AND previous.created_at>now()-interval '30 minutes' AND previous.payload-'click_id_ciphertext'-'provider_ids_ciphertext'=p-'click_id_ciphertext'-'provider_ids_ciphertext' THEN
+ UPDATE private.touches SET payload=payload||p WHERE touches.id=previous.id;RETURN jsonb_build_object('id',previous.id); END IF;
  INSERT INTO private.touches(session_id,payload) VALUES(sid,p) RETURNING touches.id INTO id;
  RETURN jsonb_build_object('id',id);
 END $$;
