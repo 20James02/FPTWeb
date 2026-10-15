@@ -25,6 +25,8 @@ from pagefpt.modules.leads.profile import router as lead_profile_router
 from pagefpt.modules.leads.routes import router as leads_router
 from pagefpt.modules.link_analytics.routes import router as link_analytics_router
 from pagefpt.modules.marketing.routes import router as marketing_router
+from pagefpt.modules.measurement.routes import public_router as measurement_public_router
+from pagefpt.modules.measurement.routes import router as measurement_router
 from pagefpt.modules.media.routes import router as media_router
 from pagefpt.modules.pricing.imports import router as imports_router
 from pagefpt.modules.pricing.routes import router as pricing_router
@@ -77,9 +79,8 @@ router.include_router(display_router)
 router.include_router(administration_router)
 
 
+router.include_router(measurement_router)
+router.include_router(measurement_public_router)
+
 # CMS slug fallback follows every concrete API route.
 router.include_router(cms_router)
-
-from pagefpt.modules.measurement.routes import router as measurement_router
-
-router.include_router(measurement_router)

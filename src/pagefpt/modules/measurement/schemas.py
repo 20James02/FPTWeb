@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Literal
+from uuid import UUID, uuid4
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 
@@ -44,6 +45,103 @@ class ConnectionInput(Command):
         if not getattr(self.settings, required[self.provider]):
             raise ValueError("Thiếu mã đo lường của nền tảng")
         return self
+
+
+EVENTS = [
+    "page_view",
+    "view_plan",
+    "select_plan",
+    "form_open",
+    "form_start",
+    "click_call",
+    "click_zalo",
+    "click_messenger",
+    "select_billing_period",
+    "select_accessory",
+    "select_region",
+    "compare_plans",
+    "view_cost",
+    "return_visit",
+    "view_landing",
+    "experiment_exposure",
+    "generate_lead",
+]
+
+
+class MeasurementPolicy(Command):
+    ga4_connection_id: UUID | None = None
+    consent_mode: Literal["basic", "advanced"] | None = None
+    event_enabled: list[str] | None = Field(default=None, max_length=30)
+    attribution_window_days: int | None = Field(default=None, ge=1, le=90)
+    minimum_samples: int | None = Field(default=None, ge=30, le=10000)
+    maturity_days: int | None = Field(default=None, ge=1, le=90)
+    refresh_seconds: int | None = Field(default=None, ge=30, le=300)
+    retention_days: int | None = Field(default=None, ge=1, le=365)
+
+    @field_validator("event_enabled")
+    @classmethod
+    def supported_events(cls, value):
+        if value is not None and (set(value) - set(EVENTS) or len(set(value)) != len(value)):
+            raise ValueError("Chọn sự kiện có sẵn trong hệ thống")
+        return value
+
+
+class ConversionRule(Command):
+    id: UUID = Field(default_factory=uuid4)
+    event: Literal["lead", "qualified", "closed", "installed"]
+    connection_id: UUID
+    provider_event: str = Field(min_length=1, max_length=40, pattern=r"^[A-Za-z][A-Za-z0-9_]*$")
+    conversion_label: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_-]*$")
+    conversion_action: str = Field(
+        default="", max_length=100, pattern=r"^(customers/[0-9]+/conversionActions/[0-9]+)?$"
+    )
+    primary: bool = False
+    route: Literal["browser", "server", "ga4_import"] = "browser"
+    value_vnd: int = Field(default=0, ge=0, le=1000000000)
+
+
+class ConfigInput(Command):
+    name: str = Field(min_length=1, max_length=100)
+    scope: Literal["global", "domain", "landing", "campaign"] = "global"
+    scope_key: str = Field(default="*", max_length=150)
+    environment: Literal["test", "staging", "production"]
+    policy: MeasurementPolicy = Field(default_factory=MeasurementPolicy)
+    rules: list[ConversionRule] | None = Field(default=None, max_length=20)
+
+    @model_validator(mode="after")
+    def supported_scope(self):
+        import re
+
+        if not self.name.strip():
+            raise ValueError("Nhập tên cấu hình")
+        patterns = {
+            "global": r"\*",
+            "domain": r"[a-z0-9.-]+",
+            "landing": r"/(?:[a-z0-9-]+(?:/[a-z0-9-]+)*)?",
+            "campaign": r"[a-zA-Z0-9_-]{1,100}",
+        }
+        if not re.fullmatch(patterns[self.scope], self.scope_key):
+            raise ValueError("Phạm vi không hợp lệ")
+        identities = [(r.event, str(r.connection_id)) for r in self.rules or []]
+        if len(set(identities)) != len(identities):
+            raise ValueError("Mỗi kết nối chỉ nhận một mục tiêu cho cùng kết quả")
+        if any(
+            r.event == "lead" and r.provider_event.lower() == "purchase" for r in self.rules or []
+        ):
+            raise ValueError("Form tư vấn không phải giao dịch mua hàng")
+        return self
+
+
+class ConfigUpdate(ConfigInput):
+    expected_version: int = Field(ge=1)
+
+
+class SimulationInput(Command):
+    expected_version: int = Field(ge=1)
+    path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
+    event: Literal["lead", "qualified", "closed", "installed"] = "lead"
+    analytics: bool = False
+    marketing: bool = False
 
 
 class ConnectionUpdate(ConnectionInput):
