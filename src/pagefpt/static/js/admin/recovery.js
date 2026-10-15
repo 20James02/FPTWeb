@@ -1,7 +1,21 @@
 /** Six-digit Telegram code and MFA proof are consumed on final submit. */
 let recoveryBusy = false;
 let currentRecoveryChallenge = "";
+function clearRecoveryCodeError() {
+  document.getElementById("forgot-otp-code")?.setAttribute?.("aria-invalid", "false");
+  const error = document.getElementById("recovery-code-error");
+  if (error) { error.textContent = ""; error.hidden = true; }
+}
+function showRecoveryCodeError(message) {
+  const input = document.getElementById("forgot-otp-code");
+  input?.setAttribute?.("aria-invalid", "true");
+  const error = document.getElementById("recovery-code-error");
+  if (error) { error.textContent = message; error.hidden = false; }
+  else showToast(message, "error");
+  input?.focus?.();
+}
 function showRecoveryReference() {
+  clearRecoveryCodeError();
   const help = document.getElementById("recovery-code-help");
   if (help)
     help.textContent =
@@ -39,14 +53,43 @@ async function handleForgotStep1(e) {
     button.disabled = false;
   }
 }
-function handleForgotStep2(e) {
+async function handleForgotStep2(e) {
   if (e) e.preventDefault();
-  const otp = document.getElementById("forgot-otp-code").value.trim();
+  if (recoveryBusy) return;
+  const input = document.getElementById("forgot-otp-code");
+  const otp = input.value.trim();
   if (!/^[0-9]{6}$/.test(otp) || !currentRecoveryChallenge) {
-    showToast("Nhập đúng mã Telegram gồm 6 chữ số.", "error");
+    showRecoveryCodeError("Nhập đúng mã Telegram gồm 6 chữ số.");
     return;
   }
-  goToForgotStep(3);
+  const challenge = currentRecoveryChallenge;
+  const account = currentForgotAccount;
+  const generation = typeof loginModeGeneration === "undefined" ? 0 : loginModeGeneration;
+  const current = () =>
+    challenge === currentRecoveryChallenge && account === currentForgotAccount &&
+    input.value.trim() === otp &&
+    generation === (typeof loginModeGeneration === "undefined" ? 0 : loginModeGeneration);
+  const button = document.getElementById("btn-forgot-step2-submit");
+  const label = button?.querySelector?.("span");
+  const oldLabel = label?.textContent;
+  recoveryBusy = true;
+  clearRecoveryCodeError();
+  button.disabled = true;
+  button.setAttribute?.("aria-busy", "true");
+  if (label) label.textContent = "Đang xác minh mã…";
+  try {
+    const result = await recoveryRequest("/verify", {email: account, challenge_id: challenge, otp});
+    if (!current()) return;
+    if (result.verified !== true) throw new Error("Mã chưa được xác minh. Hãy kiểm tra và thử lại.");
+    goToForgotStep(3);
+  } catch (err) {
+    if (current()) showRecoveryCodeError(err.message || "Chưa xác minh được mã. Vui lòng thử lại.");
+  } finally {
+    recoveryBusy = false;
+    button.disabled = false;
+    button.setAttribute?.("aria-busy", "false");
+    if (label) label.textContent = oldLabel;
+  }
 }
 async function handleForgotStep3(e) {
   if (e) e.preventDefault();
@@ -117,3 +160,4 @@ async function resendForgotOtp() {
     recoveryBusy = false;
   }
 }
+document.getElementById("forgot-otp-code")?.addEventListener?.("input", clearRecoveryCodeError);

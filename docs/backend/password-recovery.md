@@ -19,9 +19,12 @@ Giữ Supabase Auth quản lý mật khẩu, JWT và MFA. Backend dùng API Admi
 | Endpoint | Request | Response |
 |---|---|---|
 | POST /api/v1/auth/recovery | `{email}` | `202 {accepted:true,challenge_id:UUID}` |
+| POST /api/v1/auth/recovery/verify | `{email,challenge_id,otp}` | `200 {verified:true}` khi mã đúng, `401` khi sai/hết hạn/không hợp lệ |
 | POST /api/v1/auth/recovery/reset | `{email,challenge_id,otp,password,totp:""}` | `200 {changed:true,provider_revoked:boolean}` |
 
-Chỉ nhận `otp` đúng 6 chữ số ASCII; giữ số 0 đầu. Không nhận recovery_link hoặc mã 7/8 số. Password 8..1024 ký tự, thêm chính sách Supabase. TOTP trống hoặc 6 số. Form bước 2 chỉ kiểm tra định dạng; proof Telegram và MFA được xác minh khi lưu mật khẩu mới. Browser giữ challenge_id/code trong bộ nhớ và input, không lưu localStorage/sessionStorage. Gửi lại cập nhật challenge_id, xóa input mã cũ. Xóa mọi input mã/mật khẩu khi thành công và yêu cầu đăng nhập lại.
+Chỉ nhận `otp` đúng 6 chữ số ASCII; giữ số 0 đầu. Không nhận recovery_link hoặc mã 7/8 số. Password 8..1024 ký tự, thêm chính sách Supabase. TOTP trống hoặc 6 số. Form bước 2 gọi `/verify` để máy chủ so HMAC mã thật, kiểm tra challenge/email/chat/thời hạn/quyền tài khoản; chỉ chuyển bước 3 khi server trả verified đúng kiểu boolean true. Mã sai hiển thị lỗi ngay dưới ô nhập; khi đang kiểm tra, nút bị khóa. Phản hồi cũ sau khi đổi email, hủy, đổi bước hoặc sửa mã không tự mở form mật khẩu mới.
+
+Verify không tiêu thụ mã hoặc trả provider proof, không gia hạn mã và không xóa số lần sai đã có. Verify/reset dùng chung row lock và bộ đếm tối đa 5 lần sai; lần thứ 5 chặn challenge và xóa code/proof. Khi lưu, `/reset` luôn kiểm tra lại và consume một lần, rồi xác minh Supabase/MFA; việc đã verify không cho phép dùng mã sai, hết hạn hoặc bị thu hồi sau đó. Browser giữ challenge_id/code trong bộ nhớ và input, không lưu localStorage/sessionStorage. Gửi lại cập nhật challenge_id, xóa input mã cũ. Xóa mọi input mã/mật khẩu khi thành công và yêu cầu đăng nhập lại.
 
 Email không tồn tại hoặc không đủ điều kiện nhận cùng hình dạng response 202 với UUID ngẫu nhiên, không phát sinh provider request/job. Response accepted không khẳng định tồn tại tài khoản hay Telegram đã giao thành công. Không công bố recipient hoặc membership. Throttling HMAC email/IP áp dụng mọi email; gate gửi lại tối thiểu 60 giây cũng áp dụng email không hợp lệ. Chỉ ở chế độ cũ, email thiếu binding riêng mới không được gửi.
 

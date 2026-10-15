@@ -26,10 +26,13 @@ class RecoveryEmail(Command):
         return Login.valid_email(value)
 
 
-class ResetPassword(RecoveryEmail):
-    password: str = Field(min_length=8, max_length=1024)
+class RecoveryCode(RecoveryEmail):
     otp: str = Field(pattern=r"^[0-9]{6}$")
     challenge_id: UUID
+
+
+class ResetPassword(RecoveryCode):
+    password: str = Field(min_length=8, max_length=1024)
     totp: str = Field(default="", pattern=r"^([0-9]{6})?$")
     totp_factor_id: UUID | None = None
 
@@ -98,6 +101,25 @@ async def request_recovery(input: RecoveryEmail, request: Request):
         proof_ciphertext=crypt.encrypt(proof),
     )
     return accepted
+
+
+@router.post("/verify")
+async def verify_code(input: RecoveryCode, request: Request):
+    same_origin(request)
+    await throttle(request, input.email)
+    crypt = crypto(request)
+    checked = await dispatch(
+        request,
+        "telegram_recovery_verify",
+        chat_id=request.app.state.settings.recovery_chat_for(input.email),
+        key=crypt.match(input.email, "telegram-recovery-email"),
+        id=str(input.challenge_id),
+        code_hash=crypt.match(str(input.challenge_id) + ":" + input.otp, "telegram-recovery-code"),
+    )
+    if checked.get("verified") is not True:
+        raise DomainError("RECOVERY_EXPIRED", 401)
+    # No grant/provider proof is exposed. The final reset rechecks and consumes.
+    return {"verified": True}
 
 
 @router.post("/reset")

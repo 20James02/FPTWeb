@@ -533,9 +533,10 @@
         <div class="login-field">
           <label for="forgot-otp-code">Mã Telegram 6 số</label>
           <div class="login-input-wrap">
-            <input type="text" id="forgot-otp-code" placeholder="123456" maxlength="6" minlength="6" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" spellcheck="false" autocapitalize="none" aria-describedby="recovery-code-help">
+            <input type="text" id="forgot-otp-code" placeholder="123456" maxlength="6" minlength="6" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" spellcheck="false" autocapitalize="none" aria-describedby="recovery-code-help recovery-code-error">
           </div>
           <p id="recovery-code-help" style="font-size: 0.78rem; color: #94A3B8; margin-top: 8px; line-height: 1.5;">Nhận mã từ bot Telegram đã thiết lập hoặc liên hệ quản trị viên. Mã hết hạn sau 5 phút, chỉ dùng một lần; gửi lại sẽ vô hiệu mã cũ.</p>
+          <p id="recovery-code-error" role="alert" hidden style="font-size: 0.8rem; color: #FDA4AF; margin-top: 8px;"></p>
         </div>
 
         <div class="countdown-timer-box" style="margin-bottom: 14px;">
@@ -545,7 +546,7 @@
 
         <button type="submit" class="btn-login-cta" id="btn-forgot-step2-submit">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Tiếp Tục Nhập Mật Khẩu</span>
+          <span>Xác Minh Mã & Tiếp Tục</span>
         </button>
 
         <div style="text-align: center; margin-top: 16px; display: flex; justify-content: space-between;">
@@ -559,7 +560,7 @@
         <div style="margin-bottom: 16px;">
           <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: #FFFFFF;">Đặt Lại Mật Khẩu Mới</h2>
           <div style="font-size: 0.8rem; color: #94A3B8; line-height: 1.45;">
-            Bước 3/3: Mã Telegram và MFA được xác minh khi lưu mật khẩu mới.
+            Bước 3/3: Mã Telegram đã được kiểm tra. Hệ thống kiểm tra lại mã và MFA khi lưu mật khẩu mới.
           </div>
         </div>
 
@@ -665,6 +666,8 @@
   }
 
   function goToForgotStep(step) {
+    // Discard pending async verification when navigating between recovery steps.
+    loginModeGeneration++;
     const s1 = document.getElementById('forgot-step-1');
     const s2 = document.getElementById('forgot-step-2');
     const s3 = document.getElementById('forgot-step-3');

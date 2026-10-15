@@ -32,18 +32,44 @@ for name in names:
   if row:print(Crypto('e'*32,'m'*32,'t'*32).decrypt(row[0]));break
 `,challengeId],{env:{...process.env,PYTHONPATH:'src:.'},encoding:'utf8'}).trim();
   assert.match(code,/^[0-9]{6}$/);
+  const wrong=code==='000000'?'000001':'000000';
+  await page.fill('#forgot-otp-code',wrong);
+  const rejected=page.waitForResponse(r=>r.url()===origin+'/api/v1/auth/recovery/verify');
+  await page.click('#btn-forgot-step2-submit');
+  assert.equal((await rejected).status(),401);
+  await page.locator('#recovery-code-error').waitFor();
+  assert.ok(await page.locator('#forgot-step-2').isVisible());
+  assert.ok(!(await page.locator('#forgot-step-3').isVisible()));
+  assert.equal(await page.locator('#forgot-otp-code').getAttribute('aria-invalid'),'true');
   await page.fill('#forgot-otp-code',code);
+  // Hold a real verification response, return to email, and reject stale navigation.
+  let releaseVerification,enteredVerification;
+  const release=new Promise(r=>releaseVerification=r);
+  const entered=new Promise(r=>enteredVerification=r);
+  await page.route(origin+'/api/v1/auth/recovery/verify',async route=>{
+   enteredVerification();await release;await route.continue();
+  },{times:1});
+  const stale=page.waitForResponse(r=>r.url()===origin+'/api/v1/auth/recovery/verify');
+  await page.click('#btn-forgot-step2-submit');await entered;
+  await page.getByRole('button',{name:'← Đổi Email',exact:true}).click();
+  releaseVerification();assert.equal((await stale).status(),200);
+  await page.waitForFunction(()=>!document.getElementById('btn-forgot-step2-submit').disabled);
+  assert.ok(await page.locator('#forgot-step-1').isVisible());
+  assert.ok(!(await page.locator('#forgot-step-3').isVisible()));
+  assert.notEqual(await page.evaluate(()=>document.activeElement.id),'forgot-otp-code');
+  await page.evaluate(()=>goToForgotStep(2));
   assert.equal(await page.locator('#forgot-otp-code').getAttribute('inputmode'),'numeric');
   for(const width of [360,390,430,1440]){
    await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   }
-  await page.click('#btn-forgot-step2-submit');await page.locator('#forgot-step-3').waitFor();
+  const verified=page.waitForResponse(r=>r.url()===origin+'/api/v1/auth/recovery/verify');
+  await page.click('#btn-forgot-step2-submit');assert.equal((await verified).status(),200);await page.locator('#forgot-step-3').waitFor();
   await page.fill('#new-password','QA-recovered-password-123');await page.fill('#confirm-new-password','QA-recovered-password-123');await page.fill('#recovery-totp','123456');
   const received=page.waitForResponse(r=>r.url()===origin+'/api/v1/auth/recovery/reset' && r.request().method()==='POST');
   await page.click('#btn-forgot-step3-submit');const response=await received;assert.equal(response.status(),200,await response.text());assert.equal((await response.json()).changed,true);
   assert.equal(response.request().postDataJSON().otp,code);assert.ok(response.request().postDataJSON().challenge_id);assert.equal(response.request().postDataJSON().recovery_link,undefined);
   await page.waitForFunction(()=>document.getElementById('forgot-otp-code').value==='');
   assert.equal(await page.inputValue('#new-password'),'');assert.deepEqual(errors,[]);
-  console.log('Telegram code browser passed: six digits, four widths, MFA, real SQL reset audit and cleared credentials.');
+  console.log('Telegram code browser passed: wrong code stays on step two, correct code verified by server, four widths, MFA, SQL reset audit and cleared credentials.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

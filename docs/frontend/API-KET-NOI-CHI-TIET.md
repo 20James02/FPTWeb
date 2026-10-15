@@ -189,7 +189,8 @@ Tổng 226 method/path: 220 có trong OpenAPI và 6 route ngoài OpenAPI.
 | DELETE | `/api/v1/auth/mfa/{id}` | own active membership; CSRF for writes | — | — | `src/pagefpt/modules/identity/accounts.py:185` |
 | POST | `/api/v1/auth/mfa/{id}/verify` | own active membership; CSRF for writes | — | Code | `src/pagefpt/modules/identity/accounts.py:131` |
 | POST | `/api/v1/auth/recovery` | active membership after provider proof on reset | — | RecoveryEmail | `src/pagefpt/modules/identity/recovery.py:46` |
-| POST | `/api/v1/auth/recovery/reset` | active membership after provider proof on reset | — | ResetPassword | `src/pagefpt/modules/identity/recovery.py:95` |
+| POST | `/api/v1/auth/recovery/verify` | Mã/challenge/email/chat hợp lệ, same-origin và giới hạn lần sai | — | RecoveryCode | `src/pagefpt/modules/identity/recovery.py` |
+| POST | `/api/v1/auth/recovery/reset` | Kiểm tra lại mã, active membership và MFA trước đổi mật khẩu | — | ResetPassword | `src/pagefpt/modules/identity/recovery.py` |
 | DELETE | `/api/v1/auth/session` | login_or_cookie_session | — | — | `src/pagefpt/modules/identity/sessions.py:177` |
 | POST | `/api/v1/auth/session` | login_or_cookie_session | — | Login | `src/pagefpt/modules/identity/sessions.py:122` |
 | GET | `/api/v1/catalog` | public | — | — | `src/pagefpt/modules/catalog/routes.py:43` |
