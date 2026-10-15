@@ -1,5 +1,49 @@
 <dialog id="plan-details-dialog" class="plan-details-dialog" aria-labelledby="plan-details-title">
-<header><div><span class="detail-eyebrow">THÔNG TIN GÓI CƯỚC</span><h2 id="plan-details-title"></h2></div><button type="button" class="detail-close" aria-label="Đóng chi tiết gói" onclick="document.getElementById('plan-details-dialog').close()">×</button></header>
-<div class="plan-details-content"><img id="plan-details-image" alt="" hidden><p id="plan-details-description"></p><dl id="plan-details-facts"></dl><h3>Thiết bị</h3><ul id="plan-details-equipment"></ul><h3>Phụ kiện & ưu đãi</h3><div id="plan-details-accessories"></div><p class="detail-note">Giá theo địa bàn đã chọn. Tổng thanh toán gồm cước kỳ, VAT, phí hòa mạng, thiết bị và phụ kiện theo báo giá; nhân viên xác nhận điều kiện lắp đặt.</p></div>
-<footer><button id="plan-details-register" type="button" class="btn-select-plan primary">Đăng ký gói</button><button id="plan-details-compare" type="button" class="btn-flip-trigger"><span class="compare-text-desktop">So sánh gói</span><span class="compare-text-mobile">So sánh</span></button></footer>
+<header>
+  <div>
+    <span class="detail-eyebrow">THÔNG TIN GÓI CƯỚC CHÍNH THỨC</span>
+    <h2 id="plan-details-title"></h2>
+  </div>
+  <button type="button" class="detail-close" aria-label="Đóng chi tiết gói" onclick="document.getElementById('plan-details-dialog').close()">×</button>
+</header>
+<div class="plan-details-content">
+  <div class="detail-hero-section">
+    <img id="plan-details-image" alt="" hidden>
+    <p id="plan-details-description"></p>
+  </div>
+  
+  <div class="detail-card detail-pricing-card">
+    <div class="detail-card-header">
+      <span class="detail-card-icon" aria-hidden="true">💳</span>
+      <h3>Chi tiết cước phí & thanh toán</h3>
+    </div>
+    <dl id="plan-details-facts"></dl>
+  </div>
+
+  <div class="detail-card detail-equipment-card">
+    <div class="detail-card-header">
+      <span class="detail-card-icon" aria-hidden="true">📦</span>
+      <h3>Thiết bị trang bị theo gói</h3>
+    </div>
+    <ul id="plan-details-equipment"></ul>
+  </div>
+
+  <div class="detail-card detail-accessories-card">
+    <div class="detail-card-header">
+      <span class="detail-card-icon" aria-hidden="true">🎁</span>
+      <h3>Phụ kiện & ưu đãi mở rộng</h3>
+    </div>
+    <div id="plan-details-accessories"></div>
+  </div>
+
+  <div class="detail-trust-note">
+    <span class="detail-trust-icon" aria-hidden="true">🛡️</span>
+    <p class="detail-note">Báo giá chính thức theo địa bàn đã chọn. Tổng thanh toán gồm cước kỳ, VAT, phí hòa mạng, thiết bị và phụ kiện theo báo giá; nhân viên kỹ thuật hỗ trợ khảo sát và nghiệm thu lắp đặt tại nhà.</p>
+  </div>
+</div>
+<footer>
+  <button id="plan-details-register" type="button" class="btn-select-plan primary">Đăng ký gói ngay</button>
+  <button id="plan-details-compare" type="button" class="btn-flip-trigger"><span class="compare-text-desktop">So sánh gói cước</span><span class="compare-text-mobile">So sánh</span></button>
+</footer>
 </dialog>
+

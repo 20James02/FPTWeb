@@ -47,7 +47,7 @@
     if (q)
       fields.push(
         ...(q.display_monthly_vnd == null ? [] : [["Giá bình quân hiển thị / tháng", money(q.display_monthly_vnd)]]),
-        ["Cước tính tiền / tháng", money(q.monthly_vnd)],
+        ["Cước mỗi tháng", money(q.monthly_vnd)],
         ["Cước trả trước cả kỳ", money(q.line_items?.term_vnd)],
         ["Phụ kiện mỗi tháng", money(a.monthly)],
         ["Phụ kiện một lần", money(a.once)],
@@ -63,10 +63,19 @@
       );
     else fields.push(["Giá cước", "Cần xác nhận theo địa bàn/kỳ đã chọn"]);
     $("plan-details-facts").replaceChildren(
-      ...fields.flatMap(([key, value]) => [
-        node("dt", key),
-        node("dd", String(value)),
-      ]),
+      ...fields.flatMap(([key, value]) => {
+        const dt = node("dt", key);
+        const dd = node("dd", String(value));
+        const k = key.toLowerCase();
+        if (k.includes("tổng thanh toán")) {
+          dt.className = "fact-highlight fact-total-dt";
+          dd.className = "fact-highlight fact-total-dd";
+        } else if (k.includes("bình quân") || k.includes("cước mỗi tháng")) {
+          dt.className = "fact-accent-dt";
+          dd.className = "fact-accent-dd";
+        }
+        return [dt, dd];
+      }),
     );
     $("plan-details-equipment").replaceChildren(
       ...((q?.equipment ?? plan.equipment)?.length

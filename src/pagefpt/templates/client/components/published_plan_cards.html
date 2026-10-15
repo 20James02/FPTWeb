@@ -1,5 +1,6 @@
 {% for plan in plans %}
 {% set labels = plan.card_labels or {} %}
+{% set is_ultra = plan.speed_mbps and plan.speed_mbps >= 1000 %}
 <div class="{% if landing_card_mode|default(false) %}lp-plan-card {% endif %}plan-card-3d-wrapper plan-card--reference {{ 'is-center' if loop.first else 'is-hidden' }}" data-lp-accent="{{plan.presentation.accent|default('blue') if landing_card_mode|default(false) else 'blue'}}" data-analytics-plan-id="{{plan.id}}" data-analytics-placement="{{ 'landing' if landing_card_mode|default(false) else 'home' }}" data-lp-plan="{{plan.id}}" data-plan-id="{{plan.id}}" data-service="{{plan.service}}" data-category="{{ 'combo' if plan.service in ['combo', 'camera', 'play'] else plan.service }}">
   <div class="plan-card-3d-inner" id="card-3d-{{ plan.id }}">
     <div class="card-face card-face-front"><div class="card-light-streak" aria-hidden="true"></div>
@@ -11,13 +12,66 @@
         <div class="plan-header"><h3 class="plan-name" title="{{plan.name}}">{{ plan.name }}</h3>
           {% if landing_card_mode|default(false) and plan.presentation.subtitle %}<p class="lp-card-subtitle" title="{{plan.presentation.subtitle}}">{{plan.presentation.subtitle}}</p>{% endif %}
         </div>
-        <div class="plan-price-box"><div class="plan-price-row">
-          <button type="button" class="plan-price-info" data-plan-id="{{plan.id}}" onclick="openPublishedPlanDetails(this)" aria-label="Xem giá và điều kiện của {{plan.name}}"><span class="plan-price-amount" data-quote-plan="{{plan.id}}" aria-live="polite">Cần tư vấn</span><span class="plan-info-icon" aria-hidden="true">i</span></button>
-          <label class="billing-choice"><span class="sr-only">Kỳ thanh toán của {{plan.name}}</span><select data-billing-months="{{plan.id}}" aria-label="Kỳ thanh toán của {{plan.name}}">{% set period=landing.billing_months if landing_card_mode|default(false) else 6 %}{% for n in [1,6,12] %}<option value="{{n}}" {{"selected" if n==period}}>{{"Hàng tháng" if n==1 else n|string+" tháng"}}</option>{% endfor %}</select></label>
-        </div><div class="plan-price-note sr-only" data-quote-note="{{plan.id}}">Chọn khu vực để xem giá.</div></div>
-        <small data-period-average="{{plan.id}}" hidden>Bình quân/tháng</small><div class="plan-speed-panel">
-          <div class="plan-speed-data"><p>{{labels.get('speed', 'Tốc độ')}} (Download/Upload)</p><div class="plan-speed-values"><span><span class="plan-direction" aria-hidden="true">↓</span><span class="sr-only">Download: </span><strong>{{ (plan.speed_mbps ~ ' Mbps') if plan.speed_mbps else 'Chưa cập nhật' }}</strong></span><span><span class="plan-direction" aria-hidden="true">↑</span><span class="sr-only">Upload: </span><strong>{{ (plan.upload_speed_mbps ~ ' Mbps') if plan.upload_speed_mbps else 'Chưa cập nhật' }}</strong></span></div></div>
-          <svg class="plan-speed-gauge" viewBox="0 0 64 44" aria-hidden="true"><path d="M7 35a25 25 0 0 1 50 0" fill="none" stroke="#d1d1d1" stroke-width="6" stroke-linecap="round"/><path d="M7 35a25 25 0 0 1 11-21" fill="none" stroke="#ff7614" stroke-width="6" stroke-linecap="round"/><path d="M30 36 21 20 37 30a6 6 0 0 1-7 6" fill="#aaa"/></svg>
+        <div class="plan-price-box">
+          <div class="plan-price-row">
+            <button type="button" class="plan-price-info" data-plan-id="{{plan.id}}" onclick="openPublishedPlanDetails(this)" aria-label="Xem giá và điều kiện của {{plan.name}}"><span class="plan-price-amount" data-quote-plan="{{plan.id}}" aria-live="polite">Cần tư vấn</span><span class="plan-info-icon" aria-hidden="true">i</span></button>
+            <label class="billing-choice"><span class="sr-only">Kỳ thanh toán của {{plan.name}}</span><select data-billing-months="{{plan.id}}" aria-label="Kỳ thanh toán của {{plan.name}}">{% set period=landing.billing_months if landing_card_mode|default(false) else 6 %}{% for n in [1,6,12] %}<option value="{{n}}" {{"selected" if n==period}}>{{"Hàng tháng" if n==1 else n|string+" tháng"}}</option>{% endfor %}</select></label>
+          </div>
+          <div class="plan-price-note sr-only" data-quote-note="{{plan.id}}">Chọn khu vực để xem giá.</div>
+          <div class="plan-price-subtext"><small data-period-average="{{plan.id}}" class="period-average-badge" hidden>Bình quân/tháng</small></div>
+        </div>
+        <div class="plan-speed-panel {{ 'speed-panel--ultra' if is_ultra else 'speed-panel--standard' }}">
+          <div class="plan-speed-data">
+            <div class="plan-speed-label-row">
+              <p class="plan-speed-title">{{labels.get('speed', 'Tốc độ')}} (Download/Upload)</p>
+              {% if is_ultra %}
+              <span class="speed-tier-badge speed-tier--ultra" title="Băng thông đột phá 1 Gbps">⚡ 1 Gbps Turbo</span>
+              {% elif plan.speed_mbps and plan.speed_mbps >= 300 %}
+              <span class="speed-tier-badge speed-tier--high">300 Mbps Pro</span>
+              {% endif %}
+            </div>
+            <div class="plan-speed-values">
+              <span class="speed-val-down {{ 'speed-val--ultra' if is_ultra else '' }}">
+                <span class="plan-direction" aria-hidden="true">↓</span>
+                <span class="sr-only">Download: </span>
+                <strong>{{ (plan.speed_mbps ~ ' Mbps') if plan.speed_mbps else 'Chưa cập nhật' }}</strong>
+              </span>
+              <span class="speed-val-up">
+                <span class="plan-direction" aria-hidden="true">↑</span>
+                <span class="sr-only">Upload: </span>
+                <strong>{{ (plan.upload_speed_mbps ~ ' Mbps') if plan.upload_speed_mbps else 'Chưa cập nhật' }}</strong>
+              </span>
+            </div>
+          </div>
+          <div class="plan-speed-gauge-wrap {{ 'gauge-wrap--ultra' if is_ultra else 'gauge-wrap--std' }}">
+            <svg class="plan-speed-gauge {{ 'gauge--ultra' if is_ultra else 'gauge--std' }}" viewBox="0 0 64 44" aria-hidden="true">
+              <defs>
+                <linearGradient id="gauge-grad-ultra-{{ plan.id }}" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff7a00" />
+                  <stop offset="50%" stop-color="#ff3300" />
+                  <stop offset="100%" stop-color="#e11d48" />
+                </linearGradient>
+                <linearGradient id="gauge-grad-std-{{ plan.id }}" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+              </defs>
+              <path class="gauge-base" d="M7 35a25 25 0 0 1 50 0" fill="none" stroke="#e2e8f0" stroke-width="5.5" stroke-linecap="round"/>
+              <path class="gauge-active {{ 'gauge-active--ultra' if is_ultra else 'gauge-active--std' }}"
+                    d="M7 35a25 25 0 0 1 50 0"
+                    fill="none"
+                    stroke="url(#{{ 'gauge-grad-ultra-' ~ plan.id if is_ultra else 'gauge-grad-std-' ~ plan.id }})"
+                    stroke-width="5.5"
+                    stroke-linecap="round"
+                    style="--target-dash: {{ '9' if is_ultra else ('48' if plan.speed_mbps and plan.speed_mbps >= 300 else '62') }};" />
+              <g class="gauge-needle-wrap {{ 'needle-wrap--ultra' if is_ultra else 'needle-wrap--std' }}"
+                 style="--target-rot: {{ '62deg' if is_ultra else ('-35deg' if plan.speed_mbps and plan.speed_mbps >= 300 else '-60deg') }};">
+                <line x1="32" y1="35" x2="32" y2="15" stroke="{{ '#e11d48' if is_ultra else '#0284c7' }}" stroke-width="2.5" stroke-linecap="round" />
+                <circle cx="32" cy="35" r="4.5" fill="#0f172a" />
+                <circle cx="32" cy="35" r="2" fill="#fff" />
+              </g>
+            </svg>
+          </div>
         </div>
         <div class="plan-benefits-scroll" tabindex="0" role="region" aria-label="Thiết bị và ưu đãi của {{plan.name}}">
           <div class="plan-equipment-block"><h4 class="{{'sr-only' if labels.get('equipment', 'Thiết bị') == 'Thiết bị'}}">{{labels.get('equipment', 'Thiết bị')}}</h4><ul class="plan-features" data-period-equipment="{{plan.id}}">{% for equipment in plan.equipment or [] %}<li class="plan-feature-item">{{equipment}}</li>{% else %}<li class="plan-feature-item">Nhân viên xác nhận thiết bị theo gói.</li>{% endfor %}</ul></div>
