@@ -30,6 +30,10 @@ class Worker:
         self.telegram = telegram
 
     async def handle(self, job):
+        if job["kind"] == "measurement_sync":
+            from pagefpt.modules.measurement.sync import process
+
+            return await process(self.db, self.crypt, self.provider_http, job)
         if job["kind"] == "measurement_conversion":
             from pagefpt.modules.measurement.worker import process
 

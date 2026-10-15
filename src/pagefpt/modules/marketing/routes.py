@@ -26,6 +26,41 @@ async def session(input: ConsentInput, request: Request):
     }
 
 
+class SessionResume(Command):
+    session_token: str = Field(max_length=8192)
+
+
+@router.post("/sessions/resume")
+async def resume_session(input: SessionResume, request: Request):
+    claims = crypto(request).verify(input.session_token, "session", datetime.now(UTC))
+    row = await dispatch(request, "session_read", id=claims["id"])
+    return {
+        key: row.get(key) is True
+        for key in ("analytics", "marketing", "advertising", "personalization")
+    }
+
+
+@router.post("/consent/revoke")
+async def revoke_session(input: SessionResume, request: Request):
+    from pagefpt.modules.identity.sessions import same_origin
+
+    same_origin(request)
+    # An expired signed session can only REDUCE its own permissions here.
+    # Every endpoint that reads/tracks data still verifies the real expiry.
+    claims = crypto(request).verify(input.session_token, "session", datetime.fromtimestamp(0, UTC))
+    await dispatch(
+        request,
+        "consent",
+        id=claims["id"],
+        analytics=False,
+        marketing=False,
+        advertising=False,
+        personalization=False,
+        consent_version="2026-10-v3-revoked",
+    )
+    return {"revoked": True}
+
+
 @router.put("/consent")
 async def consent(input: ConsentUpdate, request: Request):
     claims = crypto(request).verify(input.session_token, "session", datetime.now(UTC))
@@ -57,7 +92,10 @@ async def events(input: EventBatch, request: Request):
         request,
         "events",
         session_id=claims["id"],
-        events=[v.model_dump(mode="json") for v in input.events],
+        events=[
+            {**v.model_dump(mode="json"), "environment": request.app.state.settings.environment}
+            for v in input.events
+        ],
     )
 
 

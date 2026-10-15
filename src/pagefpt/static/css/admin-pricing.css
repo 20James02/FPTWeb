@@ -861,3 +861,14 @@
   margin: 0 !important;
   white-space: nowrap !important;
 }
+
+/* Each billing period remains readable on a narrow phone screen. */
+.price-matrix-dialog { width: min(1180px, calc(100vw - 24px)); max-width: 1180px; }
+.price-periods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.price-period { min-width: 0; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-surface); }
+.price-period-heading { padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+.price-period-fields { display: grid; gap: 12px; border: 0; padding: 0; margin: 12px 0; min-width: 0; }
+.price-period-fields:disabled { opacity: .55; }
+.price-period-preview { font-size: 13px; line-height: 1.65; color: var(--text-secondary); overflow-wrap: anywhere; }
+.price-period input, .price-period textarea, .price-period select { min-width: 0; max-width: 100%; box-sizing: border-box; }
+@media (max-width: 800px) { .price-periods { grid-template-columns: minmax(0, 1fr); } }

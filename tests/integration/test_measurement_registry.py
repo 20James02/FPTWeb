@@ -9,7 +9,7 @@ def connection(**changes):
         "name": "GA website",
         "provider": "ga4",
         "environment": "test",
-        "settings": {"measurement_id": "G-TEST123"},
+        "settings": {"measurement_id": "G-TEST123", "browser_enabled": True},
         **changes,
     }
 

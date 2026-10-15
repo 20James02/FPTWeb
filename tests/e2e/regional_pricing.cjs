@@ -184,12 +184,14 @@ fs.mkdirSync(output, { recursive: true });
               '#price-location-picker input[type=checkbox][value="' + id + '"]',
             )
             .check();
-        await page.locator("#inp-monthly-vnd").fill("210.000");
+        await page.locator("#period-1-enabled").uncheck();
+        await page.locator("#period-12-enabled").uncheck();
+        await page.locator("#period-6-monthly").fill("210.000");
         await page.locator("#inp-source").fill("Synthetic QA: not commercial");
         await page.locator("#price-publish-now").check();
         const data = await submitDialog(
           "create-price-backdrop",
-          "/api/v1/admin/prices/bulk",
+          "/api/v1/admin/prices/matrix",
         );
         assert.equal(data.items.length, 2);
         assert.ok(
@@ -219,12 +221,14 @@ fs.mkdirSync(output, { recursive: true });
               '"]',
           )
           .check();
-        await page.locator("#inp-monthly-vnd").fill("230000");
+        await page.locator("#period-1-enabled").uncheck();
+        await page.locator("#period-12-enabled").uncheck();
+        await page.locator("#period-6-monthly").fill("230000");
         await page.locator("#inp-source").fill("Synthetic ward price only");
         await page.locator("#price-publish-now").check();
         const data = await submitDialog(
           "create-price-backdrop",
-          "/api/v1/admin/prices/bulk",
+          "/api/v1/admin/prices/matrix",
         );
         assert.equal(data.items[0].monthly_vnd, 230000);
       },
@@ -342,7 +346,7 @@ fs.mkdirSync(output, { recursive: true });
             r.status === "published",
         );
         await page.evaluate((row) => openCreatePriceModal(row), old);
-        await page.locator("#inp-monthly-vnd").fill("240000");
+        await page.locator("#period-6-monthly").fill("240000");
         await page.locator("#inp-start").evaluate(
           (el, start) => {
             el.value = start;
@@ -354,7 +358,7 @@ fs.mkdirSync(output, { recursive: true });
             old.start,
           ),
         );
-        const fresh = await submitDialog("create-price-backdrop", "/replace");
+        const fresh = (await submitDialog("create-price-backdrop", "/api/v1/admin/prices/matrix")).items[0];
         assert.equal(fresh.status, "published");
         assert.notEqual(fresh.id, old.id);
         assert.equal(
@@ -408,9 +412,9 @@ fs.mkdirSync(output, { recursive: true });
               .getElementById("create-price-backdrop")
               .getBoundingClientRect().width,
             inputHeight: document
-              .getElementById("inp-monthly-vnd")
+              .getElementById("period-6-monthly")
               .getBoundingClientRect().height,
-            font: getComputedStyle(document.getElementById("inp-monthly-vnd"))
+            font: getComputedStyle(document.getElementById("period-6-monthly"))
               .fontSize,
           }));
           assert.equal(metrics.overflow, false);

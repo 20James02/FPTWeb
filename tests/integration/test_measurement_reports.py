@@ -64,3 +64,65 @@ async def test_cost_import_rejects_mixed_rollup_grains(admin):
         json={"connection_id": conn["id"], "rows": [row, {**row, "ad_id": "456"}]},
     )
     assert result.status_code == 422
+
+
+async def test_two_connections_cannot_import_same_ad_account_twice(admin):
+    rows = []
+    for name in ("First", "Second"):
+        rows.append(
+            (
+                await admin.post(
+                    "/api/v1/admin/measurement/connections",
+                    json=connection(
+                        name=name,
+                        provider="google_ads",
+                        settings={"tag_id": "AW-123456", "customer_id": "123456789"},
+                    ),
+                )
+            ).json()
+        )
+    for index, conn in enumerate(rows):
+        body = {
+            "connection_id": conn["id"],
+            "rows": [{"day": "2026-10-15", "campaign_id": "555", "cost_vnd": 100}],
+        }
+        preview = await admin.post("/api/v1/admin/measurement/cost-imports/preview", json=body)
+        if index:
+            assert preview.status_code == 409, preview.text
+        else:
+            assert preview.status_code == 200, preview.text
+            applied = await admin.post(
+                "/api/v1/admin/measurement/cost-imports/apply",
+                json={**body, "preview_token": preview.json()["preview_token"]},
+            )
+            assert applied.status_code == 200, applied.text
+
+
+async def test_cost_preview_cannot_be_applied_after_account_changes(admin):
+    c = (
+        await admin.post(
+            "/api/v1/admin/measurement/connections",
+            json=connection(
+                provider="google_ads", settings={"tag_id": "AW-123456", "customer_id": "123456789"}
+            ),
+        )
+    ).json()
+    body = {
+        "connection_id": c["id"],
+        "rows": [{"day": "2026-10-15", "campaign_id": "555", "cost_vnd": 100}],
+    }
+    preview = await admin.post("/api/v1/admin/measurement/cost-imports/preview", json=body)
+    changed = await admin.put(
+        "/api/v1/admin/measurement/connections/" + c["id"],
+        json={
+            **c["payload"],
+            "settings": {**c["payload"]["settings"], "customer_id": "987654321"},
+            "expected_version": 1,
+        },
+    )
+    assert changed.status_code == 200, changed.text
+    applied = await admin.post(
+        "/api/v1/admin/measurement/cost-imports/apply",
+        json={**body, "preview_token": preview.json()["preview_token"]},
+    )
+    assert applied.status_code == 409, applied.text

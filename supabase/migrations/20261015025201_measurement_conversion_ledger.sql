@@ -4,6 +4,7 @@ CREATE TABLE private.measurement_occurrences(
  stage text NOT NULL CHECK(stage IN ('lead','qualified','closed','installed')),event_time timestamptz NOT NULL,
  snapshot jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(lead_id,stage)
 );
+CREATE INDEX measurement_lead_session ON private.leads((payload->>'session_id')) WHERE payload ? 'session_id';
 CREATE INDEX measurement_occurrence_time ON private.measurement_occurrences(event_time DESC,id);
 CREATE TABLE private.measurement_deliveries(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),occurrence_id uuid NOT NULL REFERENCES private.measurement_occurrences(id) ON DELETE CASCADE,
@@ -15,16 +16,25 @@ CREATE TABLE private.measurement_deliveries(
 CREATE INDEX measurement_delivery_work ON private.measurement_deliveries(state,updated_at,id);
 CREATE FUNCTION private.measurement_snapshot() RETURNS trigger LANGUAGE plpgsql SET search_path='' AS $$
 DECLARE env text:=NEW.payload->>'measurement_environment';host text:=NEW.payload->>'measurement_host';path text:=coalesce(NEW.payload->>'measurement_path','/');
- p jsonb:='{}';rules jsonb:='[]';versions jsonb:='[]';r record;window_days int;sid uuid:=(NEW.payload->>'session_id')::uuid;first_source jsonb;last_source jsonb;
+ p jsonb:='{}';rules jsonb:='[]';versions jsonb:='[]';r record;window_days int;sid uuid:=(NEW.payload->>'session_id')::uuid;first_source jsonb;last_source jsonb;campaign_key text;campaign_source jsonb;
 BEGIN
  FOR r IN SELECT a.scope,rel.id,rel.payload FROM private.measurement_active a JOIN private.measurement_releases rel ON rel.id=a.release_id
  WHERE a.environment=env AND (a.scope='global' OR a.scope='domain' AND a.scope_key=host OR a.scope='landing' AND a.scope_key=path)
- ORDER BY CASE a.scope WHEN 'global' THEN 0 WHEN 'domain' THEN 1 ELSE 2 END LOOP
+ ORDER BY CASE a.scope WHEN 'global' THEN 0 WHEN 'domain' THEN 1 WHEN 'landing' THEN 2 ELSE 3 END LOOP
   p:=p||coalesce(r.payload->'policy','{}');
   IF r.payload ? 'rules' THEN rules:=r.payload->'rules';END IF;
   versions:=versions||jsonb_build_array(r.id);
  END LOOP;
- window_days:=least(90,greatest(1,coalesce((p->>'attribution_window_days')::int,30)));
+ window_days:=least(private.measurement_retention_days(env),greatest(1,coalesce((p->>'attribution_window_days')::int,30)));
+ IF EXISTS(SELECT 1 FROM private.sessions WHERE id=sid AND analytics) THEN
+  SELECT payload INTO campaign_source FROM private.touches WHERE session_id=sid AND created_at>now()-make_interval(days=>window_days) ORDER BY created_at DESC,id DESC LIMIT 1;
+  campaign_key:=private.measurement_campaign_key(jsonb_build_object('environment',env,'campaign',campaign_source->>'campaign_id','platform',coalesce(nullif(campaign_source->>'platform',''),campaign_source->>'utm_source')))->>'key';
+  FOR r IN SELECT rel.id,rel.payload FROM private.measurement_active a JOIN private.measurement_releases rel ON rel.id=a.release_id WHERE a.environment=env AND a.scope='campaign' AND a.scope_key=campaign_key LOOP
+   p:=p||coalesce(r.payload->'policy','{}');IF r.payload ? 'rules' THEN rules:=r.payload->'rules';END IF;versions:=versions||jsonb_build_array(r.id);
+  END LOOP;
+ END IF;
+ window_days:=least(private.measurement_retention_days(env),greatest(1,coalesce((p->>'attribution_window_days')::int,30)));
+
  IF EXISTS(SELECT 1 FROM private.sessions WHERE id=sid AND analytics) THEN
   SELECT payload-'click_id_ciphertext'-'provider_ids_ciphertext' INTO first_source FROM private.touches WHERE session_id=sid AND created_at>now()-make_interval(days=>window_days) ORDER BY created_at,id LIMIT 1;
   SELECT payload-'click_id_ciphertext'-'provider_ids_ciphertext' INTO last_source FROM private.touches WHERE session_id=sid AND created_at>now()-make_interval(days=>window_days) ORDER BY created_at DESC,id DESC LIMIT 1;
@@ -41,9 +51,9 @@ BEGIN
  IF l.id IS NULL THEN RETURN;END IF;
  event:=CASE WHEN p_stage='lead' THEN l.event_id ELSE md5(l.event_id::text||':'||p_stage)::uuid END;
  INSERT INTO private.measurement_occurrences(id,lead_id,stage,event_time,snapshot)
- VALUES(event,l.id,p_stage,p_time,jsonb_build_object('source',l.payload->'attribution'->'last_touch','measurement',l.payload->'measurement')) ON CONFLICT DO NOTHING;
+ VALUES(event,l.id,p_stage,p_time,jsonb_build_object('source',l.payload->'attribution'->'last_touch','measurement',l.payload->'measurement','client_context_ciphertext',CASE WHEN p_stage='lead' AND coalesce((l.payload->>'marketing_opt_in')::bool,false) AND EXISTS(SELECT 1 FROM private.sessions WHERE id=(l.payload->>'session_id')::uuid AND analytics AND marketing AND advertising) THEN nullif(current_setting('pagefpt.measurement_client',true),'') END,'provider_ids_ciphertext',CASE WHEN p_stage='lead' THEN (SELECT payload->>'provider_ids_ciphertext' FROM private.touches WHERE session_id=(l.payload->>'session_id')::uuid ORDER BY created_at DESC,id DESC LIMIT 1) ELSE (SELECT snapshot->>'provider_ids_ciphertext' FROM private.measurement_occurrences WHERE lead_id=l.id AND stage='lead') END)) ON CONFLICT DO NOTHING;
  IF NOT FOUND THEN RETURN; END IF;
- FOR rule IN SELECT value FROM jsonb_array_elements(coalesce(l.payload->'measurement'->'rules','[]')) WHERE value->>'event'=p_stage AND value->>'route'='server' LOOP
+ FOR rule IN SELECT value FROM jsonb_array_elements(coalesce(l.payload->'measurement'->'rules','[]')) WHERE value->>'event'=p_stage AND (value->>'route'='server' OR value->>'route'='ga4_import' AND p_stage<>'lead') LOOP
   SELECT * INTO conn FROM private.measurement_connections WHERE id=(rule->>'connection_id')::uuid;
   IF conn.id IS NULL THEN CONTINUE; END IF;
   INSERT INTO private.measurement_deliveries(occurrence_id,connection_id,rule) VALUES(event,conn.id,rule) ON CONFLICT DO NOTHING RETURNING id INTO delivery;
@@ -93,14 +103,32 @@ BEGIN
  SELECT * INTO s FROM private.measurement_secrets WHERE connection_id=conn.id;
  token:=gen_random_uuid();
  UPDATE private.measurement_deliveries SET state='sending',attempt=attempt+1,lease_token=token,lease_until=now()+interval '30 seconds',updated_at=now() WHERE id=d.id;
- RETURN jsonb_build_object('status','ready','lease_token',token,'connection',conn.payload,'secret_ciphertext',CASE WHEN s.expires_at IS NULL OR s.expires_at>now() THEN s.ciphertext END,
+ RETURN jsonb_build_object('status','ready','lease_token',token,'connection_id',conn.id,'connection',conn.payload,'secret_ciphertext',CASE WHEN s.expires_at IS NULL OR s.expires_at>now() THEN s.ciphertext END,
   'rule',d.rule,'event',jsonb_build_object('event_id',o.id,'event_time',o.event_time,'stage',o.stage,'source',o.snapshot->'source'),
-  'provider_ids_ciphertext',(SELECT payload->>'provider_ids_ciphertext' FROM private.touches WHERE session_id=sid ORDER BY created_at DESC,id DESC LIMIT 1),
-  'click_id_ciphertext',CASE WHEN l.click_id_expires_at>now() THEN l.click_id_ciphertext END);
+  'client_context_ciphertext',CASE WHEN l.created_at>now()-make_interval(days=>private.measurement_retention_days(l.payload->>'measurement_environment')) THEN o.snapshot->>'client_context_ciphertext' END,'personalization',(SELECT personalization FROM private.sessions WHERE id=sid),'provider_ids_ciphertext',CASE WHEN l.created_at>now()-make_interval(days=>private.measurement_retention_days(l.payload->>'measurement_environment')) THEN o.snapshot->>'provider_ids_ciphertext' END,
+  'click_id_ciphertext',CASE WHEN l.click_id_expires_at>now() AND l.created_at>now()-make_interval(days=>private.measurement_retention_days(l.payload->>'measurement_environment')) THEN l.click_id_ciphertext END);
 END $$;
+CREATE FUNCTION private.measurement_public_receipt(event uuid) RETURNS jsonb LANGUAGE sql STABLE SET search_path='' AS $$
+ SELECT jsonb_build_object('policy',o.snapshot->'measurement'->'policy','versions',o.snapshot->'measurement'->'versions',
+ 'measurement_id',CASE WHEN coalesce((o.snapshot->'measurement'->'policy'->>'ga4_enabled')::bool,true) THEN coalesce((SELECT cn.payload->'settings'->>'measurement_id' FROM private.measurement_connections cn WHERE cn.id::text=o.snapshot->'measurement'->'policy'->>'ga4_connection_id' AND (cn.payload->>'enabled')::bool AND coalesce((cn.payload->'settings'->>'browser_enabled')::bool,false)),'') ELSE '' END,
+ 'targets',coalesce((SELECT jsonb_agg(r||jsonb_build_object('provider',cn.payload->>'provider','settings',jsonb_build_object('tag_id',cn.payload->'settings'->>'tag_id','pixel_id',cn.payload->'settings'->>'pixel_id','measurement_id',cn.payload->'settings'->>'measurement_id','browser_enabled',cn.payload->'settings'->'browser_enabled'))) FROM jsonb_array_elements(coalesce(o.snapshot->'measurement'->'rules','[]')) r JOIN private.measurement_connections cn ON cn.id::text=r->>'connection_id' WHERE (cn.payload->>'enabled')::bool),'[]'))
+ FROM private.measurement_occurrences o WHERE o.id=event AND o.stage='lead'
+$$;
+ALTER FUNCTION api.submit_lead(jsonb) RENAME TO submit_lead_before_measurement;
+CREATE FUNCTION api.submit_lead(command jsonb) RETURNS jsonb LANGUAGE plpgsql SET search_path='' AS $$
+DECLARE result jsonb;BEGIN
+ PERFORM set_config('pagefpt.measurement_client',coalesce(command->>'measurement_client_ciphertext',''),true);
+ result:=api.submit_lead_before_measurement(command-'measurement_client_ciphertext');
+ IF result->>'event_id' IS NOT NULL THEN result:=result||jsonb_build_object('measurement',private.measurement_public_receipt((result->>'event_id')::uuid));END IF;
+ RETURN result;
+END $$;
+REVOKE ALL ON FUNCTION private.measurement_public_receipt(uuid),api.submit_lead(jsonb),api.submit_lead_before_measurement(jsonb) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION private.measurement_public_receipt(uuid),api.submit_lead(jsonb),api.submit_lead_before_measurement(jsonb) TO service_role;
 ALTER FUNCTION api.dispatch(jsonb) RENAME TO dispatch_before_measurement_ledger;
 CREATE FUNCTION api.dispatch(command jsonb) RETURNS jsonb LANGUAGE plpgsql SET search_path='' AS $$
+DECLARE result jsonb;
 BEGIN
+ IF command->>'op'='lead_replay' THEN result:=api.dispatch_before_measurement_ledger(command);IF result->>'event_id' IS NOT NULL THEN result:=result||jsonb_build_object('measurement',private.measurement_public_receipt((result->>'event_id')::uuid));END IF;RETURN result;END IF;
  IF command->>'op' LIKE 'measurement_delivery_%' THEN RETURN private.measurement_delivery_dispatch(command); END IF;
  IF command->>'op'='conversion_prepare' AND EXISTS(SELECT 1 FROM private.leads l,jsonb_array_elements(coalesce(l.payload->'measurement'->'rules','[]')) r WHERE l.id=(command->>'id')::uuid AND r->>'event'=coalesce(command->>'stage','lead')) THEN RETURN '{"status":"managed_destination"}'; END IF;
  RETURN api.dispatch_before_measurement_ledger(command);

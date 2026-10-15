@@ -283,7 +283,7 @@ function renderPricing() {
     monthly.append(
       pricingNode(
         "span",
-        `Giá gốc ${moneyFormat.format(row.monthly_vnd)}đ × ${row.monthly_coefficient ?? 1}`,
+        `Bình quân hiển thị ${moneyFormat.format(row.display_monthly_vnd ?? Math.round(row.monthly_vnd * Number(row.monthly_coefficient ?? 1)))}đ/tháng`,
         "pricing-sub",
       ),
     );
@@ -732,80 +732,7 @@ function pricingMoney(id) {
   return n;
 }
 function openCreatePriceModal(row = null, clone = false) {
-  editingPrice = clone ? null : row;
-  cloningGroupScopeId =
-    clone && row?.scope_kind === "group" ? row.scope_id : null;
-  $p("create-price-form").reset();
-  $p("price-publish-control").hidden = !!row && !clone;
-  pricingClearError("price-error");
-  $p("inp-plan-id").replaceChildren(new Option("Chọn gói cước…", ""));
-  for (const plan of availablePlans.filter((p) => p.status !== "retired"))
-    $p("inp-plan-id").append(new Option(plan.payload.name, plan.id));
-  $p("inp-start").value = pricingLocalDate(Date.now());
-  $p("inp-plan-id").disabled = false;
-  $p("inp-scope-kind").disabled = false;
-  $p("inp-billing-months").disabled = false;
-  $p("price-dialog-title").textContent = row
-    ? row.status === "published"
-      ? "Thay thế giá đã công bố"
-      : "Sửa bản nháp giá"
-    : "Thêm giá mới";
-  $p("btn-submit-price").textContent =
-    row?.status === "published" ? "Lưu & công bố giá thay thế" : "Lưu bản nháp";
-  $p("price-version-note").textContent =
-    row?.status === "published"
-      ? "Giá cũ kết thúc tại thời điểm giá mới bắt đầu. Lịch sử báo giá khách đã gửi được giữ nguyên."
-      : "Một mức giá chung cho các ô đã chọn. Tạo thêm giá riêng cho xã/phường cần mức khác.";
-  if (row) {
-    $p("inp-scope-kind").disabled = !clone;
-    if (
-      row.scope_kind === "group" &&
-      !Array.from($p("inp-scope-kind").options).some((o) => o.value === "group")
-    )
-      $p("inp-scope-kind").append(new Option("Nhóm giá hiện tại", "group"));
-    $p("inp-plan-id").value = row.plan_id;
-    $p("inp-scope-kind").value = row.scope_kind;
-    for (const [id, key] of [
-      ["inp-monthly-vnd", "monthly_vnd"],
-      ["inp-setup-vnd", "setup_vnd"],
-      ["inp-equipment-vnd", "equipment_vnd"],
-      ["inp-billing-months", "billing_months"],
-      ["inp-gift-months", "gift_months"],
-      ["inp-source", "source"],
-    ])
-      $p(id).value = row[key];
-    $p("inp-monthly-coefficient").value = row.monthly_coefficient ?? 1;
-    $p("inp-vat-bps").value = row.vat_bps / 100;
-    $p("inp-vat-included").checked = row.vat_included;
-    $p("inp-start").value = pricingLocalDate(
-      row.status === "published"
-        ? Math.max(Date.now() + 1000, Date.parse(row.start) + 1000)
-        : row.start,
-    );
-    $p("inp-end").value = row.end ? pricingLocalDate(row.end) : "";
-    if (row.status === "published" && !clone) {
-      for (const id of ["inp-plan-id", "inp-scope-kind", "inp-billing-months"])
-        $p(id).disabled = true;
-    }
-  }
-  pricePicker = new PricingLocationPicker(
-    $p("price-location-picker"),
-    row?.scope_kind === "region" ? [row.scope_id] : [],
-  );
-  if (row && !clone)
-    for (const input of $p("price-location-picker").querySelectorAll(
-      "input,button",
-    ))
-      input.disabled = true;
-  if (clone) {
-    $p("price-dialog-title").textContent = "Nhân bản giá vào bản nháp mới";
-    $p("btn-submit-price").textContent = "Lưu bản nháp mới";
-    $p("price-version-note").textContent =
-      "Chọn địa bàn hoặc thời gian khác. Giá đã công bố được giữ nguyên.";
-  }
-  onScopeKindChange($p("inp-scope-kind").value);
-  formatPricingMoney();
-  openPricingDialog("create-price-backdrop");
+  return window.PageFPTPriceMatrix.open(row, clone);
 }
 function closeCreatePriceModal() {
   closePricingDialog("create-price-backdrop");
@@ -829,64 +756,7 @@ function formatPricingMoney() {
   }
 }
 async function handleCreatePriceSubmit(event) {
-  event.preventDefault();
-  pricingClearError("price-error");
-  const button = $p("btn-submit-price");
-  button.disabled = true;
-  try {
-    const base = {
-      plan_id: $p("inp-plan-id").value,
-      scope_kind: $p("inp-scope-kind").value,
-      billing_months: Number($p("inp-billing-months").value),
-      monthly_vnd: pricingMoney("inp-monthly-vnd"),
-      monthly_coefficient: $p("inp-monthly-coefficient").value,
-      setup_vnd: pricingMoney("inp-setup-vnd"),
-      equipment_vnd: pricingMoney("inp-equipment-vnd"),
-      vat_included: $p("inp-vat-included").checked,
-      vat_bps: Math.round(Number($p("inp-vat-bps").value) * 100),
-      gift_months: Number($p("inp-gift-months").value),
-      source: $p("inp-source").value.trim(),
-      start: new Date($p("inp-start").value).toISOString(),
-      end: $p("inp-end").value
-        ? new Date($p("inp-end").value).toISOString()
-        : null,
-    };
-    const scopes = editingPrice
-      ? [editingPrice.scope_id]
-      : base.scope_kind === "default"
-        ? [PRICING_ZERO]
-        : base.scope_kind === "group" && cloningGroupScopeId
-          ? [cloningGroupScopeId]
-          : Array.from(pricePicker.selected);
-    if (!scopes.length)
-      throw new Error("Chọn ít nhất một địa bàn hoặc dùng giá mặc định.");
-    if (scopes.length > 500) throw new Error("Mỗi lần lưu tối đa 500 địa bàn.");
-    const rows = scopes.map((id) => ({ ...base, scope_id: id }));
-    if (editingPrice)
-      await pricingApi(
-        "/api/v1/admin/prices/" +
-          editingPrice.id +
-          (editingPrice.status === "published" ? "/replace" : "") +
-          "?expected_version=" +
-          editingPrice.version,
-        editingPrice.status === "published" ? "POST" : "PUT",
-        rows[0],
-      );
-    else if (rows.length === 1 && !$p("price-publish-now").checked)
-      await pricingApi("/api/v1/admin/prices", "POST", rows[0]);
-    else
-      await pricingApi("/api/v1/admin/prices/bulk", "POST", {
-        rows,
-        publish: $p("price-publish-now").checked,
-      });
-    closeCreatePriceModal();
-    showToast("Đã lưu " + rows.length + " bản ghi giá.", "success");
-    await loadPricesList();
-  } catch (e) {
-    pricingError("price-error", e);
-  } finally {
-    button.disabled = false;
-  }
+  return window.PageFPTPriceMatrix.save(event);
 }
 async function publishPriceRecord(id, version) {
   try {
@@ -1381,24 +1251,7 @@ document.addEventListener("admin:data-changed", () => {
 
 let cloningGroupScopeId = null;
 function previewDraftPrice() {
-  try {
-    const price = {
-      monthly_vnd: pricingMoney("inp-monthly-vnd"),
-      monthly_coefficient: $p("inp-monthly-coefficient").value,
-      billing_months: Number($p("inp-billing-months").value),
-      setup_vnd: pricingMoney("inp-setup-vnd"),
-      equipment_vnd: pricingMoney("inp-equipment-vnd"),
-      vat_bps: Math.round(Number($p("inp-vat-bps").value) * 100),
-      vat_included: $p("inp-vat-included").checked,
-    };
-    $p("price-draft-preview").textContent =
-      "Dự kiến cho kỳ thanh toán: " +
-      adminMoney(adminDraftCost(price)) +
-      " · Chưa trừ ưu đãi. Tháng tặng không làm tăng số tháng phải trả.";
-  } catch (_) {
-    $p("price-draft-preview").textContent =
-      "Nhập cước, phí và kỳ thanh toán để xem tổng dự kiến.";
-  }
+  window.PageFPTPriceMatrix?.preview();
 }
 document.addEventListener("DOMContentLoaded", () => {
   $p("create-price-form")?.addEventListener("input", previewDraftPrice);

@@ -23,6 +23,12 @@ ALTER FUNCTION private.measurement_dispatch(jsonb) RENAME TO measurement_registr
 CREATE FUNCTION private.measurement_dispatch(c jsonb) RETURNS jsonb LANGUAGE plpgsql SET search_path='' AS $$
 DECLARE op text:=c->>'op'; actor uuid; perm text; row private.measurement_configs; p jsonb; rid uuid; ref uuid; valid boolean; conn private.measurement_connections;
 BEGIN
+ IF op='measurement_connection_save' THEN
+  -- Lock the same destination as publication before evaluating the live-change permission.
+  PERFORM 1 FROM private.measurement_connections WHERE id=(c->>'id')::uuid FOR UPDATE;
+  IF EXISTS(SELECT 1 FROM private.measurement_active a JOIN private.measurement_releases rel ON rel.id=a.release_id WHERE (c->>'id')::uuid IN(SELECT private.measurement_refs(rel.payload)))
+   AND NOT private.permitted((c->>'actor')::uuid,'measurement.publish','00000000-0000-0000-0000-000000000000') THEN RETURN '{"error":"PERMISSION_DENIED","status":403}';END IF;
+ END IF;
  IF op='measurement_bundle' THEN
   RETURN jsonb_build_object('connections',coalesce((SELECT jsonb_agg(jsonb_build_object('id',id,'payload',payload,'version',version)) FROM private.measurement_connections WHERE payload->>'environment'=c->>'environment'),'[]'),
    'releases',coalesce((SELECT jsonb_agg(jsonb_build_object('id',r.id,'config_id',r.config_id,'payload',r.payload)) FROM private.measurement_active a JOIN private.measurement_releases r ON r.id=a.release_id WHERE a.environment=c->>'environment'),'[]'));

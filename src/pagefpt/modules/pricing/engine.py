@@ -16,6 +16,7 @@ def calculate_quote(
     promotions: list[dict],
     revision: int,
     region_path: list[str] | None = None,
+    plan_equipment: list[str] | None = None,
 ) -> dict:
     path = region_path or ([region_id] if region_id else [])
     candidates = []
@@ -92,6 +93,8 @@ def calculate_quote(
         "monthly_vnd": monthly,
         "base_monthly_vnd": p["monthly_vnd"],
         "monthly_coefficient": str(coefficient),
+        "display_monthly_vnd": p.get("display_monthly_vnd"),
+        "equipment": p["equipment"] if p.get("equipment") is not None else plan_equipment,
         "vat_included": p["vat_included"],
         "vat_bps": p["vat_bps"],
         "plan_id": plan_id,

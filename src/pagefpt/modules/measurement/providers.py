@@ -3,6 +3,7 @@
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -114,6 +115,22 @@ def build(command, secrets):
         }
         if not user_data:
             raise ValueError("CLIENT_IDENTIFIER_REQUIRED")
+        client = command.get("client_context", {})
+        if event["stage"] == "lead":
+            ua, source = client.get("user_agent", ""), client.get("source_url", "")
+            url = urlsplit(source)
+            if (
+                not isinstance(ua, str)
+                or not 1 <= len(ua) <= 512
+                or any(ord(c) < 32 for c in ua)
+                or url.scheme not in {"http", "https"}
+                or not url.hostname
+                or url.query
+                or url.fragment
+                or len(source) > 2048
+            ):
+                raise ValueError("WEBSITE_CLIENT_CONTEXT_REQUIRED")
+            user_data["client_user_agent"] = ua
         payload = {
             "data": [
                 {
@@ -125,6 +142,8 @@ def build(command, secrets):
                 }
             ]
         }
+        if event["stage"] == "lead":
+            payload["data"][0]["event_source_url"] = client["source_url"]
         if settings.get("test_event_code"):
             payload["test_event_code"] = settings["test_event_code"]
         return f"https://graph.facebook.com/{version}/{pixel}/events", headers, {}, payload

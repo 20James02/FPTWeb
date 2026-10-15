@@ -29,6 +29,7 @@ async def preview(input: CostImport, request: Request):
             "actor": actor.user_id,
             "digest": digest(request, data),
             "versions": check["versions"],
+            "connection_version": check["connection_version"],
             "exp": datetime.now(UTC).timestamp() + 300,
         }
     )
@@ -49,8 +50,14 @@ async def apply(input: CostApply, request: Request):
         request,
         "measurement_cost_apply",
         actor=actor.user_id,
-        digest=claims["digest"],
+        digest=crypto(request).match(
+            json.dumps(
+                {"digest": claims["digest"], "versions": claims["versions"]}, sort_keys=True
+            ),
+            "measurement-cost-import",
+        ),
         versions=claims["versions"],
+        connection_version=claims["connection_version"],
         **data,
     )
 
@@ -84,8 +91,17 @@ async def report(request: Request, start: date, end: date):
             "minimum_samples": policy["minimum_samples"],
             "maturity_days": policy["maturity_days"],
             "closed_interval": interval,
-            "score": round(interval[0] * 100, 2) if ready else None,
+            "score": round(interval[0] * 100, 2) if ready and interval is not None else None,
         }
         row["closed_rate"] = row["closed"] / row["forms"] if row["forms"] else None
+    traffic = await dispatch(
+        request,
+        "measurement_traffic_report",
+        actor=actor.user_id,
+        start=start.isoformat(),
+        end=end.isoformat(),
+        environment=request.app.state.settings.environment,
+    )
+    result["traffic"] = traffic["items"]
     result["policy_versions"] = [r["id"] for r in bundle["releases"]]
     return result

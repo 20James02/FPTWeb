@@ -884,7 +884,7 @@ async function openWorkspaceEditor(row = null) {
 }
 function workspacePayload() {
   const def = workspaceDefinition(),
-    data = {};
+    data = workspaceTab === "campaigns" ? {...(workspaceEditing?.payload || {})} : {};
   for (const [key, , type] of def.fields || []) {
     const input = document.getElementById("ws-" + key);
     data[key] =

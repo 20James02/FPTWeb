@@ -111,6 +111,13 @@ def apply_voucher(quote: dict, campaign: dict, path: list[str], plan: dict, at: 
     if basis == "monthly":
         quote["voucher_base_monthly_vnd"] = quote["monthly_vnd"]
         quote["monthly_vnd"] -= discount // months
+        if quote.get("display_monthly_vnd") is not None:
+            average_discount = int(
+                (Decimal(discount) / Decimal(quote.get("service_months", months))).quantize(
+                    Decimal(1), rounding=ROUND_HALF_UP
+                )
+            )
+            quote["display_monthly_vnd"] = max(0, quote["display_monthly_vnd"] - average_discount)
     view.update(
         discount_vnd=discount,
         budget_cost_vnd=budget_cost,

@@ -28,6 +28,10 @@ def command(provider):
         },
         "identifiers": {"ga_client_id": "123456.7890", "fbp": "fb.1.1234567890123.123456789"},
         "click_id": "opaque",
+        "client_context": {
+            "user_agent": "QA synthetic browser",
+            "source_url": "https://example.test/offer",
+        },
     }
 
 
@@ -45,6 +49,8 @@ async def test_meta_provider_parses_receipt_and_never_sends_contact_data():
     assert (
         "user_data" in body
         and "fbp" in body
+        and "client_user_agent" in body
+        and "event_source_url" in body
         and "phone" not in body
         and "synthetic-secret" not in body
     )
@@ -84,3 +90,14 @@ async def test_partial_failure_and_ga4_receipt_not_attribution_success():
         assert (
             await deliver(client, command("ga4"), {"api_secret": "synthetic-secret"})
         ).state == "received"
+
+
+@respx.mock
+async def test_meta_website_event_rejects_missing_real_client_context():
+    from pagefpt.modules.measurement.providers import deliver
+
+    value = command("meta")
+    value.pop("client_context", None)
+    async with httpx.AsyncClient() as client:
+        result = await deliver(client, value, {"access_token": "synthetic-secret"})
+    assert result.state == "failed"

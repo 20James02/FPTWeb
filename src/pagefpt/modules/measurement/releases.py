@@ -1,9 +1,14 @@
 """Pure compilation: only schema-approved public settings leave the server."""
 
+from typing import Any
+
 from pagefpt.core.errors import DomainError
 from pagefpt.modules.measurement.schemas import EVENTS, ConfigInput
 
-DEFAULT_POLICY = {
+DEFAULT_POLICY: dict[str, Any] = {
+    "ga4_enabled": True,
+    "consent_title": "Lựa chọn dữ liệu",
+    "consent_description": "Bạn có thể chọn riêng từng mục đích sử dụng dữ liệu. Website vẫn tiếp nhận yêu cầu tư vấn khi bạn từ chối đo lường.",
     "consent_mode": "advanced",
     "event_enabled": EVENTS,
     "attribution_window_days": 30,
@@ -53,13 +58,18 @@ def effective(bundle, *, path="/", host="", campaign="", draft=None):
             }
         )
     return {
-        "measurement_id": ga.get("payload", {}).get("settings", {}).get("measurement_id", ""),
+        "measurement_id": ga.get("payload", {}).get("settings", {}).get("measurement_id", "")
+        if policy.get("ga4_enabled")
+        and ga.get("payload", {}).get("settings", {}).get("browser_enabled")
+        else "",
+        "consent_title": policy["consent_title"],
+        "consent_description": policy["consent_description"],
         "consent_mode": policy["consent_mode"],
         "event_enabled": policy["event_enabled"],
         "refresh_seconds": policy["refresh_seconds"],
         "versions": versions,
         "targets": targets,
-        "attribution_window_days": policy["attribution_window_days"],
+        "attribution_window_days": min(policy["attribution_window_days"], policy["retention_days"]),
     }
 
 
@@ -84,6 +94,19 @@ def validate_config(payload, bundle):
     primary = set()
     for rule in parsed.rules or []:
         conn = connections[str(rule.connection_id)]["payload"]
+        if rule.route == "browser" and rule.event != "lead":
+            raise DomainError("CRM_STAGE_REQUIRES_SERVER", 422)
+        # generate_lead already has one native GA4 receipt path; do not add a second MP copy.
+        if conn["provider"] == "ga4" and rule.event == "lead" and rule.route == "server":
+            raise DomainError("GA4_LEAD_USES_NATIVE_RECEIPT", 422)
+        if (
+            conn["provider"] == "ga4"
+            and rule.event == "lead"
+            and rule.provider_event != "generate_lead"
+        ):
+            raise DomainError("GA4_LEAD_EVENT_IS_GENERATE_LEAD", 422)
+        if rule.route == "ga4_import" and conn["provider"] != "ga4":
+            raise DomainError("GA4_IMPORT_REQUIRES_GA4", 422)
         if (
             conn["provider"] == "google_ads"
             and rule.route == "browser"

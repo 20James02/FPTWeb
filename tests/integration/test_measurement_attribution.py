@@ -66,3 +66,68 @@ async def test_new_advertising_permission_not_implied_by_legacy_marketing(client
         assert db.execute(
             "SELECT advertising,personalization FROM private.sessions"
         ).fetchone() == (True, False)
+
+
+async def test_resume_session_respects_current_server_consent(admin):
+    token = (
+        await admin.post(
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
+        )
+    ).json()["session_token"]
+    response = await admin.post("/api/v1/sessions/resume", json={"session_token": token})
+    assert response.status_code == 200 and response.json()["advertising"] is True, response.text
+    await admin.put(
+        "/api/v1/consent",
+        json={
+            "session_token": token,
+            "analytics": False,
+            "marketing": False,
+            "consent_version": "v3",
+        },
+    )
+    response = await admin.post("/api/v1/sessions/resume", json={"session_token": token})
+    assert response.status_code == 200 and response.json()["analytics"] is False, response.text
+
+
+async def test_expired_session_proof_can_only_revoke_not_read_or_track(client, gateway):
+    from datetime import UTC, datetime
+
+    from pagefpt.core.crypto import Crypto
+
+    crypt = Crypto("e" * 32, "m" * 32, "t" * 32)
+    token = (
+        await client.post(
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
+        )
+    ).json()["session_token"]
+    claims = crypt.verify(token, "session", datetime.now(UTC))
+    expired = crypt.sign({**claims, "exp": 1})
+    assert (
+        await client.post("/api/v1/sessions/resume", json={"session_token": expired})
+    ).status_code == 403
+    assert (
+        await client.post(
+            "/api/v1/touches", json={"session_token": expired, "utm_source": "google"}
+        )
+    ).status_code == 403
+    revoked = await client.post("/api/v1/consent/revoke", json={"session_token": expired})
+    assert revoked.status_code == 200, revoked.text
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute(
+            "SELECT analytics,marketing,advertising,personalization FROM private.sessions"
+        ).fetchone() == (False, False, False, False)
+    assert (
+        await client.post("/api/v1/consent/revoke", json={"session_token": expired + "x"})
+    ).status_code == 403

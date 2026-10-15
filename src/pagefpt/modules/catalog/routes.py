@@ -245,6 +245,7 @@ async def build_quote(input, request, confirmed_path=None):
         promotions,
         data["revision"],
         region_path=data.get("region_path"),
+        plan_equipment=data.get("plan_equipment"),
     )
     # One database read supplies regional prices for all UI periods. Previews have no token.
     billing_options = []
@@ -262,6 +263,7 @@ async def build_quote(input, request, confirmed_path=None):
             period_promotions,
             data["revision"],
             region_path=data.get("region_path"),
+            plan_equipment=data.get("plan_equipment"),
         )
         preview["billing_months"] = months
         with_accessories(preview, devices, months)

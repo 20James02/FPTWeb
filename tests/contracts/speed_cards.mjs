@@ -54,3 +54,11 @@ test("recommendation highlights only the first measured option and keeps claims 
   for (const service of ["internet", "combo", "business"])
     assert.ok(model.fit({ service }, null, 0).hook.length > 0);
 });
+test("period average is presented separately from the actual prepaid total", () => {
+  const q = { status: "confirmed", billing_months: 6, monthly_vnd: 210000,
+    display_monthly_vnd: 175000, initial_total_vnd: 1560000, vat_included: true };
+  assert.equal(model.price(q).amount, "175.000đ");
+  assert.equal(model.price(q).caption, "Bình quân mỗi tháng");
+  assert.match(model.price(q).note, /1.560.000đ/);
+  assert.equal(model.price({...q, display_monthly_vnd: 0}).amount, "0đ");
+});

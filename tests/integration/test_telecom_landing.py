@@ -33,7 +33,9 @@ async def test_telecom_preview_and_published_render_share_template(admin, client
     assert live.status_code == 200 and "lp-hero" in live.text
     assert "1900 6600" not in live.text and "1.200.000" not in live.text
     assert 'data-landing-preview="false"' in live.text
-    assert '"consent_mode": "advanced"' in live.text
+    assert '"dynamic": true' in live.text
+    public = await client.get("/api/v1/measurement/config")
+    assert public.status_code == 200 and public.json()["consent_mode"] == "advanced"
     assert '"preview": false' in live.text
     assert (await admin.get("/admin/landing-pages")).status_code == 200
 

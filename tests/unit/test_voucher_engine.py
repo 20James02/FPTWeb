@@ -74,6 +74,15 @@ def test_monthly_percentage_rounding_cap_and_total():
     assert q["voucher"]["discount_vnd"] == 42000
 
 
+def test_monthly_voucher_updates_period_average_without_repricing_the_term():
+    c = campaign()
+    c["rules"][0].update(discount_kind="percent", amount=500, basis="monthly", cap_vnd=7000)
+    q = {**quote(), "display_monthly_vnd": 175000, "service_months": 7}
+    apply_voucher(q, c, ["w"], {"id": "p"}, NOW)
+    assert q["display_monthly_vnd"] == 169000
+    assert q["initial_total_vnd"] == 1158000
+
+
 def test_does_not_stack_unless_enabled_and_never_goes_negative():
     c = campaign()
     q = quote()

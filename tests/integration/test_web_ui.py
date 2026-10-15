@@ -77,7 +77,9 @@ async def test_admin_login_renders(client):
 async def test_client_advanced_consent_has_transparent_notice(client, path):
     response = await client.get(path)
     assert response.status_code == 200
-    assert '"consent_mode": "advanced"' in response.text
+    assert '"dynamic": true' in response.text
+    public = await client.get("/api/v1/measurement/config")
+    assert public.status_code == 200 and public.json()["consent_mode"] == "advanced"
     assert response.text.count('id="pagefpt-google-config"') == 1
     assert "tín hiệu đo lường hạn chế" in response.text
 

@@ -133,3 +133,228 @@ async def test_release_history_cannot_mutate_account_identity(admin, gateway):
     assert r.status_code == 409
     with psycopg.connect(gateway.dsn) as db:
         assert db.execute("SELECT count(*) FROM private.measurement_releases").fetchone()[0] == 1
+
+
+async def test_active_connection_edit_requires_publish_permission(admin, gateway):
+    conn, draft = await setup_config(admin)
+    await admin.post(
+        "/api/v1/admin/measurement/configs/" + draft["id"] + "/publish",
+        json={"expected_version": 1},
+    )
+    with psycopg.connect(gateway.dsn) as db:
+        db.execute(
+            "UPDATE private.memberships SET permissions=ARRAY['measurement.read','measurement.configure']"
+        )
+    response = await admin.put(
+        "/api/v1/admin/measurement/connections/" + conn["id"],
+        json={**conn["payload"], "enabled": False, "expected_version": 1},
+    )
+    assert response.status_code == 403, response.text
+    assert (await admin.get("/api/v1/measurement/config")).json()["measurement_id"] == "G-TEST123"
+
+
+async def test_browser_crm_and_duplicate_ga4_lead_routes_cannot_publish(admin):
+    conn, draft = await setup_config(admin)
+    base = "/api/v1/admin/measurement/configs/" + draft["id"]
+    for stage, route in [("closed", "browser"), ("lead", "server")]:
+        r = await admin.put(
+            base,
+            json={
+                **draft["payload"],
+                "expected_version": draft["version"],
+                "rules": [
+                    {
+                        "event": stage,
+                        "connection_id": conn["id"],
+                        "provider_event": "generate_lead" if stage == "lead" else "sale_closed",
+                        "route": route,
+                    }
+                ],
+            },
+        )
+        assert r.status_code == 200, r.text
+        draft = r.json()
+        invalid = await admin.post(base + "/publish", json={"expected_version": draft["version"]})
+        assert invalid.status_code == 422, invalid.text
+
+
+async def test_campaign_override_resolves_only_unique_owned_mapping(admin):
+    ads = (
+        await admin.post(
+            "/api/v1/admin/measurement/connections",
+            json=connection(
+                provider="google_ads",
+                enabled=True,
+                settings={"tag_id": "AW-123456", "customer_id": "123456789"},
+            ),
+        )
+    ).json()
+    campaign = (
+        await admin.post(
+            "/api/v1/admin/campaigns",
+            json={
+                "name": "Owned campaign",
+                "platform": "google",
+                "utm_campaign": "camera",
+                "connection_id": ads["id"],
+                "external_campaign_id": "555",
+            },
+        )
+    ).json()
+    _, cfg = await setup_config(admin, "campaign", campaign["id"], policy={"consent_mode": "basic"})
+    assert (
+        await admin.post(
+            "/api/v1/admin/measurement/configs/" + cfg["id"] + "/publish",
+            json={"expected_version": 1},
+        )
+    ).status_code == 200
+    matched = await admin.get("/api/v1/measurement/config?path=/&campaign=555&platform=google")
+    assert matched.status_code == 200 and matched.json()["consent_mode"] == "basic", matched.text
+    assert (await admin.get("/api/v1/measurement/config?campaign=555&platform=meta")).json()[
+        "consent_mode"
+    ] == "advanced"
+
+
+async def test_bulk_disable_reports_stale_item_without_reverting_success(admin):
+    a = (
+        await admin.post("/api/v1/admin/measurement/connections", json=connection(enabled=True))
+    ).json()
+    b = (
+        await admin.post("/api/v1/admin/measurement/connections", json=connection(enabled=True))
+    ).json()
+    result = await admin.post(
+        "/api/v1/admin/measurement/bulk",
+        json={
+            "action": "disable",
+            "items": [
+                {"id": a["id"], "expected_version": 1},
+                {"id": b["id"], "expected_version": 999},
+            ],
+        },
+    )
+    assert result.status_code == 200, result.text
+    assert [r["ok"] for r in result.json()["items"]] == [True, False]
+    rows = (await admin.get("/api/v1/admin/measurement/connections")).json()["items"]
+    assert next(c for c in rows if c["id"] == a["id"])["payload"]["enabled"] is False
+
+
+async def test_session_campaign_config_and_receipt_survive_direct_navigation(admin):
+    from uuid import uuid4
+
+    global_conn, global_cfg = await setup_config(admin)
+    await admin.post(
+        "/api/v1/admin/measurement/configs/" + global_cfg["id"] + "/publish",
+        json={"expected_version": 1},
+    )
+    ads = (
+        await admin.post(
+            "/api/v1/admin/measurement/connections",
+            json=connection(
+                enabled=True,
+                provider="google_ads",
+                settings={"tag_id": "AW-123456", "customer_id": "123456789"},
+            ),
+        )
+    ).json()
+    campaign = (
+        await admin.post(
+            "/api/v1/admin/campaigns",
+            json={
+                "name": "Persistent",
+                "platform": "google",
+                "utm_campaign": "camera",
+                "connection_id": ads["id"],
+                "external_campaign_id": "555",
+            },
+        )
+    ).json()
+    campaign_ga = (
+        await admin.post(
+            "/api/v1/admin/measurement/connections",
+            json=connection(
+                enabled=True, settings={"measurement_id": "G-CAMP123", "browser_enabled": True}
+            ),
+        )
+    ).json()
+    cfg = (
+        await admin.post(
+            "/api/v1/admin/measurement/configs",
+            json={
+                "name": "Campaign override",
+                "scope": "campaign",
+                "scope_key": campaign["id"],
+                "environment": "test",
+                "policy": {"ga4_connection_id": campaign_ga["id"]},
+            },
+        )
+    ).json()
+    simulation = await admin.post(
+        "/api/v1/admin/measurement/configs/" + cfg["id"] + "/simulate", json={"expected_version": 1}
+    )
+    assert (
+        simulation.status_code == 200
+        and simulation.json()["public_config"]["measurement_id"] == "G-CAMP123"
+    ), simulation.text
+    await admin.post(
+        "/api/v1/admin/measurement/configs/" + cfg["id"] + "/publish", json={"expected_version": 1}
+    )
+    token = (
+        await admin.post(
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
+        )
+    ).json()["session_token"]
+    await admin.post(
+        "/api/v1/touches",
+        json={
+            "session_token": token,
+            "utm_source": "google",
+            "campaign_id": "555",
+            "platform": "google",
+        },
+    )
+    await admin.post("/api/v1/touches", json={"session_token": token, "landing_path": "/plans"})
+    resolved = await admin.post(
+        "/api/v1/measurement/config/session", json={"session_token": token, "path": "/plans"}
+    )
+    assert resolved.status_code == 200 and resolved.json()["measurement_id"] == "G-CAMP123", (
+        resolved.text
+    )
+    assert resolved.headers["cache-control"] == "no-store"
+    lead = await admin.post(
+        "/api/v1/leads",
+        json={
+            "phone": "0901234567",
+            "session_token": token,
+            "analytics_opt_in": True,
+            "marketing_opt_in": True,
+            "consent_version": "v3",
+            "measurement_path": "/plans",
+        },
+        headers={"Idempotency-Key": str(uuid4())},
+    )
+    assert lead.status_code == 201, lead.text
+    assert lead.json()["measurement"]["measurement_id"] == "G-CAMP123", lead.text
+    assert "ciphertext" not in str(lead.json()["measurement"])
+
+
+async def test_connection_browser_switch_disables_native_ga4(admin):
+    conn, cfg = await setup_config(admin)
+    await admin.post(
+        "/api/v1/admin/measurement/configs/" + cfg["id"] + "/publish", json={"expected_version": 1}
+    )
+    changed = await admin.put(
+        "/api/v1/admin/measurement/connections/" + conn["id"],
+        json={
+            **conn["payload"],
+            "settings": {**conn["payload"]["settings"], "browser_enabled": False},
+            "expected_version": 1,
+        },
+    )
+    assert changed.status_code == 200, changed.text
+    assert (await admin.get("/api/v1/measurement/config")).json()["measurement_id"] == ""

@@ -7,7 +7,7 @@ DECLARE sid uuid:=(c->>'session_id')::uuid; p jsonb:=c->'payload'; previous priv
 BEGIN
  PERFORM 1 FROM private.sessions WHERE sessions.id=sid AND analytics FOR UPDATE;
  IF NOT FOUND THEN RETURN '{}'; END IF;
- SELECT * INTO previous FROM private.touches WHERE session_id=sid AND created_at>now()-interval '30 days' ORDER BY created_at DESC,touches.id DESC LIMIT 1;
+ SELECT * INTO previous FROM private.touches WHERE session_id=sid AND created_at>now()-interval '90 days' ORDER BY created_at DESC,touches.id DESC LIMIT 1;
  IF coalesce(p->>'utm_source','')='' AND coalesce(p->>'utm_campaign','')='' AND coalesce(p->>'platform','')='' AND coalesce(p->>'campaign_id','')='' AND coalesce(p->>'click_id_ciphertext','')='' THEN
   IF previous.id IS NOT NULL AND p ? 'provider_ids_ciphertext' THEN UPDATE private.touches SET payload=payload||jsonb_build_object('provider_ids_ciphertext',p->'provider_ids_ciphertext') WHERE touches.id=previous.id; END IF;
   IF previous.id IS NOT NULL OR NOT p ? 'provider_ids_ciphertext' THEN RETURN jsonb_build_object('id',previous.id); END IF;
@@ -27,7 +27,10 @@ BEGIN
   UPDATE private.sessions SET advertising=coalesce((command->>'advertising')::bool,false) AND analytics AND marketing,
    personalization=coalesce((command->>'personalization')::bool,false) AND coalesce((command->>'advertising')::bool,false) AND analytics AND marketing
    WHERE id=(command->>'id')::uuid;
-  IF NOT coalesce((command->>'advertising')::bool,false) THEN UPDATE private.touches SET payload=payload-'provider_ids_ciphertext' WHERE session_id=(command->>'id')::uuid;END IF;
+  IF NOT coalesce((command->>'advertising')::bool,false) THEN UPDATE private.touches SET payload=payload-'provider_ids_ciphertext'-'click_id_ciphertext' WHERE session_id=(command->>'id')::uuid;
+   UPDATE private.leads SET click_id_ciphertext=NULL,click_id_expires_at=NULL WHERE payload->>'session_id'=command->>'id';
+   UPDATE private.measurement_occurrences SET snapshot=snapshot-'provider_ids_ciphertext'-'client_context_ciphertext' WHERE lead_id IN(SELECT id FROM private.leads WHERE payload->>'session_id'=command->>'id');
+  END IF;
  END IF;
  RETURN result;
 END $$;

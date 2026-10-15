@@ -16,8 +16,8 @@
         return null;
       const prepaid = q.monthly_vnd === null;
       return {
-        amount: money(prepaid ? q.initial_total_vnd : q.monthly_vnd),
-        caption: prepaid ? "Thanh toán ban đầu" : "Giá mỗi tháng",
+        amount: money(prepaid ? q.initial_total_vnd : q.display_monthly_vnd ?? q.monthly_vnd),
+        caption: prepaid ? "Thanh toán ban đầu" : q.display_monthly_vnd != null ? "Bình quân mỗi tháng" : "Giá mỗi tháng",
         unit: prepaid ? "" : "/tháng",
         note: `${q.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · Kỳ 6 tháng${prepaid ? "" : " · Ban đầu " + money(q.initial_total_vnd)}`,
       };

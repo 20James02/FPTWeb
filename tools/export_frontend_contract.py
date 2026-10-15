@@ -67,9 +67,9 @@ def authorization(endpoint, path):
         if (
             isinstance(node, ast.Call)
             and isinstance(node.func, ast.Name)
-            and node.func.id == "check"
+            and node.func.id in {"check", "authorize"}
         ):
-            permission = node.args[1]
+            permission = node.args[1] if len(node.args) > 1 else ast.Constant("measurement.read")
             value = (
                 permission.value
                 if isinstance(permission, ast.Constant)

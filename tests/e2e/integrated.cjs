@@ -116,9 +116,9 @@ const output = process.env.PAGEFPT_QA_OUTPUT || 'docs/qa/2026-10-01/browser-inte
  await check('price create UI commits draft',async()=>{
   const before=await api('/api/v1/admin/prices');const known=new Set(before.json.items.map(p=>p.id));
   await page.evaluate(()=>openCreatePriceModal()); assert.equal(await page.locator('#inp-plan-id').isVisible(),true,'Price modal must expose usable form controls'); await page.locator('#inp-plan-id').selectOption(planId);
-  await page.locator('#inp-monthly-vnd').fill('100'); await page.locator('#inp-source').fill('QA synthetic; never commercial');
-  const response=page.waitForResponse(r=>r.url().endsWith('/api/v1/admin/prices')&&r.request().method()==='POST');
-  await page.locator('#btn-submit-price').click(); const result=await response; assert.equal(result.status(),201);
+  await page.locator('#period-1-enabled').uncheck(); await page.locator('#period-12-enabled').uncheck(); await page.locator('#period-6-monthly').fill('100'); await page.locator('#inp-source').fill('QA synthetic; never commercial');
+  const response=page.waitForResponse(r=>r.url().endsWith('/api/v1/admin/prices/matrix')&&r.request().method()==='POST');
+  await page.locator('#btn-submit-price').click(); const result=await response; assert.equal(result.status(),200);
   const after=await api('/api/v1/admin/prices');priceId=after.json.items.find(p=>!known.has(p.id)&&p.monthly_vnd===100)?.id;
   assert.ok(priceId,'UI-created draft must be visible through the read API');
   await page.locator('[data-price-id="'+priceId+'"]').waitFor();

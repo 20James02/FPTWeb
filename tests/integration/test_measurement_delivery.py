@@ -156,3 +156,103 @@ async def test_delivery_fence_rejects_late_finish_and_connection_disable(admin, 
             "dispatch", {"command": {"op": "measurement_delivery_prepare", "id": ledger}}
         )
     )["status"] == "disabled"
+
+
+async def test_delivery_uses_original_touch_identifiers_not_later_campaign(admin, gateway):
+    _, token, _ = await seeded(admin)
+    # Seeded lead has no fbc. A later campaign must not lend its identifiers to it.
+    await admin.post(
+        "/api/v1/touches",
+        json={
+            "session_token": token,
+            "utm_source": "meta",
+            "utm_campaign": "other",
+            "campaign_id": "22222222222222222222",
+            "platform": "meta",
+            "fbc": "fb.1.1792038000000.CAMPAIGN_B",
+        },
+    )
+    with psycopg.connect(gateway.dsn) as db:
+        ledger = str(db.execute("SELECT id FROM private.measurement_deliveries").fetchone()[0])
+    result = await gateway.rpc(
+        "dispatch", {"command": {"op": "measurement_delivery_prepare", "id": ledger}}
+    )
+    assert result["event"]["source"]["campaign_id"] == "11111111111111111111"
+    assert not result.get("provider_ids_ciphertext"), result
+
+
+async def test_crm_stage_keeps_intake_identifiers_and_ga4_import_has_outbox(admin, gateway):
+    from psycopg.types.json import Jsonb
+
+    _, token, _ = await seeded(admin)
+    await admin.post(
+        "/api/v1/touches",
+        json={
+            "session_token": token,
+            "utm_source": "meta",
+            "utm_campaign": "later",
+            "platform": "meta",
+            "fbc": "fb.1.1792038000000.LATER",
+        },
+    )
+    ga = (
+        await admin.post("/api/v1/admin/measurement/connections", json=connection(enabled=True))
+    ).json()
+    with psycopg.connect(gateway.dsn) as db:
+        lead = db.execute("SELECT id FROM private.leads").fetchone()[0]
+        db.execute(
+            "UPDATE private.leads SET payload=jsonb_set(payload,'{measurement,rules}',%s) WHERE id=%s",
+            [
+                Jsonb(
+                    [
+                        {
+                            "event": "qualified",
+                            "route": "ga4_import",
+                            "connection_id": ga["id"],
+                            "provider_event": "qualified_lead",
+                        }
+                    ]
+                ),
+                lead,
+            ],
+        )
+        db.execute("SELECT private.measurement_occurrence(%s,'qualified',now())", [lead])
+        occurrences = db.execute(
+            "SELECT stage,snapshot FROM private.measurement_occurrences ORDER BY created_at"
+        ).fetchall()
+        assert len(occurrences) == 2
+        assert all(not snapshot.get("provider_ids_ciphertext") for _, snapshot in occurrences)
+        assert db.execute("SELECT count(*) FROM private.measurement_deliveries").fetchone()[0] == 2
+
+
+async def test_short_retention_bounds_clicks_and_client_context_before_cleanup(admin, gateway):
+    conn, _, _ = await seeded(admin)
+    cfg = (await admin.get("/api/v1/admin/measurement/configs")).json()["items"][0]
+    saved = await admin.put(
+        "/api/v1/admin/measurement/configs/" + cfg["id"],
+        json={
+            **cfg["payload"],
+            "policy": {"retention_days": 1},
+            "expected_version": cfg["version"],
+        },
+    )
+    assert saved.status_code == 200, saved.text
+    await admin.post(
+        "/api/v1/admin/measurement/configs/" + cfg["id"] + "/publish",
+        json={"expected_version": saved.json()["version"]},
+    )
+    with psycopg.connect(gateway.dsn) as db:
+        db.execute("UPDATE private.leads SET created_at=now()-interval '2 days'")
+        ledger = str(db.execute("SELECT id FROM private.measurement_deliveries").fetchone()[0])
+    ready = await gateway.rpc(
+        "dispatch", {"command": {"op": "measurement_delivery_prepare", "id": ledger}}
+    )
+    assert ready["status"] == "ready"
+    assert (
+        not ready.get("click_id_ciphertext")
+        and not ready.get("provider_ids_ciphertext")
+        and not ready.get("client_context_ciphertext")
+    )
+    await gateway.rpc("dispatch", {"command": {"op": "schedule_tick"}})
+    with psycopg.connect(gateway.dsn) as db:
+        assert db.execute("SELECT click_id_ciphertext FROM private.leads").fetchone()[0] is None

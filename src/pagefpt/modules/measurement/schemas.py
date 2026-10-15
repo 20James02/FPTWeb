@@ -19,10 +19,20 @@ class ConnectionSettings(Command):
     pixel_id: str = Field(default="", pattern=r"^[0-9]{0,30}$")
     ad_account_id: str = Field(default="", pattern=r"^[0-9]{0,30}$")
     api_version: str = Field(default="", pattern=r"^(v[0-9]{1,2}\.0)?$")
+    ads_api_version: str = Field(default="", pattern=r"^(v[0-9]{1,2})?$")
     currency: Literal["VND", "USD"] = "VND"
     browser_enabled: bool = False
     server_enabled: bool = False
+    sync_interval_minutes: int = Field(default=0, ge=0, le=1440)
+    sync_lookback_days: int = Field(default=3, ge=1, le=31)
     test_event_code: str = Field(default="", max_length=50, pattern=r"^[a-zA-Z0-9_-]*$")
+
+    @field_validator("sync_interval_minutes")
+    @classmethod
+    def sync_interval(cls, value):
+        if value and value < 15:
+            raise ValueError("Chu kỳ đồng bộ tối thiểu 15 phút, 0 để tắt")
+        return value
 
 
 class ConnectionInput(Command):
@@ -70,13 +80,16 @@ EVENTS = [
 
 class MeasurementPolicy(Command):
     ga4_connection_id: UUID | None = None
+    ga4_enabled: bool | None = None
     consent_mode: Literal["basic", "advanced"] | None = None
+    consent_title: str | None = Field(default=None, min_length=1, max_length=80)
+    consent_description: str | None = Field(default=None, min_length=1, max_length=400)
     event_enabled: list[str] | None = Field(default=None, max_length=30)
     attribution_window_days: int | None = Field(default=None, ge=1, le=90)
     minimum_samples: int | None = Field(default=None, ge=30, le=10000)
     maturity_days: int | None = Field(default=None, ge=1, le=90)
     refresh_seconds: int | None = Field(default=None, ge=30, le=300)
-    retention_days: int | None = Field(default=None, ge=1, le=365)
+    retention_days: int | None = Field(default=None, ge=1, le=90)
 
     @field_validator("event_enabled")
     @classmethod
@@ -114,6 +127,11 @@ class ConfigInput(Command):
 
         if not self.name.strip():
             raise ValueError("Nhập tên cấu hình")
+        if self.scope != "global" and any(
+            getattr(self.policy, k) is not None
+            for k in ("minimum_samples", "maturity_days", "retention_days")
+        ):
+            raise ValueError("Ngưỡng báo cáo và lưu trữ chỉ thiết lập ở phạm vi toàn website")
         patterns = {
             "global": r"\*",
             "domain": r"[a-z0-9.-]+",
@@ -142,6 +160,7 @@ class SimulationInput(Command):
     event: Literal["lead", "qualified", "closed", "installed"] = "lead"
     analytics: bool = False
     marketing: bool = False
+    advertising: bool = False
 
 
 class ConnectionUpdate(ConnectionInput):
@@ -194,7 +213,7 @@ class CostImport(Command):
         keys = [(r.day, r.campaign_id, r.adgroup_id, r.ad_id) for r in self.rows]
         if len(set(keys)) != len(keys):
             raise ValueError("Một kỳ và nhóm quảng cáo chỉ có một dòng chi phí")
-        grains = {}
+        grains: dict[tuple[date, str], str] = {}
         for row in self.rows:
             key = (row.day, row.campaign_id)
             grain = "ad" if row.ad_id else "group" if row.adgroup_id else "campaign"
@@ -206,3 +225,27 @@ class CostImport(Command):
 
 class CostApply(CostImport):
     preview_token: str = Field(max_length=8192)
+
+
+class TrafficRow(Command):
+    day: date
+    source: str = Field(max_length=150)
+    campaign: str = Field(max_length=150)
+    sessions: int = Field(ge=0, le=1000000000)
+    engaged_sessions: int = Field(ge=0, le=1000000000)
+    average_session_seconds: float = Field(ge=0, le=604800, allow_inf_nan=False)
+
+
+class BulkItem(VersionInput):
+    id: UUID
+
+
+class BulkInput(Command):
+    action: Literal["disable", "publish"]
+    items: list[BulkItem] = Field(min_length=1, max_length=50)
+
+    @model_validator(mode="after")
+    def unique_ids(self):
+        if len({r.id for r in self.items}) != len(self.items):
+            raise ValueError("Mỗi mục chỉ được chọn một lần")
+        return self

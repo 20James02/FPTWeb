@@ -62,6 +62,10 @@ class CampaignInput(Command):
     platform: Literal["google", "meta", "tiktok", "zalo", "seo", "referral"]
     utm_campaign: str = Field(max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
     branch_id: UUID | None = None
+    connection_id: UUID | None = None
+    external_campaign_id: str = Field(default="", max_length=40, pattern=r"^[0-9]*$")
+    landing_path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
+    content_note: str = Field(default="", max_length=1000)
 
 
 class Variant(Command):

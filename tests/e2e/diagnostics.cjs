@@ -41,14 +41,14 @@ const output = process.env.PAGEFPT_QA_DIAGNOSTICS || 'docs/qa/2026-10-01/diagnos
       await page.evaluate(()=>openCreatePriceModal());
       const plan=await page.evaluate(()=>availablePlans.find(p=>p.payload?.code==='qa-synthetic').id);
       await page.selectOption('#inp-plan-id',plan);
-      await page.fill('#inp-monthly-vnd','101');
+      await page.locator('#period-1-enabled').uncheck(); await page.locator('#period-12-enabled').uncheck(); await page.fill('#period-6-monthly','101');
       await page.fill('#inp-source','qa-synthetic-diagnostic');
       report.price_form_valid=await page.evaluate(()=>document.getElementById('create-price-form').checkValidity());
       assert.equal(report.price_form_valid,true);
-      const responsePromise=page.waitForResponse(r=>r.url()===origin+'/api/v1/admin/prices'&&r.request().method()==='POST',{timeout:8000});
+      const responsePromise=page.waitForResponse(r=>r.url()===origin+'/api/v1/admin/prices/matrix'&&r.request().method()==='POST',{timeout:8000});
       const [response]=await Promise.all([responsePromise,page.click('#btn-submit-price')]);
       report.price_submit_status=response.status();
-      assert.equal(response.status(),201);
+      assert.equal(response.status(),200);
       const after=await api('/api/v1/admin/prices');
       const created=after.data.items.find(p=>!knownIds.has(p.id)&&p.monthly_vnd===101);
       assert.ok(created,'UI-created price must be visible through the read API');
