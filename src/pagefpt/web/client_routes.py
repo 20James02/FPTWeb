@@ -14,9 +14,17 @@ templates_dir = Path(__file__).resolve().parent.parent / "templates"
 templates = Jinja2Templates(directory=str(templates_dir))
 
 
+def plan_sort_key(p):
+    val = p.get("sort_order")
+    return (val if (val is not None and val > 0) else 9999, p.get("name") or "")
+
+
 async def published_catalog(request, kind="plan"):
     try:
-        return (await dispatch(request, "public_catalog", kind=kind))["items"]
+        items = (await dispatch(request, "public_catalog", kind=kind))["items"]
+        if kind == "plan":
+            items.sort(key=plan_sort_key)
+        return items
     except DomainError:
         # Offline preview may explain the empty catalog, never invent packages/prices.
         if request.app.state.settings.environment not in {"development", "test"}:

@@ -145,7 +145,12 @@ async function loadPricesList() {
       pricingApi("/api/v1/admin/me"),
     ]);
     if (generation !== pricingLoadGeneration) return;
-    availablePlans = plans;
+    availablePlans = plans.sort((a, b) => {
+      const orderA = a.payload.sort_order ?? a.published_payload?.sort_order ?? 9999;
+      const orderB = b.payload.sort_order ?? b.published_payload?.sort_order ?? 9999;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.payload.name || "").localeCompare(b.payload.name || "");
+    });
     pricingProvinces = provinces;
     pricingRows = prices.items;
     pricingCursor = pricingRows.length === 100 ? pricingRows.at(-1).id : null;
@@ -380,6 +385,7 @@ function renderPricing() {
     pricingFilter(p, p.payload.name),
   )) {
     const info = pricingNode("div");
+    const sortVal = row.payload.sort_order ?? row.published_payload?.sort_order;
     info.append(
       pricingNode("strong", row.payload.name),
       pricingNode(
@@ -393,6 +399,11 @@ function renderPricing() {
         "pricing-sub",
       ),
       pricingStatus(row),
+      pricingNode(
+        "span",
+        sortVal ? `Thứ tự #${sortVal}` : "Thứ tự: Mặc định",
+        "pricing-tag",
+      ),
     );
     if (row.status === "published" && row.version !== row.published_version)
       info.append(
@@ -797,9 +808,22 @@ function openPlanDialog(row = null) {
       ["plan-speed", "speed_mbps"],
       ["plan-upload-speed", "upload_speed_mbps"],
       ["plan-description", "description"],
+      ["plan-sort-order", "sort_order"],
     ])
       $p(id).value = row.payload[key] ?? "";
     $p("plan-equipment").value = (row.payload.equipment || []).join("\n");
+  } else {
+    for (const id of [
+      "plan-name",
+      "plan-code",
+      "plan-description",
+      "plan-equipment",
+      "plan-speed",
+      "plan-upload-speed",
+    ])
+      $p(id).value = "";
+    $p("plan-sort-order").value = "0";
+    $p("plan-service").value = "internet";
   }
   for (const [key, value] of Object.entries({
     badge: "Gói đang cung cấp",
@@ -968,6 +992,9 @@ async function savePlan(event) {
       upload_speed_mbps: $p("plan-upload-speed").value
         ? Number($p("plan-upload-speed").value)
         : null,
+      sort_order: $p("plan-sort-order").value
+        ? Number($p("plan-sort-order").value)
+        : 0,
       description: $p("plan-description").value,
       equipment: $p("plan-equipment")
         .value.split("\n")
@@ -1285,3 +1312,102 @@ function previewPlanCard() {
 document
   .getElementById("plan-form")
   ?.addEventListener("input", previewPlanCard);
+
+function pricingAddPlan() {
+  editingPlan = null;
+  openPlanDialog(null);
+}
+
+let planReorderItems = [];
+
+function openPlanReorderDialog() {
+  pricingClearError("plan-reorder-error");
+  const active = availablePlans
+    .filter((p) => p.status !== "retired")
+    .sort((a, b) => {
+      const orderA = a.payload.sort_order ?? a.published_payload?.sort_order ?? 9999;
+      const orderB = b.payload.sort_order ?? b.published_payload?.sort_order ?? 9999;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.payload.name || "").localeCompare(b.payload.name || "");
+    });
+  planReorderItems = [...active];
+  renderPlanReorderList();
+  openPricingDialog("plan-reorder-dialog");
+}
+
+function renderPlanReorderList() {
+  const container = $p("plan-reorder-list");
+  container.replaceChildren();
+  if (!planReorderItems.length) {
+    container.append(
+      pricingNode("p", "Chưa có gói cước nào để sắp xếp.", "pricing-empty")
+    );
+    return;
+  }
+  planReorderItems.forEach((plan, index) => {
+    const item = pricingNode("div", "", "plan-reorder-item");
+    item.dataset.planId = plan.id;
+
+    const info = pricingNode("div", "", "plan-reorder-info");
+    const rank = pricingNode("span", String(index + 1), "plan-reorder-rank");
+    const textWrap = pricingNode("div");
+    const title = pricingNode("div", plan.payload.name, "plan-reorder-name");
+    const meta = pricingNode(
+      "div",
+      pricingServiceLabel(plan.payload.service) +
+        (plan.payload.speed_mbps ? " · " + plan.payload.speed_mbps + " Mbps" : "") +
+        (plan.status === "published" ? " · Đã công bố" : " · Bản nháp"),
+      "plan-reorder-meta"
+    );
+    textWrap.append(title, meta);
+    info.append(rank, textWrap);
+
+    const actions = pricingNode("div", "", "plan-reorder-actions");
+    const upBtn = pricingNode("button", "▲ Lên", "plan-reorder-btn");
+    upBtn.type = "button";
+    upBtn.title = "Đưa gói lên trước";
+    upBtn.disabled = index === 0;
+    upBtn.onclick = () => {
+      [planReorderItems[index - 1], planReorderItems[index]] = [
+        planReorderItems[index],
+        planReorderItems[index - 1],
+      ];
+      renderPlanReorderList();
+    };
+
+    const downBtn = pricingNode("button", "▼ Xuống", "plan-reorder-btn");
+    downBtn.type = "button";
+    downBtn.title = "Đưa gói xuống sau";
+    downBtn.disabled = index === planReorderItems.length - 1;
+    downBtn.onclick = () => {
+      [planReorderItems[index + 1], planReorderItems[index]] = [
+        planReorderItems[index],
+        planReorderItems[index + 1],
+      ];
+      renderPlanReorderList();
+    };
+
+    actions.append(upBtn, downBtn);
+    item.append(info, actions);
+    container.append(item);
+  });
+}
+
+async function savePlanOrder() {
+  pricingClearError("plan-reorder-error");
+  const btn = $p("btn-save-plan-order");
+  btn.disabled = true;
+  btn.textContent = "Đang lưu thứ tự…";
+  try {
+    const ids = planReorderItems.map((p) => p.id);
+    await pricingApi("/api/v1/admin/plans/reorder", "POST", { plan_ids: ids });
+    closePricingDialog("plan-reorder-dialog");
+    showToast("Đã lưu và cập nhật thứ tự gói cước hiển thị trên website!", "success");
+    await loadPricesList();
+  } catch (e) {
+    pricingError("plan-reorder-error", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Lưu & áp dụng thứ tự";
+  }
+}

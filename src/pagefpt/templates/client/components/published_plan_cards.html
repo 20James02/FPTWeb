@@ -20,7 +20,7 @@
           <div class="plan-price-note sr-only" data-quote-note="{{plan.id}}">Chọn khu vực để xem giá.</div>
           <div class="plan-price-subtext"><small data-period-average="{{plan.id}}" class="period-average-badge" hidden>Bình quân/tháng</small></div>
         </div>
-        <div class="plan-speed-panel {{ 'speed-panel--ultra' if is_ultra else 'speed-panel--standard' }}">
+        <div class="plan-speed-panel" data-speed-tier="{{ 'ultra' if is_ultra else 'standard' }}">
           <div class="plan-speed-data">
             <div class="plan-speed-label-row">
               <p class="plan-speed-title">{{labels.get('speed', 'Tốc độ')}} (Download/Upload)</p>

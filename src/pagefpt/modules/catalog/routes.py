@@ -9,7 +9,12 @@ from pagefpt.api.dependencies import crypto, dispatch
 from pagefpt.modules.catalog.accessories import selection, with_accessories
 from pagefpt.modules.catalog.geography_routes import router as geography_router
 from pagefpt.modules.catalog.images import plan_payload
-from pagefpt.modules.catalog.schemas import PlanInput, RegionInput, VersionCommand
+from pagefpt.modules.catalog.schemas import (
+    PlanInput,
+    PlanReorderInput,
+    RegionInput,
+    VersionCommand,
+)
 from pagefpt.modules.content.cache import public_json
 from pagefpt.modules.pricing.engine import calculate_quote
 from pagefpt.modules.pricing.landing import (
@@ -42,7 +47,15 @@ async def save_resource(request, kind, input):
 
 @router.get("/catalog")
 async def catalog(request: Request):
-    return public_json(request, await dispatch(request, "public_catalog", kind="plan"))
+    data = await dispatch(request, "public_catalog", kind="plan")
+    items = list(data.get("items", []))
+    items.sort(
+        key=lambda p: (
+            p.get("sort_order") if (p.get("sort_order") is not None and p.get("sort_order") > 0) else 9999,
+            p.get("name") or "",
+        )
+    )
+    return public_json(request, {"items": items})
 
 
 @router.get("/accessories")
@@ -126,6 +139,47 @@ async def locations(
 @router.get("/regions")
 async def regions(request: Request):
     return await dispatch(request, "public_catalog", kind="region")
+
+
+@router.post("/admin/plans/reorder")
+async def reorder_plans(input: PlanReorderInput, request: Request):
+    actor = await current_actor(request)
+    check(actor, "catalog.write")
+    updated = []
+    for index, plan_id in enumerate(input.plan_ids):
+        sort_order = index + 1
+        plan = await dispatch(
+            request, "resource_get", actor=actor.user_id, kind="plan", id=str(plan_id)
+        )
+        if plan.get("status") == "retired":
+            continue
+        payload = dict(plan.get("payload") or {})
+        pub_order = (plan.get("published_payload") or {}).get("sort_order")
+        is_published = plan.get("status") == "published"
+        if payload.get("sort_order") == sort_order and (not is_published or pub_order == sort_order):
+            updated.append(plan)
+            continue
+        payload["sort_order"] = sort_order
+        res = await dispatch(
+            request,
+            "resource_update",
+            actor=actor.user_id,
+            kind="plan",
+            id=str(plan_id),
+            expected_version=plan["version"],
+            payload=payload,
+        )
+        if is_published:
+            res = await dispatch(
+                request,
+                "resource_publish",
+                actor=actor.user_id,
+                kind="plan",
+                id=str(plan_id),
+                expected_version=res["version"],
+            )
+        updated.append(res)
+    return {"status": "ok", "items": updated}
 
 
 @router.post("/admin/plans", status_code=201)

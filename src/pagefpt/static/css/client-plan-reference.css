@@ -232,7 +232,8 @@
   overflow: hidden;
   transition: all 0.25s ease;
 }
-.speed-panel--ultra {
+.speed-panel--ultra,
+.plan-speed-panel[data-speed-tier="ultra"] {
   border-color: #fed7aa;
   background: linear-gradient(135deg, #fffbf5 0%, #ffffff 100%);
   box-shadow: 0 2px 8px rgba(251, 146, 60, 0.08);

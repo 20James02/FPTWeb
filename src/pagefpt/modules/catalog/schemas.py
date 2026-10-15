@@ -32,6 +32,11 @@ class PlanInput(Command):
     applicable_region_ids: list[UUID] = Field(default_factory=list, max_length=500)
     image_id: UUID | None = None
     image_alt: str = Field(default="", max_length=200)
+    sort_order: int = Field(default=0, ge=0, le=9999)
+
+
+class PlanReorderInput(Command):
+    plan_ids: list[UUID] = Field(min_length=1, max_length=100)
 
 
 class RegionInput(Command):
