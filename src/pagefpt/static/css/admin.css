@@ -89,32 +89,158 @@ body.admin-body {
   text-transform: uppercase;
 }
 
+/* ===================================================================
+   ADMIN SIDEBAR NAV — COLLAPSIBLE GROUPS & COMPACT SUBMENUS
+   =================================================================== */
 .sidebar-nav {
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-3) var(--space-2);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 3px;
   flex-grow: 1;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
-.nav-section-title {
-  font-size: 0.7rem;
+.sidebar-nav a {
+  text-decoration: none !important;
+}
+
+/* Nhóm menu cha có thể gập/mở */
+.nav-group {
+  margin-bottom: 3px;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) ease;
+}
+
+.nav-group-header {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  min-height: 40px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.825rem;
+  font-weight: var(--font-weight-semibold);
+  user-select: none;
+  transition: all var(--duration-fast) ease;
+  position: relative;
+}
+
+.nav-group-header::-webkit-details-marker {
+  display: none;
+}
+
+.nav-group-header:hover {
+  background: var(--bg-surface-muted);
+  color: var(--text-primary);
+}
+
+.nav-group[open] > .nav-group-header {
+  color: var(--color-primary);
   font-weight: var(--font-weight-bold);
+  background: rgba(243, 112, 33, 0.05);
+}
+
+.nav-group-header svg:first-child {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.nav-group-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.1px;
+}
+
+.nav-group-chevron {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  opacity: 0.5;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-group[open] > .nav-group-header .nav-group-chevron {
+  transform: rotate(90deg);
+  opacity: 0.9;
+  color: var(--color-primary);
+}
+
+/* Khối Menu con (Submenu) với đường nối chỉ thị nhánh */
+.nav-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px 0 4px 10px;
+  margin-left: 14px;
+  margin-top: 2px;
+  border-left: 2px solid var(--border-subtle);
+  animation: submenuSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes submenuSlideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Link con */
+.nav-link.nav-sublink {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-xs, 6px);
+  gap: 8px;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: var(--space-2) var(--space-3) var(--space-1);
-  margin-top: var(--space-2);
+  text-decoration: none !important;
+}
+
+.nav-link.nav-sublink:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-muted);
+  text-decoration: none !important;
+}
+
+.nav-link.nav-sublink.active {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.nav-link.nav-sublink svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.7;
+}
+
+.nav-link.nav-sublink.active svg {
+  opacity: 1;
+}
+
+.nav-link.nav-link-root {
+  min-height: 40px;
+  padding: 8px 10px;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 2px;
+  text-decoration: none !important;
 }
 
 .nav-link {
-  text-decoration: none;
-  min-height: 44px;
+  text-decoration: none !important;
+  min-height: 40px;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 9px 12px;
+  padding: 8px 10px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-weight: var(--font-weight-medium);
@@ -124,7 +250,7 @@ body.admin-body {
 }
 
 .nav-link:hover {
-  text-decoration: none;
+  text-decoration: none !important;
   background: var(--bg-surface-muted);
   color: var(--text-primary);
 }
@@ -137,9 +263,10 @@ body.admin-body {
 
 .nav-link svg {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
 }
+
 
 .nav-counter {
   margin-left: auto;

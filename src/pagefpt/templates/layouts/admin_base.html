@@ -34,60 +34,167 @@
       {% endif %}
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-section-title">Kinh Doanh & Bán Hàng</div>
+        <nav class=sidebar-nav>
+      <!-- 1. Tổng Quan Doanh Nghiệp -->
       {% if admin_actor.permits("report.read") %}
-      <a href="/admin/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+      <a href="/admin/dashboard" class="nav-link nav-link-root {{ 'active' if active_page == 'dashboard' }}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         <span>Tổng quan kinh doanh</span>
       </a>
       {% endif %}
 
+      <!-- 2. Nhóm Bán Hàng & Lead CRM -->
       {% if admin_actor.permits("lead.read") %}
-      <a href="/admin/workbench" class="nav-link {{ 'active' if active_page == 'workbench' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 6 2 2 4-4M12 6h8M4 12h16M4 18h16"/></svg><span>Việc cần xử lý</span></a>
-      <a href="/admin/leads" class="nav-link {% if active_page == 'leads' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>Quản Lý Lead CRM (Khách Hàng)</span>
-        <span class="nav-counter" id="sidebar-new-leads-count">—</span>
-      </a>
+      {% set is_sales_active = active_page in ['workbench', 'leads'] %}
+      <details class="nav-group" {{ 'open' if is_sales_active }}>
+        <summary class="nav-group-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="nav-group-title">Bán Hàng &amp; Khách Hàng</span>
+          <svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </summary>
+        <div class="nav-submenu">
+          <a href="/admin/workbench" class="nav-link nav-sublink {{ 'active' if active_page == 'workbench' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 6 2 2 4-4M12 6h8M4 12h16M4 18h16"/></svg>
+            <span>Việc cần xử lý</span>
+          </a>
+          <a href="/admin/leads" class="nav-link nav-sublink {{ 'active' if active_page == 'leads' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span>Quản Lý Lead CRM</span>
+            <span class="nav-counter" id="sidebar-new-leads-count">—</span>
+          </a>
+        </div>
+      </details>
       {% endif %}
 
-      <div class="nav-section-title">Dịch Vụ & Bảng Giá</div>
+      <!-- 3. Nhóm Sản Phẩm & Bảng Giá -->
       {% if admin_actor.permits("catalog.write") or admin_actor.permits("pricing.write") %}
-      <a href="/admin/pricing" class="nav-link {% if active_page == 'pricing' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span>Gói cước & Bảng giá</span>
-      </a>
-      {% if admin_actor.permits('catalog.write') %}<a href="/admin/accessories" class="nav-link {{ 'active' if active_page == 'accessories' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6V3h8v3M3 12h18"/></svg><span>Sản phẩm & phụ kiện</span></a>{% endif %}
+      {% set is_pricing_active = active_page in ['pricing', 'accessories'] %}
+      <details class="nav-group" {{ 'open' if is_pricing_active }}>
+        <summary class="nav-group-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="nav-group-title">Sản Phẩm &amp; Bảng Giá</span>
+          <svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </summary>
+        <div class="nav-submenu">
+          <a href="/admin/pricing" class="nav-link nav-sublink {{ 'active' if active_page == 'pricing' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Gói cước &amp; Bảng giá</span>
+          </a>
+          {% if admin_actor.permits('catalog.write') %}
+          <a href="/admin/accessories" class="nav-link nav-sublink {{ 'active' if active_page == 'accessories' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6V3h8v3M3 12h18"/></svg>
+            <span>Sản phẩm &amp; Phụ kiện</span>
+          </a>
+          {% endif %}
+        </div>
+      </details>
       {% endif %}
 
-      {% if admin_actor.permits('marketing.write') %}<a href="/admin/vouchers" class="nav-link {{ 'active' if active_page == 'vouchers' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8V4h18v4a4 4 0 0 0 0 8v4H3v-4a4 4 0 0 0 0-8Z"/><path d="M14 4v16"/></svg><span>Voucher &amp; Link chia sẻ</span></a>{% endif %}
-      <div class="nav-section-title">Phân Tích & Báo Cáo</div>
-      {% if admin_actor.permits("marketing.write") %}<a href="/admin/link-performance" class="nav-link {{ 'active' if active_page == 'link-performance' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg><span>Hiệu quả link content</span></a>{% endif %}
+      <!-- 4. Nhóm Marketing & Quảng Bá -->
+      {% if admin_actor.permits("marketing.write") or admin_actor.permits("measurement.read") %}
+      {% set is_marketing_active = active_page in ['vouchers', 'marketing', 'link-performance', 'measurement'] %}
+      <details class="nav-group" {{ 'open' if is_marketing_active }}>
+        <summary class="nav-group-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+          <span class="nav-group-title">Marketing &amp; Chiến Dịch</span>
+          <svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </summary>
+        <div class="nav-submenu">
+          {% if admin_actor.permits('marketing.write') %}
+          <a href="/admin/vouchers" class="nav-link nav-sublink {{ 'active' if active_page == 'vouchers' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8V4h18v4a4 4 0 0 0 0 8v4H3v-4a4 4 0 0 0 0-8Z"/><path d="M14 4v16"/></svg>
+            <span>Voucher &amp; Link chia sẻ</span>
+          </a>
+          <a href="/admin/marketing" class="nav-link nav-sublink {{ 'active' if active_page == 'marketing' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Quản lý chiến dịch &amp; Kênh</span>
+          </a>
+          <a href="/admin/link-performance" class="nav-link nav-sublink {{ 'active' if active_page == 'link-performance' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg>
+            <span>Hiệu quả link content</span>
+          </a>
+          {% endif %}
+          {% if admin_actor.permits("measurement.read") %}
+          <a href="/admin/measurement" class="nav-link nav-sublink {{ 'active' if active_page == 'measurement' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>Đo lường &amp; Phân tích Ads</span>
+          </a>
+          {% endif %}
+        </div>
+      </details>
+      {% endif %}
+
+      <!-- 5. Nhóm Website & Nội Dung -->
+      {% if admin_actor.permits('content.publish') or admin_actor.permits("content.write") %}
+      {% set is_cms_active = active_page in ['appearance', 'navigation', 'landing-pages', 'content'] %}
+      <details class="nav-group" {{ 'open' if is_cms_active }}>
+        <summary class="nav-group-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <span class="nav-group-title">Website &amp; Nội Dung</span>
+          <svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </summary>
+        <div class="nav-submenu">
+          {% if admin_actor.permits('content.publish') %}
+          <a href="/admin/appearance" class="nav-link nav-sublink {{ 'active' if active_page == 'appearance' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m3 16 5-5 4 4 4-6 5 7"/></svg>
+            <span>Slide &amp; Giao diện trang chủ</span>
+          </a>
+          <a href="/admin/navigation" class="nav-link nav-sublink {{ 'active' if active_page == 'navigation' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 6h14M5 12h14M5 18h14"/></svg>
+            <span>Menu điều hướng</span>
+          </a>
+          {% endif %}
+          {% if admin_actor.permits("content.write") %}
+          <a href="/admin/landing-pages" class="nav-link nav-sublink {{ 'active' if active_page == 'landing-pages' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 8h18M8 8v13"/></svg>
+            <span>Thiết kế Landing page</span>
+          </a>
+          {% endif %}
+          {% if admin_actor.permits("content.write") or admin_actor.permits("catalog.write") %}
+          <a href="/admin/content" class="nav-link nav-sublink {{ 'active' if active_page == 'content' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Quản lý nội dung tổng hợp</span>
+          </a>
+          {% endif %}
+        </div>
+      </details>
+      {% endif %}
+
+      <!-- 6. Báo Cáo Hiệu Quả -->
       {% if admin_actor.permits("report.read") %}
-      <a href="/admin/reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">
+      <a href="/admin/reports" class="nav-link nav-link-root {{ 'active' if active_page == 'reports' }}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <span>Báo cáo hiệu quả</span>
+        <span>Báo cáo hiệu quả kinh doanh</span>
       </a>
       {% endif %}
 
-      {% if admin_actor.permits('content.publish') %}
-      <div class="nav-section-title">Giao diện website</div>
-      <a href="/admin/appearance" class="nav-link {{ 'active' if active_page == 'appearance' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m3 16 5-5 4 4 4-6 5 7"/></svg><span>Slide &amp; giao diện</span></a>
-      <a href="/admin/navigation" class="nav-link {{ 'active' if active_page == 'navigation' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 6h14M5 12h14M5 18h14"/></svg><span>Menu điều hướng</span></a>
-      {% endif %}
-      {% if admin_actor.permits("content.write") %}<a href="/admin/landing-pages" class="nav-link {{ 'active' if active_page == 'landing-pages' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 8h18M8 8v13"/></svg><span>Landing page</span></a>{% endif %}
-      <div class="nav-section-title">Hệ Thống</div>
-      <a href="/admin/account" class="nav-link {% if active_page == 'account' %}active{% endif %}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg><span>Tài khoản &amp; Bảo mật</span></a>
-      {% if admin_actor.permits("workflow.manage") or admin_actor.permits("content.publish") %}
-      <a href="/admin/settings" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Cài đặt & Trạng thái</span>
-      </a>
-      {% endif %}
-{% if admin_actor.permits("marketing.write") %}<a href="/admin/marketing" class="nav-link {% if active_page == "marketing" %}active{% endif %}"><span>Marketing & Quảng cáo</span></a>{% endif %}
-{% if admin_actor.permits("content.write") or admin_actor.permits("catalog.write") %}<a href="/admin/content" class="nav-link {% if active_page == "content" %}active{% endif %}"><span>Nội dung & Ưu đãi</span></a>{% endif %}
-{% if admin_actor.permits("workflow.manage") or admin_actor.permits("identity.manage") or admin_actor.permits("governance.audit") or admin_actor.permits("governance.export") or admin_actor.permits("governance.write") %}<a href="/admin/operations" class="nav-link {% if active_page == "operations" %}active{% endif %}"><span>Vận hành & Nhân sự</span></a>{% endif %}
+      <!-- 7. Nhóm Hệ Thống & Vận Hành -->
+      {% set is_system_active = active_page in ['account', 'operations', 'settings'] %}
+      <details class="nav-group" {{ 'open' if is_system_active }}>
+        <summary class="nav-group-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span class="nav-group-title">Hệ Thống &amp; Vận Hành</span>
+          <svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </summary>
+        <div class="nav-submenu">
+          <a href="/admin/account" class="nav-link nav-sublink {{ 'active' if active_page == 'account' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg>
+            <span>Tài khoản &amp; Bảo mật</span>
+          </a>
+          {% if admin_actor.permits("workflow.manage") or admin_actor.permits("identity.manage") or admin_actor.permits("governance.audit") or admin_actor.permits("governance.export") or admin_actor.permits("governance.write") %}
+          <a href="/admin/operations" class="nav-link nav-sublink {{ 'active' if active_page == 'operations' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Nhật ký &amp; Nhân sự</span>
+          </a>
+          {% endif %}
+          {% if admin_actor.permits("workflow.manage") or admin_actor.permits("content.publish") %}
+          <a href="/admin/settings" class="nav-link nav-sublink {{ 'active' if active_page == 'settings' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Cài đặt hệ thống</span>
+          </a>
+          {% endif %}
+        </div>
+      </details>
     </nav>
 
     <div class="sidebar-footer">
