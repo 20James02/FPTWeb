@@ -51,7 +51,9 @@ async def catalog(request: Request):
     items = list(data.get("items", []))
     items.sort(
         key=lambda p: (
-            p.get("sort_order") if (p.get("sort_order") is not None and p.get("sort_order") > 0) else 9999,
+            p.get("sort_order")
+            if (p.get("sort_order") is not None and p.get("sort_order") > 0)
+            else 9999,
             p.get("name") or "",
         )
     )
@@ -156,7 +158,9 @@ async def reorder_plans(input: PlanReorderInput, request: Request):
         payload = dict(plan.get("payload") or {})
         pub_order = (plan.get("published_payload") or {}).get("sort_order")
         is_published = plan.get("status") == "published"
-        if payload.get("sort_order") == sort_order and (not is_published or pub_order == sort_order):
+        if payload.get("sort_order") == sort_order and (
+            not is_published or pub_order == sort_order
+        ):
             updated.append(plan)
             continue
         payload["sort_order"] = sort_order

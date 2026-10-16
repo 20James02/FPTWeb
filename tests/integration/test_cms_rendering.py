@@ -1,5 +1,30 @@
+from xml.etree import ElementTree
+
 import httpx
 import pytest
+
+from pagefpt.web.service_pages import SERVICE_PAGES
+
+
+async def test_sitemap_includes_static_pages_and_uses_configured_origin(client):
+    client._transport.app.state.settings.public_origin = "https://public.example.test/"
+    response = await client.get("/sitemap.xml")
+    assert response.status_code == 200
+    locations = [node.text for node in ElementTree.fromstring(response.text).iter("{*}loc")]
+    # ElementTree's iter does not expand wildcard namespaces.
+    locations = [
+        node.text for node in ElementTree.fromstring(response.text).findall("{*}url/{*}loc")
+    ]
+    expected_paths = {"/", "/khuyen-mai", "/do-toc-do", "/chinh-sach-bao-mat"} | {
+        "/san-pham/" + slug for slug in SERVICE_PAGES
+    }
+    assert set(locations) == {"https://public.example.test" + path for path in expected_paths}
+    assert len(locations) == len(expected_paths)
+    for path in expected_paths:
+        assert (await client.get(path)).status_code == 200
+    robots = await client.get("/robots.txt")
+    assert "Sitemap: https://public.example.test/sitemap.xml" in robots.text
+    assert "Disallow: /admin" in robots.text and "Disallow: /api/" in robots.text
 
 
 async def page(admin, slug="qa-landing"):

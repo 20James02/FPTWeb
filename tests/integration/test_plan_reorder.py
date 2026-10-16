@@ -7,7 +7,12 @@ async def test_plan_reorder_and_sort_order(admin):
     p1 = (
         await admin.post(
             "/api/v1/admin/plans",
-            json={"name": "Alpha Plan", "service": "internet", "code": "qa-alpha", "sort_order": 10},
+            json={
+                "name": "Alpha Plan",
+                "service": "internet",
+                "code": "qa-alpha",
+                "sort_order": 10,
+            },
         )
     ).json()
     p2 = (
@@ -19,7 +24,12 @@ async def test_plan_reorder_and_sort_order(admin):
     p3 = (
         await admin.post(
             "/api/v1/admin/plans",
-            json={"name": "Gamma Plan", "service": "internet", "code": "qa-gamma", "sort_order": 30},
+            json={
+                "name": "Gamma Plan",
+                "service": "internet",
+                "code": "qa-gamma",
+                "sort_order": 30,
+            },
         )
     ).json()
 
@@ -47,7 +57,9 @@ async def test_plan_reorder_and_sort_order(admin):
 
     # Check /api/v1/catalog new order
     catalog_after = (await admin.get("/api/v1/catalog")).json()["items"]
-    reordered_ids = [item["id"] for item in catalog_after if item["id"] in [p1["id"], p2["id"], p3["id"]]]
+    reordered_ids = [
+        item["id"] for item in catalog_after if item["id"] in [p1["id"], p2["id"], p3["id"]]
+    ]
     assert reordered_ids == [p3["id"], p1["id"], p2["id"]]
 
     # Check client homepage cards order

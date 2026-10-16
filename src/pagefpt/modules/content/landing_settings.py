@@ -242,7 +242,7 @@ class LandingSettings(TextContent):
     )
     footer_links: list[NavigationLink] = Field(
         default_factory=lambda: [
-            NavigationLink(label="Chính sách bảo mật", href="/chinh-sach-bao-mat")
+            NavigationLink(label="Chính sách bảo mật", href="https://fpt.vn/ho-tro")
         ],
         max_length=12,
     )

@@ -1,3 +1,4 @@
+import re
 from uuid import uuid4
 
 import httpx
@@ -7,6 +8,19 @@ from psycopg.types.json import Jsonb
 
 from pagefpt.application import create_app
 from pagefpt.core.config import Settings
+
+
+async def test_empty_runline_keeps_default_copy_free_of_unverified_promotions(admin):
+    settings = (await admin.get("/api/v1/system/display-settings")).json()
+    saved = await admin.post(
+        "/api/v1/system/display-settings",
+        json={"expected_version": settings["version"], "runline_text": ""},
+    )
+    assert saved.status_code == 200, saved.text
+    response = await admin.get("/")
+    assert response.status_code == 200
+    assert not re.search(r"tặng.{0,60}(?:2|hai).{0,20}tháng", response.text, re.I)
+    assert "440.000đ" not in response.text
 
 
 @pytest.mark.parametrize("environment", ["staging", "production"])

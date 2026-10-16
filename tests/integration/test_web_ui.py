@@ -233,6 +233,7 @@ async def test_plans_3d_details_slider_tags_menu_and_footer(client, published_ui
     assert "footer-hotline" in text
     assert "compact-footer-grid" in text
     assert 'href="/chinh-sach-bao-mat"' in text
+    assert 'href="https://fpt.vn/ho-tro" class="legal-sublink"' in text
     assert "Tuân Thủ NĐ" not in text
 
     # 4. CSS verify for navbar white-space nowrap & 3D rules

@@ -579,7 +579,7 @@
       plans_layout: "grid",
       eyebrow: "SIÊU BÃO ƯU ĐÃI ĐỘC QUYỀN THÁNG NÀY",
       title: "Đại Tiệc Ưu Đãi Lắp Mạng FPT Telecom",
-      highlight: "Tặng Đến 2 Tháng Cước + Modem Wi-Fi 6 0đ",
+      highlight: "Tặng Thêm Tháng Cước + Modem Wi-Fi 6 0đ",
       subtitle:
         "Cơ hội nhận ưu đãi lớn nhất năm: Giảm 50% phí hòa mạng, tặng thêm tháng sử dụng và hỗ trợ chuyển mạng nhanh chóng.",
       form: "NHẬN TƯ VẤN ƯU ĐÃI ĐỘC QUYỀN",
@@ -588,7 +588,7 @@
       slug: "sieu-khuyen-mai-lap-mang-fpt",
       page_title: "Đại Tiệc Siêu Khuyến Mãi Lắp Mạng Cáp Quang FPT Telecom",
       benefits: [
-        { title: "Tặng 1-2 tháng cước", text: "Áp dụng khi thanh toán trước 6 hoặc 12 tháng", icon: "award" },
+        { title: "Tặng thêm tháng cước", text: "Áp dụng khi thanh toán trước 12 tháng", icon: "award" },
         { title: "Miễn phí Modem Wi-Fi 6", text: "Trang bị thiết bị Wi-Fi 6 cao cấp hoàn toàn 0đ", icon: "wifi" },
         { title: "Lắp đặt siêu tốc", text: "Kéo cáp nhanh chóng trong vòng 12 - 24 giờ", icon: "install" },
         { title: "Hỗ trợ đổi mạng", text: "Tặng thêm quà đặc biệt cho khách hàng chuyển từ mạng khác sang", icon: "users" }
@@ -596,7 +596,7 @@
       faqs: [
         {
           question: "Điều kiện để nhận tháng cước tặng kèm là gì?",
-          answer: "Khách hàng tham gia chương trình trả trước 6 tháng (tặng 1 tháng) hoặc 12 tháng (tặng 2 tháng) theo chính sách hiện hành."
+          answer: "Khách hàng tham gia chương trình trả trước 12 tháng (tặng 1 tháng) theo chính sách thương mại hiện hành của FPT."
         },
         {
           question: "Khách hàng chuyển từ mạng khác sang có quà gì?",

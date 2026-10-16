@@ -1,7 +1,7 @@
 {% extends "layouts/client_base.html" %}
 
 {% block title %}{{ campaign.title or 'Khuyến Mãi Lắp Mạng FPT Đặc Biệt' }}{% endblock %}
-{% block meta_desc %}{{ campaign.desc or 'Ưu đãi lắp mạng FPT siêu tốc: Miễn phí Modem Wi-Fi 6, tặng 1-2 tháng cước, liên hệ trong 5 phút.' }}{% endblock %}
+{% block meta_desc %}{{ campaign.desc or 'Ưu đãi lắp mạng FPT siêu tốc: Miễn phí Modem Wi-Fi 6, tặng thêm tháng cước khi trả trước, liên hệ trong 5 phút.' }}{% endblock %}
 
 {% block content %}
 <section class="container" style="padding: var(--space-8) var(--space-4);">
@@ -12,7 +12,7 @@
     </div>
 
     <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1.25; margin-bottom: var(--space-3);">
-      {{ campaign.headline or 'Lắp Mạng FPT Wi-Fi 6 — Tặng Tới 2 Tháng Cước' }}
+      {{ campaign.headline or 'Lắp Mạng FPT Wi-Fi 6 — Ưu Đãi Độc Quyền Trả Trước' }}
     </h1>
 
     <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6;">
@@ -54,7 +54,7 @@
 
       <label class="form-label" for="lp-consent">
         <input type="checkbox" id="lp-consent" required>
-        Tôi đồng ý gửi thông tin để được liên hệ tư vấn theo <a href="/chinh-sach-bao-mat">chính sách bảo mật</a>.
+        Tôi đồng ý gửi thông tin để được liên hệ tư vấn theo <a href="https://fpt.vn/ho-tro" target="_blank" rel="noopener noreferrer">chính sách bảo mật</a>.
       </label>
 
       <button type="submit" class="btn-submit-lead" style="margin-top: var(--space-2); font-size: 1.1rem; padding: 16px;">
