@@ -219,18 +219,16 @@ function populateProvinceSelect(select, zoneId, selected) {
   if (zone.provinces.some((p) => p.code === selected)) select.value = selected;
 }
 function syncSelectedProvinceToUI(province) {
+  const shortProv = (province.name || "Chọn khu vực").replace(/^(Thành phố|Tỉnh)\s+/i, "");
   const name = [province.wardName, province.name].filter(Boolean).join(", ");
   for (const id of ["header-current-province", "current-region-label"]) {
     const label = document.getElementById(id);
     if (label) {
       label.textContent =
         id === "header-current-province"
-          ? (province.name || "Chọn địa bàn").replace(
-              /^(Thành phố|Tỉnh)\s+/i,
-              "",
-            )
-          : name || "Chọn địa bàn";
-      label.title = name || "Chọn địa bàn";
+          ? shortProv
+          : (province.wardName ? [province.wardName, shortProv].join(", ") : shortProv);
+      label.title = name || "Chọn khu vực";
     }
   }
   const badge = document.getElementById("active-province-badge");

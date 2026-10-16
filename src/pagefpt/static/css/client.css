@@ -5205,9 +5205,9 @@ img, svg {
   }
 
   .region-pill {
-    max-width: clamp(95px, 28vw, 130px) !important;
+    max-width: clamp(105px, 32vw, 150px) !important;
     padding: 4px 8px !important;
-    font-size: 0.72rem !important;
+    font-size: 0.74rem !important;
     border-radius: 20px !important;
     flex-shrink: 1 !important;
   }
@@ -6420,7 +6420,7 @@ img, svg {
 }
 @media (max-width: 540px) {
   .site-header .btn-header-call, .site-header .btn-mobile-menu-toggle { width: 44px !important; height: 44px !important; }
-  .header-actions .region-pill { max-width: 100px !important; min-height: 44px; }
+  .header-actions .region-pill { max-width: clamp(105px, 32vw, 150px) !important; min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   [data-aos] { opacity: 1 !important; transform: none !important; transition: none !important; }
