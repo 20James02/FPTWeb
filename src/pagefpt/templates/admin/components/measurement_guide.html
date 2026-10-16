@@ -1,0 +1,143 @@
+<div class="ms-guide" id="ms-guide">
+  <header class="ms-guide-intro">
+    <span class="ms-eyebrow">THIẾT LẬP TỪNG BƯỚC</span>
+    <h2>Đo đúng nguồn. Hiểu đúng kết quả.</h2>
+    <p>Bắt đầu với GA4, sau đó thêm nền tảng bạn chạy quảng cáo. Mỗi bước bên dưới chỉ rõ việc làm trong Admin và việc làm trong tài khoản nền tảng.</p>
+    <nav class="ms-guide-nav" aria-label="Chủ đề hướng dẫn">
+      <button type="button" data-ms-help="ga4">Google Analytics 4</button>
+      <button type="button" data-ms-help="google_ads">Google Ads</button>
+      <button type="button" data-ms-help="meta">Meta Ads</button>
+      <button type="button" data-ms-help="campaigns">Chiến dịch &amp; UTM</button>
+      <button type="button" data-ms-help="verify">Kiểm tra dữ liệu</button>
+      <button type="button" data-ms-help="errors">Gỡ lỗi</button>
+    </nav>
+  </header>
+
+  <details class="ms-guide-section" id="ms-guide-start" open>
+    <summary>Bắt đầu ở đây · 4 bước thiết lập</summary>
+    <div class="ms-guide-body">
+      <ol class="ms-guide-steps">
+        <li><strong>Tạo kết nối</strong><p>Chọn nền tảng, nhập đúng ID, chọn môi trường <code>production</code> cho website thật và bật kết nối.</p><button type="button" data-ms-jump="connections">Đến Kết nối</button></li>
+        <li><strong>Xác thực nếu dùng API</strong><p>Đo GA4 trên trình duyệt chỉ cần Measurement ID. Đọc báo cáo, đồng bộ chi phí và gửi từ máy chủ cần thêm bộ khóa, quyền tài khoản và kiểm tra kết nối.</p></li>
+        <li><strong>Kiểm tra rồi công bố</strong><p>Tạo cấu hình Toàn website, phạm vi <code>*</code>; chọn kết nối GA4, bật GA4, lưu nháp. Bấm <b>Kiểm tra &amp; công bố</b>, mô phỏng tại <code>/</code> rồi công bố.</p><button type="button" data-ms-jump="configs">Đến Cấu hình &amp; Sự kiện</button></li>
+        <li><strong>Xác nhận dữ liệu ở hai phía</strong><p>Kiểm tra website và tài khoản nền tảng. Có mã trên trang, lưu khóa thành công hoặc mô phỏng đúng chưa chứng minh Google/Meta đã nhận chuyển đổi.</p><button type="button" data-ms-help="verify">Xem cách kiểm tra</button></li>
+      </ol>
+      <p class="ms-help-note">Cần quyền đo lường toàn website; quản lý khóa, công bố và ghi ra nền tảng có quyền riêng, yêu cầu MFA. Nếu thiếu nút, nhờ chủ tài khoản cấp đúng quyền.</p>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-ga4">
+    <summary>Google Analytics 4 · Lượt truy cập và form thành công</summary>
+    <div class="ms-guide-body">
+      <h3>1. Lấy mã trong Google Analytics</h3>
+      <p>Mở đúng tài sản → <b>Quản trị → Luồng dữ liệu → Web</b>. Sao chép Measurement ID dạng <code>G-…</code>. Stream ID là mã số của luồng; Property ID là mã số của tài sản trong phần thông tin tài sản.</p>
+      <h3>2. Nhập tại Admin</h3>
+      <p>Trong <b>Kết nối → Thêm kết nối → Google Analytics 4</b>, nhập Measurement ID, bật kết nối và phương thức trình duyệt. Property ID/Stream ID cần cho kiểm tra API và đọc báo cáo; chúng không thay thế Measurement ID.</p>
+      <h3>3. Công bố và xem kết quả</h3>
+      <p>Trong <b>Cấu hình &amp; Sự kiện</b>, chọn kết nối, bật GA4 rồi kiểm tra và công bố. Mở trang khách hàng, chọn đồng ý phân tích rồi xem báo cáo Thời gian thực trong GA4. Dùng Tag Assistant để kiểm tra thẻ; DebugView cần bật chế độ debug.</p>
+      <p>Form chỉ phát <code>generate_lead</code> khi máy chủ xác nhận đã lưu. Nếu tối ưu theo form, đánh dấu sự kiện này là sự kiện chính trong GA4. Nhấn nút hoặc mở form chưa phải gửi thành công.</p>
+      <details class="ms-guide-nested"><summary>Đọc báo cáo GA4 về Admin bằng OAuth</summary><div>
+        <p>Trong Google Cloud, bật Google Analytics Admin API và Google Analytics Data API; thiết lập màn hình chấp thuận OAuth, tạo OAuth Client loại Web. Tài khoản cấp quyền phải đọc được tài sản GA4.</p>
+        <p>Đăng ký chính xác Redirect URI bên dưới. Lưu Client ID và Client Secret tại <b>Quản lý khóa</b> rồi bấm <b>Kết nối Google OAuth</b>. Nếu ứng dụng còn ở chế độ thử nghiệm, thêm tài khoản đăng nhập vào danh sách người dùng thử.</p>
+        <p>Quay lại Admin, bấm <b>Kiểm tra kết nối</b> rồi <b>Đồng bộ báo cáo GA4</b>. Đọc API và nạp thẻ trình duyệt là hai việc riêng; API secret của Measurement Protocol không thay thế OAuth.</p>
+      </div></details>
+      <p class="ms-guide-source">Tài liệu Google: <a href="https://support.google.com/analytics/answer/12270356?hl=vi" target="_blank" rel="noopener noreferrer">Tìm Measurement ID</a> · <a href="https://support.google.com/analytics/answer/7201382?hl=vi" target="_blank" rel="noopener noreferrer">DebugView</a></p>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-google_ads">
+    <summary>Google Ads · Đo chuyển đổi và đồng bộ chi phí</summary>
+    <div class="ms-guide-body">
+      <h3>1. Chuẩn bị mã tài khoản</h3>
+      <p>Trong Google Ads, lấy Customer ID của tài khoản chạy quảng cáo, bỏ dấu gạch ngang khi nhập Admin. Google tag dạng <code>AW-…</code> nằm trong hướng dẫn thiết lập thẻ của hành động chuyển đổi. Manager Customer ID chỉ nhập khi truy cập qua tài khoản quản lý.</p>
+      <h3>2. Chọn đường đo chuyển đổi</h3>
+      <ul>
+        <li><strong>Nhập từ GA4:</strong> trong GA4, mở <b>Quản trị → Liên kết sản phẩm → Liên kết Google Ads</b>. Liên kết đúng tài khoản, sau đó tạo chuyển đổi Ads từ sự kiện chính <code>generate_lead</code>. Bật tự động gắn thẻ trong Ads. Đường <code>ga4_import</code> trong Admin chỉ ghi nhận lựa chọn; không tự liên kết hai tài khoản.</li>
+        <li><strong>Google Ads trực tiếp trên trình duyệt:</strong> tạo hành động chuyển đổi website trong Ads. Lấy Google tag <code>AW-…</code> và Conversion Label từ hướng dẫn đoạn mã sự kiện. Trong mục tiêu Admin, chọn kết quả <b>Form đã lưu</b>, kết nối Ads, phương thức <b>Trình duyệt</b> và nhập đúng label.</li>
+        <li><strong>Kết quả chốt/lắp từ CRM:</strong> dùng phương thức <b>Máy chủ</b>, conversion action dạng <code>customers/1234567890/conversionActions/987654321</code>, bật connector máy chủ và cấp quyền API tương ứng. Cần click ID thật và lựa chọn dữ liệu phù hợp; hệ thống không bịa mã khi thiếu.</li>
+      </ul>
+      <p class="ms-help-note">Với cùng một kết quả và tài khoản Ads, chọn một mục tiêu tối ưu chính. Nếu đo cả GA4 import và Ads trực tiếp, thiết lập mục tiêu phụ trên nền tảng để tránh tối ưu trùng. Công bố Admin không tự đổi Primary/Secondary trong Google Ads.</p>
+      <h3>3. Nếu cần chi phí, kiểm tra API hoặc gửi từ máy chủ</h3>
+      <p>Tạo OAuth Client Web trong Google Cloud, bật Google Ads API; lưu Client ID, Client Secret và Developer Token tại <b>Quản lý khóa</b>. Nhập phiên bản Google Ads API còn được hỗ trợ ở trường riêng, kết nối Google OAuth rồi kiểm tra. Tuyến gửi máy chủ dùng Google Data Manager API và cần quyền tương ứng; kiểm tra đọc tài khoản chưa xác nhận quyền gửi.</p>
+      <p>Sau khi kiểm tra đúng tài khoản, dùng <b>Đồng bộ chi phí</b>. Đồng bộ ngày yêu cầu tiền tệ VND và múi giờ UTC+7 được hỗ trợ. Có thể nhập tay với bước xem trước khi chưa cấp API.</p>
+      <p class="ms-guide-source">Tài liệu Google: <a href="https://support.google.com/analytics/answer/9379420?hl=vi" target="_blank" rel="noopener noreferrer">Liên kết GA4 và Ads</a> · <a href="https://support.google.com/google-ads/answer/9520128?hl=vi" target="_blank" rel="noopener noreferrer">Nhập sự kiện chính</a> · <a href="https://support.google.com/google-ads/answer/7548399?hl=vi" target="_blank" rel="noopener noreferrer">Google tag &amp; chuyển đổi</a></p>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-meta">
+    <summary>Meta Ads · Pixel, Conversions API và chế độ thử</summary>
+    <div class="ms-guide-body">
+      <ol class="ms-guide-list">
+        <li>Trong Meta Events Manager, chọn đúng nguồn dữ liệu và lấy <b>Pixel / Dataset ID</b>. Lấy Ad Account ID từ tài khoản quảng cáo; nhập phần số, không kèm <code>act_</code>.</li>
+        <li>Tạo kết nối Meta trong Admin, nhập hai ID và phiên bản Graph API còn được nguồn dữ liệu hỗ trợ. Bật phương thức trình duyệt nếu dùng Pixel; bật máy chủ nếu dùng Conversions API.</li>
+        <li>Với API, dùng token được cấp quyền vào đúng nguồn dữ liệu và tài khoản quảng cáo; nhập ở <b>Quản lý khóa</b>, không dán vào URL/ghi chú. Meta hiện dùng token nhập thủ công, không có nút Google OAuth.</li>
+        <li>Ở cấu hình, thêm mục tiêu <b>Form đã lưu</b>, chọn kết nối Meta, tên sự kiện <code>Lead</code> và một phương thức phù hợp. Kết quả đủ điều kiện/chốt/lắp dùng phương thức máy chủ. Kiểm tra rồi công bố.</li>
+        <li>Khi thử Conversions API, lấy <b>Test Event Code</b> tại Test Events, nhập vào kết nối và theo dõi sự kiện trong Events Manager. Xóa mã thử sau khi kiểm tra, trước khi dùng lưu lượng thật.</li>
+      </ol>
+      <p>Kiểm tra kết nối hiện xác minh quyền đọc Pixel; đồng bộ chi phí còn cần quyền đọc tài khoản quảng cáo. Theo dõi Test Events/Diagnostics để xác nhận dữ liệu nhận và lỗi thực tế. Một phản hồi đọc Pixel thành công chưa chứng minh gửi chuyển đổi hay đọc chi phí thành công.</p>
+      <p>Phương thức máy chủ cần định danh thật được phép sử dụng. Với form website, hệ thống còn kiểm tra URL nguồn đã làm sạch và User-Agent; thiếu dữ liệu sẽ báo lỗi, không giả báo nhận.</p>
+      <p class="ms-guide-source">Tài liệu Meta: <a href="https://developers.facebook.com/docs/marketing-api/conversions-api/get-started/" target="_blank" rel="noopener noreferrer">Chuẩn bị Conversions API</a> · <a href="https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api/" target="_blank" rel="noopener noreferrer">Gửi và kiểm tra sự kiện</a>. Tên menu có thể thay đổi theo tài khoản; đối chiếu quyền và phiên bản trong tài liệu hiện hành.</p>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-campaigns">
+    <summary>Chiến dịch &amp; UTM · Phân biệt từng nội dung quảng cáo</summary>
+    <div class="ms-guide-body">
+      <ol class="ms-guide-list">
+        <li>Tạo chiến dịch trong <b>Quản lý chiến dịch</b>. Đặt tên và <code>utm_campaign</code> ổn định; tách từng nội dung bằng quảng cáo hoặc link riêng.</li>
+        <li>Vào <b>Chiến dịch &amp; Link</b>, chọn chiến dịch, kết nối đúng nền tảng, nhập Campaign ID từ Ads Manager, trang đích và ghi chú. Bấm <b>Lưu liên kết chiến dịch</b>.</li>
+        <li>Bấm <b>Tạo tham số để sao chép</b>. Google: dán vào <b>Final URL suffix</b>; Meta: dán vào <b>URL parameters</b>. Dán chuỗi tham số, không thêm dấu <code>?</code> ở đầu.</li>
+        <li>Dùng chức năng kiểm tra URL của nền tảng. Mã động chỉ được thay khi nền tảng xử lý quảng cáo; tự mở URL có dấu ngoặc chưa phải kiểm tra click thật.</li>
+        <li>Xem <b>Link &amp; hiệu quả nội dung</b> và <b>Báo cáo</b> để đối chiếu form, chốt, lắp và chi phí. Có thể dùng link voucher riêng cho từng bài đăng để phân biệt nội dung.</li>
+      </ol>
+      <p class="ms-help-note"><strong>Hai mã khác nhau:</strong> Campaign ID của Google/Meta là mã số bên ngoài. Phạm vi <code>campaign</code> trong cấu hình dùng UUID chiến dịch nội bộ. Không nhập lẫn hai mã này.</p>
+      <p>Google dùng tham số động như <code>{campaignid}</code>; Meta dùng {% raw %}<code>{{campaign.id}}</code>{% endraw %}. Ưu tiên sao chép chuỗi hệ thống sinh theo chiến dịch thay vì tự gõ. Không đưa điện thoại, email, địa chỉ khách hoặc token vào UTM.</p>
+      <p>Ghi trực tiếp suffix vào Google Ads có bước xem trước và áp dụng riêng, cần quyền ghi ra ngoài. Meta hiện chỉ xuất tham số để bạn dán trong Ads Manager.</p>
+      <button type="button" data-ms-jump="campaigns">Đến Chiến dịch &amp; Link</button>
+      <p class="ms-guide-source">Tài liệu Google: <a href="https://support.google.com/google-ads/answer/6076199?hl=vi" target="_blank" rel="noopener noreferrer">URL suffix &amp; kiểm tra URL</a> · <a href="https://support.google.com/google-ads/answer/6305348?hl=vi" target="_blank" rel="noopener noreferrer">ValueTrack</a></p>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-verify">
+    <summary>Kiểm tra trước khi chạy · Đâu là bằng chứng hoạt động?</summary>
+    <div class="ms-guide-body">
+      <ol class="ms-guide-list">
+        <li><strong>Đúng môi trường:</strong> kết nối, cấu hình công bố và ứng dụng phải cùng môi trường. Vercel Production của website thật cần <code>PAGEFPT_ENVIRONMENT=production</code>.</li>
+        <li><strong>Cấu hình đã có hiệu lực:</strong> mô phỏng đúng trang đích và lựa chọn dữ liệu. <code>/api/v1/measurement/config</code> phải trả đúng <code>measurement_id</code> và có <code>versions</code> khi áp dụng GA4; HTTP 200 với ID rỗng chưa đủ.</li>
+        <li><strong>Nền tảng thực sự nhận:</strong> mở website khách hàng, kiểm tra lựa chọn phân tích/quảng cáo, dùng Tag Assistant, GA4 Thời gian thực hoặc Meta Test Events. Admin không phát thẻ đo lường khách hàng.</li>
+        <li><strong>Form và kết quả đúng:</strong> chỉ form được server lưu mới tính gửi thành công. CRM xác nhận các bước đủ điều kiện/chốt/lắp riêng. Đối soát với sổ gửi chuyển đổi; không dùng lượt nhấn nút làm số form.</li>
+        <li><strong>Chi phí và lịch nền:</strong> kiểm tra trạng thái đồng bộ ở Lịch sử. Nhập lại cùng số liệu là cập nhật thay thế; không trộn chi phí API và nhập tay cho cùng nguồn. Lịch tự động cần worker <code>/internal/jobs/process</code> của hệ thống hoạt động.</li>
+      </ol>
+      <dl class="ms-guide-definitions">
+        <div><dt>Đã lưu / Bản nháp</dt><dd>Thiết lập đã được lưu; bản nháp chưa chạy trên website.</dd></div>
+        <div><dt>Đã kiểm tra kết nối</dt><dd>API đọc đúng nguồn đã thành công; chưa xác nhận dữ liệu conversion nhận.</dd></div>
+        <div><dt>received / accepted</dt><dd>Yêu cầu đã được transport nhận / phản hồi nền tảng báo chấp nhận. Chưa đồng nghĩa được phân bổ thành chuyển đổi quảng cáo.</dd></div>
+        <div><dt>unknown</dt><dd>Chưa xác định kết quả gửi; không thử lại mù để tránh đếm trùng.</dd></div>
+      </dl>
+      <p>Lựa chọn phân tích, tiếp thị, quảng cáo và cá nhân hóa được tách riêng. Basic chỉ tải Google sau đồng ý; Advanced dùng tín hiệu Google hạn chế, không biến khách từ chối thành đã đồng ý. Số CRM, GA4 và Ads có thể lệch vì consent, trình chặn, cửa sổ phân bổ và độ trễ báo cáo.</p>
+      <button type="button" data-ms-jump="reports">Đến Báo cáo</button>
+      <button type="button" data-ms-jump="releases">Đến Lịch sử đồng bộ</button>
+    </div>
+  </details>
+
+  <details class="ms-guide-section" id="ms-guide-errors">
+    <summary>Gỡ lỗi nhanh · Tìm nguyên nhân theo thông báo</summary>
+    <div class="ms-guide-body">
+      <dl class="ms-guide-definitions">
+        <div><dt>Chưa thấy dữ liệu GA4</dt><dd>Kiểm tra đúng G-ID, môi trường, bản công bố, consent và trình chặn. Xem Thời gian thực trước báo cáo tổng hợp; không cài thêm một thẻ trùng để thử.</dd></div>
+        <div><dt>ACCESS_TOKEN_REQUIRED / OAUTH_CLIENT_REQUIRED</dt><dd>Chưa đủ khóa API/OAuth. Nhập Client ID và Client Secret để bắt đầu Google OAuth; khi lưu lại khóa phải nhập đầy đủ bộ muốn giữ.</dd></div>
+        <div><dt>redirect_uri_mismatch</dt><dd>Đăng ký callback chính xác trong Google Cloud, gồm HTTPS và tên miền; không thêm dấu / ở cuối. Callback bên dưới dùng origin đã cấu hình của máy chủ.</dd></div>
+        <div><dt>PROPERTY_AND_STREAM_REQUIRED</dt><dd>Kiểm tra API GA4 cần cả Property ID và Stream ID dạng số; G-ID không thay thế hai mã này.</dd></div>
+        <div><dt>ADS_API_SETTINGS_REQUIRED / ACCOUNT_NOT_VERIFIED</dt><dd>Kiểm tra phiên bản API, Customer ID, Developer Token, tiền tệ và tài khoản được cấp quyền. Chọn đúng tài khoản con nếu dùng Manager.</dd></div>
+        <div><dt>Thiếu định danh / CLIENT_IDENTIFIER_REQUIRED</dt><dd>Phiên chưa có định danh thật được phép sử dụng hoặc đã bị chặn/thu hồi. Kiểm tra consent và nguồn truy cập; không nhập ID giả để ép gửi.</dd></div>
+        <div><dt>VERSION_CONFLICT</dt><dd>Cấu hình đã đổi ở phiên khác. Làm mới rồi mở lại bản mới trước khi lưu.</dd></div>
+        <div><dt>Không có nút / PERMISSION_DENIED</dt><dd>Cần membership toàn website, đúng quyền đo lường và MFA cho thao tác nhạy cảm. Quyền xử lý lead không tự cấp quyền quản lý khóa.</dd></div>
+        <div><dt>Đồng bộ chưa chạy / số liệu trống</dt><dd>Xem lỗi job ở Lịch sử, quyền token, hạn token, worker và giới hạn API. Mỗi đợt đồng bộ tối đa 31 ngày; báo cáo tối đa 93 ngày. Trống không đồng nghĩa bằng 0.</dd></div>
+      </dl>
+      <h3>Redirect URI cho Google OAuth</h3>
+      <p>Đăng ký giá trị này trong Authorized redirect URIs của OAuth Client Web trên Google Cloud:</p>
+      <code class="ms-guide-code" id="ms-guide-callback">{{ request.app.state.settings.public_origin or (request.base_url | string).rstrip('/') }}/api/v1/admin/measurement/oauth/callback</code>
+      <p class="ms-guide-source">Hướng dẫn đối chiếu 16/10/2026. Giao diện nền tảng có thể đổi; các liên kết tài liệu chính thức được đặt trong từng mục.</p>
+    </div>
+  </details>
+</div>

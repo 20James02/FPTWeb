@@ -2,6 +2,15 @@
 
 Ngày cập nhật: 16/10/2026. Đường dẫn: `/admin/measurement`.
 
+## Hướng dẫn ngay trong Admin
+
+Bấm **Hướng dẫn thiết lập** ở đầu trang hoặc tab **Hướng dẫn**. Nội dung chia thành các mục có thể mở/thu gọn: bắt đầu 4 bước, GA4, Google Ads, Meta, chiến dịch/UTM, kiểm tra dữ liệu và gỡ lỗi. Nút chuyển tới Kết nối/Cấu hình/Chiến dịch/Báo cáo chỉ điều hướng, không tự lưu khóa hay công bố.
+
+- Từng ô ID trong form kết nối có giải thích nơi lấy và mục đích. Form quản lý khóa có hướng dẫn riêng theo nền tảng; lưu bộ khóa vẫn thay thế toàn bộ giá trị cũ.
+- Phần **Gỡ lỗi nhanh** hiển thị Redirect URI Google OAuth theo `public_origin` của server (dự phòng base URL khi chưa cấu hình). Sao chép chính xác sang Google Cloud, không tự đổi sang domain khác hoặc thêm dấu `/` cuối.
+- GA4 trình duyệt chỉ cần G-ID và cấu hình công bố; OAuth dành cho kiểm tra nguồn/đọc báo cáo. Google Ads có ba đường được giải thích riêng: nhập GA4, browser conversion, server CRM qua Data Manager. Chọn một mục tiêu tối ưu chính cho cùng kết quả/tài khoản, đối chiếu Primary/Secondary trên nền tảng.
+- Các liên kết tài liệu Google và Meta đặt cạnh từng phần. Hướng dẫn không tự sửa tài khoản quảng cáo, không cài thêm thẻ trùng và không biến trạng thái đã lưu thành đã xác minh nhận dữ liệu.
+
 ## Điều gì thiết lập được từ Admin
 
 | Phần | Thiết lập và hành vi |
