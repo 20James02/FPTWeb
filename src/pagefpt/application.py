@@ -60,6 +60,10 @@ def create_app(settings: Settings | None = None, gateway: Database | None = None
             expose_headers=["X-Request-ID"],
         )
 
+    from pagefpt.modules.vouchers.sharing import VoucherShareMetadataMiddleware
+
+    app.add_middleware(VoucherShareMetadataMiddleware)
+
     from pagefpt.api.boundary import install_boundary
 
     install_boundary(app)

@@ -17,6 +17,7 @@ Tải ảnh dùng cơ chế R2 hiện có: upload intent có thời hạn → v�
 - `POST /api/v1/admin/vouchers/{id}/links` nhận trường tùy chọn `preview_image_url`: URL HTTPS công khai hoặc đường dẫn `/static/`.
 - Bỏ trường khỏi request: giữ ảnh đã lưu để tương thích client cũ. Chuỗi rỗng hoặc `null`: bỏ ảnh riêng. `GET /api/v1/admin/vouchers` trả ảnh trong từng phần tử `links`.
 - Trình lấy preview được nhận diện từ User-Agent nhận HTML200 với metadata Open Graph/Twitter được render phía server; không phải ảnh gắn bằng JavaScript sau tải trang. Tên/mô tả dùng nội dung voucher đã công bố trong thời gian hiệu lực; bản nháp dùng nội dung tư vấn chung.
+- Trang đích có `pf_offer` cũng nhận metadata render phía server cho đúng link đang bật và đúng trang đích. Nhờ vậy trình lấy preview không có User-Agent đặc biệt vẫn thấy ảnh sau khi theo chuyển hướng. Việc đọc metadata này không ghi thêm click, không tạo session/cookie và có timeout 1,5 giây; lỗi metadata không chặn trang/form.
 - Khách bấm link vẫn nhận302 tới trang đích có `pf_offer`, cùng cookie ưu đãi hiện có. Link tắt/không tồn tại hoặc trang đích không khả dụng trả404.
 - Các lượt crawler được ghi vào nhóm bot, tách khỏi click khách (`raw_clicks - bot_clicks`), không tạo phiên đo lường hoặc nhận voucher. Nhận diện User-Agent là ước tính, không chứng minh người thật.
 - Response có `Vary: User-Agent`, `Cache-Control: private, no-store`. Chỉ trả ảnh và nội dung công khai; không trả ngân sách, ghi chú nội bộ hay nhân viên.

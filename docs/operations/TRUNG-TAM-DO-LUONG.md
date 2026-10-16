@@ -98,3 +98,10 @@ Các quyền này yêu cầu membership toàn website. Thao tác nhạy cảm y�
 Các kiểm thử provider sử dụng HTTP giả lập với dữ liệu tổng hợp; browser fixture chặn transport ra ngoài. Không tạo đơn giả, gửi Telegram hoặc gửi conversion vào tài khoản thật để thử tự động.
 
 Trước khi chạy thật: migrations mới đã áp dụng, origin/callback Google chính xác, scheduler hoạt động, account permissions/API version đúng; sau đó dùng chế độ kiểm tra của provider để xác nhận quyền gửi/nhận. Lưu bộ khóa ở Admin, không đưa qua chat hoặc Git. Kết quả kiểm tra tự động và trạng thái triển khai thực tế được ghi riêng trong báo cáo QA của đợt thay đổi.
+
+
+### Kiểm tra đúng môi trường triển khai
+
+Vercel **Production** của `fpt-vungtau.com` phải có `PAGEFPT_ENVIRONMENT=production`. Tên môi trường trong FastAPI quyết định chọn cấu hình đo lường, không phải nhãn Production trên Vercel. Không công bố ở production rồi chạy app bằng staging.
+
+Sau phát hành, kiểm tra `/api/v1/measurement/config`: `measurement_id` phải là ID đã chọn (hiện tại `G-D0J0XLJ891`) và `versions` phải có bản công bố. HTTP200 với ID rỗng/versions rỗng chưa chứng minh tracking hoạt động. Việc nạp đúng mã trên website vẫn cần được kiểm tra riêng với dữ liệu nhận ở GA4/Ads/Meta.

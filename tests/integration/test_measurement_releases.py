@@ -358,3 +358,17 @@ async def test_connection_browser_switch_disables_native_ga4(admin):
     )
     assert changed.status_code == 200, changed.text
     assert (await admin.get("/api/v1/measurement/config")).json()["measurement_id"] == ""
+
+
+async def test_deployed_environment_must_match_the_published_ga4_config(client, gateway):
+    import psycopg
+
+    with psycopg.connect(gateway.dsn) as db:
+        db.execute("SELECT private.measurement_bootstrap('production')")
+    client._transport.app.state.settings.environment = "staging"
+    wrong = (await client.get("/api/v1/measurement/config")).json()
+    assert wrong["measurement_id"] == "" and wrong["versions"] == []
+    client._transport.app.state.settings.environment = "production"
+    configured = (await client.get("/api/v1/measurement/config")).json()
+    assert configured["measurement_id"] == "G-D0J0XLJ891"
+    assert len(configured["versions"]) == 1

@@ -262,8 +262,8 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | POST | `/api/v1/webhooks/leads/{provider}` | server HMAC signature | — | LeadWebhook | `src/pagefpt/modules/integrations/webhooks.py:27` |
 | GET | `/chinh-sach-bao-mat` | public_html | — | — | `src/pagefpt/web/client_routes.py:93` |
 | GET | `/do-toc-do` | server_guarded_admin_html | — | — | `src/pagefpt/web/client_routes.py:107` |
-| GET | `/health/live` | health_public | — | — | `src/pagefpt/application.py:67` |
-| GET | `/health/ready` | health_public | — | — | `src/pagefpt/application.py:71` |
+| GET | `/health/live` | health_public | — | — | `src/pagefpt/application.py:71` |
+| GET | `/health/ready` | health_public | — | — | `src/pagefpt/application.py:75` |
 | POST | `/internal/jobs/process` | server worker secret | — | ProcessInput | `src/pagefpt/modules/workflow/routes.py:48` |
 | GET | `/internal/jobs/recover` | server worker secret | — | — | `src/pagefpt/modules/workflow/routes.py:63` |
 | GET | `/internal/jobs/status` | server worker secret | — | — | `src/pagefpt/modules/workflow/routes.py:31` |

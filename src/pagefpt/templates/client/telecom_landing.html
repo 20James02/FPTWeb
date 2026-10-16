@@ -1,6 +1,7 @@
 {% from 'client/components/landing_icons.html' import icon %}
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{page.title}}</title><meta name="description" content="{{page.description}}"><meta name="robots" content="{{'noindex, nofollow' if preview else 'index, follow'}}"><link rel="canonical" href="{{canonical}}">
+{% include "client/components/voucher_share_metadata.html" %}
 <link rel="stylesheet" href="/static/css/variables.css"><link rel="stylesheet" href="/static/css/client.css"><link rel="stylesheet" href="/static/css/client-accessories.css"><link rel="stylesheet" href="/static/css/client-services.css"><link rel="stylesheet" href="/static/css/client-plan-reference.css"><link rel="stylesheet" href="/static/css/telecom-landing.css">
 {% include "client/components/google_analytics.html" %}
 <link rel="stylesheet" href="/static/css/vouchers.css?v=20261015b"><link rel="stylesheet" href="/static/css/voucher-acquisition.css"></head><body class="telecom-landing" data-landing-preview="{{'true' if preview else 'false'}}" data-theme="{{landing.theme_preset|default('fpt_standard')}}" data-radius="{{landing.theme_radius|default('rounded')}}" data-plans-layout="{{landing.plans_layout|default('grid')}}" data-hero-layout="{{landing.hero_layout|default('split')}}">

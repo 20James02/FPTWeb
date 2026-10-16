@@ -13187,7 +13187,7 @@
       "path": "/health/live",
       "operation_id": "live_health_live_get",
       "source": "src/pagefpt/application.py",
-      "source_line": 67,
+      "source_line": 71,
       "authorization": {
         "caller": "health_public",
         "permission": null,
@@ -13213,7 +13213,7 @@
       "path": "/health/ready",
       "operation_id": "ready_health_ready_get",
       "source": "src/pagefpt/application.py",
-      "source_line": 71,
+      "source_line": 75,
       "authorization": {
         "caller": "health_public",
         "permission": null,

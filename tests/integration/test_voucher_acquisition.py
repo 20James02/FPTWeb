@@ -78,7 +78,10 @@ async def test_link_preview_image_is_independent_editable_and_safe(admin, gatewa
 
     with psycopg.connect(gateway.dsn) as db:
         assert (
-            db.execute("SELECT coalesce(sum(raw_clicks-bot_clicks),0) FROM private.link_daily").fetchone()[0] == 0
+            db.execute(
+                "SELECT coalesce(sum(raw_clicks-bot_clicks),0) FROM private.link_daily"
+            ).fetchone()[0]
+            == 0
         )
     opened = await admin.get("/s/preview-image", follow_redirects=False)
     assert opened.status_code == 302 and opened.headers["location"] == "/?pf_offer=preview-image"
@@ -123,3 +126,69 @@ async def test_preview_does_not_expose_unpublished_voucher_content(admin):
     assert response.status_code == 200
     assert "DRAFT SECRET" not in response.text
     assert "http://test/static/images/device-camera-3d.webp" in response.text
+
+
+async def test_preview_metadata_survives_redirect_without_a_recognized_crawler(admin, gateway):
+    import psycopg
+
+    from tests.integration.test_telecom_landing import body
+
+    page = (await admin.post("/api/v1/admin/pages", json=body())).json()
+    assert (
+        await admin.post(
+            "/api/v1/admin/pages/" + page["id"] + "/publish",
+            json={"expected_version": page["version"]},
+        )
+    ).status_code == 200
+    voucher = await create(admin)
+    endpoint = "/api/v1/admin/vouchers/" + voucher["id"] + "/links"
+    image = "https://media.example.test/social.webp"
+    for target, slug in [("/", "generic-preview"), ("/qa-telecom", "landing-preview")]:
+        assert (
+            await admin.post(
+                endpoint, json={"slug": slug, "target": target, "preview_image_url": image}
+            )
+        ).status_code == 201
+        response = await admin.get(
+            "/s/" + slug, headers={"User-Agent": "Zalo"}, follow_redirects=True
+        )
+        assert response.status_code == 200 and len(response.history) == 1
+        assert 'property="og:image" content="' + image + '"' in response.text
+        assert 'name="twitter:image" content="' + image + '"' in response.text
+        assert 'property="og:url" content="http://test/s/' + slug + '"' in response.text
+        # Rendering metadata again must not add a second click or create a session.
+        with psycopg.connect(gateway.dsn) as db:
+            before = db.execute(
+                "SELECT coalesce(sum(raw_clicks),0) FROM private.link_daily"
+            ).fetchone()[0]
+        repeat = await admin.get(target + "?pf_offer=" + slug)
+        assert repeat.status_code == 200 and image in repeat.text
+        with psycopg.connect(gateway.dsn) as db:
+            assert (
+                db.execute("SELECT coalesce(sum(raw_clicks),0) FROM private.link_daily").fetchone()[
+                    0
+                ]
+                == before
+            )
+    assert image not in (await admin.get("/do-toc-do?pf_offer=generic-preview")).text
+    assert image not in (await admin.get("/admin/login?pf_offer=generic-preview")).text
+    await admin.post(endpoint, json={"slug": "generic-preview", "active": False})
+    assert image not in (await admin.get("/?pf_offer=generic-preview")).text
+
+
+async def test_optional_share_metadata_failure_does_not_break_client_page(
+    client, gateway, monkeypatch
+):
+    from pagefpt.core.errors import DomainError
+
+    original = gateway.rpc
+
+    async def failing(name, payload, actor_token=None):
+        if payload.get("command", {}).get("op") == "voucher_link_metadata":
+            raise DomainError("DATABASE_UNAVAILABLE", 503)
+        return await original(name, payload, actor_token)
+
+    monkeypatch.setattr(gateway, "rpc", failing)
+    response = await client.get("/?pf_offer=valid-link")
+    assert response.status_code == 200 and 'id="lead-intake-form"' in response.text
+    assert 'property="og:image"' not in response.text
