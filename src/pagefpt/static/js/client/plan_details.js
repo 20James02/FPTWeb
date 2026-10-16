@@ -56,10 +56,14 @@
         ["VAT bổ sung", money(q.line_items?.vat_added_vnd || 0)],
         ["Ưu đãi giảm tiền", money(q.line_items?.discount_vnd || 0)],
         [
-          "Tổng thanh toán ban đầu",
-          money(window.PageFPTAccessories.total(active)),
+          "Tháng sử dụng",
+          (q.gift_months === 1 || (q.service_months && q.billing_months && q.service_months - q.billing_months === 1))
+            ? `${q.service_months} tháng (Tặng 1 tháng)`
+            : String(q.service_months),
         ],
-        ["Tháng sử dụng", String(q.service_months)],
+        ...((q.gift_months === 1 || (q.service_months && q.billing_months && q.service_months - q.billing_months === 1))
+          ? [["Ưu đãi tặng kèm", "Tặng 1 tháng cước sử dụng"]]
+          : []),
       );
     else fields.push(["Giá cước", "Cần xác nhận theo địa bàn/kỳ đã chọn"]);
     $("plan-details-facts").replaceChildren(

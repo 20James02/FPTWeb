@@ -36,6 +36,8 @@ def test_exact_region_beats_group():
     )
     assert q["initial_total_vnd"] == 1350000
     assert q["price_id"] == "p1"
+    assert q["gift_months"] == 1
+    assert q["service_months"] == 7
 
 
 def test_unknown_region_needs_quote():

@@ -42,6 +42,7 @@ async function refreshCatalogPrices(regionId = null) {
   const ids = Array.from(new Set(labels.map((el) => el.dataset.quotePlan)));
   window.PageFPTAccessories?.clearQuotes();
   labels.forEach((el) => (el.textContent = "Cần tư vấn"));
+  document.querySelectorAll("[data-period-gift]").forEach((el) => (el.hidden = true));
   if (typeof compareItems !== "undefined") {
     compareItems.forEach((item) => (item.fee = "Cần tư vấn"));
     if (typeof renderCompareCards === "function") renderCompareCards();
@@ -118,11 +119,19 @@ async function refreshCatalogPrices(regionId = null) {
           if (typeof renderCompareCards === "function") renderCompareCards();
         }
         if (window.PageFPTAccessories) window.PageFPTAccessories.render(id);
-        else
+        else {
+          const giftMonths = quote ? (quote.gift_months ?? ((quote.service_months && quote.billing_months) ? (quote.service_months - quote.billing_months) : 0)) : 0;
+          document.querySelectorAll("[data-period-gift]").forEach((el) => {
+            if (el.dataset.periodGift === id) {
+              el.hidden = giftMonths !== 1;
+              if (giftMonths === 1) el.textContent = "🎁 Tặng 1 tháng";
+            }
+          });
           document.querySelectorAll("[data-quote-note]").forEach((el) => {
             if (el.dataset.quoteNote === id)
               el.textContent = `${quote.vat_included ? "Đã gồm VAT" : "Chưa gồm VAT"} · Trả ${quote.billing_months} tháng · Ban đầu ${total}đ`;
           });
+        }
       } catch (_) {
         /* Keep consultation state; never invent a fallback price. */
       } finally {

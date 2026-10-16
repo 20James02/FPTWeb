@@ -189,53 +189,145 @@ function loadMoreLeads() {
 }
 function renderMobileLead(container, lead) {
   const card = adminNode("article", "", "crm-mobile-card");
-  const link = adminNode(
-    "a",
-    `${lead.payload?.phone_masked || "***"} · ${lead.id.slice(0, 8)}`,
-    "btn-action-detail",
-  );
-  link.href = "/admin/leads/detail?id=" + encodeURIComponent(lead.id);
-  card.append(link);
-  card.append(
-    adminNode(
-      "p",
-      adminStatusLabel(lead.status),
-      "status-badge " + lead.status,
-    ),
-  );
-  card.append(
-    adminNode(
-      "p",
-      `${lead.labels?.plan || "Cần tư vấn"} · ${lead.labels?.region || "Cần xác nhận địa bàn"}`,
-    ),
-  );
-  card.append(adminNode("p", lead.labels?.assignee || "Chưa phân công"));
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "link");
+  const shortId = lead.id.slice(0, 8).toUpperCase();
+  card.setAttribute("aria-label", `Xem chi tiết hồ sơ #${shortId}`);
+
+  // Whole block click navigation
+  card.onclick = (e) => {
+    if (e.target.closest('input[type="checkbox"], label.admin-check, button')) return;
+    window.location.assign("/admin/leads/detail?id=" + encodeURIComponent(lead.id));
+  };
+  card.onkeydown = (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target === card) {
+      e.preventDefault();
+      window.location.assign("/admin/leads/detail?id=" + encodeURIComponent(lead.id));
+    }
+  };
+
+  // Determine Customer Name
+  const customerName =
+    lead.payload?.name ||
+    lead.payload?.customer_name ||
+    lead.name ||
+    ("Khách hàng #" + shortId);
+
+  // Determine Address
+  let addressText = "Chưa có địa chỉ";
+  if (lead.payload?.address_confirmation) {
+    const ac = lead.payload.address_confirmation;
+    addressText = [ac.ward_name, ac.province_name].filter(Boolean).join(", ");
+  } else if (lead.payload?.installation_address) {
+    addressText = lead.payload.installation_address;
+  } else if (lead.payload?.address) {
+    addressText = lead.payload.address;
+  } else if (lead.labels?.region) {
+    addressText = lead.labels.region;
+  }
+
+  // Determine Phone
+  const phoneText = lead.payload?.phone_masked || lead.phone_masked || "***";
+
+  // Check Overdue SLA
   const overdue =
     ["new", "assigned", "contacting"].includes(lead.status) &&
     lead.sla_due_at &&
     new Date(lead.sla_due_at) < new Date();
-  card.append(
-    adminNode(
-      "p",
-      overdue
-        ? "Quá thời gian liên hệ"
-        : `Hạn xử lý: ${lead.sla_due_at ? PageFPTDates.format(lead.sla_due_at) : "Chưa có"}`,
-      overdue ? "sla-overdue" : "",
-    ),
-  );
+
+  // 1. Header: Selection Checkbox (if any) + Name + Code + Status Badge
+  const header = adminNode("div", "", "crm-card-header");
+  const nameGroup = adminNode("div", "", "crm-card-name-group");
+
   if (adminHasPermission("lead.assign") && adminCanAssignLead(lead)) {
-    const label = adminNode("label", "Chọn hồ sơ này", "admin-check");
+    const label = adminNode("label", "", "admin-check crm-card-check");
+    label.onclick = (e) => e.stopPropagation();
     const selected = document.createElement("input");
     selected.type = "checkbox";
     selected.dataset.crmSelect = "true";
     selected.checked = crmSelectedLeads.has(lead.id);
-    selected.onchange = () => {
+    selected.setAttribute("aria-label", "Chọn hồ sơ " + shortId);
+    selected.onchange = (e) => {
+      e.stopPropagation();
       if (selected.checked) crmSelectedLeads.set(lead.id, lead);
       else crmSelectedLeads.delete(lead.id);
     };
-    label.prepend(selected);
-    card.append(label);
+    label.append(selected);
+    nameGroup.append(label);
   }
+
+  const nameSpan = adminNode("strong", customerName, "crm-card-customer-name");
+  const codeSpan = adminNode("span", "#" + shortId, "crm-card-code");
+  nameGroup.append(nameSpan, codeSpan);
+
+  const statusBadge = adminNode(
+    "span",
+    adminStatusLabel(lead.status),
+    "status-badge " + lead.status,
+  );
+  header.append(nameGroup, statusBadge);
+  card.append(header);
+
+  // 2. Body: Phone & Address rows
+  const body = adminNode("div", "", "crm-card-body");
+
+  // Phone row
+  const phoneRow = adminNode("div", "", "crm-card-info-row crm-card-phone-row");
+  const phoneIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  phoneIcon.setAttribute("class", "crm-card-icon");
+  phoneIcon.setAttribute("viewBox", "0 0 24 24");
+  phoneIcon.setAttribute("fill", "none");
+  phoneIcon.setAttribute("stroke", "currentColor");
+  phoneIcon.setAttribute("stroke-width", "2");
+  phoneIcon.innerHTML = '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>';
+  const phoneSpan = adminNode("span", phoneText, "crm-card-phone");
+  phoneRow.append(phoneIcon, phoneSpan);
+  if (overdue) {
+    phoneRow.append(adminNode("span", "⚠️ Quá hạn xử lý", "badge-sla-overdue"));
+  }
+  body.append(phoneRow);
+
+  // Address row
+  const addrRow = adminNode("div", "", "crm-card-info-row crm-card-address-row");
+  const addrIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  addrIcon.setAttribute("class", "crm-card-icon");
+  addrIcon.setAttribute("viewBox", "0 0 24 24");
+  addrIcon.setAttribute("fill", "none");
+  addrIcon.setAttribute("stroke", "currentColor");
+  addrIcon.setAttribute("stroke-width", "2");
+  addrIcon.innerHTML = '<path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/>';
+  const addrSpan = adminNode("span", addressText, "crm-card-address");
+  addrRow.append(addrIcon, addrSpan);
+  body.append(addrRow);
+
+  card.append(body);
+
+  // 3. Footer: Plan + Assignee + Detail Button
+  const footer = adminNode("div", "", "crm-card-footer");
+  const metaTags = adminNode("div", "", "crm-card-meta-tags");
+
+  const planTag = adminNode("span", lead.labels?.plan || "Cần tư vấn", "crm-tag crm-tag-plan");
+  metaTags.append(planTag);
+
+  if (lead.labels?.assignee) {
+    const assTag = adminNode("span", "👤 " + lead.labels.assignee, "crm-tag crm-tag-assignee");
+    metaTags.append(assTag);
+  }
+
+  const dateObj = new Date(lead.created_at);
+  if (!isNaN(dateObj.getTime())) {
+    const timeSpan = adminNode("span", PageFPTDates.format(dateObj), "crm-card-time");
+    metaTags.append(timeSpan);
+  }
+
+  const detailBtn = adminNode("a", "", "btn-action-detail crm-card-detail-btn");
+  detailBtn.href = "/admin/leads/detail?id=" + encodeURIComponent(lead.id);
+  detailBtn.innerHTML = '<span>Chi tiết</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>';
+  detailBtn.onclick = (e) => e.stopPropagation();
+
+  footer.append(metaTags, detailBtn);
+  card.append(footer);
+
   container.append(card);
 }
 

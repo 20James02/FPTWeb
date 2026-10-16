@@ -101,6 +101,7 @@ def calculate_quote(
         "region_id": region_id,
         "billing_months": months,
         "service_months": months + p["gift_months"],
+        "gift_months": p.get("gift_months", 0),
         "revision": revision,
         "initial_total_vnd": max(0, base - discount),
         "line_items": {

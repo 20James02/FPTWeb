@@ -83,6 +83,17 @@
       el.hidden = !q || q.display_monthly_vnd == null;
       el.textContent = "Bình quân/tháng";
     });
+    const giftMonths = q
+      ? (q.gift_months ?? ((q.service_months && q.billing_months) ? (q.service_months - q.billing_months) : 0))
+      : 0;
+    document.querySelectorAll("[data-period-gift]").forEach(el => {
+      if (el.dataset.periodGift !== plan) return;
+      const isOne = giftMonths === 1;
+      el.hidden = !isOne;
+      if (isOne) {
+        el.textContent = "🎁 Tặng 1 tháng";
+      }
+    });
     const published = typeof getPublishedPlans === 'function' ? getPublishedPlans().find(p => p.id === plan) : null;
     const equipment = q?.equipment ?? published?.equipment;
     document.querySelectorAll("[data-period-equipment]").forEach(el => {

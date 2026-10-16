@@ -8,105 +8,148 @@
 {% block content %}
 <!-- CRM Header Controls -->
 <div class="crm-header-bar">
-  <div style="display: flex; align-items: center; gap: var(--space-3);">
-    <h1 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary);">Danh Sách Đơn Tư Vấn</h1>
+  <div class="crm-header-left" style="display: flex; align-items: center; gap: var(--space-3); min-width: 0;">
+    <h1 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin: 0;">Danh Sách Đơn Tư Vấn</h1>
     <span class="kanban-count-pill" id="leads-total-counter">Đang tải...</span>
   </div>
 
-  <div style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
-    <!-- View Switcher -->
-    <div class="crm-view-switch">
-      <button type="button" class="view-switch-btn active" id="btn-view-table" onclick="switchCrmView('table')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <span>Dạng Bảng</span>
+  <div class="crm-header-controls" style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+    <!-- Fast Action Reload -->
+    <button type="button" class="btn-action-detail crm-btn-reload" style="padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;" onclick="reloadCrmData()" title="Làm mới danh sách" aria-label="Làm mới">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <span class="btn-reload-text">Làm Mới</span>
+    </button>
+
+    <!-- Mobile Filter & Tools Toggle Button (Visible only on mobile <= 768px) -->
+    <button type="button" id="btn-toggle-mobile-tools" class="btn-toggle-mobile-tools" onclick="toggleMobileTools()" aria-expanded="false" aria-controls="crm-collapsible-tools" title="Mở bộ lọc và chức năng">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      <span id="btn-mobile-tools-label">Bộ Lọc</span>
+      <span id="crm-mobile-filter-active-dot" class="crm-filter-active-dot" hidden>●</span>
+    </button>
+
+    <!-- Desktop View Switcher & Action buttons -->
+    <div class="crm-desktop-actions" style="display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+      <!-- View Switcher -->
+      <div class="crm-view-switch">
+        <button type="button" class="view-switch-btn active" id="btn-view-table" onclick="switchCrmView('table')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>Dạng Bảng</span>
+        </button>
+
+        <button type="button" class="view-switch-btn" id="btn-view-kanban" onclick="switchCrmView('kanban')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
+          <span>Dạng Cột (Kanban)</span>
+        </button>
+      </div>
+
+      <!-- Fast Action Dialing Toolbar -->
+      <button type="button" class="btn-action-call" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để thực hiện cuộc gọi', 'info')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Gọi Nhanh</span>
+      </button>
+      <button type="button" class="btn-action-zalo" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để chat Zalo', 'info')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span>Zalo Tư Vấn</span>
       </button>
 
-      <button type="button" class="view-switch-btn" id="btn-view-kanban" onclick="switchCrmView('kanban')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
-        <span>Dạng Cột (Kanban)</span>
+      <!-- Fast Action Guide Button -->
+      <button type="button" class="btn-action-guide" onclick="window.openAdminGuide('leads')" title="Xem hướng dẫn quy trình xử lý hồ sơ">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Hướng Dẫn</span>
+      </button>
+
+      <!-- Export Lead Metadata CSV -->
+      <button type="button" class="btn-action-detail" style="padding: 7px 14px; font-size: 0.8rem;" onclick="triggerLeadExport()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Xuất Báo Cáo (CSV)</span>
       </button>
     </div>
-
-    <!-- Fast Action Dialing Toolbar -->
-    <button type="button" class="btn-action-call" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để thực hiện cuộc gọi', 'info')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      <span>Gọi Nhanh</span>
-    </button>
-    <button type="button" class="btn-action-zalo" style="padding: 7px 14px; font-size: 0.8rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để chat Zalo', 'info')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      <span>Zalo Tư Vấn</span>
-    </button>
-
-        <!-- Fast Action Guide Button -->
-    <button type="button" class="btn-action-guide" onclick="window.openAdminGuide('leads')" title="Xem hướng dẫn quy trình xử lý hồ sơ">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      <span>Hướng Dẫn</span>
-    </button>
-
-    <!-- Export Lead Metadata CSV -->
-    <button type="button" class="btn-action-detail" style="padding: 7px 14px; font-size: 0.8rem;" onclick="triggerLeadExport()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      <span>Xuất Báo Cáo (CSV)</span>
-    </button>
   </div>
 </div>
 
-{% if admin_actor.permits("lead.assign") %}<button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible()">Chọn tất cả đang hiển thị</button><button type="button" class="btn-action-detail" onclick="crmSelectVisible(false)">Bỏ chọn</button>{% endif %}
-<!-- Thanh Bộ Lọc Nhanh -->
-
-<!-- Quick Status Filter Chips for Rapid Triaging -->
-<div class="crm-quick-status-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px;">
-  <button type="button" class="lp-filter-chip active" onclick="onStatusFilterChanged('all'); document.getElementById('filter-status').value='all';">Tất cả</button>
-  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('new'); document.getElementById('filter-status').value='new';">Mới tiếp nhận</button>
-  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('assigned'); document.getElementById('filter-status').value='assigned';">Đã phân công</button>
-  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('contacting'); document.getElementById('filter-status').value='contacting';">Đang liên hệ</button>
-  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('qualified'); document.getElementById('filter-status').value='qualified';">Khách chốt gói</button>
-  <button type="button" class="lp-filter-chip" onclick="onStatusFilterChanged('installed'); document.getElementById('filter-status').value='installed';">Đã lắp đặt</button>
+<!-- Fast Search Input (Always visible directly under header) -->
+<div class="crm-search-bar-wrap">
+  <div class="crm-search-box">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="crm-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="filter-input crm-main-search" placeholder="Tìm nhanh theo tên, số điện thoại, mã hồ sơ, địa bàn..." aria-label="Tìm hồ sơ trên server" id="filter-search" oninput="applyLocalSearch()">
+  </div>
 </div>
 
-<div class="crm-filters-row">
-  <input type="text" class="filter-input" placeholder="Tìm nhanh theo tên, số điện thoại, mã hồ sơ, địa bàn..." aria-label="Tìm hồ sơ trên server" id="filter-search" oninput="applyLocalSearch()" style="min-width: 240px; border-radius: 8px;">
+<!-- Collapsible Toolbar & Filters (Collapsed by default on mobile <= 768px, permanently open on desktop) -->
+<div id="crm-collapsible-tools" class="crm-collapsible-tools">
+  <!-- Mobile-only secondary buttons when expanded -->
+  <div class="crm-mobile-tools-extra">
+    <div class="crm-view-switch" style="width: 100%; display: flex;">
+      <button type="button" class="view-switch-btn active" id="btn-view-table-mob" onclick="switchCrmView('table')" style="flex: 1; text-align: center;">
+        <span>Dạng Danh Sách</span>
+      </button>
+      <button type="button" class="view-switch-btn" id="btn-view-kanban-mob" onclick="switchCrmView('kanban')" style="flex: 1; text-align: center;">
+        <span>Dạng Kanban</span>
+      </button>
+    </div>
+    <div class="crm-mobile-actions-grid">
+      <button type="button" class="btn-action-call" style="padding: 7px 10px; font-size: 0.78rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để thực hiện cuộc gọi', 'info')">Gọi Nhanh</button>
+      <button type="button" class="btn-action-zalo" style="padding: 7px 10px; font-size: 0.78rem;" onclick="showToast('Vui lòng mở hồ sơ đơn tư vấn để chat Zalo', 'info')">Zalo</button>
+      <button type="button" class="btn-action-guide" style="padding: 7px 10px; font-size: 0.78rem;" onclick="window.openAdminGuide('leads')">Hướng Dẫn</button>
+      <button type="button" class="btn-action-detail" style="padding: 7px 10px; font-size: 0.78rem;" onclick="triggerLeadExport()">Xuất CSV</button>
+    </div>
+  </div>
 
-  <select class="filter-select" aria-label="Lọc trạng thái" id="filter-status" onchange="onStatusFilterChanged(this.value)" style="border-radius: 8px;">
-    <option value="all">Tất cả trạng thái</option>
-    <option value="new">Mới tiếp nhận</option>
-    <option value="assigned">Đã phân công</option>
-    <option value="contacting">Đang liên hệ tư vấn</option>
-    <option value="contacted">Đã liên hệ</option>
-    <option value="qualified">Khách chốt gói</option>
-    <option value="survey">Khảo sát hạ tầng</option>
-    <option value="quoted">Đã báo giá</option>
-    <option value="closed">Đã ký hợp đồng</option>
-    <option value="installed">Đã lắp đặt xong</option>
-    <option value="unreachable">Chưa liên lạc được</option>
-    <option value="no_infrastructure">Chưa có hạ tầng</option>
-    <option value="rejected">Từ chối / Hủy</option>
-    <option value="invalid">Thông tin không hợp lệ</option>
-    <option value="duplicate">Trùng lặp</option>
-  </select>
+  {% if admin_actor.permits("lead.assign") %}
+  <div class="crm-bulk-actions">
+    <button type="button" class="btn-action-detail" onclick="adminChooseAssignee(Array.from(crmSelectedLeads.values()))">Phân công hồ sơ đã chọn</button>
+    <button type="button" class="btn-action-detail" onclick="crmSelectVisible()">Chọn tất cả đang hiển thị</button>
+    <button type="button" class="btn-action-detail" onclick="crmSelectVisible(false)">Bỏ chọn</button>
+  </div>
+  {% endif %}
+
+  <!-- Quick Status Filter Chips for Rapid Triaging -->
+  <div class="crm-quick-status-chips">
+    <button type="button" class="lp-filter-chip active" data-status="all" onclick="selectStatusChip('all')">Tất cả</button>
+    <button type="button" class="lp-filter-chip" data-status="new" onclick="selectStatusChip('new')">Mới tiếp nhận</button>
+    <button type="button" class="lp-filter-chip" data-status="assigned" onclick="selectStatusChip('assigned')">Đã phân công</button>
+    <button type="button" class="lp-filter-chip" data-status="contacting" onclick="selectStatusChip('contacting')">Đang liên hệ</button>
+    <button type="button" class="lp-filter-chip" data-status="qualified" onclick="selectStatusChip('qualified')">Khách chốt gói</button>
+    <button type="button" class="lp-filter-chip" data-status="installed" onclick="selectStatusChip('installed')">Đã lắp đặt</button>
+  </div>
+
+  <div class="crm-filters-row">
+    <select class="filter-select" aria-label="Lọc trạng thái" id="filter-status" onchange="onStatusFilterChanged(this.value)" style="border-radius: 8px;">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="new">Mới tiếp nhận</option>
+      <option value="assigned">Đã phân công</option>
+      <option value="contacting">Đang liên hệ tư vấn</option>
+      <option value="contacted">Đã liên hệ</option>
+      <option value="qualified">Khách chốt gói</option>
+      <option value="survey">Khảo sát hạ tầng</option>
+      <option value="quoted">Đã báo giá</option>
+      <option value="closed">Đã ký hợp đồng</option>
+      <option value="installed">Đã lắp đặt xong</option>
+      <option value="unreachable">Chưa liên lạc được</option>
+      <option value="no_infrastructure">Chưa có hạ tầng</option>
+      <option value="rejected">Từ chối / Hủy</option>
+      <option value="invalid">Thông tin không hợp lệ</option>
+      <option value="duplicate">Trùng lặp</option>
+    </select>
 
     <button type="button" id="btn-toggle-advanced-filters" class="btn-action-detail" onclick="toggleCrmAdvancedFilters()" style="padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-    <span id="btn-toggle-filters-text">Bộ Lọc Chi Tiết ▾</span>
-    <span id="crm-filter-active-dot" class="crm-filter-active-dot" hidden>●</span>
-  </button>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      <span id="btn-toggle-filters-text">Bộ Lọc Chi Tiết ▾</span>
+      <span id="crm-filter-active-dot" class="crm-filter-active-dot" hidden>●</span>
+    </button>
+  </div>
 
-  <button type="button" class="btn-action-detail" style="padding: 7px 14px; font-size: 0.8rem;" onclick="reloadCrmData()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-    <span>Làm Mới</span>
-  </button>
-</div>
-
-<div id="crm-advanced-filters-panel" class="crm-advanced-filters-panel" hidden>
-<div class="admin-filter-grid">
-<label>Chi nhánh<select id="filter-branch" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
-<label>Nhân viên<select id="filter-assignee" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
-<label>Tỉnh/thành<select id="filter-region" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
-<label>Từ ngày<input id="filter-start" type="date" onchange="reloadCrmData()"></label>
-<label>Đến ngày<input id="filter-end" type="date" onchange="reloadCrmData()"></label>
-<label class="admin-check"><input id="filter-overdue" type="checkbox" onchange="reloadCrmData()">Chỉ hồ sơ quá hạn xử lý (SLA)</label>
-</div>
-<div class="workspace-item-actions"><select id="crm-saved-view" aria-label="Bộ lọc cá nhân" onchange="crmApplyView(this.value)"><option value="">Bộ lọc đã lưu</option></select><button class="btn-action-detail" type="button" onclick="crmSaveView()">Lưu bộ lọc</button><button class="btn-action-detail" type="button" onclick="crmDeleteView()">Xóa bộ lọc</button><button class="btn-action-detail" type="button" onclick="crmResetAdvancedFilters()">Đặt lại bộ lọc</button></div>
+  <div id="crm-advanced-filters-panel" class="crm-advanced-filters-panel" hidden>
+    <div class="admin-filter-grid">
+      <label>Chi nhánh<select id="filter-branch" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+      <label>Nhân viên<select id="filter-assignee" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+      <label>Tỉnh/thành<select id="filter-region" onchange="reloadCrmData()"><option value="">Tất cả trong phạm vi</option></select></label>
+      <label>Từ ngày<input id="filter-start" type="date" onchange="reloadCrmData()"></label>
+      <label>Đến ngày<input id="filter-end" type="date" onchange="reloadCrmData()"></label>
+      <label class="admin-check"><input id="filter-overdue" type="checkbox" onchange="reloadCrmData()">Chỉ hồ sơ quá hạn xử lý (SLA)</label>
+    </div>
+    <div class="workspace-item-actions"><select id="crm-saved-view" aria-label="Bộ lọc cá nhân" onchange="crmApplyView(this.value)"><option value="">Bộ lọc đã lưu</option></select><button class="btn-action-detail" type="button" onclick="crmSaveView()">Lưu bộ lọc</button><button class="btn-action-detail" type="button" onclick="crmDeleteView()">Xóa bộ lọc</button><button class="btn-action-detail" type="button" onclick="crmResetAdvancedFilters()">Đặt lại bộ lọc</button></div>
+  </div>
 </div>
 <!-- ==========================================
      CHẾ ĐỘ 1: DẠNG BẢNG CHI TIẾT (TABLE VIEW)
@@ -153,6 +196,26 @@
 {% endfor %}
 </div>
 <script>
+function toggleMobileTools() {
+  const tools = document.getElementById("crm-collapsible-tools");
+  const btn = document.getElementById("btn-toggle-mobile-tools");
+  if (!tools) return;
+  const isOpen = tools.classList.toggle("open");
+  if (btn) {
+    btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    btn.classList.toggle("active", isOpen);
+  }
+}
+
+function selectStatusChip(statusVal) {
+  document.querySelectorAll(".crm-quick-status-chips .lp-filter-chip").forEach(chip => {
+    chip.classList.toggle("active", chip.dataset.status === statusVal);
+  });
+  const filterSelect = document.getElementById("filter-status");
+  if (filterSelect) filterSelect.value = statusVal;
+  onStatusFilterChanged(statusVal);
+}
+
 function switchCrmView(viewMode) {
   const tableView = document.getElementById('crm-table-view');
   const kanbanView = document.getElementById('crm-kanban-view');

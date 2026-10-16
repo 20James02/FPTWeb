@@ -224,6 +224,8 @@ async def test_plans_3d_details_slider_tags_menu_and_footer(client, published_ui
         assert f'data-plan-id="{plan["id"]}"' in text
     assert "Gói đang cung cấp" in text
     assert "badge-basic" in text
+    assert "data-period-gift" in text
+    assert "period-gift-badge" in text
 
     # 3. Corporate Multi-Column Footer Check
     assert "footer-columns-grid" in text

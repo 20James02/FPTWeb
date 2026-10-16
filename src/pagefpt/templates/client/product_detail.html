@@ -49,6 +49,7 @@
         {% if plan.speed_mbps %}<p class="service-bandwidth">Băng thông gói: {{ plan.speed_mbps }} Mbps</p>{% endif %}
         <p>{{ plan.description or 'Nhận tư vấn cấu hình và điều kiện cung cấp tại địa chỉ lắp đặt.' }}</p>
         <p class="service-plan-price" data-quote-plan="{{ plan.id }}">Cần tư vấn</p>
+        <div class="plan-price-subtext"><small data-period-average="{{ plan.id }}" class="period-average-badge" hidden>Bình quân/tháng</small><span data-period-gift="{{ plan.id }}" class="period-gift-badge" hidden>🎁 Tặng 1 tháng</span></div>
         <p class="service-plan-note" data-quote-note="{{ plan.id }}">Chọn khu vực để xác nhận giá.</p>
         <ul data-period-equipment="{{ plan.id }}">{% for equipment in plan.equipment %}<li>{{ equipment }}</li>{% endfor %}</ul>
         <button type="button" class="btn-select-plan primary" data-analytics-action="select_plan" data-analytics-plan-id="{{ plan.id }}" data-analytics-placement="product" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="selectPublishedPlan(this)">Nhận tư vấn gói này</button>
