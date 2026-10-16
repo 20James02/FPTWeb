@@ -245,3 +245,11 @@ console.log(
   "GA4: advanced denied/granted/withdrawn, basic fallback, preview, single initialization, URL/PII filtering, attribution, lead deduplication passed.",
 );
 const committed=harness(false,'basic');committed.grant();committed.window.PageFPTGoogle.acceptReceipt({event_id:receipt,plan_id:plan});committed.fire('pagefpt:lead-accepted',{event_id:receipt,plan_id:plan});assert.equal(committed.events().filter(x=>x[1]==='generate_lead').length,1,'Receipt bootstrap and normal DOM listener share one deduplication path');
+const renamed=harness(false,'basic');renamed.grant();
+const bridged=[];renamed.window.PageFPTMeasurement={behavior:(...args)=>{bridged.push(args);return false;}};
+renamed.window.PageFPTGoogle.apply({measurement_id:'G-D0J0XLJ891',consent_mode:'basic',event_enabled:['click_zalo'],targets:[{provider:'ga4',event:'click_zalo',provider_event:'zalo_contact',route:'browser',settings:{measurement_id:'G-D0J0XLJ891',browser_enabled:true}}]});
+renamed.window.PageFPTGoogle.track('click_zalo',{});
+assert.equal(renamed.events().at(-1)[1],'zalo_contact');
+assert.equal(bridged.at(-1)[0],'click_zalo');
+assert.equal(renamed.events().filter(e=>e[1]==='click_zalo').length,0,'Renaming must not emit the original plus an alias');
+console.log('GA4 native behavior mapping: alias replaces the source event and bridges other providers once');

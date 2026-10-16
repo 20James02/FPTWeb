@@ -1,0 +1,18 @@
+<dialog id="ms-connection-dialog" class="ms-dialog ms-dialog-wide">
+<form id="ms-connection-form" data-ms-wizard="connection">
+  <header><div><span class="ms-eyebrow">THIẾT LẬP KẾT NỐI</span><h2 id="ms-connection-title">Thêm kết nối</h2><p>Điền theo từng bước. Khóa truy cập được lưu riêng phía máy chủ.</p></div><button type="button" data-ms-close>Đóng</button></header>
+  <nav class="ms-step-nav" aria-label="Các bước tạo kết nối"><button type="button" data-ms-step="0">1. Nền tảng</button><button type="button" data-ms-step="1">2. Mã &amp; phương thức</button><button type="button" data-ms-step="2">3. Kiểm tra</button></nav>
+  <p class="ms-error" role="alert" tabindex="-1" hidden></p>
+  <section data-ms-step-panel="0"><h3>Chọn nền tảng cần đo</h3><p>Chọn Production cho website thật. Mỗi kết nối thuộc một tài khoản nguồn.</p><div class="ms-form-grid">
+    <label>Tên dễ nhớ<input name="name" required maxlength="100" placeholder="Ví dụ: GA4 website chính"></label>
+    <label>Nền tảng<select name="provider"><option value="ga4">Google Analytics 4</option><option value="google_ads">Google Ads</option><option value="meta">Meta</option></select></label>
+    <label>Môi trường<select name="environment"><option value="production">Production — website thật</option><option value="staging">Staging — chạy thử</option><option value="test">Test — kiểm thử</option></select></label>
+    <label class="ms-check"><input name="enabled" type="checkbox">Cho phép sử dụng kết nối</label>
+  </div></section>
+  <section data-ms-step-panel="1" hidden><h3>Nhập mã từ đúng tài khoản</h3><p>Mỗi trường có hướng dẫn nơi lấy. ID là mã công khai; token nhập ở Quản lý khóa sau khi lưu.</p><div id="ms-connection-fields" class="ms-form-grid"></div>
+    <div class="ms-help-note"><label class="ms-check"><input name="browser_enabled" type="checkbox">Đo từ trình duyệt khi khách cho phép dữ liệu</label><label class="ms-check"><input name="server_enabled" type="checkbox">Gửi kết quả CRM từ máy chủ</label><p>GA4 trình duyệt không cần OAuth. API báo cáo, chi phí và gửi từ máy chủ cần thêm bộ khóa/quyền riêng.</p></div>
+    <details><summary>Tùy chọn đồng bộ &amp; tiền tệ</summary><div class="ms-form-grid"><label>Chu kỳ đồng bộ (phút, 0 để tắt)<input name="sync_interval_minutes" type="number" min="0" max="1440" value="0" required></label><label>Số ngày đồng bộ lại<input name="sync_lookback_days" type="number" min="1" max="31" value="3" required></label><label>Tiền tệ<select name="currency"><option value="VND">VND</option><option value="USD">USD (chưa hỗ trợ báo cáo chi phí)</option></select></label></div><p>Chu kỳ tối thiểu 15 phút. Báo cáo chi phí cần VND và múi giờ UTC+7 được hỗ trợ.</p></details>
+  </section>
+  <section data-ms-step-panel="2" hidden><h3>Lưu và xác minh theo từng lớp</h3><div class="ms-wizard-summary" data-ms-summary></div><ol class="ms-guide-list"><li><b>Lưu &amp; kiểm tra:</b> lưu kết nối rồi kiểm tra cấu hình và quyền đọc API hiện có.</li><li><b>Quản lý khóa:</b> nếu API báo thiếu token, nhập bộ khóa hoặc kết nối OAuth từ thẻ kết nối.</li><li><b>Xác minh dữ liệu nhận:</b> dùng Tag Assistant, GA4 Thời gian thực hoặc Meta Test Events. Kiểm tra đọc API không tự xác nhận sự kiện đã nhận.</li></ol></section>
+  <footer class="ms-wizard-footer"><span data-ms-step-status role="status" aria-live="polite"></span><button type="button" data-ms-prev>Quay lại</button><button type="button" data-ms-next>Tiếp tục</button><button type="submit" name="action" value="save" data-ms-finish>Lưu kết nối</button><button type="submit" name="action" value="check" data-ms-finish>Lưu &amp; kiểm tra</button></footer>
+</form></dialog>

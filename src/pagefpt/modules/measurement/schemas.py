@@ -76,6 +76,29 @@ EVENTS = [
     "experiment_exposure",
     "generate_lead",
 ]
+BEHAVIOR_EVENTS = [e for e in EVENTS if e != "generate_lead"]
+MeasurementEvent = Literal[
+    "lead",
+    "qualified",
+    "closed",
+    "installed",
+    "page_view",
+    "view_plan",
+    "select_plan",
+    "form_open",
+    "form_start",
+    "click_call",
+    "click_zalo",
+    "click_messenger",
+    "select_billing_period",
+    "select_accessory",
+    "select_region",
+    "compare_plans",
+    "view_cost",
+    "return_visit",
+    "view_landing",
+    "experiment_exposure",
+]
 
 
 class MeasurementPolicy(Command):
@@ -101,7 +124,7 @@ class MeasurementPolicy(Command):
 
 class ConversionRule(Command):
     id: UUID = Field(default_factory=uuid4)
-    event: Literal["lead", "qualified", "closed", "installed"]
+    event: MeasurementEvent
     connection_id: UUID
     provider_event: str = Field(min_length=1, max_length=40, pattern=r"^[A-Za-z][A-Za-z0-9_]*$")
     conversion_label: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9_-]*$")
@@ -119,7 +142,7 @@ class ConfigInput(Command):
     scope_key: str = Field(default="*", max_length=150)
     environment: Literal["test", "staging", "production"]
     policy: MeasurementPolicy = Field(default_factory=MeasurementPolicy)
-    rules: list[ConversionRule] | None = Field(default=None, max_length=20)
+    rules: list[ConversionRule] | None = Field(default=None, max_length=100)
 
     @model_validator(mode="after")
     def supported_scope(self):
@@ -147,6 +170,24 @@ class ConfigInput(Command):
             r.event == "lead" and r.provider_event.lower() == "purchase" for r in self.rules or []
         ):
             raise ValueError("Form tư vấn không phải giao dịch mua hàng")
+        for r in self.rules or []:
+            if r.event in BEHAVIOR_EVENTS and (
+                r.route != "browser"
+                or r.primary
+                or r.value_vnd
+                or r.provider_event.lower()
+                in {
+                    "purchase",
+                    "generate_lead",
+                    "lead",
+                    "crm_closed",
+                    "crm_qualified",
+                    "crm_installed",
+                }
+            ):
+                raise ValueError(
+                    "Sự kiện hành vi chỉ đo trên trình duyệt, không phải doanh thu hoặc chuyển đổi chính"
+                )
         return self
 
 
@@ -157,7 +198,7 @@ class ConfigUpdate(ConfigInput):
 class SimulationInput(Command):
     expected_version: int = Field(ge=1)
     path: str = Field(default="/", max_length=150, pattern=r"^/[a-z0-9/-]*$")
-    event: Literal["lead", "qualified", "closed", "installed"] = "lead"
+    event: MeasurementEvent = "lead"
     analytics: bool = False
     marketing: bool = False
     advertising: bool = False

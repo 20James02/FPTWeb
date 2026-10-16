@@ -4,6 +4,23 @@ Ngày cập nhật: 16/10/2026. Đường dẫn: `/admin/measurement`.
 
 ## Hướng dẫn ngay trong Admin
 
+### Luồng thao tác trong form
+
+- **Kết nối:** Nền tảng → Mã & phương thức → Kiểm tra. Điền theo trợ giúp từng ô; có thể chọn **Lưu & kiểm tra** để mở bảng xác minh ngay sau khi lưu.
+- **Cấu hình:** Phạm vi → Kết nối → Sự kiện → Kiểm tra. Bước tiếp theo kiểm tra các ô bắt buộc; có thể quay lại và sửa trước khi lưu. **Lưu & mô phỏng** lưu bản nháp rồi mở phép thử, chưa công bố.
+- **Sự kiện:** chọn nguồn website/CRM, kết nối nhận và tên sự kiện nhà cung cấp. Trường Conversion Label/Action chỉ hiện cho đúng phương thức Google Ads. Mỗi dòng có thể mở/thu gọn. Nút **Liên kết bộ sự kiện GA4** thêm 17 liên kết mặc định còn thiếu, không nhân đôi liên kết đã có.
+- **Công bố:** chọn đúng trang, sự kiện và trạng thái dữ liệu rồi mô phỏng. Nút công bố chỉ bật sau mô phỏng thành công; thay đầu vào sẽ yêu cầu mô phỏng lại. Server vẫn kiểm tra quyền, phiên bản và cấu hình độc lập với giao diện.
+
+### Sự kiện và kiểm tra kết nối
+
+16 hành vi website hiện có cùng 4 kết quả CRM có thể ánh xạ qua `rules`, tối đa 100 liên kết/cấu hình. `lead` là nguồn form đã được server lưu, GA4 nhận tên `generate_lead`; 3 kết quả CRM còn lại là `qualified`, `closed`, `installed`. Hành vi chỉ dùng tuyến browser, không có giá trị doanh thu hoặc đánh dấu primary; không tạo occurrence CRM. Không hỗ trợ JavaScript tùy ý hay tự phát minh sự kiện chưa được website ghi nhận.
+
+GA4 browser dùng kết nối được chọn ở bước 2; tên ánh xạ thay tên hành vi gốc, không gửi đồng thời bản gốc và bản đổi tên. GA4 `generate_lead` vẫn dùng đường receipt duy nhất. Google Ads/Meta nhận hành vi qua runtime theo lựa chọn phân tích/tiếp thị/quảng cáo hiện có; không dùng hành vi để giả tạo form hoặc sự kiện mua hàng.
+
+`POST /api/v1/admin/measurement/connections/{id}/diagnostics` trả từng kiểm tra: bật kết nối, phương thức trình duyệt, khóa, quyền đọc nguồn, quyền báo cáo và bước xác minh sự kiện. GA4 đọc Admin API + Data API metadata; Meta đọc Pixel và tài khoản quảng cáo khi có mã; Google Ads đọc tài khoản qua API. Phép đọc có timeout, host cố định và không trả phản hồi lỗi thô/token. Thiếu OAuth không được báo là đã kết nối API chỉ vì G-ID hợp lệ. Mỗi kết quả luôn giữ `delivery_verified=false`: cần xác nhận riêng ở GA4/Tag Assistant hoặc Meta Test Events. Kiểm tra trong cấu hình chạy tối đa 3 kết nối đồng thời, 10 kết nối/đợt; kết quả muộn không ghi đè form đã thay đổi.
+
+Không cần migration schema cho thay đổi này: rules và kết quả kiểm tra dùng cột JSON, RPC, kiểm tra phiên bản và phân quyền hiện có. Không tự bật thêm đích đo hoặc sửa bản cấu hình đã công bố của tài khoản thật khi triển khai giao diện.
+
 Bấm **Hướng dẫn thiết lập** ở đầu trang hoặc tab **Hướng dẫn**. Nội dung chia thành các mục có thể mở/thu gọn: bắt đầu 4 bước, GA4, Google Ads, Meta, chiến dịch/UTM, kiểm tra dữ liệu và gỡ lỗi. Nút chuyển tới Kết nối/Cấu hình/Chiến dịch/Báo cáo chỉ điều hướng, không tự lưu khóa hay công bố.
 
 - Từng ô ID trong form kết nối có giải thích nơi lấy và mục đích. Form quản lý khóa có hướng dẫn riêng theo nền tảng; lưu bộ khóa vẫn thay thế toàn bộ giá trị cũ.

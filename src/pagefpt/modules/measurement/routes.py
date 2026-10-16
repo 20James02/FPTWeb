@@ -14,6 +14,7 @@ from pagefpt.modules.marketing.routes import SessionResume
 from pagefpt.modules.measurement import reporting
 from pagefpt.modules.measurement.accounts import router as account_router
 from pagefpt.modules.measurement.campaigns import router as campaign_router
+from pagefpt.modules.measurement.diagnostics import router as diagnostics_router
 from pagefpt.modules.measurement.external_updates import router as external_update_router
 from pagefpt.modules.measurement.policy import authorize
 from pagefpt.modules.measurement.releases import effective, validate_config
@@ -27,9 +28,11 @@ from pagefpt.modules.measurement.schemas import (
     SimulationInput,
     VersionInput,
 )
+from pagefpt.modules.measurement.simulation import simulate_routes
 from pagefpt.modules.measurement.sync import router as sync_router
 
 router = APIRouter(prefix="/api/v1/admin/measurement")
+router.include_router(diagnostics_router)
 public_router = APIRouter(prefix="/api/v1/measurement")
 
 
@@ -153,18 +156,7 @@ async def config_simulate(id: UUID, input: SimulationInput, request: Request):
     )
     return {
         "public_config": public,
-        "routes": [
-            {
-                "connection_id": r["connection_id"],
-                "event": r["provider_event"],
-                "allowed": input.analytics and input.marketing and input.advertising,
-                "reason": "consented"
-                if input.analytics and input.marketing and input.advertising
-                else "consent_required",
-            }
-            for r in public["targets"]
-            if r["event"] == input.event
-        ],
+        "routes": simulate_routes(public, data, input),
         "dry_run": True,
     }
 

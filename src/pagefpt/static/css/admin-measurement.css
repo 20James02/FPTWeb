@@ -49,3 +49,22 @@
   .ms-guide-steps{grid-template-columns:1fr;gap:16px;padding-left:20px}
   .ms-guide-definitions>div{grid-template-columns:1fr;gap:4px}
 }
+
+.ms-step-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:20px}
+.ms-dialog{margin:auto}.ms-dialog header{flex-wrap:nowrap;align-items:flex-start}.ms-dialog header>div{min-width:0}.ms-dialog header>button{flex-shrink:0}.ms-dialog header p{font-size:13px;margin-top:8px}
+.ms-step-nav button{text-align:left;font-size:13px;line-height:1.5}
+.ms-step-nav button[aria-current=step]{background:#1763c6;color:#fff;border-color:#1763c6}
+.ms-dialog [hidden]{display:none!important}
+.ms-dialog [data-ms-step-panel]>h3{font-size:20px;margin:6px 0 12px;line-height:1.4}
+.ms-dialog [data-ms-step-panel]>p{font-size:14px;line-height:1.7;margin:12px 0}
+.ms-dialog [data-ms-step-panel]{min-width:0}
+.ms-wizard-footer{position:sticky;bottom:-24px;background:var(--bg-card,#fff);padding-bottom:12px;flex-wrap:wrap;align-items:center;z-index:1}
+.ms-wizard-footer [data-ms-step-status]{margin-right:auto;font-size:13px;color:var(--ms-muted)}
+.ms-wizard-summary{padding:16px;background:var(--bg-body);border:1px solid var(--ms-line);border-radius:12px;margin:16px 0}
+.ms-diagnostic{margin:12px 0;padding:14px 16px;border:1px solid var(--ms-line);border-left:4px solid #64748b;border-radius:10px;background:var(--bg-card,#fff);font-size:14px;overflow-wrap:anywhere}
+.ms-diagnostic p{margin:6px 0;line-height:1.65}
+.ms-diagnostic-pass{border-left-color:#15803d}.ms-diagnostic-fail{border-left-color:#dc2626}.ms-diagnostic-warning{border-left-color:#c27a0c}
+.ms-rule h4{font-size:16px;margin-bottom:8px}
+.ms-dialog details.ms-rule{padding:14px 16px;border:1px solid var(--ms-line);border-radius:12px}.ms-rule>summary{line-height:1.5;min-height:44px;padding:8px 0;overflow-wrap:anywhere}.ms-rule[open]>summary{border-bottom:1px solid var(--ms-line);padding-bottom:14px}
+.ms-dialog .ms-guide-list{font-size:14px;line-height:1.7;padding-left:20px;margin:16px 0}.ms-dialog .ms-guide-list li+li{margin-top:12px}
+@media(max-width:600px){.ms-step-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.ms-step-nav button{font-size:12px;padding:10px}.ms-wizard-footer{bottom:-18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ms-wizard-footer [data-ms-step-status]{grid-column:1/-1}.ms-wizard-footer button{padding:10px 8px;white-space:normal}.ms-data{grid-template-columns:1fr;gap:5px}.ms-data dd{margin-bottom:8px}}

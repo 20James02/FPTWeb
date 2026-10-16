@@ -3,7 +3,7 @@
 from typing import Any
 
 from pagefpt.core.errors import DomainError
-from pagefpt.modules.measurement.schemas import EVENTS, ConfigInput
+from pagefpt.modules.measurement.schemas import BEHAVIOR_EVENTS, EVENTS, ConfigInput
 
 DEFAULT_POLICY: dict[str, Any] = {
     "ga4_enabled": True,
@@ -94,8 +94,11 @@ def validate_config(payload, bundle):
     primary = set()
     for rule in parsed.rules or []:
         conn = connections[str(rule.connection_id)]["payload"]
-        if rule.route == "browser" and rule.event != "lead":
+        if rule.route == "browser" and rule.event in {"qualified", "closed", "installed"}:
             raise DomainError("CRM_STAGE_REQUIRES_SERVER", 422)
+        if conn["provider"] == "ga4" and rule.route == "browser" and rule.event in BEHAVIOR_EVENTS:
+            if str(rule.connection_id) != str(parsed.policy.ga4_connection_id):
+                raise DomainError("GA4_BROWSER_REQUIRES_SELECTED_CONNECTION", 422)
         # generate_lead already has one native GA4 receipt path; do not add a second MP copy.
         if conn["provider"] == "ga4" and rule.event == "lead" and rule.route == "server":
             raise DomainError("GA4_LEAD_USES_NATIVE_RECEIPT", 422)

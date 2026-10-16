@@ -2,7 +2,7 @@
 
 Sinh từ code hiện tại bằng `uv run python tools/export_frontend_contract.py`. Không truy cập tài khoản cloud. Quyền trong bảng là kiểm tra Python; SQL còn kiểm tra scope/assignee/global. Response OpenAPI của phần lớn API chưa có DTO: xem response map trong prompt, không coi schema `{}` là hợp đồng đầy đủ.
 
-Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
+Tổng 267 method/path: 260 có trong OpenAPI và 7 route ngoài OpenAPI.
 
 ## Toàn bộ method, URL, quyền và body
 
@@ -29,7 +29,7 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | GET | `/admin/settings` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:128` |
 | GET | `/admin/vouchers` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:191` |
 | GET | `/admin/workbench` | server_guarded_admin_html | — | — | `src/pagefpt/web/admin_routes.py:99` |
-| GET | `/api/v1/accessories` | public | — | — | `src/pagefpt/modules/catalog/routes.py:61` |
+| GET | `/api/v1/accessories` | public | — | — | `src/pagefpt/modules/catalog/routes.py:63` |
 | GET | `/api/v1/admin/address-options` | lead.write | — | — | `src/pagefpt/modules/leads/profile.py:47` |
 | PATCH | `/api/v1/admin/appointments/{id}` | lead.write | — | AppointmentUpdate | `src/pagefpt/modules/leads/appointments.py:58` |
 | GET | `/api/v1/admin/assignees` | lead.assign | — | — | `src/pagefpt/modules/leads/admin.py:240` |
@@ -102,38 +102,39 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | GET | `/api/v1/admin/link-performance/options` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:93` |
 | GET | `/api/v1/admin/link-performance/report` | marketing.write (global SQL scope) | — | — | `src/pagefpt/modules/link_analytics/routes.py:38` |
 | PUT | `/api/v1/admin/link-performance/{id}` | marketing.write (global SQL scope) | — | LinkUpdate | `src/pagefpt/modules/link_analytics/routes.py:113` |
-| GET | `/api/v1/admin/locations` | catalog.write | — | — | `src/pagefpt/modules/catalog/routes.py:118` |
+| GET | `/api/v1/admin/locations` | catalog.write | — | — | `src/pagefpt/modules/catalog/routes.py:120` |
 | GET | `/api/v1/admin/locations/source` | catalog.write | — | — | `src/pagefpt/modules/catalog/geography_routes.py:29` |
 | POST | `/api/v1/admin/locations/sync` | catalog.write | AAL2 | GeographySyncInput | `src/pagefpt/modules/catalog/geography_routes.py:44` |
 | GET | `/api/v1/admin/me` | admin | — | — | `src/pagefpt/modules/identity/routes.py:9` |
-| POST | `/api/v1/admin/measurement/bulk` | measurement.publish | AAL2 | pagefpt__modules__measurement__schemas__BulkInput | `src/pagefpt/modules/measurement/routes.py:301` |
+| POST | `/api/v1/admin/measurement/bulk` | measurement.publish | AAL2 | pagefpt__modules__measurement__schemas__BulkInput | `src/pagefpt/modules/measurement/routes.py:293` |
 | GET | `/api/v1/admin/measurement/campaigns` | marketing.write; measurement.read | — | — | `src/pagefpt/modules/measurement/campaigns.py:26` |
 | PUT | `/api/v1/admin/measurement/campaigns/{id}/mapping` | marketing.write; measurement.configure | AAL2 | CampaignMapping | `src/pagefpt/modules/measurement/campaigns.py:33` |
 | POST | `/api/v1/admin/measurement/campaigns/{id}/sync-apply` | marketing.write; measurement.external_write | AAL2 | ApplyUpdate | `src/pagefpt/modules/measurement/external_updates.py:129` |
 | POST | `/api/v1/admin/measurement/campaigns/{id}/sync-preview` | marketing.write; measurement.external_write | AAL2 | VersionInput | `src/pagefpt/modules/measurement/external_updates.py:101` |
 | GET | `/api/v1/admin/measurement/campaigns/{id}/tracking` | marketing.write; measurement.read | — | — | `src/pagefpt/modules/measurement/campaigns.py:60` |
 | GET | `/api/v1/admin/measurement/capabilities` | measurement.read | — | — | `src/pagefpt/modules/measurement/accounts.py:62` |
-| GET | `/api/v1/admin/measurement/configs` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:91` |
-| POST | `/api/v1/admin/measurement/configs` | measurement.configure | AAL2 | ConfigInput | `src/pagefpt/modules/measurement/routes.py:97` |
-| PUT | `/api/v1/admin/measurement/configs/{id}` | measurement.configure | AAL2 | ConfigUpdate | `src/pagefpt/modules/measurement/routes.py:110` |
-| POST | `/api/v1/admin/measurement/configs/{id}/publish` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:172` |
-| POST | `/api/v1/admin/measurement/configs/{id}/simulate` | measurement.configure | AAL2 | SimulationInput | `src/pagefpt/modules/measurement/routes.py:142` |
-| POST | `/api/v1/admin/measurement/configs/{id}/validate` | measurement.configure | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:135` |
-| GET | `/api/v1/admin/measurement/connections` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:36` |
-| POST | `/api/v1/admin/measurement/connections` | measurement.configure | AAL2 | ConnectionInput | `src/pagefpt/modules/measurement/routes.py:42` |
-| PUT | `/api/v1/admin/measurement/connections/{id}` | measurement.configure | AAL2 | ConnectionUpdate | `src/pagefpt/modules/measurement/routes.py:55` |
+| GET | `/api/v1/admin/measurement/configs` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:94` |
+| POST | `/api/v1/admin/measurement/configs` | measurement.configure | AAL2 | ConfigInput | `src/pagefpt/modules/measurement/routes.py:100` |
+| PUT | `/api/v1/admin/measurement/configs/{id}` | measurement.configure | AAL2 | ConfigUpdate | `src/pagefpt/modules/measurement/routes.py:113` |
+| POST | `/api/v1/admin/measurement/configs/{id}/publish` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:164` |
+| POST | `/api/v1/admin/measurement/configs/{id}/simulate` | measurement.configure | AAL2 | SimulationInput | `src/pagefpt/modules/measurement/routes.py:145` |
+| POST | `/api/v1/admin/measurement/configs/{id}/validate` | measurement.configure | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:138` |
+| GET | `/api/v1/admin/measurement/connections` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:39` |
+| POST | `/api/v1/admin/measurement/connections` | measurement.configure | AAL2 | ConnectionInput | `src/pagefpt/modules/measurement/routes.py:45` |
+| PUT | `/api/v1/admin/measurement/connections/{id}` | measurement.configure | AAL2 | ConnectionUpdate | `src/pagefpt/modules/measurement/routes.py:58` |
 | POST | `/api/v1/admin/measurement/connections/{id}/check` | measurement.configure | AAL2 | — | `src/pagefpt/modules/measurement/accounts.py:74` |
-| POST | `/api/v1/admin/measurement/connections/{id}/credentials` | measurement.credentials | AAL2 | CredentialsInput | `src/pagefpt/modules/measurement/routes.py:68` |
-| POST | `/api/v1/admin/measurement/connections/{id}/disable` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:204` |
+| POST | `/api/v1/admin/measurement/connections/{id}/credentials` | measurement.credentials | AAL2 | CredentialsInput | `src/pagefpt/modules/measurement/routes.py:71` |
+| POST | `/api/v1/admin/measurement/connections/{id}/diagnostics` | measurement.configure; 'pass' if p['enabled'] else 'warning'; 'pass' if settings.get('browser_enabled') else 'warning'; warning; warning; fail; warning; fail; fail; fail; warning | AAL2 | — | `src/pagefpt/modules/measurement/diagnostics.py:61` |
+| POST | `/api/v1/admin/measurement/connections/{id}/disable` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:196` |
 | POST | `/api/v1/admin/measurement/connections/{id}/oauth/start` | measurement.credentials | AAL2 | — | `src/pagefpt/modules/measurement/accounts.py:150` |
 | POST | `/api/v1/admin/measurement/cost-imports/apply` | measurement.configure | AAL2 | CostApply | `src/pagefpt/modules/measurement/reporting.py:43` |
 | POST | `/api/v1/admin/measurement/cost-imports/preview` | measurement.configure | AAL2 | CostImport | `src/pagefpt/modules/measurement/reporting.py:22` |
-| GET | `/api/v1/admin/measurement/deliveries` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:272` |
-| POST | `/api/v1/admin/measurement/deliveries/{id}/retry` | measurement.replay | AAL2 | — | `src/pagefpt/modules/measurement/routes.py:278` |
+| GET | `/api/v1/admin/measurement/deliveries` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:264` |
+| POST | `/api/v1/admin/measurement/deliveries/{id}/retry` | measurement.replay | AAL2 | — | `src/pagefpt/modules/measurement/routes.py:270` |
 | GET | `/api/v1/admin/measurement/oauth/callback` | measurement.credentials | AAL2 | — | `src/pagefpt/modules/measurement/accounts.py:230` |
-| GET | `/api/v1/admin/measurement/releases` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:186` |
-| POST | `/api/v1/admin/measurement/releases/{id}/restore` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:192` |
-| GET | `/api/v1/admin/measurement/reports` | admin | — | — | `src/pagefpt/modules/measurement/routes.py:288` |
+| GET | `/api/v1/admin/measurement/releases` | measurement.read | — | — | `src/pagefpt/modules/measurement/routes.py:178` |
+| POST | `/api/v1/admin/measurement/releases/{id}/restore` | measurement.publish | AAL2 | VersionInput | `src/pagefpt/modules/measurement/routes.py:184` |
+| GET | `/api/v1/admin/measurement/reports` | admin | — | — | `src/pagefpt/modules/measurement/routes.py:280` |
 | GET | `/api/v1/admin/measurement/sync-jobs` | measurement.read | — | — | `src/pagefpt/modules/measurement/sync.py:45` |
 | POST | `/api/v1/admin/measurement/sync-jobs` | measurement.configure | AAL2 | SyncInput | `src/pagefpt/modules/measurement/sync.py:33` |
 | POST | `/api/v1/admin/media/upload-intents` | content.write | — | UploadInput | `src/pagefpt/modules/media/routes.py:24` |
@@ -154,13 +155,13 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | PATCH | `/api/v1/admin/payments/{id}` | lead.write | AAL2 | PaymentUpdate | `src/pagefpt/modules/leads/billing.py:160` |
 | POST | `/api/v1/admin/payments/{id}/collect` | lead.write | AAL2 | PaymentCollect | `src/pagefpt/modules/leads/billing.py:174` |
 | GET | `/api/v1/admin/plans` | catalog.write | — | — | `src/pagefpt/api/v1/resources.py:88` |
-| POST | `/api/v1/admin/plans` | catalog.write | — | PlanInput | `src/pagefpt/modules/catalog/routes.py:185` |
-| POST | `/api/v1/admin/plans/reorder` | catalog.write | — | PlanReorderInput | `src/pagefpt/modules/catalog/routes.py:144` |
+| POST | `/api/v1/admin/plans` | catalog.write | — | PlanInput | `src/pagefpt/modules/catalog/routes.py:189` |
+| POST | `/api/v1/admin/plans/reorder` | catalog.write | — | PlanReorderInput | `src/pagefpt/modules/catalog/routes.py:146` |
 | GET | `/api/v1/admin/plans/{id}` | catalog.write | — | — | `src/pagefpt/api/v1/resources.py:107` |
 | PUT | `/api/v1/admin/plans/{id}` | catalog.write | — | PlanInput | `src/pagefpt/api/v1/resources.py:68` |
 | POST | `/api/v1/admin/plans/{id}/retire` | catalog.write | — | VersionCommand | `src/pagefpt/api/v1/resources.py:112` |
 | GET | `/api/v1/admin/prices` | pricing.write | — | — | `src/pagefpt/modules/pricing/routes.py:33` |
-| POST | `/api/v1/admin/prices` | pricing.write | — | PriceInput | `src/pagefpt/modules/catalog/routes.py:242` |
+| POST | `/api/v1/admin/prices` | pricing.write | — | PriceInput | `src/pagefpt/modules/catalog/routes.py:246` |
 | POST | `/api/v1/admin/prices/bulk` | pricing.write; pricing.publish | AAL2 | BulkPriceInput | `src/pagefpt/modules/pricing/routes.py:48` |
 | POST | `/api/v1/admin/prices/imports/apply` | pricing.write | AAL2 | ApplyInput | `src/pagefpt/modules/pricing/imports.py:66` |
 | POST | `/api/v1/admin/prices/imports/preview` | pricing.write | — | ImportInput | `src/pagefpt/modules/pricing/imports.py:48` |
@@ -187,7 +188,7 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | POST | `/api/v1/admin/referrals` | care.write | — | ReferralInput | `src/pagefpt/modules/care/routes.py:75` |
 | POST | `/api/v1/admin/referrals/{id}/approve` | care.approve | AAL2 | VersionCommand | `src/pagefpt/modules/care/routes.py:84` |
 | GET | `/api/v1/admin/regions` | catalog.write | — | — | `src/pagefpt/api/v1/resources.py:88` |
-| POST | `/api/v1/admin/regions` | catalog.write | — | RegionInput | `src/pagefpt/modules/catalog/routes.py:190` |
+| POST | `/api/v1/admin/regions` | catalog.write | — | RegionInput | `src/pagefpt/modules/catalog/routes.py:194` |
 | GET | `/api/v1/admin/regions/{id}` | catalog.write | — | — | `src/pagefpt/api/v1/resources.py:107` |
 | PUT | `/api/v1/admin/regions/{id}` | catalog.write | — | RegionInput | `src/pagefpt/api/v1/resources.py:68` |
 | POST | `/api/v1/admin/regions/{id}/retire` | catalog.write | — | VersionCommand | `src/pagefpt/api/v1/resources.py:112` |
@@ -216,7 +217,7 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | POST | `/api/v1/admin/vouchers/{id}/publish` | marketing.write; pricing.publish | AAL2 | VersionCommand | `src/pagefpt/modules/vouchers/routes.py:110` |
 | GET | `/api/v1/admin/workbench` | lead.read | — | — | `src/pagefpt/modules/leads/admin.py:169` |
 | GET | `/api/v1/admin/workspace/{kind}` | RESOURCE_PERMISSIONS[kind] | — | — | `src/pagefpt/modules/administration/routes.py:105` |
-| POST | `/api/v1/admin/{kind}/{id}/publish` | prices:pricing.publish; pages:content.publish; experiments:marketing.write; plans/products/regions/promotions:catalog.write | AAL2 | VersionCommand | `src/pagefpt/modules/catalog/routes.py:195` |
+| POST | `/api/v1/admin/{kind}/{id}/publish` | prices:pricing.publish; pages:content.publish; experiments:marketing.write; plans/products/regions/promotions:catalog.write | AAL2 | VersionCommand | `src/pagefpt/modules/catalog/routes.py:199` |
 | GET | `/api/v1/auth/account` | own active membership; CSRF for writes | — | — | `src/pagefpt/modules/identity/accounts.py:98` |
 | POST | `/api/v1/auth/account/password` | own active membership; CSRF for writes | — | PasswordChange | `src/pagefpt/modules/identity/accounts.py:221` |
 | POST | `/api/v1/auth/mfa/enroll` | own active membership; CSRF for writes | — | Enroll | `src/pagefpt/modules/identity/accounts.py:116` |
@@ -241,15 +242,15 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | POST | `/api/v1/link-tracking/engagement` | public | — | EngagementInput | `src/pagefpt/modules/link_analytics/routes.py:232` |
 | POST | `/api/v1/link-tracking/revoke` | public | — | RevokeInput | `src/pagefpt/modules/link_analytics/routes.py:245` |
 | POST | `/api/v1/link-tracking/visit` | public | — | pagefpt__modules__link_analytics__schemas__VisitInput | `src/pagefpt/modules/link_analytics/routes.py:197` |
-| GET | `/api/v1/measurement/config` | public | — | — | `src/pagefpt/modules/measurement/routes.py:216` |
-| POST | `/api/v1/measurement/config/session` | public | — | SessionConfigInput | `src/pagefpt/modules/measurement/routes.py:247` |
-| GET | `/api/v1/pages/{slug}` | public | — | — | `src/pagefpt/modules/content/routes.py:12` |
-| POST | `/api/v1/quotes` | public | — | QuoteRequest | `src/pagefpt/modules/catalog/routes.py:251` |
+| GET | `/api/v1/measurement/config` | public | — | — | `src/pagefpt/modules/measurement/routes.py:208` |
+| POST | `/api/v1/measurement/config/session` | public | — | SessionConfigInput | `src/pagefpt/modules/measurement/routes.py:239` |
+| GET | `/api/v1/pages/{slug}` | public | — | — | `src/pagefpt/modules/content/routes.py:13` |
+| POST | `/api/v1/quotes` | public | — | QuoteRequest | `src/pagefpt/modules/catalog/routes.py:255` |
 | GET | `/api/v1/redirects/resolve` | public | — | — | `src/pagefpt/modules/content/redirects.py:63` |
-| GET | `/api/v1/regions` | public | — | — | `src/pagefpt/modules/catalog/routes.py:139` |
-| GET | `/api/v1/regions/hierarchy` | public | — | — | `src/pagefpt/modules/catalog/routes.py:69` |
+| GET | `/api/v1/regions` | public | — | — | `src/pagefpt/modules/catalog/routes.py:141` |
+| GET | `/api/v1/regions/hierarchy` | public | — | — | `src/pagefpt/modules/catalog/routes.py:71` |
 | GET | `/api/v1/regions/location-suggestion` | public | — | — | `src/pagefpt/modules/catalog/geography_routes.py:17` |
-| GET | `/api/v1/regions/{id}/wards` | public | — | — | `src/pagefpt/modules/catalog/routes.py:100` |
+| GET | `/api/v1/regions/{id}/wards` | public | — | — | `src/pagefpt/modules/catalog/routes.py:102` |
 | POST | `/api/v1/sessions` | public | — | ConsentInput | `src/pagefpt/modules/marketing/routes.py:17` |
 | POST | `/api/v1/sessions/resume` | public | — | SessionResume | `src/pagefpt/modules/marketing/routes.py:33` |
 | GET | `/api/v1/system/display-settings` | public | — | — | `src/pagefpt/modules/content/display_settings.py:229` |
@@ -270,10 +271,10 @@ Tổng 266 method/path: 259 có trong OpenAPI và 7 route ngoài OpenAPI.
 | GET | `/khuyen-mai` | public_html | — | — | `src/pagefpt/web/client_routes.py:71` |
 | GET | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
 | HEAD | `/r/{slug}` | public_html | — | — | `src/pagefpt/modules/link_analytics/routes.py:146` |
-| GET | `/robots.txt` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:40` |
+| GET | `/robots.txt` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:55` |
 | GET | `/s/{slug}` | public_html | — | — | `src/pagefpt/modules/vouchers/routes.py:188` |
 | GET | `/san-pham/{slug}` | public_html | — | — | `src/pagefpt/web/client_routes.py:51` |
-| GET | `/sitemap.xml` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:18` |
+| GET | `/sitemap.xml` | seo_public | — | — | `src/pagefpt/modules/content/routes.py:19` |
 
 ## Path, query và header parameters
 
@@ -694,6 +695,12 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
 
 ### POST /api/v1/admin/measurement/connections/{id}/credentials
+
+| Vị trí | Tên | Bắt buộc | Schema/giới hạn |
+|---|---|---|---|
+| path | `id` | True | `{"type":"string","format":"uuid","title":"Id"}` |
+
+### POST /api/v1/admin/measurement/connections/{id}/diagnostics
 
 | Vị trí | Tên | Bắt buộc | Schema/giới hạn |
 |---|---|---|---|
@@ -1309,7 +1316,7 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `scope_key` | Không | `{"type":"string","maxLength":150,"default":"*"}` |
 | `environment` | Có | `{"type":"string","enum":["test","staging","production"]}` |
 | `policy` | Không | `{"$ref":"#/components/schemas/MeasurementPolicy"}` |
-| `rules` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/ConversionRule"},"type":"array","maxItems":20},{"type":"null"}]}` |
+| `rules` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/ConversionRule"},"type":"array","maxItems":100},{"type":"null"}]}` |
 
 ### ConfigUpdate
 
@@ -1320,7 +1327,7 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | `scope_key` | Không | `{"type":"string","maxLength":150,"default":"*"}` |
 | `environment` | Có | `{"type":"string","enum":["test","staging","production"]}` |
 | `policy` | Không | `{"$ref":"#/components/schemas/MeasurementPolicy"}` |
-| `rules` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/ConversionRule"},"type":"array","maxItems":20},{"type":"null"}]}` |
+| `rules` | Không | `{"anyOf":[{"items":{"$ref":"#/components/schemas/ConversionRule"},"type":"array","maxItems":100},{"type":"null"}]}` |
 | `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 
 ### ConfirmQuote
@@ -1404,7 +1411,7 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 | Field | Bắt buộc | Kiểu và toàn bộ giới hạn |
 |---|---|---|
 | `id` | Không | `{"type":"string","format":"uuid"}` |
-| `event` | Có | `{"type":"string","enum":["lead","qualified","closed","installed"]}` |
+| `event` | Có | `{"type":"string","enum":["lead","qualified","closed","installed","page_view","view_plan","select_plan","form_open","form_start","click_call","click_zalo","click_messenger","select_billing_period","select_accessory","select_region","compare_plans","view_cost","return_visit","view_landing","experiment_exposure"]}` |
 | `connection_id` | Có | `{"type":"string","format":"uuid"}` |
 | `provider_event` | Có | `{"type":"string","maxLength":40,"minLength":1,"pattern":"^[A-Za-z][A-Za-z0-9_]*$"}` |
 | `conversion_label` | Không | `{"type":"string","maxLength":100,"pattern":"^[a-zA-Z0-9_-]*$","default":""}` |
@@ -2223,7 +2230,7 @@ Thiếu query không bắt buộc → dùng default server. Không gắn query c
 |---|---|---|
 | `expected_version` | Có | `{"type":"integer","minimum":1.0}` |
 | `path` | Không | `{"type":"string","maxLength":150,"pattern":"^/[a-z0-9/-]*$","default":"/"}` |
-| `event` | Không | `{"type":"string","enum":["lead","qualified","closed","installed"],"default":"lead"}` |
+| `event` | Không | `{"type":"string","enum":["lead","qualified","closed","installed","page_view","view_plan","select_plan","form_open","form_start","click_call","click_zalo","click_messenger","select_billing_period","select_accessory","select_region","compare_plans","view_cost","return_visit","view_landing","experiment_exposure"],"default":"lead"}` |
 | `analytics` | Không | `{"type":"boolean","default":false}` |
 | `marketing` | Không | `{"type":"boolean","default":false}` |
 | `advertising` | Không | `{"type":"boolean","default":false}` |

@@ -4,7 +4,6 @@
     if (window.PageFPTGoogle) { window.PageFPTGoogle.apply?.(config); return; }
   let id = config.measurement_id;
   if (
-    !/^G-[A-Z0-9]+$/.test(id || "") ||
     config.preview ||
     /^\/admin(?:\/|$)/.test(window.location.pathname)
   )
@@ -132,14 +131,17 @@
     return clean;
   }
   function send(name, data = {}) {
+    if (Array.isArray(config.event_enabled) && !config.event_enabled.includes(name)) return false;
+    const mapped = window.PageFPTMeasurement?.behavior?.(name, data) || false;
     if (
       (Array.isArray(config.event_enabled) && !config.event_enabled.includes(name)) ||
       !loaded ||
       (!advanced && !context().analytics_opt_in) ||
       window[disable]
     )
-      return false;
-    gtag("event", name, { ...properties(data), ...pageFields(), send_to: id });
+      return mapped;
+    const alias = (config.targets || []).find(target => target.provider === 'ga4' && target.event === name && target.route === 'browser' && target.settings?.browser_enabled && target.settings?.measurement_id === id && /^[A-Za-z][A-Za-z0-9_]{0,39}$/.test(target.provider_event || ''));
+    gtag("event", alias?.provider_event || name, { ...properties(data), ...pageFields(), send_to: id });
     return true;
   }
   let observedCards = new WeakSet();
@@ -190,7 +192,13 @@
     }
   }
   function updateConsent() {
-    if (!/^G-[A-Z0-9]+$/.test(id || "")) return;
+    if (!/^G-[A-Z0-9]+$/.test(id || "")) {
+      if (context().analytics_opt_in) {
+        if (!pageViewed && send('page_view')) pageViewed = true;
+        observePlans();
+      }
+      return;
+    }
     const allowed = !!context().analytics_opt_in;
     if (allowed && !lastAnalyticsConsent && observer) {
       observer.disconnect?.();
@@ -277,7 +285,6 @@
       }
       config = next;
       advanced = config.consent_mode === "advanced";
-      if (!/^G-[A-Z0-9]+$/.test(id || "")) return;
       updateConsent();
     },
     track(name, data) {
