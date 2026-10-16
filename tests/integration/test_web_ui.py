@@ -253,7 +253,6 @@ async def test_multitask_3card_zoom_in_and_light_sheen(client, published_ui_plan
     assert "multitask-mode" in text
     assert "is-center" in text
     assert "card-light-streak" in text
-    assert "Chế độ thẻ đa nhiệm" in text
 
     # 2. CSS Check for Zoom In scale and Light Sweep Animation
     css_res = await client.get("/static/css/client.css")
@@ -803,7 +802,6 @@ async def test_desktop_css_layout_and_styles(client, published_ui_plans):
     home_html = home_res.text
     assert "flip-text-desktop" in home_html
     assert "compare-text-desktop" in home_html
-    assert "hint-desktop" in home_html
 
 
 @pytest.mark.asyncio

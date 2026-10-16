@@ -556,7 +556,7 @@ img, svg {
 .plans-slider-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: var(--space-4);
   padding: 0 var(--space-2);
 }
