@@ -34,7 +34,7 @@
 .telecom-landing .lp-plan-card .plan-speed-line strong{color:#0369a1}
 .telecom-landing .lp-plan-card .plan-price-box{padding:0!important;min-height:68px!important;flex:0 0 68px}
 .telecom-landing .lp-plan-card .plan-price-row{display:flex!important;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px!important;min-width:0}
-.telecom-landing .lp-plan-card .plan-price-amount{font-size:clamp(19px,1.7vw,24px)!important;color:#c2410c;line-height:1.2;overflow-wrap:anywhere}
+.telecom-landing .lp-plan-card .plan-price-amount{font-size:clamp(19px,1.7vw,24px)!important;color:#c2410c;line-height:1.2;white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important}
 .telecom-landing .lp-plan-card .billing-choice{min-width:0;flex:0 1 108px}
 .telecom-landing .lp-plan-card .billing-choice select{height:44px!important;min-height:44px!important;width:100%;font-size:14px!important;padding:6px!important;border:1px solid #cbd5e1;border-radius:8px;background:white;color:#1e293b}
 .telecom-landing .lp-plan-card .plan-price-note{font-size:12px!important;line-height:1.4;color:#64748b}

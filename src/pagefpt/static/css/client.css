@@ -5936,9 +5936,12 @@ img, svg {
   }
 
   .plan-price-amount {
-    font-size: 1.95rem !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
   }
 
   .plan-price-currency {

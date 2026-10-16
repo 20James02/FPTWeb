@@ -158,8 +158,8 @@
   gap: 6px !important;
 }
 .plan-price-info {
-  display: flex;
-  align-items: center;
+  display: inline-flex !important;
+  align-items: center !important;
   gap: 5px;
   min-height: 44px;
   min-width: 0;
@@ -169,6 +169,8 @@
   color: var(--card-blue);
   cursor: pointer;
   text-align: left;
+  white-space: nowrap !important;
+  flex-shrink: 0;
 }
 :is(
     .plan-card--reference,
@@ -180,18 +182,23 @@
   font-size: 24px !important;
   line-height: 1.2;
   font-weight: 700;
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
 }
 .plan-info-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 14px;
+  width: 14px;
   height: 14px;
   border: 1px solid #8c8c8c;
   border-radius: 50%;
   font-size: 10px;
   font-style: normal;
   color: #727272;
+  flex-shrink: 0 !important;
 }
 :is(
     .plan-card--reference,
@@ -745,6 +752,9 @@
     .plan-card-3d-wrapper
   ) .plan-price-amount {
     font-size: 20px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
   }
 
   :is(
