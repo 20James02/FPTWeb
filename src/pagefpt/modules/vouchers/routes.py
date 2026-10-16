@@ -146,12 +146,15 @@ async def delete(id: UUID, request: Request, expected_version: int = Query(ge=1)
 @router.post("/api/v1/admin/vouchers/{id}/links", status_code=201)
 async def share(id: UUID, input: LinkInput, request: Request):
     actor = await manager(request)
+    payload = input.model_dump(mode="json")
+    if "preview_image_url" not in input.model_fields_set:
+        payload.pop("preview_image_url", None)
     return await dispatch(
         request,
         "voucher_link_save",
         actor=actor.user_id,
         id=str(id),
-        payload=input.model_dump(mode="json"),
+        payload=payload,
     )
 
 
@@ -186,8 +189,13 @@ async def link_qr(slug: str, request: Request):
 async def short_link(slug: str, request: Request):
     if len(slug) > 50:
         raise DomainError("NOT_FOUND", 404)
-    campaign = await resolve(request, link=slug, record_click=True)
     from pagefpt.modules.link_analytics.service import preview_bot, sign_source
+
+    if preview_bot(request):
+        from pagefpt.modules.vouchers.sharing import preview_response
+
+        return await preview_response(slug, request)
+    campaign = await resolve(request, link=slug, record_click=True)
 
     if not campaign:
         landing = await dispatch(
@@ -203,6 +211,7 @@ async def short_link(slug: str, request: Request):
         response.delete_cookie(COOKIE, httponly=True, samesite="lax")
         response.headers["Cache-Control"] = "private, no-store"
         response.headers["Referrer-Policy"] = "same-origin"
+        response.headers["Vary"] = "User-Agent"
         return response
     response = RedirectResponse(
         campaign["link"]["target"] + "?" + urlencode({"pf_offer": slug}), status_code=302
@@ -226,6 +235,7 @@ async def short_link(slug: str, request: Request):
     )
     response.headers["Cache-Control"] = "private, no-store"
     response.headers["Referrer-Policy"] = "same-origin"
+    response.headers["Vary"] = "User-Agent"
     return response
 
 

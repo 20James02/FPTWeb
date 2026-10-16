@@ -253,7 +253,20 @@
     }
     observePlans();
   }
+  function acceptReceipt(data) {
+    if (
+      !uuid(data.event_id) ||
+      receipts.has(data.event_id) ||
+      (!advanced && !context().analytics_opt_in)
+    )
+      return;
+    if (send("generate_lead", data)) {
+      receipts.add(data.event_id);
+      if (receipts.size > 100) receipts.delete(receipts.values().next().value);
+    }
+  }
   window.PageFPTGoogle = {
+    acceptReceipt,
     apply(next) {
       if (next.measurement_id !== id) {
         window[disable] = true;
@@ -278,19 +291,7 @@
     },
   };
   window.addEventListener("pagefpt-consent-change", updateConsent);
-  window.addEventListener("pagefpt:lead-accepted", (event) => {
-    const data = event.detail || {};
-    if (
-      !uuid(data.event_id) ||
-      receipts.has(data.event_id) ||
-      (!advanced && !context().analytics_opt_in)
-    )
-      return;
-    if (send("generate_lead", data)) {
-      receipts.add(data.event_id);
-      if (receipts.size > 100) receipts.delete(receipts.values().next().value);
-    }
-  });
+  window.addEventListener("pagefpt:lead-accepted", event => acceptReceipt(event.detail || {}));
   document.addEventListener("click", (event) => {
     const button = event.target.closest?.(
       "[data-analytics-action=select_plan],.btn-select-plan[data-plan-id]",

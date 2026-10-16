@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from pagefpt.modules.pricing.schemas import Command
 
@@ -76,6 +76,29 @@ class VoucherUpdate(VoucherInput):
 
 
 class LinkInput(Command):
+    preview_image_url: str | None = Field(default=None, max_length=1500)
+
+    @field_validator("preview_image_url")
+    @classmethod
+    def public_image(cls, value):
+        from urllib.parse import unquote, urlsplit
+
+        if not value:
+            return value
+        if any(ord(c) <= 32 or c in '\\"<>' for c in value):
+            raise ValueError("Ảnh cần URL công khai hợp lệ")
+        parsed = urlsplit(value)
+        local = value.startswith("/static/") and not parsed.netloc
+        remote = (
+            parsed.scheme == "https"
+            and parsed.hostname
+            and not parsed.username
+            and not parsed.password
+        )
+        if not (local or remote) or parsed.fragment or ".." in unquote(parsed.path).split("/"):
+            raise ValueError("Ảnh cần URL HTTPS công khai hoặc đường dẫn /static/")
+        return value
+
     title: str = Field(default="", max_length=160)
     content_note: str = Field(default="", max_length=2000)
     slug: str = Field(min_length=3, max_length=50, pattern=r"^[a-z0-9-]+$")

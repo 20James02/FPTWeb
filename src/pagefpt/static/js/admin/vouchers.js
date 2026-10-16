@@ -771,6 +771,10 @@
 
   function edit(row = null) {
     selected = row;
+    if ($("v-link-image")) $("v-link-image").value = "";
+    if ($("v-link-image-file")) $("v-link-image-file").value = "";
+    if ($("v-link-slug")) $("v-link-slug").value = "";
+    if ($("voucher-link-save")) $("voucher-link-save").textContent = "+ Tạo link chia sẻ";
     const p = row?.payload;
     rules = p ? structuredClone(p.rules) : [baseRule()];
     excluded = new Set(p?.exclusions || []);
@@ -1008,6 +1012,7 @@
   }
 
   function renderLinks() {
+    updateSharePreview();
     const box = $("voucher-links");
     if (!box) return;
     box.replaceChildren();
@@ -1073,6 +1078,7 @@
             channel: link.channel,
             employee_id: link.employee_id,
             active: !link.active,
+            preview_image_url: link.preview_image_url || "",
           });
           await load();
           renderLinks();
@@ -1085,7 +1091,11 @@
         if ($("v-link-target")) $("v-link-target").value = link.target;
         if ($("v-link-channel")) $("v-link-channel").value = link.channel;
         if ($("v-link-employee")) $("v-link-employee").value = link.employee_id || "";
-        $("v-link-slug")?.focus();
+        if ($("v-link-image")) $("v-link-image").value = link.preview_image_url || "";
+        updateSharePreview();
+        $("voucher-link-save").textContent = "Lưu thay đổi link";
+        $("v-link-image")?.scrollIntoView({block:"center",behavior:"smooth"});
+        $("v-link-image")?.focus({preventScroll:true});
       };
       line.append(copy, copyMsg, qr, toggle, change);
       box.append(line);
@@ -1481,6 +1491,50 @@
       });
   }
 
+  function updateSharePreview() {
+    const raw = $("v-link-image")?.value.trim() || "";
+    let image = "/static/images/device-internet-3d.webp";
+    try {
+      const parsed = new URL(raw, location.origin);
+      if(raw && (parsed.protocol === "https:" || raw.startsWith("/static/")) && !parsed.username && !parsed.password) image = parsed.href;
+    } catch (_) {}
+    const img = $("v-link-preview-image");
+    if(img) {img.hidden=false;img.src=image;}
+    const published = selected?.published_payload;
+    const live = selected?.status === "published" && Date.parse(published?.start)<=Date.now() && Date.now()<Date.parse(published?.end);
+    if($("v-link-preview-title")) $("v-link-preview-title").textContent = live ? published.name : "Tư vấn lắp mạng FPT — Gói cước theo khu vực";
+    if($("v-link-preview-description")) $("v-link-preview-description").textContent = live ? (published.terms||"").slice(0,300) : "Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng.";
+    if($("v-link-preview-domain")) $("v-link-preview-domain").textContent = location.host;
+  }
+  $("v-link-image")?.addEventListener("input",updateSharePreview);
+  $("v-link-image-clear")?.addEventListener("click",()=>{
+    $("v-link-image").value="";
+    $("v-link-image-file").value="";
+    $("v-link-image-help").textContent="Đang dùng ảnh mặc định. Lưu link để áp dụng.";
+    updateSharePreview();
+  });
+  $("v-link-preview-image")?.addEventListener("error",()=>{
+    $("v-link-preview-image").hidden=true;
+    $("v-link-image-help").textContent="Chưa tải được ảnh xem trước. Kiểm tra URL ảnh có truy cập công khai được không.";
+  });
+  $("v-link-image-file")?.addEventListener("change",event=>{
+    const file=event.target.files?.[0];
+    if(!file)return;
+    job(async()=>{
+      $("v-link-image-help").textContent="Đang tải và kiểm tra ảnh…";
+      try {
+        const asset=await window.adminUploadImage(file);
+        $("v-link-image").value=asset.payload.url;
+        updateSharePreview();
+        $("v-link-image-help").textContent="Đã tải ảnh. Lưu link để áp dụng ảnh mới.";
+      } catch(error) {
+        $("v-link-image-help").textContent=error.message;
+        throw error;
+      } finally {event.target.value="";}
+    });
+  });
+  updateSharePreview();
+
   // Submit Link Form
   const linkForm = $("voucher-link-form");
   if (linkForm) {
@@ -1498,23 +1552,28 @@
           return;
         }
 
+        // Saving the first draft refreshes the voucher editor; freeze link fields first.
+        const linkDraft = {
+          slug,
+          target: $("v-link-target")?.value.trim() || "/",
+          channel: $("v-link-channel")?.value || "zalo",
+          employee_id: $("v-link-employee")?.value || null,
+          active: links.find(link=>link.slug===slug && link.voucher_id===selected?.id)?.active ?? true,
+          preview_image_url: $("v-link-image")?.value.trim() || "",
+        };
         if (!selected) {
           showNotice("Đang lưu bản nháp voucher trước khi tạo link chia sẻ...", "info");
           const savedRow = await saveDraftInternal();
           if (!savedRow) return;
         }
 
-        await api("/" + selected.id + "/links", "POST", {
-          slug: slug,
-          target: $("v-link-target")?.value.trim() || "/",
-          channel: $("v-link-channel")?.value || "zalo",
-          employee_id: $("v-link-employee")?.value || null,
-          active: true,
-        });
+        $("v-link-slug").value=linkDraft.slug;
+        $("v-link-image").value=linkDraft.preview_image_url;
+        await api("/" + selected.id + "/links", "POST", linkDraft);
         await load();
         renderLinks();
         showNotice(
-          `🎉 Đã tạo thành công link chia sẻ /s/${slug} kèm mã QR Marketing!`,
+          `Đã lưu link /s/${slug} và ảnh xem trước.`,
           "success",
         );
       });

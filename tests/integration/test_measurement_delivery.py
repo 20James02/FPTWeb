@@ -256,3 +256,155 @@ async def test_short_retention_bounds_clicks_and_client_context_before_cleanup(a
     await gateway.rpc("dispatch", {"command": {"op": "schedule_tick"}})
     with psycopg.connect(gateway.dsn) as db:
         assert db.execute("SELECT click_id_ciphertext FROM private.leads").fetchone()[0] is None
+
+
+async def test_legacy_gateway_does_not_bypass_advertising_permission(admin, gateway):
+    token = (
+        await admin.post(
+            "/api/v1/sessions",
+            json={"analytics": True, "marketing": True, "consent_version": "legacy"},
+        )
+    ).json()["session_token"]
+    lead = await admin.post(
+        "/api/v1/leads",
+        json={
+            "phone": "0901234567",
+            "session_token": token,
+            "marketing_opt_in": True,
+            "consent_version": "legacy",
+        },
+        headers={"Idempotency-Key": str(uuid4())},
+    )
+    assert lead.status_code == 201, lead.text
+    with psycopg.connect(gateway.dsn) as db:
+        id = str(db.execute("SELECT id FROM private.leads").fetchone()[0])
+    ready = await gateway.rpc("dispatch", {"command": {"op": "conversion_prepare", "id": id}})
+    assert ready["status"] == "consent_denied", ready
+
+
+async def test_legacy_prepare_rechecks_advertising_after_concurrent_revoke(admin, gateway):
+    import asyncio
+
+    token = (
+        await admin.post(
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
+        )
+    ).json()["session_token"]
+    result = await admin.post(
+        "/api/v1/leads",
+        json={
+            "phone": "0901234567",
+            "session_token": token,
+            "marketing_opt_in": True,
+            "consent_version": "v3",
+        },
+        headers={"Idempotency-Key": str(uuid4())},
+    )
+    assert result.status_code == 201, result.text
+    async with await psycopg.AsyncConnection.connect(gateway.dsn) as db:
+        lead = (await (await db.execute("SELECT id FROM private.leads")).fetchone())[0]
+        await db.execute("UPDATE private.sessions SET advertising=false")
+        pending = asyncio.create_task(
+            gateway.rpc("dispatch", {"command": {"op": "conversion_prepare", "id": str(lead)}})
+        )
+        try:
+            for _ in range(200):
+                await db.execute("SELECT pg_stat_clear_snapshot()")
+                row = await (
+                    await db.execute(
+                        "SELECT count(*) FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND query LIKE 'SELECT api.dispatch(%%' AND wait_event_type='Lock'"
+                    )
+                ).fetchone()
+                if row[0]:
+                    break
+                await asyncio.sleep(0.01)
+            else:
+                raise AssertionError(
+                    "Conversion preparation did not reach the concurrent consent lock"
+                )
+            await db.commit()
+            prepared = await asyncio.wait_for(pending, 5)
+            assert prepared["status"] == "consent_denied", prepared
+        finally:
+            await db.rollback()
+            if not pending.done():
+                pending.cancel()
+                await asyncio.gather(pending, return_exceptions=True)
+
+
+async def test_managed_prepare_respects_concurrent_advertising_revocation(admin, gateway):
+    await seeded(admin)
+    async with await psycopg.AsyncConnection.connect(gateway.dsn) as db:
+        delivery = (
+            await (await db.execute("SELECT id FROM private.measurement_deliveries")).fetchone()
+        )[0]
+        await db.execute("UPDATE private.sessions SET advertising=false")
+        pending = asyncio.create_task(
+            gateway.rpc(
+                "dispatch", {"command": {"op": "measurement_delivery_prepare", "id": str(delivery)}}
+            )
+        )
+        try:
+            for _ in range(200):
+                await db.execute("SELECT pg_stat_clear_snapshot()")
+                row = await (
+                    await db.execute(
+                        "SELECT count(*) FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND query LIKE 'SELECT api.dispatch(%%' AND wait_event_type='Lock'"
+                    )
+                ).fetchone()
+                if pending.done() or row[0]:
+                    break
+                await asyncio.sleep(0.01)
+            else:
+                raise AssertionError("Managed preparation did not reach a result or consent lock")
+            await db.commit()
+            prepared = await asyncio.wait_for(pending, 5)
+            assert prepared["status"] == "consent_denied", prepared
+        finally:
+            await db.rollback()
+            if not pending.done():
+                pending.cancel()
+                await asyncio.gather(pending, return_exceptions=True)
+
+
+async def test_managed_prepare_does_not_block_privacy_erasure_cascade(admin, gateway):
+    await seeded(admin)
+    async with await psycopg.AsyncConnection.connect(gateway.dsn) as db:
+        delivery = (
+            await (await db.execute("SELECT id FROM private.measurement_deliveries")).fetchone()
+        )[0]
+        await db.execute("DELETE FROM private.sessions")
+        pending = asyncio.create_task(
+            gateway.rpc(
+                "dispatch", {"command": {"op": "measurement_delivery_prepare", "id": str(delivery)}}
+            )
+        )
+        try:
+            for _ in range(200):
+                await db.execute("SELECT pg_stat_clear_snapshot()")
+                row = await (
+                    await db.execute(
+                        "SELECT count(*) FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND query LIKE 'SELECT api.dispatch(%%' AND wait_event_type='Lock'"
+                    )
+                ).fetchone()
+                if row[0]:
+                    break
+                await asyncio.sleep(0.01)
+            else:
+                raise AssertionError("Preparation did not reach the concurrent privacy lock")
+            await db.execute("SET LOCAL lock_timeout='500ms'")
+            await db.execute("DELETE FROM private.leads")
+            await db.commit()
+            prepared = await asyncio.wait_for(pending, 5)
+            assert prepared["status"] in {"not_found", "consent_denied"}, prepared
+        finally:
+            await db.rollback()
+            if not pending.done():
+                pending.cancel()
+                await asyncio.gather(pending, return_exceptions=True)

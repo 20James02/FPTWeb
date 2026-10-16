@@ -1,6 +1,7 @@
 const { chromium, webkit } = require("playwright"),
   assert = require("node:assert/strict");
-const origin = "http://127.0.0.1:8098";
+const origin = process.env.PAGEFPT_QA_ORIGIN || "http://127.0.0.1:8098";
+if(!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin)) throw Error("Loopback fixture required");
 (async () => {
   const type = process.env.PAGEFPT_QA_WEBKIT ? webkit : chromium;
   const browser = await type.launch(

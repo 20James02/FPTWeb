@@ -312,3 +312,10 @@ Không coi các đề xuất này là đã triển khai chỉ vì có màn hình
 
 
 Cập nhật14/10/2026: shared `voucher_acquisition.html`, `voucher-acquisition.css`, `voucher_acquisition.js` dùng ở client_base và standalone telecom_landing. Tham số `pf_offer` chỉ biểu thị ý định mở popup; quyền lợi lấy từ public voucher context đã công bố. Xem `docs/admin/VOUCHER-POPUP-FORM.md`; không tự công bố voucher khi tạo link.
+
+
+## Bổ sung 16/10/2026 — ảnh preview riêng từng link
+
+`POST /api/v1/admin/vouchers/{id}/links` nhận `preview_image_url` (HTTPS công khai hoặc `/static/`, tối đa1500 ký tự). Bỏ trường giữ ảnh cũ; `""`/null xóa ảnh riêng. Danh sách `links` trả lại trường này. Form Admin dùng upload R2 hiện có và khung xem trước; phải chụp dữ liệu link trước bước tự lưu voucher mới. Khi sửa ảnh, giữ nguyên `active` của link.
+
+`/s/{slug}` trả HTML metadata200 cho crawler được nhận diện,302 cho khách; có `Vary: User-Agent`. Metadata chỉ lấy nội dung voucher đã công bố còn hiệu lực, không lấy ghi chú hoặc bản nháp; các lượt crawler thuộc nhóm bot. Xem `docs/operations/ANH-PREVIEW-LINK-VOUCHER.md` về sử dụng và cache mạng xã hội.

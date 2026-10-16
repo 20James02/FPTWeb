@@ -1,5 +1,5 @@
 {
-  "review_date": "14/10/2026",
+  "review_date": "16/10/2026",
   "timezone": "Asia/Saigon",
   "scope": "Voucher UI handoff, current local implementation",
   "generated_from": "create_app(Settings(environment=test,_env_file=None)).openapi()",
@@ -7892,64 +7892,78 @@
         "title": "VisitInput"
       },
       "pagefpt__modules__vouchers__schemas__LinkInput": {
+        "additionalProperties": false,
         "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 160,
-            "title": "Title",
-            "default": ""
-          },
-          "content_note": {
-            "type": "string",
-            "maxLength": 2000,
-            "title": "Content Note",
-            "default": ""
-          },
-          "slug": {
-            "type": "string",
-            "maxLength": 50,
-            "minLength": 3,
-            "pattern": "^[a-z0-9-]+$",
-            "title": "Slug"
-          },
-          "target": {
-            "type": "string",
-            "maxLength": 110,
-            "title": "Target",
-            "default": "/"
-          },
-          "channel": {
-            "type": "string",
-            "maxLength": 40,
-            "minLength": 1,
-            "pattern": "^[a-zA-Z0-9_-]+$",
-            "title": "Channel",
-            "default": "direct"
-          },
-          "employee_id": {
+          "preview_image_url": {
             "anyOf": [
               {
-                "type": "string",
-                "format": "uuid"
+                "maxLength": 1500,
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
+            "default": null,
+            "title": "Preview Image Url"
+          },
+          "title": {
+            "default": "",
+            "maxLength": 160,
+            "title": "Title",
+            "type": "string"
+          },
+          "content_note": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Content Note",
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 50,
+            "minLength": 3,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Slug",
+            "type": "string"
+          },
+          "target": {
+            "default": "/",
+            "maxLength": 110,
+            "title": "Target",
+            "type": "string"
+          },
+          "channel": {
+            "default": "direct",
+            "maxLength": 40,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Channel",
+            "type": "string"
+          },
+          "employee_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
             "title": "Employee Id"
           },
           "active": {
-            "type": "boolean",
+            "default": true,
             "title": "Active",
-            "default": true
+            "type": "boolean"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "slug"
         ],
-        "title": "LinkInput"
+        "title": "LinkInput",
+        "type": "object"
       },
       "ProcessInput": {
         "additionalProperties": false,

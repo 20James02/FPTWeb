@@ -348,7 +348,7 @@
           <label>
             Mã đường dẫn rút gọn <span class="v-req">*</span>
             <input id="v-link-slug" required pattern="[a-z0-9-]{3,50}" placeholder="VD: vungtau-camera-zalo" autocomplete="off">
-            <small class="v-help">Đường dẫn: <code>fpt.vn/s/[ma-duong-dan]</code></small>
+            <small class="v-help">Đường dẫn: <code>/s/[ma-duong-dan]</code></small>
           </label>
 
           <label>
@@ -379,6 +379,25 @@
             <small class="v-help">Gắn để theo dõi KPI nguồn giới thiệu, không tự gán người xử lý hồ sơ.</small>
           </label>
         </div>
+
+        <section class="voucher-share-preview-editor" aria-labelledby="v-share-preview-heading">
+          <div class="voucher-share-preview-fields">
+            <h3 id="v-share-preview-heading">Ảnh xem trước khi chia sẻ</h3>
+            <p class="v-help">Ảnh riêng cho link này trên Zalo, Facebook và các ứng dụng hỗ trợ xem trước link. Nên dùng ảnh ngang 1200 × 630 px, chữ ngắn và rõ.</p>
+            <label for="v-link-image">Đường dẫn ảnh công khai</label>
+            <input id="v-link-image" type="text" inputmode="url" maxlength="1500" placeholder="https://… hoặc tải ảnh bên dưới" aria-describedby="v-link-image-help">
+            <div class="voucher-share-image-actions">
+              <label class="btn-action-detail voucher-share-upload" for="v-link-image-file">Tải ảnh lên<input id="v-link-image-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+              <button id="v-link-image-clear" class="btn-action-detail" type="button">Dùng ảnh mặc định</button>
+            </div>
+            <small id="v-link-image-help" class="v-help" role="status" aria-live="polite">JPEG, PNG hoặc WebP · tối đa 10 MB. Ảnh chỉ thay đổi sau khi lưu link.</small>
+            <small class="v-help">Mạng xã hội có thể lưu ảnh cũ trong bộ nhớ đệm. Sau khi đổi ảnh, cần yêu cầu nền tảng tải lại bản xem trước hoặc chia sẻ link mới.</small>
+          </div>
+          <figure class="voucher-share-preview" aria-label="Mô phỏng thẻ xem trước link">
+            <img id="v-link-preview-image" src="/static/images/device-internet-3d.webp" alt="Ảnh xem trước link voucher" loading="lazy" referrerpolicy="no-referrer">
+            <figcaption><strong id="v-link-preview-title">Tư vấn lắp mạng FPT</strong><p id="v-link-preview-description">Chọn gói phù hợp và nhận tư vấn ưu đãi.</p><small id="v-link-preview-domain"></small></figcaption>
+          </figure>
+        </section>
 
         <div style="margin-top: 14px;">
           <button id="voucher-link-save" class="btn-action-call" type="submit">+ Tạo link chia sẻ</button>
@@ -461,5 +480,6 @@
 </dialog>
 {% endblock %}
 {% block extra_scripts %}
+<script src="/static/js/admin/media_upload.js"></script>
 <script src="/static/js/admin/vouchers.js"></script>
 {% endblock %}

@@ -1,6 +1,6 @@
 {
   "generated_from": "current FastAPI route tree + app.openapi + endpoint source",
-  "date": "2026-10-15",
+  "date": "2026-10-16",
   "security_note": "OpenAPI lacks securitySchemes/response models for most routes; permission annotations come from Python, not a complete SQL authorization proof.",
   "operations": [
     {
@@ -8,7 +8,7 @@
       "path": "/",
       "operation_id": "home__get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 27,
+      "source_line": 35,
       "authorization": {
         "caller": "public_html",
         "permission": null,
@@ -617,7 +617,7 @@
       "path": "/api/v1/accessories",
       "operation_id": "accessories_api_v1_accessories_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 48,
+      "source_line": 61,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -4231,7 +4231,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher",
       "operation_id": "lead_voucher_api_v1_admin_leads__id__voucher_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 285,
+      "source_line": 295,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4284,7 +4284,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/reserve",
       "operation_id": "reserve_api_v1_admin_leads__id__voucher_reserve_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 291,
+      "source_line": 301,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4346,7 +4346,7 @@
       "path": "/api/v1/admin/leads/{id}/voucher/{action}",
       "operation_id": "action_api_v1_admin_leads__id__voucher__action__post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 358,
+      "source_line": 368,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -4854,7 +4854,7 @@
       "path": "/api/v1/admin/locations",
       "operation_id": "locations_api_v1_admin_locations_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 105,
+      "source_line": 118,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -7593,7 +7593,7 @@
       "path": "/api/v1/admin/plans",
       "operation_id": "create_plan_api_v1_admin_plans_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 131,
+      "source_line": 185,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -7618,6 +7618,57 @@
       },
       "declared_responses": {
         "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "response_model_present": false,
+      "in_openapi": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/plans/reorder",
+      "operation_id": "reorder_plans_api_v1_admin_plans_reorder_post",
+      "source": "src/pagefpt/modules/catalog/routes.py",
+      "source_line": 144,
+      "authorization": {
+        "caller": "admin",
+        "checks": [
+          {
+            "permission": "catalog.write",
+            "mfa": false
+          }
+        ],
+        "resource_kind": null,
+        "scope_note": "DB scope/assignment/global checks may further restrict; UI checks are not authorization."
+      },
+      "parameters": [],
+      "request_body": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PlanReorderInput"
+            }
+          }
+        },
+        "required": true
+      },
+      "declared_responses": {
+        "200": {
           "description": "Successful Response",
           "content": {
             "application/json": {
@@ -7903,7 +7954,7 @@
       "path": "/api/v1/admin/prices",
       "operation_id": "create_price_api_v1_admin_prices_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 188,
+      "source_line": 242,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -9457,7 +9508,7 @@
       "path": "/api/v1/admin/regions",
       "operation_id": "create_region_api_v1_admin_regions_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 136,
+      "source_line": 190,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -10479,7 +10530,7 @@
       "path": "/api/v1/admin/vouchers/links/{slug}/qr",
       "operation_id": "link_qr_api_v1_admin_vouchers_links__slug__qr_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 158,
+      "source_line": 161,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -11065,7 +11116,7 @@
       "path": "/api/v1/admin/{kind}/{id}/publish",
       "operation_id": "publish_api_v1_admin__kind___id__publish_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 141,
+      "source_line": 195,
       "authorization": {
         "caller": "admin",
         "checks": [
@@ -11561,7 +11612,7 @@
       "path": "/api/v1/catalog",
       "operation_id": "catalog_api_v1_catalog_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 43,
+      "source_line": 48,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12375,7 +12426,7 @@
       "path": "/api/v1/quotes",
       "operation_id": "quote_api_v1_quotes_post",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 197,
+      "source_line": 251,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12469,7 +12520,7 @@
       "path": "/api/v1/regions",
       "operation_id": "regions_api_v1_regions_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 126,
+      "source_line": 139,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12496,7 +12547,7 @@
       "path": "/api/v1/regions/hierarchy",
       "operation_id": "regions_hierarchy_api_v1_regions_hierarchy_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 56,
+      "source_line": 69,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12552,7 +12603,7 @@
       "path": "/api/v1/regions/{id}/wards",
       "operation_id": "wards_api_v1_regions__id__wards_get",
       "source": "src/pagefpt/modules/catalog/routes.py",
-      "source_line": 87,
+      "source_line": 100,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12891,7 +12942,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "clear_api_v1_vouchers_context_delete",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 238,
+      "source_line": 248,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12918,7 +12969,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "context_api_v1_vouchers_context_get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 232,
+      "source_line": 242,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -12973,7 +13024,7 @@
       "path": "/api/v1/vouchers/context",
       "operation_id": "save_context_api_v1_vouchers_context_post",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 245,
+      "source_line": 255,
       "authorization": {
         "caller": "public",
         "checks": [],
@@ -13080,7 +13131,7 @@
       "path": "/chinh-sach-bao-mat",
       "operation_id": "privacy_policy_chinh_sach_bao_mat_get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 85,
+      "source_line": 93,
       "authorization": {
         "caller": "public_html",
         "permission": null,
@@ -13108,7 +13159,7 @@
       "path": "/do-toc-do",
       "operation_id": "speedtest_do_toc_do_get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 99,
+      "source_line": 107,
       "authorization": {
         "caller": "server_guarded_admin_html",
         "permission": null,
@@ -13248,7 +13299,7 @@
       "path": "/khuyen-mai",
       "operation_id": "landing_page_khuyen_mai_get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 63,
+      "source_line": 71,
       "authorization": {
         "caller": "public_html",
         "permission": null,
@@ -13356,7 +13407,7 @@
       "path": "/s/{slug}",
       "operation_id": "short_link_s__slug__get",
       "source": "src/pagefpt/modules/vouchers/routes.py",
-      "source_line": 185,
+      "source_line": 188,
       "authorization": {
         "caller": "public_html",
         "permission": null,
@@ -13402,7 +13453,7 @@
       "path": "/san-pham/{slug}",
       "operation_id": "product_detail_san_pham__slug__get",
       "source": "src/pagefpt/web/client_routes.py",
-      "source_line": 43,
+      "source_line": 51,
       "authorization": {
         "caller": "public_html",
         "permission": null,
@@ -18601,6 +18652,13 @@
           "maxLength": 200,
           "title": "Image Alt",
           "default": ""
+        },
+        "sort_order": {
+          "type": "integer",
+          "maximum": 9999.0,
+          "minimum": 0.0,
+          "title": "Sort Order",
+          "default": 0
         }
       },
       "additionalProperties": false,
@@ -18680,6 +18738,26 @@
         "plan_id"
       ],
       "title": "PlanPresentation"
+    },
+    "PlanReorderInput": {
+      "properties": {
+        "plan_ids": {
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": "array",
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Plan Ids"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "plan_ids"
+      ],
+      "title": "PlanReorderInput"
     },
     "PreferencesInput": {
       "properties": {
@@ -20699,6 +20777,18 @@
     },
     "pagefpt__modules__vouchers__schemas__LinkInput": {
       "properties": {
+        "preview_image_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1500
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Preview Image Url"
+        },
         "title": {
           "type": "string",
           "maxLength": 160,

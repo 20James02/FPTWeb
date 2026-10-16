@@ -1,6 +1,6 @@
 # Vận hành Trung tâm đo lường
 
-Ngày cập nhật: 15/10/2026. Đường dẫn: `/admin/measurement`.
+Ngày cập nhật: 16/10/2026. Đường dẫn: `/admin/measurement`.
 
 ## Điều gì thiết lập được từ Admin
 
@@ -46,6 +46,7 @@ Google Ads có thao tác **xem trước → áp dụng** cho `campaign.final_url
 
 - Form chỉ là chuyển đổi khi server đã lưu và cấp receipt. Retry cùng idempotency key không tạo thêm occurrence.
 - Mỗi lead/stage có một occurrence; mỗi occurrence/kết nối có một delivery, lease token chặn worker trả kết quả muộn. Không gửi trực tiếp tới nền tảng trong request gửi form.
+- Gateway chuyển đổi cũ vẫn dùng cho kết quả chưa có mục tiêu quản lý mới, nhưng cũng yêu cầu quyền quảng cáo tách riêng. Khi đã khai báo mục tiêu cho một kết quả, quyền gửi của kết quả đó chuyển sang các đích mới; khai báo đầy đủ các đích cần dùng vì không thể biết một gateway tùy ý đang chuyển tiếp tới tài khoản nào.
 - GA4 `generate_lead` đi theo đường receipt gốc. Không cho thêm bản sao Measurement Protocol của cùng lead. CRM qua `server` hoặc GA4 `ga4_import` có outbox; việc import từ GA4 sang Ads vẫn phải cấu hình trong Google.
 - Phiên đã đồng ý được giữ qua chuyển trang, xác minh lại với server khi khôi phục; thu hồi ở tab khác hạn chế ngay, tăng quyền vẫn cần server xác nhận. Cấu hình theo phiên không được CDN cache; receipt trả metadata đích công khai của snapshot đã lưu để chuyển đổi trình duyệt và máy chủ dùng cùng nguồn.
 - Snapshot giữ phiên bản cấu hình, nguồn và mã nhận diện tại lúc nhận lead. Khách vào chiến dịch khác sau đó không thay mã nhận diện cho lần chuyển đổi cũ. Rút đồng ý/tắt kết nối vẫn được kiểm tra lại trước khi gửi.

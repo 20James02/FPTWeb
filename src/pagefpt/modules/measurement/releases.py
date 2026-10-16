@@ -127,5 +127,8 @@ def validate_config(payload, bundle):
             primary.add(key)
     return {
         "valid": True,
-        "warnings": ["Cấu hình website không tự thay đổi mục tiêu trong tài khoản quảng cáo."],
+        "warnings": [
+            "Cấu hình website không tự thay đổi mục tiêu trong tài khoản quảng cáo.",
+            "Khi có mục tiêu được quản lý cho một kết quả, gateway chuyển đổi cũ nhường quyền gửi kết quả đó; hãy khai báo đầy đủ các đích cần dùng.",
+        ],
     }

@@ -56,6 +56,7 @@
   window.addEventListener('pagefpt:lead-accepted',e=>{
     const receipt=e.detail?.measurement;
     if(receipt&&typeof receipt==='object'){active=safe({...active,...receipt.policy,measurement_id:receipt.measurement_id,targets:receipt.targets,versions:receipt.versions});runtime.config=active;window.dispatchEvent(new CustomEvent('pagefpt-measurement-config',{detail:active}));}
+    window.PageFPTGoogle?.acceptReceipt?.(e.detail||{});
     track('lead',e.detail);
   });
 

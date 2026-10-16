@@ -459,3 +459,19 @@ async def test_connection_source_identity_cannot_change_while_first_sync_fetches
             {"entity_id": job["id"]},
         )
     )["rows"] == 1
+
+
+async def test_sync_jobs_list_is_readable_before_and_after_first_job(admin):
+    before = await admin.get("/api/v1/admin/measurement/sync-jobs")
+    assert before.status_code == 200, before.text
+    assert before.json() == {"items": []}
+    c = (await admin.post("/api/v1/admin/measurement/connections", json=connection())).json()
+    queued = await admin.post(
+        "/api/v1/admin/measurement/sync-jobs",
+        json={"connection_id": c["id"], "start": "2026-10-15", "end": "2026-10-15"},
+    )
+    assert queued.status_code == 202, queued.text
+    after = await admin.get("/api/v1/admin/measurement/sync-jobs")
+    assert after.status_code == 200, after.text
+    assert len(after.json()["items"]) == 1
+    assert after.json()["items"][0]["connection_id"] == c["id"]

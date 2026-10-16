@@ -8,7 +8,13 @@ import pytest
 async def test_conversion_requires_consent_and_disabled_is_not_sent(admin, gateway):
     token = (
         await admin.post(
-            "/api/v1/sessions", json={"analytics": True, "marketing": True, "consent_version": "v1"}
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
         )
     ).json()["session_token"]
     await admin.post(
@@ -56,7 +62,13 @@ async def test_conversion_click_id_is_private_until_consented_delivery(admin, ga
 
     session = (
         await admin.post(
-            "/api/v1/sessions", json={"analytics": True, "marketing": True, "consent_version": "v1"}
+            "/api/v1/sessions",
+            json={
+                "analytics": True,
+                "marketing": True,
+                "advertising": True,
+                "consent_version": "v3",
+            },
         )
     ).json()["session_token"]
     await admin.post(

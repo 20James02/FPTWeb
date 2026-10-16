@@ -244,3 +244,4 @@ assert.equal(basic.events().length, basicCount);
 console.log(
   "GA4: advanced denied/granted/withdrawn, basic fallback, preview, single initialization, URL/PII filtering, attribution, lead deduplication passed.",
 );
+const committed=harness(false,'basic');committed.grant();committed.window.PageFPTGoogle.acceptReceipt({event_id:receipt,plan_id:plan});committed.fire('pagefpt:lead-accepted',{event_id:receipt,plan_id:plan});assert.equal(committed.events().filter(x=>x[1]==='generate_lead').length,1,'Receipt bootstrap and normal DOM listener share one deduplication path');

@@ -40,3 +40,86 @@ async def test_draft_link_reaches_target_without_setting_a_voucher_cookie(admin)
         json={"slug": "acquisition-draft", "target": "/", "active": False},
     )
     assert (await admin.get("/s/acquisition-draft", follow_redirects=False)).status_code == 404
+
+
+async def test_link_preview_image_is_independent_editable_and_safe(admin, gateway):
+    from html.parser import HTMLParser
+
+    class Tags(HTMLParser):
+        def __init__(self, body):
+            super().__init__()
+            self.tags = {}
+            self.feed(body)
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "meta":
+                values = dict(attrs)
+                self.tags[values.get("property") or values.get("name")] = values.get("content")
+
+    voucher = await create(admin, name='Ưu đãi "Camera" <hấp dẫn>')
+    endpoint = "/api/v1/admin/vouchers/" + voucher["id"] + "/links"
+    image = "https://media.example.test/camera.webp"
+    saved = await admin.post(endpoint, json={"slug": "preview-image", "preview_image_url": image})
+    assert saved.status_code == 201, saved.text
+    listing = (await admin.get("/api/v1/admin/vouchers")).json()["links"]
+    assert next(x for x in listing if x["slug"] == "preview-image")["preview_image_url"] == image
+    for ua in ("facebookexternalhit/1.1", "TelegramBot", "ZaloPreview/1.0", "Twitterbot"):
+        response = await admin.get("/s/preview-image", headers={"User-Agent": ua})
+        assert response.status_code == 200, response.text
+        tags = Tags(response.text).tags
+        assert tags["og:image"] == tags["twitter:image"] == image
+        assert tags["og:title"] == voucher["payload"]["name"]
+        assert tags["og:url"].endswith("/s/preview-image")
+        assert "Set-Cookie" not in response.headers
+        assert "user-agent" in response.headers["vary"].lower()
+        assert '"Camera" <hấp dẫn>' not in response.text
+    # Social fetches never count as customer clicks or consume offers.
+    import psycopg
+
+    with psycopg.connect(gateway.dsn) as db:
+        assert (
+            db.execute("SELECT coalesce(sum(raw_clicks-bot_clicks),0) FROM private.link_daily").fetchone()[0] == 0
+        )
+    opened = await admin.get("/s/preview-image", follow_redirects=False)
+    assert opened.status_code == 302 and opened.headers["location"] == "/?pf_offer=preview-image"
+    # Older clients that omit the optional image must not erase a saved image.
+    await admin.post(endpoint, json={"slug": "preview-image", "channel": "facebook"})
+    response = await admin.get("/s/preview-image", headers={"User-Agent": "facebookexternalhit"})
+    assert Tags(response.text).tags["og:image"] == image
+    await admin.post(endpoint, json={"slug": "preview-image", "preview_image_url": ""})
+    response = await admin.get("/s/preview-image", headers={"User-Agent": "facebookexternalhit"})
+    assert Tags(response.text).tags["og:image"] != image
+    for bad in (
+        "javascript:alert(1)",
+        "//evil.test/image.png",
+        "https://user:password@example.test/a.png",
+        "/admin/account",
+        "https://example.test/a\n.png",
+    ):
+        result = await admin.post(
+            endpoint, json={"slug": "preview-image", "preview_image_url": bad}
+        )
+        assert result.status_code == 422, result.text
+    await admin.post(endpoint, json={"slug": "preview-image", "active": False})
+    assert (
+        await admin.get("/s/preview-image", headers={"User-Agent": "TelegramBot"})
+    ).status_code == 404
+
+
+async def test_preview_does_not_expose_unpublished_voucher_content(admin):
+    voucher = (
+        await admin.post(
+            "/api/v1/admin/vouchers",
+            json=campaign_body(name="DRAFT SECRET TITLE", terms="DRAFT SECRET TERMS"),
+        )
+    ).json()
+    image = "/static/images/device-camera-3d.webp"
+    result = await admin.post(
+        "/api/v1/admin/vouchers/" + voucher["id"] + "/links",
+        json={"slug": "draft-preview", "preview_image_url": image},
+    )
+    assert result.status_code == 201, result.text
+    response = await admin.get("/s/draft-preview", headers={"User-Agent": "TelegramBot"})
+    assert response.status_code == 200
+    assert "DRAFT SECRET" not in response.text
+    assert "http://test/static/images/device-camera-3d.webp" in response.text

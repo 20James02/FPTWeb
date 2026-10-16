@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const origin=process.env.PAGEFPT_QA_ORIGIN||'http://127.0.0.1:8098';
 if(!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))throw Error('Loopback fixture required');
 (async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});try{
- const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[],httpErrors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/api/v1/admin/measurement/')&&r.status()>=400)httpErrors.push({url:new URL(r.url()).pathname,status:r.status()});});
  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
  const login=await page.request.post(origin+'/api/v1/auth/session',{data:{email:'qa-admin@example.test',password:'qa-only-password',otp:'123456'},headers:{Origin:origin}});assert.equal(login.status(),200);
  await page.goto(origin+'/admin/measurement');await page.locator('#ms-connections .ms-card').first().waitFor();
@@ -15,5 +15,5 @@ if(!/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))throw Error('Loopback
  await page.screenshot({path:'.local/qa/admin-measurement-20261015/admin-report-mobile.png',fullPage:true});
  await page.click('[data-ms-tab=connections]');await page.locator('#ms-connections .ms-card').filter({hasText:'QA Ads'}).getByRole('checkbox').check();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Dừng các kết nối đã chọn',exact:true}).click();await page.locator('#ms-connections .ms-card').filter({hasText:'QA Ads'}).getByText('Đã tắt',{exact:true}).waitFor();
  for(const width of [360,390,430,1440]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.click('[data-ms-tab=connections]');await page.locator('#ms-connections .ms-card').filter({hasText:'QA Measurement'}).getByRole('button',{name:'Thiết lập',exact:true}).click();assert.ok(await page.evaluate(()=>{const d=document.getElementById('ms-connection-dialog');return d.scrollWidth<=d.clientWidth+1;}));await page.locator('#ms-connection-dialog [data-ms-close]').click();}
- assert.deepEqual(errors,[]);console.log('Measurement browser passed: connection/config/simulation/publish/restore, costs/report, bulk disable and four viewport widths.');
+ assert.deepEqual(httpErrors,[]);assert.deepEqual(errors,[]);console.log('Measurement browser passed: connection/config/simulation/publish/restore, costs/report, bulk disable and four viewport widths.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});

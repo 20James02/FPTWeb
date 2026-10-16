@@ -94,10 +94,11 @@ test("withdrawal restricts locally even when the consent API fails", async () =>
 test("a late session acknowledgement cannot restore consent after withdrawal", async () => {
   const h = harness({ analytics: true, marketing: true });
   vm.runInContext(
-    "var reply; fetch = async path => path === '/api/v1/sessions' ? new Promise(resolve => reply=resolve) : ({ok:false})",
+    "let reply; fetch = async path => path === '/api/v1/sessions' ? new Promise(resolve => reply=resolve) : ({ok:false})",
     h.ctx,
   );
   const initializing = vm.runInContext("initClientSession()", h.ctx);
+  for(let n=0;n<5 && vm.runInContext("typeof reply",h.ctx)!=="function";n++)await Promise.resolve();
   const withdrawing = vm.runInContext(
     "setAnalyticsConsent(false,false)",
     h.ctx,
