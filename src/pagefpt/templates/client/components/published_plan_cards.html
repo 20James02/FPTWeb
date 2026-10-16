@@ -6,7 +6,7 @@
     <div class="card-face card-face-front"><div class="card-light-streak" aria-hidden="true"></div>
       {% if labels.get('badge', 'Gói đang cung cấp') %}<span class="plan-tag-badge badge-basic">{{ labels.get('badge', 'Gói đang cung cấp') }}</span>{% endif %}
       <div class="plan-card-image-wrap {{ 'plan-card-image-placeholder' if not plan.image_url }}">
-      {% if plan.image_url %}<img class="plan-card-image" src="{{ plan.image_url }}" alt="{{ plan.image_alt or plan.name }}" width="{{ plan.image_width }}" height="{{ plan.image_height }}" loading="lazy" decoding="async">{% else %}<img class="plan-card-image" src="/static/images/device-internet-3d.webp" alt="Minh họa thiết bị Internet" width="800" height="800" loading="lazy" decoding="async">{% endif %}
+      {% if plan.image_url %}<img class="plan-card-image" src="{{ plan.image_url }}" alt="{{ plan.image_alt or plan.name }}" width="{{ plan.image_width }}" height="{{ plan.image_height }}" sizes="(max-width: 768px) 310px, 340px" loading="lazy" decoding="async">{% else %}<img class="plan-card-image" src="/static/images/device-internet-3d.webp" alt="Minh họa thiết bị Internet" width="800" height="800" sizes="(max-width: 768px) 310px, 340px" loading="lazy" decoding="async">{% endif %}
       </div>
       <div class="plan-card-body">
         <div class="plan-header"><h3 class="plan-name" title="{{plan.name}}">{{ plan.name }}</h3>
@@ -14,7 +14,7 @@
         </div>
         <div class="plan-price-box">
           <div class="plan-price-row">
-            <button type="button" class="plan-price-info" data-plan-id="{{plan.id}}" onclick="openPublishedPlanDetails(this)" aria-label="Xem giá và điều kiện của {{plan.name}}"><span class="plan-price-amount" data-quote-plan="{{plan.id}}" aria-live="polite">Cần tư vấn</span><span class="plan-info-icon" aria-hidden="true">i</span></button>
+            <button type="button" class="plan-price-info" data-plan-id="{{plan.id}}" onclick="openPublishedPlanDetails(this)" title="Xem chi tiết điều kiện {{plan.name}}"><span class="plan-price-amount" data-quote-plan="{{plan.id}}" aria-live="polite">Cần tư vấn</span><span class="plan-info-icon" aria-hidden="true">i</span><span class="sr-only"> - Xem chi tiết {{plan.name}}</span></button>
             <label class="billing-choice"><span class="sr-only">Kỳ thanh toán của {{plan.name}}</span><select data-billing-months="{{plan.id}}" aria-label="Kỳ thanh toán của {{plan.name}}">{% set period=landing.billing_months if landing_card_mode|default(false) else 6 %}{% for n in [1,6,12] %}<option value="{{n}}" {{"selected" if n==period}}>{{"Hàng tháng" if n==1 else n|string+" tháng"}}</option>{% endfor %}</select></label>
           </div>
           <div class="plan-price-note sr-only" data-quote-note="{{plan.id}}">Chọn khu vực để xem giá.</div>

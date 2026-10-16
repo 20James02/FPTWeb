@@ -5,7 +5,7 @@
       <div class="quick-utilities-grid">
         
         <!-- Utility 1: Đăng ký lắp đặt online -->
-        <a href="javascript:void(0)" class="utility-item quick-utility-item" onclick="openBottomSheet('Đăng ký Online', '', null, 'internet')" data-aos="fade-up" data-aos-delay="50">
+        <button type="button" class="utility-item quick-utility-item" onclick="openBottomSheet('Đăng ký Online', '', null, 'internet')" data-aos="fade-up" data-aos-delay="50">
           <div class="utility-icon-box" style="background: rgba(242, 111, 33, 0.1); color: var(--color-primary);">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -18,7 +18,7 @@
             <span class="utility-title">Đăng ký</span>
             <span class="utility-subtitle">Để lại thông tin</span>
           </div>
-        </a>
+        </button>
 
         <!-- Utility 2: Tra cứu & Thanh toán cước -->
         <a href="#plans-section" class="utility-item quick-utility-item" data-aos="fade-up" data-aos-delay="100">
@@ -35,7 +35,7 @@
         </a>
 
         <!-- Utility 3: Trắc nghiệm tìm gói -->
-        <a href="javascript:void(0)" class="utility-item quick-utility-item" onclick="openQuizModal()" data-aos="fade-up" data-aos-delay="150">
+        <button type="button" class="utility-item quick-utility-item" onclick="openQuizModal()" data-aos="fade-up" data-aos-delay="150">
           <div class="utility-icon-box" style="background: rgba(168, 85, 247, 0.1); color: #A855F7;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -45,7 +45,7 @@
             <span class="utility-title">Chọn gói</span>
             <span class="utility-subtitle">3 câu hỏi nhanh</span>
           </div>
-        </a>
+        </button>
 
         <!-- Utility 4: {{ contact_phone_display }} -->
         <a href="tel:{{ contact_phone }}" class="utility-item quick-utility-item" data-aos="fade-up" data-aos-delay="200">

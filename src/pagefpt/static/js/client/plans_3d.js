@@ -220,7 +220,8 @@ function renderMultitaskState(triggerShine = true) {
   if (dotsContainer) {
     dotsContainer.innerHTML = '';
     for (let i = 0; i < count; i++) {
-      const dot = document.createElement('span');
+      const dot = document.createElement('button');
+      dot.type = 'button';
       dot.className = `plans-dot ${i === currentMultitaskIndex ? 'active' : ''}`;
       dot.setAttribute('aria-label', `Xem gói thứ ${i + 1}`);
       dot.onclick = () => goToPlanSlide(i);

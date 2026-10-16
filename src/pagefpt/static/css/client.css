@@ -539,7 +539,8 @@ img, svg {
 
 .segment-tab-btn.active {
   background: var(--bg-surface);
-  color: var(--color-primary);
+  color: #c2410c;
+  font-weight: var(--font-weight-bold);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1024,6 +1025,9 @@ img, svg {
   border-radius: 50%;
   background: var(--border-strong);
   cursor: pointer;
+  border: 0;
+  padding: 0;
+  outline: none;
   transition: all var(--duration-fast) ease;
 }
 
@@ -2981,6 +2985,11 @@ img, svg {
   border: 1px solid transparent;
   transition: all var(--duration-fast) ease;
   min-height: 54px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .utility-item:hover,
@@ -3889,6 +3898,9 @@ img, svg {
   font-size: 0.74rem;
   font-weight: 600;
   transition: all 0.2s ease;
+  min-height: 36px;
+  min-width: 36px;
+  box-sizing: border-box;
 }
 
 .btn-runline-action:hover {
@@ -6054,6 +6066,10 @@ img, svg {
     height: 7px !important;
     border-radius: 50% !important;
     background: rgba(148, 163, 184, 0.4) !important;
+    border: 0 !important;
+    padding: 0 !important;
+    outline: none !important;
+    cursor: pointer !important;
     transition: all 0.3s ease !important;
   }
 

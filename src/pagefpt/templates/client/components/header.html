@@ -47,7 +47,7 @@
     <!-- Header Actions (Right) -->
     <div class="header-actions">
       <!-- Region Selector Trigger -->
-      <button type="button" class="region-pill" id="header-region-btn" onclick="const el = document.getElementById('region-selector-bar') || document.getElementById('cascading-region-box'); if(el) el.scrollIntoView({behavior: 'smooth'}); else { const region = document.getElementById('lp-region'); if(region) { region.scrollIntoView({behavior: 'smooth'}); region.focus(); } else window.location.href = '/#cascading-region-box'; }" aria-label="Chọn khu vực">
+      <button type="button" class="region-pill" id="header-region-btn" onclick="const el = document.getElementById('region-selector-bar') || document.getElementById('cascading-region-box'); if(el) el.scrollIntoView({behavior: 'smooth'}); else { const region = document.getElementById('lp-region'); if(region) { region.scrollIntoView({behavior: 'smooth'}); region.focus(); } else window.location.href = '/#cascading-region-box'; }">
         <span class="region-dot"></span>
         <span id="current-region-label">Chọn khu vực</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>

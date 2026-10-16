@@ -11,21 +11,38 @@
   <meta name="theme-color" content="#F26F21">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%2232%22%20height=%2232%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23F26F21%22/><text x=%2216%22 y=%2221%22 font-size=%2214%22 font-family=%22sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22>FPT</text></svg>">
 
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap">
+
+  {% if promo_slides and promo_slides[0].image_url %}
+  <link rel="preload" as="image" href="{{ promo_slides[0].image_url }}" fetchpriority="high">
+  {% endif %}
+
   <!-- Core Design System & Stylesheets -->
   <link rel="stylesheet" href="/static/css/variables.css">
   <link rel="stylesheet" href="/static/css/animations.css">
   <link rel="stylesheet" href="/static/css/client.css">
-
-  <!-- Modern UI Libraries CSS (Lenis Smooth Scroll & AOS Reveal) -->
-  <link rel="stylesheet" href="/static/css/vendor/lenis.css">
-  <link rel="stylesheet" href="/static/css/vendor/aos.css">
 
   <link rel="stylesheet" href="/static/css/client-mobile-home.css">
   <link rel="stylesheet" href="/static/css/client-accessories.css">
   {% include "client/components/google_analytics.html" %}
   {% block extra_head %}{% endblock %}
   <link rel="stylesheet" href="/static/css/client-plan-reference.css">
-<link rel="stylesheet" href="/static/css/vouchers.css?v=20261015b"><link rel="stylesheet" href="/static/css/voucher-acquisition.css"></head>
+
+  <!-- Non-critical Stylesheets (Deferred to prevent render blocking on mobile) -->
+  <link rel="stylesheet" href="/static/css/vendor/lenis.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/static/css/vendor/aos.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/static/css/vouchers.css?v=20261015b" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/static/css/voucher-acquisition.css" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="/static/css/vendor/lenis.css">
+    <link rel="stylesheet" href="/static/css/vendor/aos.css">
+    <link rel="stylesheet" href="/static/css/vouchers.css?v=20261015b">
+    <link rel="stylesheet" href="/static/css/voucher-acquisition.css">
+  </noscript>
+</head>
 <body>
   {% set contact_phone = display_settings.contact_phone | default('0868247625') %}
   {% set contact_phone_display = display_settings.contact_phone_display | default('0868.247.625') %}
