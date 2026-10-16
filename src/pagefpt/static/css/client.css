@@ -1002,7 +1002,10 @@ img, svg {
   align-items: center;
   justify-content: center;
   gap: var(--space-4);
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-6);
+  position: relative;
+  z-index: 5;
 }
 
 .plans-slider-dots {

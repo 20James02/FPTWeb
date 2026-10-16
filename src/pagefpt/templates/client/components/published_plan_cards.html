@@ -23,7 +23,7 @@
         <div class="plan-speed-panel" data-speed-tier="{{ 'ultra' if is_ultra else 'standard' }}">
           <div class="plan-speed-data">
             <div class="plan-speed-label-row">
-              <p class="plan-speed-title">{{labels.get('speed', 'Tốc độ')}} (Download/Upload)</p>
+              <p class="plan-speed-title">{{labels.get('speed', 'Tốc độ')}}</p>
               {% if is_ultra %}
               <span class="speed-tier-badge speed-tier--ultra" title="Băng thông đột phá 1 Gbps">⚡ 1 Gbps Turbo</span>
               {% elif plan.speed_mbps and plan.speed_mbps >= 300 %}

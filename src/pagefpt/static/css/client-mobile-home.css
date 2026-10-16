@@ -78,9 +78,7 @@
   border-radius: 6px;
 }
 .segment-tabs-wrap {
-  position: sticky;
-  top: calc(var(--client-header-height, 76px) + 8px);
-  z-index: 20;
+  position: static;
   margin: 20px auto;
   max-width: 640px;
 }
@@ -427,7 +425,7 @@
     margin-bottom: 20px !important;
   }
   .segment-tabs-wrap {
-    top: calc(var(--client-header-height, 72px) + 6px);
+    position: static;
     padding: 0 !important;
     max-width: 100%;
   }
