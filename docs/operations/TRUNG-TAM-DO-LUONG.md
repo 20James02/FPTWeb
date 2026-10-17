@@ -130,4 +130,16 @@ Trước khi chạy thật: migrations mới đã áp dụng, origin/callback Go
 
 Vercel **Production** của `fpt-vungtau.com` phải có `PAGEFPT_ENVIRONMENT=production`. Tên môi trường trong FastAPI quyết định chọn cấu hình đo lường, không phải nhãn Production trên Vercel. Không công bố ở production rồi chạy app bằng staging.
 
-Sau phát hành, kiểm tra `/api/v1/measurement/config`: `measurement_id` phải là ID đã chọn (hiện tại `G-D0J0XLJ891`) và `versions` phải có bản công bố. HTTP200 với ID rỗng/versions rỗng chưa chứng minh tracking hoạt động. Việc nạp đúng mã trên website vẫn cần được kiểm tra riêng với dữ liệu nhận ở GA4/Ads/Meta.
+Sau phát hành, kiểm tra `/api/v1/measurement/config`: `measurement_id` phải là ID đã chọn trong bản công bố và `versions` phải có bản công bố. HTTP200 với ID rỗng/versions rỗng chưa chứng minh tracking hoạt động. Việc nạp đúng mã trên website vẫn cần được kiểm tra riêng với dữ liệu nhận ở GA4/Ads/Meta.
+
+## Google Tag Manager của website
+
+Container `GTM-55F7ZTBZ` được nạp một lần trong head của trang khách hàng và cả hai loại landing đã công bố; iframe noscript nằm ngay sau thẻ body. Admin và bản xem trước không nạp container. Google Consent Mode mặc định từ chối bốn mục trước khi GTM chạy; banner hiện có cập nhật lựa chọn trong cùng `dataLayer`.
+
+GA4 hiện vẫn do cấu hình đã công bố trong Admin quản lý. Khi kiểm tra ngày 17/10/2026, phiên bản GTM công khai có danh sách tags rỗng. Gắn GTM không tự chuyển quyền đo GA4 sang GTM, không tự tạo thẻ Ads/Meta, và không chứng minh nền tảng đã nhận chuyển đổi.
+
+Không công bố thêm thẻ GA4 tự gửi page_view hoặc generate_lead đến cùng Measurement ID khi đường đo có sẵn vẫn bật. Muốn chuyển sang GTM cần kế hoạch chuyển nguồn và đối chiếu từng sự kiện, đặc biệt form chỉ được tính sau khi server lưu thành công. Khi thêm thẻ trong GTM, dùng Consent Initialization/template với `setDefaultConsentState` và `updateConsentState` theo hướng dẫn Google; các thẻ bên thứ ba cần kiểm tra đồng ý tương ứng, không chỉ dựa vào built-in consent của Google. Không lấy số điện thoại, email, địa chỉ hoặc toàn bộ query URL đưa vào biến/thẻ quảng cáo.
+
+Kiểm tra bằng Tag Assistant → Preview với URL trang khách hàng: container đúng ID, GA4 đúng Measurement ID, mỗi lần mở trang chỉ một page_view. Thử từ chối, đồng ý, tải lại và thu hồi; kiểm tra Admin/preview không có yêu cầu gtm.js. Iframe noscript là đoạn dự phòng chuẩn Google khi JavaScript tắt; nó không thể đọc lựa chọn đang lưu trong localStorage, vì vậy không cấu hình thẻ dự phòng vượt lựa chọn dữ liệu của khách.
+
+Tham khảo: [cài web container](https://support.google.com/tagmanager/answer/14842164), [Google Consent Mode](https://developers.google.com/tag-platform/security/guides/consent).

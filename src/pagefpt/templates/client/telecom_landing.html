@@ -1,10 +1,12 @@
 {% from 'client/components/landing_icons.html' import icon %}
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{% include "client/components/google_tag_manager_head.html" %}
 <title>{{page.title}}</title><meta name="description" content="{{page.description}}"><meta name="robots" content="{{'noindex, nofollow' if preview else 'index, follow'}}"><link rel="canonical" href="{{canonical}}">
 {% include "client/components/voucher_share_metadata.html" %}
 <link rel="stylesheet" href="/static/css/variables.css"><link rel="stylesheet" href="/static/css/client.css"><link rel="stylesheet" href="/static/css/client-accessories.css"><link rel="stylesheet" href="/static/css/client-services.css"><link rel="stylesheet" href="/static/css/client-plan-reference.css"><link rel="stylesheet" href="/static/css/telecom-landing.css">
 {% include "client/components/google_analytics.html" %}
 <link rel="stylesheet" href="/static/css/vouchers.css?v=20261015b"><link rel="stylesheet" href="/static/css/voucher-acquisition.css"></head><body class="telecom-landing" data-landing-preview="{{'true' if preview else 'false'}}" data-theme="{{landing.theme_preset|default('fpt_standard')}}" data-radius="{{landing.theme_radius|default('rounded')}}" data-plans-layout="{{landing.plans_layout|default('grid')}}" data-hero-layout="{{landing.hero_layout|default('split')}}">
+{% include "client/components/google_tag_manager_body.html" %}
 {% set contact_phone=landing.contact_phone or display_settings.contact_phone %}{% set contact_phone_display=(contact_phone[:4] ~ "." ~ contact_phone[4:7] ~ "." ~ contact_phone[7:]) if landing.contact_phone and contact_phone|length==10 else (contact_phone if landing.contact_phone else display_settings.contact_phone_display) %}
 {% set zalo_url = landing.zalo_url or ('https://zalo.me/' ~ contact_phone) %}
 <a class="skip-link" href="#lp-main">Đến nội dung chính</a>
