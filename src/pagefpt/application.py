@@ -96,6 +96,24 @@ def create_app(settings: Settings | None = None, gateway: Database | None = None
     if static_path.exists():
         app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
+    from starlette.responses import FileResponse
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def favicon():
+        ico_file = static_path / "images" / "favicon.ico"
+        return FileResponse(ico_file, media_type="image/x-icon", headers={"Cache-Control": "public, max-age=86400"})
+
+    @app.get("/apple-touch-icon.png", include_in_schema=False)
+    @app.get("/apple-touch-icon-precomposed.png", include_in_schema=False)
+    async def apple_touch_icon():
+        touch_file = static_path / "images" / "apple-touch-icon.png"
+        return FileResponse(touch_file, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+    @app.get("/site.webmanifest", include_in_schema=False)
+    async def site_manifest():
+        manifest_file = static_path / "site.webmanifest"
+        return FileResponse(manifest_file, media_type="application/manifest+json", headers={"Cache-Control": "public, max-age=86400"})
+
     # Public pages use published catalog snapshots; preview banners stay environment-gated.
     app.include_router(web_client_router)
     app.include_router(web_admin_router)

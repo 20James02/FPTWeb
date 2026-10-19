@@ -921,3 +921,44 @@ async def test_no_fake_fixtures_in_rendered_ui(admin):
         text = res.text
         for fixture in forbidden_fake_fixtures:
             assert fixture not in text, f"Found fake fixture '{fixture}' in rendered page '{path}'"
+
+
+@pytest.mark.asyncio
+async def test_favicon_endpoints_and_markup(client, admin):
+    fav = await client.get("/favicon.ico")
+    assert fav.status_code == 200
+    assert "image/x-icon" in fav.headers["content-type"]
+    assert len(fav.content) > 0
+
+    touch = await client.get("/apple-touch-icon.png")
+    assert touch.status_code == 200
+    assert "image/png" in touch.headers["content-type"]
+
+    manifest = await client.get("/site.webmanifest")
+    assert manifest.status_code == 200
+    assert "application/manifest+json" in manifest.headers["content-type"]
+    assert "PageFPT" in manifest.json()["name"]
+
+    svg = await client.get("/static/images/favicon.svg")
+    assert svg.status_code == 200
+    fav32 = await client.get("/static/images/favicon-32x32.png")
+    assert fav32.status_code == 200
+    fav16 = await client.get("/static/images/favicon-16x16.png")
+    assert fav16.status_code == 200
+
+    client_pages = ["/", "/san-pham/internet-gia-dinh", "/do-toc-do", "/chinh-sach-bao-mat", "/khuyen-mai"]
+    for path in client_pages:
+        res = await client.get(path)
+        assert res.status_code == 200
+        assert 'href="/favicon.ico"' in res.text
+        assert 'href="/static/images/favicon-32x32.png"' in res.text
+        assert 'href="/static/images/apple-touch-icon.png"' in res.text
+
+    login_res = await client.get("/admin/login")
+    assert login_res.status_code == 200
+    assert 'href="/favicon.ico"' in login_res.text
+    assert "fpt-brand-logo.png" in login_res.text
+
+    admin_dash = await admin.get("/admin/dashboard")
+    assert admin_dash.status_code == 200
+    assert 'href="/favicon.ico"' in admin_dash.text
