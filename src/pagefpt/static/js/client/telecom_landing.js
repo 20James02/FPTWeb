@@ -73,6 +73,9 @@
 (() => {
   const track = document.querySelector(".lp-plan-grid"),
     cards = [...(track?.querySelectorAll(".lp-plan-card") || [])];
+  if (track && track.dataset.columns) {
+    track.style.setProperty("--lp-columns", track.dataset.columns);
+  }
   const position = document.getElementById("lp-card-position"),
     previous = document.querySelector('[data-lp-slide="-1"]'),
     next = document.querySelector('[data-lp-slide="1"]');

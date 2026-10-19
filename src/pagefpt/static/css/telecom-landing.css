@@ -17,7 +17,13 @@
 .telecom-landing .lp-wrap{width:min(1360px,100% - 32px)}
 .telecom-landing .lp-section-heading h2{font-size:clamp(21px,2.3vw,30px);line-height:1.25;max-width:850px;margin-inline:auto;font-weight:800}
 .telecom-landing .lp-section-heading p{font-size:14px;max-width:760px;margin:8px auto 0;color:#475569}
-.telecom-landing .lp-plan-grid{gap:20px;justify-content:center;align-items:stretch;padding-top:12px;grid-template-columns:repeat(var(--lp-columns),minmax(0,1fr))}
+.telecom-landing .lp-plan-grid{gap:20px;justify-content:center;align-items:stretch;padding-top:12px;grid-template-columns:repeat(var(--lp-columns, 3),minmax(0,1fr))}
+.telecom-landing .lp-plan-grid[data-columns="1"],.lp-plan-grid[data-columns="1"]{--lp-columns:1}
+.telecom-landing .lp-plan-grid[data-columns="2"],.lp-plan-grid[data-columns="2"]{--lp-columns:2}
+.telecom-landing .lp-plan-grid[data-columns="3"],.lp-plan-grid[data-columns="3"]{--lp-columns:3}
+.telecom-landing .lp-plan-grid[data-columns="4"],.lp-plan-grid[data-columns="4"]{--lp-columns:4}
+.telecom-landing .lp-plan-grid[data-columns="5"],.lp-plan-grid[data-columns="5"]{--lp-columns:5}
+.telecom-landing .lp-plan-grid[data-columns="6"],.lp-plan-grid[data-columns="6"]{--lp-columns:6}
 .telecom-landing .lp-plan-grid[data-plan-count="1"]{grid-template-columns:minmax(0,360px)}
 .telecom-landing .lp-plan-grid[data-plan-count="2"]{grid-template-columns:repeat(2,minmax(0,360px))}
 .telecom-landing .lp-plan-card{width:100%;max-width:none;flex:none;min-width:0;perspective:none;transition:none;opacity:1;transform:none;filter:none;border:0;background:transparent;box-shadow:none;overflow:visible;height:650px!important}

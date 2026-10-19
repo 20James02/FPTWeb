@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/static/css/admin-billing.css">
 
   {% block extra_head %}{% endblock %}
+  <script>(function(){try{const t=localStorage.getItem('pagefpt_admin_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(_){}})();</script>
 <style>.admin-bulk-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}.admin-bulk-toolbar button,.admin-sort-button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}.admin-sort-button{border:0;background:transparent;padding:0;text-align:inherit;font:inherit;font-weight:700}.bulk-row-check{padding:6px}.admin-bulk-toolbar [role=status]{width:100%}.date-input-wrapper{display:flex;align-items:center;gap:6px;position:relative;width:100%;min-width:0}.date-input-wrapper>input:not(.date-native-picker){flex:1;min-width:0;width:0}.date-picker-button{background:#fff;border:1px solid #cbd5e1;border-radius:8px;min-height:36px;min-width:36px;margin:4px}.date-native-picker{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}</style></head>
 <body class="admin-body">
   <!-- Mobile Sidebar Backdrop -->
@@ -41,7 +42,7 @@
       {% endif %}
     </div>
 
-        <nav class=sidebar-nav>
+    <nav class="sidebar-nav">
       <!-- 1. Tổng Quan Doanh Nghiệp -->
       {% if admin_actor.permits("report.read") %}
       <a href="/admin/dashboard" class="nav-link nav-link-root {{ 'active' if active_page == 'dashboard' }}">
@@ -293,29 +294,52 @@
   <script src="/static/js/admin/notifications.js"></script>
   <script src="/static/js/admin/charts.js"></script>
 
+  <script type="application/json" id="admin-actor-data">{"permissions": {{ admin_actor.memberships | default([]) | tojson }}, "aal": {{ admin_actor.aal | default('aal1') | tojson }}}</script>
   <script>
-  window.adminPermissions = {{ admin_actor.memberships | tojson }};
-  window.adminAAL = {{ admin_actor.aal | tojson }};
-  function adminHasPermission(name) {if(window.adminAAL!=='aal2'&&window.adminPermissions.some(m=>m.require_mfa))return false;return window.adminPermissions.some(m=>m.permissions.includes(name)||m.permissions.includes("*"));}
+  (function() {
+    try {
+      const el = document.getElementById("admin-actor-data");
+      const d = el ? JSON.parse(el.textContent || "{}") : {};
+      window.adminPermissions = d.permissions || [];
+      window.adminAAL = d.aal || "aal1";
+    } catch (_) {
+      window.adminPermissions = [];
+      window.adminAAL = "aal1";
+    }
+  })();
+  function adminHasPermission(name) {
+    if (!Array.isArray(window.adminPermissions)) return false;
+    if (window.adminAAL !== "aal2" && window.adminPermissions.some(m => m && m.require_mfa)) return false;
+    return window.adminPermissions.some(m => Array.isArray(m?.permissions) && (m.permissions.includes(name) || m.permissions.includes("*")));
+  }
+  window.adminHasPermission = adminHasPermission;
 
   function toggleSidebar() {
-    document.getElementById('admin-sidebar').classList.toggle('open');
-    document.getElementById('sidebar-backdrop').classList.toggle('active');
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('active');
   }
+  window.toggleSidebar = toggleSidebar;
 
   function toggleAdminTheme() {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme') || 'light';
     const next = current === 'light' ? 'dark' : 'light';
     html.setAttribute('data-theme', next);
-    localStorage.setItem('pagefpt_admin_theme', next);
+    try {
+      localStorage.setItem('pagefpt_admin_theme', next);
+    } catch (_) {}
   }
+  window.toggleAdminTheme = toggleAdminTheme;
 
   // Restore saved theme
-  const savedTheme = localStorage.getItem('pagefpt_admin_theme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }
+  try {
+    const savedTheme = localStorage.getItem('pagefpt_admin_theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  } catch (_) {}
   </script>
 
   <script src="/static/js/admin/list_tools.js"></script>
