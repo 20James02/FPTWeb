@@ -19,4 +19,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-55F7ZTBZ');</script>
 <!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18469151383"></script>
+<script>
+window.gtag('config', 'AW-18469151383');
+window.__pagefptAdsSent = window.__pagefptAdsSent || new Set();
+window.addEventListener('pagefpt:lead-accepted', function(e) {
+  var eventId = e && e.detail && e.detail.event_id;
+  if (!eventId || window.__pagefptAdsSent.has(eventId)) return;
+  window.__pagefptAdsSent.add(eventId);
+  window.gtag('event', 'conversion', {
+    'send_to': 'AW-18469151383/eHb2CMPQm6QdEJfF4-ZE',
+    'transaction_id': eventId
+  });
+});
+</script>
 {% endif %}

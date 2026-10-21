@@ -10,6 +10,8 @@ CONTAINER = "GTM-55F7ZTBZ"
 def assert_installed(html):
     head = html.split("</head>", 1)[0]
     assert CONTAINER in head
+    assert "AW-18469151383" in head
+    assert "eHb2CMPQm6QdEJfF4-ZE" in head
     assert head.index('"analytics_storage": "denied"') < head.index("gtm.start")
     assert head.count("gtm.start") == 1
     assert "google_analytics.js" in head
@@ -53,6 +55,8 @@ async def test_gtm_is_absent_from_admin_and_unsaved_preview(admin, client):
         response = await admin.get(path)
         assert response.status_code == 200
         assert CONTAINER not in response.text
+        assert "AW-18469151383" not in response.text
     preview = await admin.post("/api/v1/admin/landing-preview", json=body())
     assert preview.status_code == 200
     assert CONTAINER not in preview.text
+    assert "AW-18469151383" not in preview.text
