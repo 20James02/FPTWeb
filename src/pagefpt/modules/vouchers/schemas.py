@@ -22,9 +22,31 @@ class Rule(Command):
     def benefit(self):
         if self.discount_kind == "percent" and (self.amount > 10000 or self.cap_vnd is None):
             raise ValueError("Giảm phần trăm cần mức 0–10000 BPS và trần tiền")
-        if (self.amount == 0 or self.cap_vnd == 0) and not self.gift_product_id:
-            raise ValueError("Cần mức giảm hoặc quà tặng")
         return self
+
+
+class PopupConfig(Command):
+    eyebrow: str = Field(default="🎁 ĐẶC QUYỀN ƯU ĐÃI FPT", max_length=100)
+    title: str = Field(default="Chúc mừng! Bạn nhận được ưu đãi", max_length=150)
+    subtitle: str = Field(default="", max_length=200)
+    hero_prefix: str = Field(default="GIẢM TRỰC TIẾP", max_length=60)
+    hero_highlight: str = Field(default="", max_length=100)
+    hero_sub: str = Field(default="Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT", max_length=250)
+    hero_image_url: str | None = Field(default=None, max_length=500)
+    cta_text: str = Field(default="NHẬN QUÀ & SỬ DỤNG NGAY", max_length=80)
+    reassurance_text: str = Field(default="🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.", max_length=200)
+    dismiss_text: str = Field(default="Để sau, tôi muốn xem các gói trước", max_length=100)
+    urgency_badge: str | None = Field(default=None, max_length=120)
+    theme: Literal["fpt_orange", "royal_gold", "festive_red", "modern_blue"] = "fpt_orange"
+
+
+class PhysicalGift(Command):
+    name: str = Field(default="", max_length=150)
+    market_value_vnd: int = Field(default=0, ge=0, le=100_000_000)
+    image_url: str | None = Field(default=None, max_length=500)
+    delivery_type: Literal["installation", "shipment", "store_pickup"] = "installation"
+    condition_note: str = Field(default="", max_length=300)
+    stock_total: int | None = Field(default=None, ge=1, le=1_000_000)
 
 
 def default_terms() -> list[Literal[1, 6, 12]]:
@@ -53,11 +75,18 @@ class VoucherInput(Command):
     hold_hours: int = Field(default=48, ge=1, le=720)
     redeem_at: Literal["closed", "installed"] = "installed"
     stackable: bool = False
+    program_type: Literal["cash_discount", "percent_discount", "physical_gift", "combo_gift_cash"] = "cash_discount"
+    popup_config: PopupConfig = Field(default_factory=PopupConfig)
+    physical_gift: PhysicalGift | None = None
 
     @model_validator(mode="after")
     def validate_campaign(self):
         if self.start.tzinfo is None or self.end.tzinfo is None or self.end <= self.start:
             raise ValueError("Khoảng thời gian cần múi giờ và ngày kết thúc sau bắt đầu")
+        has_voucher_gift = bool(self.physical_gift and self.physical_gift.name.strip())
+        for r in self.rules:
+            if (r.amount == 0 or r.cap_vnd == 0) and not r.gift_product_id and not has_voucher_gift:
+                raise ValueError("Cần mức giảm hoặc quà tặng")
         for values in (
             self.plan_ids,
             self.services,

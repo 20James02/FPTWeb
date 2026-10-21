@@ -408,8 +408,126 @@ body.voucher-modal-open::-webkit-scrollbar {
 }
 
 /* ===================================================================
-   KHỐI SỐ TIỀN ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT BANNER)
+   NHÃN KHAN HIẾM / KHẨN CẤP (URGENCY BADGE)
    =================================================================== */
+.voucher-urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin: 2px auto 6px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+  animation: urgencyPulse 2s infinite ease-in-out;
+  text-wrap: balance;
+}
+
+.voucher-urgency-badge[hidden] {
+  display: none !important;
+}
+
+@keyframes urgencyPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35); }
+  50% { transform: scale(1.03); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.55); }
+}
+
+/* ===================================================================
+   KHỐI QUÀ TẶNG SẢN PHẨM THẬT (PHYSICAL GIFT SHOWCASE)
+   =================================================================== */
+.voucher-hero-gift-wrap {
+  margin: 6px 0;
+  animation: giftReveal 0.4s ease-out;
+}
+
+.voucher-hero-gift-wrap[hidden] {
+  display: none !important;
+}
+
+@keyframes giftReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gift-image-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 120px;
+  border-radius: 14px;
+  background: radial-gradient(circle, #ffffff 40%, #fff7ed 90%, #fed7aa 100%);
+  border: 1.5px solid #fdba74;
+  box-shadow: inset 0 2px 6px rgba(249, 115, 22, 0.1), 0 6px 18px rgba(249, 115, 22, 0.15);
+  overflow: hidden;
+}
+
+.voucher-hero-gift-img {
+  max-height: 100px;
+  max-width: 88%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.16));
+  animation: giftFloat 3s infinite ease-in-out alternate;
+  transition: transform 0.3s ease;
+}
+
+@keyframes giftFloat {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-4px) scale(1.03); }
+}
+
+.gift-badge-floating {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ea580c, #f59e0b);
+  padding: 2px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.3px;
+}
+
+.voucher-gift-market-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 6px 0 2px;
+  font-size: 11.5px;
+}
+
+.gift-market-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 10.5px;
+}
+
+.gift-market-del {
+  color: #94a3b8;
+  font-weight: 700;
+  text-decoration: line-through;
+  font-size: 11px;
+}
+
+.gift-free-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+  letter-spacing: 0.2px;
+}
 .voucher-hero-discount {
   background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fed7aa 100%);
   border: 1.5px dashed #f59e0b;

@@ -65,7 +65,20 @@ def public_view(data):
         return None
     view = {
         k: data[k]
-        for k in ("id", "code", "name", "label", "terms", "start", "end", "link", "sold_out")
+        for k in (
+            "id",
+            "code",
+            "name",
+            "label",
+            "terms",
+            "start",
+            "end",
+            "link",
+            "sold_out",
+            "program_type",
+            "popup_config",
+            "physical_gift",
+        )
         if k in data
     }
     view["benefits"] = [

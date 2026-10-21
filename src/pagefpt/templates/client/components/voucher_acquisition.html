@@ -42,12 +42,26 @@
     <!-- Nội dung Tấm Vé Ưu Đãi Hoàng Gia -->
     <div class="voucher-ticket-inner" id="voucher-ticket-inner">
       <div class="voucher-ticket-head">
-        <span class="voucher-acquisition-eyebrow">🎁 ĐẶC QUYỀN ƯU ĐÃI FPT</span>
+        <span class="voucher-acquisition-eyebrow" id="voucher-acquisition-eyebrow">🎁 ĐẶC QUYỀN ƯU ĐÃI FPT</span>
         <h2 id="voucher-acquisition-title">Chúc mừng! Bạn nhận được ưu đãi</h2>
         <p id="voucher-acquisition-label" class="voucher-acquisition-label"></p>
+        <div id="voucher-urgency-badge" class="voucher-urgency-badge" hidden></div>
       </div>
 
-      <!-- KHỐI SỐ TIỀN ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT BANNER) -->
+      <!-- KHỐI QUÀ TẶNG SẢN PHẨM THẬT (PHYSICAL GIFT SHOWCASE) -->
+      <div id="voucher-hero-gift-wrap" class="voucher-hero-gift-wrap" hidden>
+        <div class="gift-image-frame">
+          <img id="voucher-hero-gift-img" class="voucher-hero-gift-img" src="" alt="Quà tặng hiện vật" loading="lazy">
+          <span class="gift-badge-floating">✨ QUÀ HIỆN VẬT CHÍNH HÃNG</span>
+        </div>
+        <div id="voucher-gift-market-box" class="voucher-gift-market-box">
+          <span class="gift-market-label">Trị giá niêm yết:</span>
+          <del id="voucher-gift-market-val" class="gift-market-del">1.200.000đ</del>
+          <span class="gift-free-badge">ĐẶC QUYỀN: 0đ</span>
+        </div>
+      </div>
+
+      <!-- KHỐI SỐ TIỀN / QUÀ ƯU ĐÃI TO NỔI BẬT (HERO DISCOUNT BANNER) -->
       <div class="voucher-hero-discount" id="voucher-hero-discount">
         <div class="hero-discount-header">
           <span class="hero-discount-sparkle">✨</span>
@@ -93,10 +107,10 @@
       <!-- Chân vé: Nút hành động quét sáng rực rỡ -->
       <div class="voucher-ticket-foot">
         <button id="voucher-acquisition-use" class="voucher-acquisition-use" type="button">
-          <span>NHẬN QUÀ &amp; SỬ DỤNG NGAY</span>
+          <span id="voucher-acquisition-use-text">NHẬN QUÀ &amp; SỬ DỤNG NGAY</span>
           <span class="use-arrow-icon" aria-hidden="true">➔</span>
         </button>
-        <p class="voucher-acquisition-reassurance">🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.</p>
+        <p class="voucher-acquisition-reassurance" id="voucher-acquisition-reassurance">🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.</p>
         <button id="voucher-acquisition-later" class="voucher-acquisition-later" type="button">Để sau, tôi muốn xem các gói trước</button>
       </div>
     </div>

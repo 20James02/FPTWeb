@@ -140,6 +140,17 @@
               </label>
 
               <label>
+                Loại chương trình ưu đãi
+                <select id="v-program-type">
+                  <option value="cash_discount">💵 Giảm tiền cước / Phí hòa mạng</option>
+                  <option value="percent_discount">📉 Giảm theo tỷ lệ % cước</option>
+                  <option value="physical_gift">🎁 Quà tặng sản phẩm thật (Hiện vật chính hãng)</option>
+                  <option value="combo_gift_cash">🎁+💵 Combo Quà tặng hiện vật &amp; Giảm tiền</option>
+                </select>
+                <small class="v-help">Xác định hình thức và giao diện hiển thị cho khách hàng.</small>
+              </label>
+
+              <label>
                 Nhãn hiển thị khách hàng
                 <input id="v-label" maxlength="80" placeholder="VD: Ưu đãi khu vực, Tri ân khách hàng">
                 <small class="v-help">Xuất hiện trên thẻ gói và banner website khách hàng.</small>
@@ -153,6 +164,115 @@
                 </label>
               </div>
             </div>
+
+            <!-- KHỐI CẤU HÌNH QUÀ TẶNG SẢN PHẨM THẬT (PHYSICAL GIFT) -->
+            <div id="v-gift-section" class="voucher-form-box voucher-gift-box-config" style="margin-top: 14px;" hidden>
+              <div class="voucher-group-header">
+                <span class="voucher-group-title">🎁 Thiết lập Quà tặng sản phẩm thật (Hiện vật):</span>
+                <span class="voucher-badge">Quà hiện vật</span>
+              </div>
+              <p class="v-help" style="margin-bottom: 10px;">Quà tặng hiện vật là đòn bẩy tâm lý chuyển đổi cực mạnh (Anchor Value), khách hàng sẽ thấy hình ảnh thực tế và giá niêm yết trên popup.</p>
+              
+              <div class="voucher-fields">
+                <label>
+                  Tên sản phẩm quà tặng <span class="v-req">*</span>
+                  <input id="v-gift-name" maxlength="150" placeholder="VD: Camera FPT Outdoor IQ3, Wifi 6 Mesh, Nồi chiên không dầu...">
+                </label>
+
+                <label>
+                  Trị giá niêm yết thị trường (VNĐ)
+                  <input id="v-gift-market-val" type="number" min="0" step="10000" placeholder="VD: 1200000 (1.200.000đ)">
+                  <small class="v-help">Dùng làm giá so sánh gạch ngang (Mỏ neo tâm lý: 0đ thay vì 1.200.000đ).</small>
+                </label>
+
+                <div class="voucher-wide">
+                  <label>
+                    Đường dẫn ảnh sản phẩm quà tặng (URL)
+                    <input id="v-gift-image-url" type="url" placeholder="https://... hoặc chọn mẫu bên dưới">
+                  </label>
+                  <div class="voucher-gift-presets" style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                    <span style="font-size: 11px; color: #64748b; align-self: center;">Mẫu nhanh:</span>
+                    <button type="button" class="btn-preset-gift" data-gift-name="Camera FPT Outdoor IQ3" data-gift-val="1200000" data-gift-img="https://fpt.vn/storage/upload/images/products/camera/iq3-thumb.png">📷 Camera Outdoor IQ3 (1.200k)</button>
+                    <button type="button" class="btn-preset-gift" data-gift-name="Bộ phát Wifi 6 Mesh AX1800AZ" data-gift-val="890000" data-gift-img="https://fpt.vn/storage/upload/images/products/internet/wifi6-mesh.png">📶 Wifi 6 Mesh (890k)</button>
+                    <button type="button" class="btn-preset-gift" data-gift-name="Mũ bảo hiểm FPT VIP &amp; Áo mưa" data-gift-val="350000" data-gift-img="https://fpt.vn/storage/upload/images/common/gift-helmet.png">🪖 Mũ BH &amp; Áo mưa (350k)</button>
+                  </div>
+                </div>
+
+                <label>
+                  Hình thức trao quà
+                  <select id="v-gift-delivery">
+                    <option value="installation">🔧 Kỹ thuật viên giao tận nhà khi lắp đặt</option>
+                    <option value="shipment">📦 Gửi bưu điện chuyển phát nhanh</option>
+                    <option value="store_pickup">🏢 Khách nhận tại chi nhánh FPT Shop</option>
+                  </select>
+                </label>
+
+                <label>
+                  Lưu ý điều kiện nhận quà
+                  <input id="v-gift-condition" maxlength="300" placeholder="VD: Áp dụng trả trước 6 hoặc 12 tháng">
+                </label>
+              </div>
+            </div>
+
+            <!-- KHỐI TÙY BIẾN TOÀN BỘ NỘI DUNG POPUP ĐIỆN THOẠI -->
+            <details class="voucher-popup-customization" style="margin-top: 14px;" open>
+              <summary><strong>📱 Tùy biến toàn bộ nội dung Popup hiển thị trên điện thoại</strong></summary>
+              <div style="padding-top: 10px;">
+                <p class="v-help">Toàn bộ văn bản trên popup khách hàng có thể tinh chỉnh linh hoạt tại đây. Màn hình điện thoại bên phải sẽ cập nhật tức thì.</p>
+                
+                <div class="voucher-fields">
+                  <label>
+                    Dòng trên cùng (Eyebrow)
+                    <input id="v-popup-eyebrow" maxlength="100" placeholder="Mặc định: 🎁 ĐẶC QUYỀN ƯU ĐÃI FPT">
+                  </label>
+
+                  <label>
+                    Tiêu đề chính Popup
+                    <input id="v-popup-title" maxlength="150" placeholder="Mặc định: Chúc mừng! Bạn nhận được ưu đãi">
+                  </label>
+
+                  <label>
+                    Tiêu đề phụ / Mô tả ngắn
+                    <input id="v-popup-subtitle" maxlength="200" placeholder="Để trống sẽ lấy tên chiến dịch">
+                  </label>
+
+                  <label>
+                    Hero Tiền tố (Prefix)
+                    <input id="v-popup-hero-prefix" maxlength="60" placeholder="VD: GIẢM TRỰC TIẾP, TẶNG MIỄN PHÍ">
+                  </label>
+
+                  <label>
+                    Hero Chữ nổi bật (Ghi đè giá trị)
+                    <input id="v-popup-hero-highlight" maxlength="100" placeholder="Để trống tự tính theo mức giảm / tên quà">
+                  </label>
+
+                  <label>
+                    Hero Chú thích bên dưới
+                    <input id="v-popup-hero-sub" maxlength="250" placeholder="Mặc định: Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT">
+                  </label>
+
+                  <label>
+                    Chữ trên nút hành động (CTA)
+                    <input id="v-popup-cta" maxlength="80" placeholder="Mặc định: NHẬN QUÀ &amp; SỬ DỤNG NGAY">
+                  </label>
+
+                  <label>
+                    Lời cam kết an tâm (Reassurance)
+                    <input id="v-popup-reassurance" maxlength="200" placeholder="Mặc định: 🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.">
+                  </label>
+
+                  <label>
+                    Chữ nút từ chối (Dismiss)
+                    <input id="v-popup-dismiss" maxlength="100" placeholder="Mặc định: Để sau, tôi muốn xem các gói trước">
+                  </label>
+
+                  <label>
+                    Nhãn khẩn cấp / Khan hiếm (Urgency Badge)
+                    <input id="v-popup-urgency" maxlength="120" placeholder="VD: ⚡ Chỉ còn 15 suất quà cho khu vực của bạn!">
+                  </label>
+                </div>
+              </div>
+            </details>
 
             <div class="voucher-form-group" style="margin-top: 14px;">
               <span class="voucher-group-title">Kỳ thanh toán áp dụng:</span>
@@ -311,14 +431,136 @@
 
         </div>
 
-        <!-- Desktop Sticky Live Preview Sidebar -->
+        <!-- Desktop Sticky Live Preview Sidebar (Smartphone Frame) -->
         <aside class="voucher-preview" id="voucher-preview-container">
           <div class="voucher-preview-header">
-            <span class="voucher-eyebrow">👁 BẢN NHÁP · DIỆN MẠO KHÁCH HÀNG</span>
+            <span class="voucher-eyebrow">📱 XEM TRƯỚC TRÊN ĐIỆN THOẠI</span>
+            <div class="phone-preview-actions">
+              <button type="button" id="v-preview-replay-anim" class="btn-preview-mini" title="Kích hoạt lại hoạt cảnh hộp quà và pháo hoa">▶ Chạy hoạt cảnh</button>
+              <button type="button" id="v-preview-toggle-mode" class="btn-preview-mini" title="Chuyển đổi xem vé / xem hộp quà">🔄 Đổi kiểu xem</button>
+            </div>
           </div>
-          <div id="voucher-preview"></div>
+
+          <!-- Khung Điện Thoại Di Động (Realistic Smartphone Frame) -->
+          <div class="smartphone-frame" id="smartphone-frame">
+            <div class="smartphone-notch">
+              <span class="smartphone-speaker"></span>
+              <span class="smartphone-camera"></span>
+            </div>
+            <div class="smartphone-status-bar">
+              <span class="phone-time">09:41</span>
+              <div class="phone-icons">
+                <span class="phone-icon">5G</span>
+                <span class="phone-icon">📶</span>
+                <span class="phone-icon">🔋</span>
+              </div>
+            </div>
+
+            <!-- Màn hình điện thoại chứa Popup chính xác 100% -->
+            <div class="smartphone-screen" id="smartphone-screen">
+              <!-- Hộp quà 3D giả lập trên màn hình phone -->
+              <div id="preview-gift-intro" class="preview-gift-intro" style="display: none;">
+                <div class="gift-radial-rays"></div>
+                <div class="gift-box-3d" id="preview-gift-box">
+                  <div class="gift-lid-group">
+                    <div class="gift-bow">
+                      <span class="bow-loop bow-left"></span>
+                      <span class="bow-loop bow-right"></span>
+                      <span class="bow-knot"></span>
+                      <span class="bow-ribbon ribbon-left"></span>
+                      <span class="bow-ribbon ribbon-right"></span>
+                    </div>
+                    <div class="gift-lid-cap"></div>
+                  </div>
+                  <div class="gift-box-body">
+                    <div class="gift-ribbon-v"></div>
+                    <div class="gift-ribbon-h"></div>
+                  </div>
+                  <div class="gift-glow-burst"></div>
+                </div>
+                <p class="gift-intro-hint">🎁 Chạm vào hộp quà để mở!</p>
+              </div>
+
+              <!-- Tấm vé popup chính thức giống hệt client -->
+              <div class="voucher-acquisition-panel voucher-ticket-card is-revealed" id="preview-ticket-panel">
+                <button class="voucher-acquisition-close" type="button" aria-label="Đóng">✕</button>
+                <div class="ticket-notch ticket-notch-left"></div>
+                <div class="ticket-notch ticket-notch-right"></div>
+                <div class="voucher-ticket-inner">
+                  <div class="voucher-ticket-head">
+                    <span class="voucher-acquisition-eyebrow" id="p-eyebrow">🎁 ĐẶC QUYỀN ƯU ĐÃI FPT</span>
+                    <h2 id="p-title" style="font-size: 16px; margin: 2px 0;">Chúc mừng! Bạn nhận được ưu đãi</h2>
+                    <p id="p-label" class="voucher-acquisition-label" style="font-size: 11.5px; margin: 2px 0 4px;"></p>
+                    <div id="p-urgency" class="voucher-urgency-badge" style="font-size: 10px; padding: 2px 8px;" hidden></div>
+                  </div>
+
+                  <!-- Khối quà tặng hiện vật preview -->
+                  <div id="p-gift-wrap" class="voucher-hero-gift-wrap" style="margin: 4px 0;" hidden>
+                    <div class="gift-image-frame" style="height: 95px;">
+                      <img id="p-gift-img" class="voucher-hero-gift-img" style="max-height: 80px;" src="" alt="Quà tặng">
+                      <span class="gift-badge-floating">✨ QUÀ HIỆN VẬT CHÍNH HÃNG</span>
+                    </div>
+                    <div id="p-gift-market-box" class="voucher-gift-market-box" style="margin: 3px 0;">
+                      <span class="gift-market-label">Trị giá:</span>
+                      <del id="p-gift-market-val" class="gift-market-del">1.200.000đ</del>
+                      <span class="gift-free-badge">ĐẶC QUYỀN: 0đ</span>
+                    </div>
+                  </div>
+
+                  <!-- Khối hero discount preview -->
+                  <div class="voucher-hero-discount" id="p-hero-box" style="padding: 4px 8px; margin: 4px 0;">
+                    <div class="hero-discount-header">
+                      <span class="hero-discount-sparkle">✨</span>
+                      <span class="hero-discount-prefix" id="p-hero-prefix" style="font-size: 9.5px;">GIẢM TRỰC TIẾP</span>
+                      <span class="hero-discount-sparkle">✨</span>
+                    </div>
+                    <div class="hero-discount-amount-wrap">
+                      <strong id="p-hero-amount" class="hero-discount-amount" style="font-size: 22px;">100.000đ</strong>
+                    </div>
+                    <p class="hero-discount-sub" id="p-hero-sub" style="font-size: 9.5px;">Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT</p>
+                  </div>
+
+                  <div class="ticket-perforated-line" style="margin: 4px -16px;">
+                    <span class="ticket-cut-icon">✂</span>
+                  </div>
+
+                  <div class="voucher-ticket-body">
+                    <div id="p-benefits" class="voucher-acquisition-benefits" style="gap: 3px;"></div>
+                    <div class="voucher-acquisition-ticket" style="padding: 4px 8px; margin: 4px 0;">
+                      <div class="ticket-code-zone">
+                        <span class="ticket-field-label" style="font-size: 8px;">MÃ ƯU ĐÃI ĐỘC QUYỀN</span>
+                        <div class="ticket-code-row">
+                          <strong id="p-code" style="font-size: 13px;">—</strong>
+                          <span class="btn-copy-code" style="font-size: 9px; padding: 1px 4px;">📋 Sao chép</span>
+                        </div>
+                      </div>
+                      <div class="ticket-date-zone" style="padding-left: 6px;">
+                        <span class="ticket-field-label" style="font-size: 8px;">THỜI HẠN</span>
+                        <strong id="p-end" style="font-size: 10px;">—</strong>
+                      </div>
+                    </div>
+                    <details class="voucher-acquisition-conditions" style="font-size: 9.5px; margin: 2px 0;">
+                      <summary style="font-size: 9.5px; min-height: 20px;">Điều kiện &amp; Quy định ▾</summary>
+                      <p id="p-terms" style="font-size: 9.5px;"></p>
+                    </details>
+                  </div>
+
+                  <div class="voucher-ticket-foot" style="margin-top: 4px;">
+                    <button id="p-cta-btn" class="voucher-acquisition-use" type="button" style="min-height: 36px; font-size: 12.5px; padding: 6px 10px;">
+                      <span id="p-cta-text">NHẬN QUÀ &amp; SỬ DỤNG NGAY</span>
+                      <span class="use-arrow-icon" style="font-size: 14px;">➔</span>
+                    </button>
+                    <p class="voucher-acquisition-reassurance" id="p-reassurance" style="font-size: 8.5px; margin: 2px 0 0;">🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.</p>
+                    <span id="p-later" class="voucher-acquisition-later" style="font-size: 9.5px; cursor: default; margin-top: 1px; display: inline-block;">Để sau, tôi muốn xem các gói trước</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="smartphone-home-bar"></div>
+          </div>
+
           <div class="voucher-preview-footer">
-            <p>💡 <em>Lưu ý: Báo giá thực tế sẽ xác nhận lại điều kiện; suất chỉ được giữ khi nhân viên xác nhận địa chỉ chính xác.</em></p>
+            <p>💡 <em>Màn hình preview tương tác 1:1 theo điện thoại di động thực tế.</em></p>
           </div>
         </aside>
       </div>

@@ -423,6 +423,10 @@
       num = (id) => Number(value(id)),
       ids = (id) =>
         [...($(id)?.querySelectorAll("input:checked") || [])].map((i) => i.value);
+    const progType = value("v-program-type") || "cash_discount";
+    const giftName = value("v-gift-name");
+    const hasGift = progType === "physical_gift" || progType === "combo_gift_cash" || !!giftName;
+
     return {
       code: value("v-code").toUpperCase(),
       name: value("v-name"),
@@ -441,6 +445,27 @@
       billing_months: ids("v-months").map(Number),
       rules: rules.map((r) => ({ ...r })),
       exclusions: [...excluded],
+      program_type: progType,
+      popup_config: {
+        eyebrow: value("v-popup-eyebrow") || "🎁 ĐẶC QUYỀN ƯU ĐÃI FPT",
+        title: value("v-popup-title") || (value("v-name") || "Chúc mừng! Bạn nhận được ưu đãi"),
+        subtitle: value("v-popup-subtitle") || value("v-label") || "",
+        hero_prefix: value("v-popup-hero-prefix") || (progType === "physical_gift" ? "TẶNG MIỄN PHÍ" : "GIẢM TRỰC TIẾP"),
+        hero_highlight: value("v-popup-hero-highlight") || "",
+        hero_sub: value("v-popup-hero-sub") || "Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT",
+        cta_text: value("v-popup-cta") || "NHẬN QUÀ & SỬ DỤNG NGAY",
+        reassurance_text: value("v-popup-reassurance") || "🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.",
+        dismiss_text: value("v-popup-dismiss") || "Để sau, tôi muốn xem các gói trước",
+        urgency_badge: value("v-popup-urgency") || null,
+        theme: "fpt_orange",
+      },
+      physical_gift: hasGift ? {
+        name: giftName,
+        market_value_vnd: num("v-gift-market-val") || 0,
+        image_url: value("v-gift-image-url") || null,
+        delivery_type: value("v-gift-delivery") || "installation",
+        condition_note: value("v-gift-condition") || "",
+      } : null,
     };
   }
 
@@ -452,6 +477,29 @@
     const items = [
       { label: "Mã chiến dịch", val: data.code || "(Chưa nhập)" },
       { label: "Tên chiến dịch", val: data.name || "(Chưa nhập)" },
+      {
+        label: "Loại chương trình",
+        val:
+          data.program_type === "physical_gift"
+            ? "🎁 Quà tặng sản phẩm thật"
+            : data.program_type === "combo_gift_cash"
+              ? "🎁+💵 Combo Quà & Giảm tiền"
+              : data.program_type === "percent_discount"
+                ? "📉 Giảm theo %"
+                : "💵 Giảm tiền cước",
+      },
+      ...(data.physical_gift?.name
+        ? [
+            {
+              label: "Quà tặng sản phẩm",
+              val:
+                data.physical_gift.name +
+                (data.physical_gift.market_value_vnd
+                  ? " (Trị giá " + money(data.physical_gift.market_value_vnd) + ")"
+                  : ""),
+            },
+          ]
+        : []),
       { label: "Nhãn hiển thị", val: data.label || "Ưu đãi khu vực" },
       {
         label: "Thời gian hiệu lực",
@@ -537,29 +585,139 @@
     }
     if (!busy) syncButtons();
 
-    const box = $("voucher-preview");
-    if (box) {
-      box.replaceChildren(
-        el("h3", $("v-name")?.value || "Tên ưu đãi"),
-        el("span", $("v-label")?.value || "Ưu đãi khu vực", "voucher-badge"),
-        el("p", $("v-terms")?.value || "Thêm điều kiện rõ ràng cho khách"),
-      );
-      for (const r of rules) {
-        const benefit =
-          r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
-        const text =
-          (r.region_name || "Toàn quốc") +
-          ": Giảm " +
-          benefit +
-          (r.basis === "monthly" ? "/tháng" : "") +
-          (r.gift_product_id
-            ? " + " +
-              (products.find((p) => p.id === r.gift_product_id)?.name || "quà")
-            : "");
-        box.append(el("p", text));
+    // Ẩn/hiện khối thiết lập quà tặng sản phẩm thật
+    const progType = $("v-program-type")?.value || "cash_discount";
+    const giftSection = $("v-gift-section");
+    if (giftSection) {
+      giftSection.hidden = !(progType === "physical_gift" || progType === "combo_gift_cash");
+    }
+
+    // Cập nhật các trường trên Smartphone Simulator
+    const eyebrow = $("p-eyebrow");
+    if (eyebrow) {
+      eyebrow.textContent = $("v-popup-eyebrow")?.value.trim() || "🎁 ĐẶC QUYỀN ƯU ĐÃI FPT";
+    }
+
+    const title = $("p-title");
+    if (title) {
+      title.textContent = $("v-popup-title")?.value.trim() || $("v-name")?.value.trim() || "Chúc mừng! Bạn nhận được ưu đãi";
+    }
+
+    const label = $("p-label");
+    if (label) {
+      label.textContent = $("v-popup-subtitle")?.value.trim() || $("v-label")?.value.trim() || "Ưu đãi khách hàng mới";
+    }
+
+    const urgency = $("p-urgency");
+    if (urgency) {
+      const urgVal = $("v-popup-urgency")?.value.trim();
+      if (urgVal) {
+        urgency.textContent = urgVal;
+        urgency.hidden = false;
+      } else {
+        urgency.hidden = true;
       }
-      if (excluded.size)
-        box.append(el("p", excluded.size + " địa bàn loại trừ"));
+    }
+
+    // Quà tặng sản phẩm thật (Physical Gift Showcase)
+    const giftWrap = $("p-gift-wrap");
+    const giftImg = $("p-gift-img");
+    const giftMarketBox = $("p-gift-market-box");
+    const giftMarketVal = $("p-gift-market-val");
+    const giftName = $("v-gift-name")?.value.trim();
+    const giftVal = Number($("v-gift-market-val")?.value) || 0;
+    const giftImgUrl = $("v-gift-image-url")?.value.trim();
+
+    if (giftWrap) {
+      if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
+        giftWrap.hidden = false;
+        if (giftImg) {
+          if (giftImgUrl) {
+            giftImg.src = giftImgUrl;
+            giftImg.alt = giftName;
+            giftImg.style.display = "block";
+          } else {
+            giftImg.style.display = "none";
+          }
+        }
+        if (giftMarketBox && giftMarketVal) {
+          if (giftVal > 0) {
+            giftMarketVal.textContent = money(giftVal);
+            giftMarketBox.style.display = "flex";
+          } else {
+            giftMarketBox.style.display = "none";
+          }
+        }
+      } else {
+        giftWrap.hidden = true;
+      }
+    }
+
+    // Hero Discount / Hero Gift Highlight Zone
+    const heroPrefix = $("p-hero-prefix");
+    const heroAmount = $("p-hero-amount");
+    const heroSub = $("p-hero-sub");
+    const customPrefix = $("v-popup-hero-prefix")?.value.trim();
+    const customHighlight = $("v-popup-hero-highlight")?.value.trim();
+    const customSub = $("v-popup-hero-sub")?.value.trim();
+
+    const firstRule = rules[0];
+    if (heroPrefix) {
+      heroPrefix.textContent = customPrefix || (progType === "physical_gift" ? "TẶNG MIỄN PHÍ" : "GIẢM TRỰC TIẾP");
+    }
+    if (heroAmount) {
+      if (customHighlight) {
+        heroAmount.textContent = customHighlight;
+      } else if (progType === "physical_gift" && giftName) {
+        heroAmount.textContent = giftName.toUpperCase();
+      } else if (firstRule) {
+        heroAmount.textContent = firstRule.discount_kind === "percent" ? (firstRule.amount / 100 + "%") : money(firstRule.amount);
+      } else {
+        heroAmount.textContent = "100.000đ";
+      }
+    }
+    if (heroSub) {
+      heroSub.textContent = customSub || (progType === "physical_gift" && giftVal > 0 ? "Trị giá " + money(giftVal) + " khi đăng ký mới" : "Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT");
+    }
+
+    // Mã voucher & Hạn dùng
+    const codeEl = $("p-code");
+    if (codeEl) codeEl.textContent = $("v-code")?.value.trim().toUpperCase() || "VIP-KM";
+
+    const endEl = $("p-end");
+    if (endEl) {
+      const endVal = $("v-end")?.value;
+      endEl.textContent = endVal ? new Date(endVal).toLocaleDateString("vi-VN") : "30 ngày";
+    }
+
+    const termsEl = $("p-terms");
+    if (termsEl) termsEl.textContent = $("v-terms")?.value.trim() || "Áp dụng cho khách hàng hoàn tất đăng ký lắp đặt mới.";
+
+    const ctaText = $("p-cta-text");
+    if (ctaText) ctaText.textContent = $("v-popup-cta")?.value.trim() || "NHẬN QUÀ & SỬ DỤNG NGAY";
+
+    const reassurance = $("p-reassurance");
+    if (reassurance) reassurance.textContent = $("v-popup-reassurance")?.value.trim() || "🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.";
+
+    const later = $("p-later");
+    if (later) later.textContent = $("v-popup-dismiss")?.value.trim() || "Để sau, tôi muốn xem các gói trước";
+
+    // Danh sách quyền lợi trên Smartphone Simulator
+    const benefitsBox = $("p-benefits");
+    if (benefitsBox) {
+      benefitsBox.replaceChildren();
+      if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
+        const item = el("p", "🎁 Quà hiện vật: " + giftName + (giftVal > 0 ? " (Trị giá " + money(giftVal) + ")" : ""));
+        item.style.cssText = "font-size:10.5px; padding:3px 6px; margin:0; border-left:3px solid #ea580c; background:#fff;";
+        benefitsBox.append(item);
+      }
+      for (const r of rules.slice(0, 2)) {
+        const benefit = r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
+        const text = "✨ " + (r.region_name || "Toàn quốc") + ": Giảm " + benefit + (r.basis === "monthly" ? " cước tháng" : "");
+        const item = el("p", text);
+        item.style.cssText = "font-size:10.5px; padding:3px 6px; margin:0; border-left:3px solid #f26f21; background:#fff;";
+        benefitsBox.append(item);
+      }
     }
 
     updateReviewSummary(data);
@@ -635,6 +793,15 @@
       }
     }
 
+    const progType = $("v-program-type")?.value || "cash_discount";
+    if (progType === "physical_gift" && !$("v-gift-name")?.value.trim()) {
+      goToStep(0);
+      highlightField("v-gift-name");
+      showNotice("Vui lòng nhập tên sản phẩm quà tặng cho chiến dịch quà hiện vật.", "error");
+      $("v-gift-name")?.focus();
+      return false;
+    }
+
     const months = [...($("v-months")?.querySelectorAll("input:checked") || [])];
     if (!months.length) {
       goToStep(0);
@@ -649,6 +816,7 @@
       rules = [baseRule()];
       renderRules();
     }
+    const hasPhysGift = !!($("v-gift-name")?.value.trim() && (progType === "physical_gift" || progType === "combo_gift_cash"));
     for (const rule of rules) {
       if (rule.discount_kind === "percent") {
         if (!rule.amount || rule.amount <= 0 || rule.amount > 10000) {
@@ -668,10 +836,10 @@
           return false;
         }
       } else {
-        if ((!rule.amount || rule.amount <= 0) && !rule.gift_product_id) {
+        if ((!rule.amount || rule.amount < 0) && !rule.gift_product_id && !hasPhysGift) {
           goToStep(1);
           showNotice(
-            `Quy tắc vùng "${rule.region_name || "Toàn quốc"}": Cần nhập số tiền giảm (VD: 50.000đ) hoặc chọn phụ kiện quà tặng kèm.`,
+            `Quy tắc vùng "${rule.region_name || "Toàn quốc"}": Cần nhập số tiền giảm (VD: 50.000đ) hoặc chọn phụ kiện quà tặng kèm (hoặc thiết lập Quà tặng sản phẩm thật).`,
             "error",
           );
           return false;
@@ -783,6 +951,22 @@
       "v-code": p?.code || "",
       "v-name": p?.name || "",
       "v-label": p?.label || "Ưu đãi khu vực",
+      "v-program-type": p?.program_type || "cash_discount",
+      "v-gift-name": p?.physical_gift?.name || "",
+      "v-gift-market-val": p?.physical_gift?.market_value_vnd || "",
+      "v-gift-image-url": p?.physical_gift?.image_url || "",
+      "v-gift-delivery": p?.physical_gift?.delivery_type || "installation",
+      "v-gift-condition": p?.physical_gift?.condition_note || "",
+      "v-popup-eyebrow": p?.popup_config?.eyebrow || "",
+      "v-popup-title": p?.popup_config?.title || "",
+      "v-popup-subtitle": p?.popup_config?.subtitle || "",
+      "v-popup-hero-prefix": p?.popup_config?.hero_prefix || "",
+      "v-popup-hero-highlight": p?.popup_config?.hero_highlight || "",
+      "v-popup-hero-sub": p?.popup_config?.hero_sub || "",
+      "v-popup-cta": p?.popup_config?.cta_text || "",
+      "v-popup-reassurance": p?.popup_config?.reassurance_text || "",
+      "v-popup-dismiss": p?.popup_config?.dismiss_text || "",
+      "v-popup-urgency": p?.popup_config?.urgency_badge || "",
       "v-terms":
         p?.terms ||
         "Áp dụng cho khách hàng hoàn tất đăng ký và nghiệm thu lắp đặt mới. Không quy đổi thành tiền mặt.",
@@ -1277,6 +1461,78 @@
   const vForm = $("voucher-form");
   if (vForm) {
     vForm.addEventListener("input", preview);
+  }
+
+  const progTypeSelect = $("v-program-type");
+  if (progTypeSelect) {
+    progTypeSelect.addEventListener("change", () => {
+      const isPhys = progTypeSelect.value === "physical_gift" || progTypeSelect.value === "combo_gift_cash";
+      const giftSec = $("v-gift-section");
+      if (giftSec) giftSec.hidden = !isPhys;
+      preview();
+    });
+  }
+
+  // Preset Gift Buttons
+  document.querySelectorAll(".btn-preset-gift").forEach((btn) => {
+    btn.onclick = () => {
+      if ($("v-gift-name")) $("v-gift-name").value = btn.dataset.giftName || "";
+      if ($("v-gift-market-val")) $("v-gift-market-val").value = btn.dataset.giftVal || "";
+      if ($("v-gift-image-url")) $("v-gift-image-url").value = btn.dataset.giftImg || "";
+      preview();
+    };
+  });
+
+  // Replay animation on smartphone simulator
+  const replayAnimBtn = $("v-preview-replay-anim");
+  if (replayAnimBtn) {
+    replayAnimBtn.onclick = () => {
+      const intro = $("preview-gift-intro");
+      const panel = $("preview-ticket-panel");
+      if (!intro || !panel) return;
+
+      intro.style.display = "flex";
+      intro.classList.remove("is-opening");
+      panel.classList.remove("is-revealed");
+      panel.style.display = "none";
+
+      setTimeout(() => {
+        intro.classList.add("is-opening");
+        setTimeout(() => {
+          panel.style.display = "block";
+          panel.classList.add("is-revealed");
+          setTimeout(() => {
+            intro.style.display = "none";
+          }, 350);
+        }, 300);
+      }, 500);
+    };
+  }
+
+  // Toggle view mode on smartphone simulator (Gift box vs Ticket)
+  const toggleModeBtn = $("v-preview-toggle-mode");
+  if (toggleModeBtn) {
+    toggleModeBtn.onclick = () => {
+      const intro = $("preview-gift-intro");
+      const panel = $("preview-ticket-panel");
+      if (!intro || !panel) return;
+      if (intro.style.display === "none") {
+        intro.style.display = "flex";
+        intro.classList.remove("is-opening");
+        panel.style.display = "none";
+      } else {
+        intro.style.display = "none";
+        panel.style.display = "block";
+        panel.classList.add("is-revealed");
+      }
+    };
+  }
+
+  const previewGiftBox = $("preview-gift-box");
+  if (previewGiftBox) {
+    previewGiftBox.onclick = () => {
+      if (replayAnimBtn) replayAnimBtn.click();
+    };
   }
 
   const vCode = $("v-code");

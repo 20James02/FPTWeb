@@ -177,3 +177,61 @@ def test_zero_effect_discount_cannot_be_held_as_an_eligible_benefit():
     assert q["voucher"]["status"] == "no_benefit"
     assert q["initial_total_vnd"] == 1200000
     assert "budget_cost_vnd" not in q["voucher"]
+
+
+def test_physical_gift_campaign_is_eligible_even_with_zero_cash_discount():
+    c = campaign(
+        program_type="physical_gift",
+        physical_gift=dict(
+            name="Camera FPT Outdoor IQ3",
+            market_value_vnd=1200000,
+            image_url="https://example.com/camera.jpg",
+            delivery_type="installation",
+            condition_note="Tặng kèm gói cước",
+            stock_total=100,
+        ),
+        popup_config=dict(
+            eyebrow="🎁 ĐẠI TIỆC QUÀ TẶNG",
+            title="Nhận Camera FPT Outdoor",
+            hero_prefix="TẶNG MIỄN PHÍ",
+            hero_highlight="CAMERA AI",
+            cta_text="ĐĂNG KÝ NHẬN QUÀ NGAY",
+        ),
+    )
+    c["rules"][0].update(basis="initial", amount=0)
+    q = quote()
+    apply_voucher(q, c, ["w"], {"id": "p", "service": "internet"}, NOW)
+    assert q["voucher"]["status"] == "eligible"
+    assert q["voucher"]["discount_vnd"] == 0
+    assert q["voucher"]["physical_gift"]["name"] == "Camera FPT Outdoor IQ3"
+
+
+def test_voucher_input_schema_validation_with_physical_gift():
+    from pagefpt.modules.vouchers.schemas import PhysicalGift, PopupConfig, VoucherInput
+
+    data = dict(
+        code="GIFT-CAM",
+        name="Quà tặng Camera FPT",
+        label="Ưu đãi quà",
+        terms="Áp dụng lắp mới",
+        start=NOW,
+        end=NOW + timedelta(days=7),
+        quota=50,
+        budget_vnd=50000000,
+        rules=[dict(key="default", amount=0)],
+        program_type="physical_gift",
+        physical_gift=PhysicalGift(
+            name="Camera Outdoor IQ3",
+            market_value_vnd=1200000,
+            delivery_type="installation",
+        ),
+        popup_config=PopupConfig(
+            title="Tặng Camera FPT",
+            cta_text="Nhận quà ngay",
+        ),
+    )
+    validated = VoucherInput(**data)
+    assert validated.physical_gift.name == "Camera Outdoor IQ3"
+    assert validated.popup_config.title == "Tặng Camera FPT"
+    assert validated.program_type == "physical_gift"
+

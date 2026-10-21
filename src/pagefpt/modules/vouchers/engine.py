@@ -97,7 +97,8 @@ def apply_voucher(quote: dict, campaign: dict, path: list[str], plan: dict, at: 
         discount *= months
     discount = min(service_remaining, discount)
     gift = rule.get("gift")
-    if discount == 0 and not gift:
+    has_physical_gift = bool((campaign.get("physical_gift") or {}).get("name"))
+    if discount == 0 and not gift and not has_physical_gift:
         view.update(status="no_benefit", discount_vnd=0)
         return quote
     budget_cost = discount + (gift["cost_vnd"] if gift else 0)
@@ -122,6 +123,7 @@ def apply_voucher(quote: dict, campaign: dict, path: list[str], plan: dict, at: 
         discount_vnd=discount,
         budget_cost_vnd=budget_cost,
         gift=gift,
+        physical_gift=campaign.get("physical_gift"),
     )
     quote["initial_total_vnd"] -= discount
     quote["line_items"]["voucher_discount_vnd"] = discount
