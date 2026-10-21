@@ -9,15 +9,14 @@ CONTAINER = "GTM-55F7ZTBZ"
 
 def assert_installed(html):
     head = html.split("</head>", 1)[0]
-    assert CONTAINER in head
+    assert CONTAINER not in html
     assert "AW-18469151383" in head
     assert "eHb2CMPQm6QdEJfF4-ZE" in head
-    assert head.index('"analytics_storage": "denied"') < head.index("gtm.start")
-    assert head.count("gtm.start") == 1
+    assert head.index('"analytics_storage": "denied"') < head.index("AW-18469151383")
+    assert "gtm.start" not in head
     assert "google_analytics.js" in head
     after_body = re.split(r"<body[^>]*>", html, maxsplit=1)[1].lstrip()
-    assert after_body.startswith("<!-- Google Tag Manager (noscript) -->")
-    assert after_body.count("https://www.googletagmanager.com/ns.html?id=" + CONTAINER) == 1
+    assert CONTAINER not in after_body
 
 
 @pytest.mark.parametrize(
