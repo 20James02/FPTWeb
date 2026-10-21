@@ -320,28 +320,9 @@ body.voucher-modal-open::-webkit-scrollbar {
   100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
 }
 
-/* 2 Rãnh khoét bán nguyệt (Notches) phong cách vé voucher quà tặng */
+/* 2 Rãnh khoét bán nguyệt (Notches) phong cách vé voucher quà tặng gắn đúng rãnh dập lỗ */
 .ticket-notch {
-  position: absolute;
-  top: 138px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #071b37;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.ticket-notch-left {
-  left: -9px;
-  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.25);
-  border-right: 2px solid #f97316;
-}
-
-.ticket-notch-right {
-  right: -9px;
-  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.25);
-  border-left: 2px solid #f97316;
+  display: none !important;
 }
 
 /* Nút đóng X tinh tế - đặt gọn góc trên không che chữ */
@@ -438,9 +419,11 @@ body.voucher-modal-open::-webkit-scrollbar {
 
 /* ===================================================================
    KHỐI QUÀ TẶNG SẢN PHẨM THẬT (PHYSICAL GIFT SHOWCASE)
+   Hiển thị sát viền popup, hình vuông 1:1
    =================================================================== */
 .voucher-hero-gift-wrap {
-  margin: 6px 0;
+  margin: 10px -16px 8px;
+  width: calc(100% + 32px);
   animation: giftReveal 0.4s ease-out;
 }
 
@@ -459,40 +442,40 @@ body.voucher-modal-open::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 120px;
-  border-radius: 14px;
-  background: radial-gradient(circle, #ffffff 40%, #fff7ed 90%, #fed7aa 100%);
-  border: 1.5px solid #fdba74;
-  box-shadow: inset 0 2px 6px rgba(249, 115, 22, 0.1), 0 6px 18px rgba(249, 115, 22, 0.15);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  border-radius: 0;
+  background: #ffffff;
+  border-top: 1.5px solid #fed7aa;
+  border-bottom: 1.5px solid #fed7aa;
+  border-left: none;
+  border-right: none;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.08);
   overflow: hidden;
 }
 
 .voucher-hero-gift-img {
-  max-height: 100px;
-  max-width: 88%;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.16));
-  animation: giftFloat 3s infinite ease-in-out alternate;
-  transition: transform 0.3s ease;
-}
-
-@keyframes giftFloat {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-4px) scale(1.03); }
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  max-width: none;
+  object-fit: cover;
+  display: block;
 }
 
 .gift-badge-floating {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  font-size: 9px;
+  top: 10px;
+  left: 10px;
+  font-size: 9.5px;
   font-weight: 800;
   color: #ffffff;
   background: linear-gradient(90deg, #ea580c, #f59e0b);
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.3px;
+  z-index: 3;
 }
 
 .voucher-gift-market-box {
@@ -500,7 +483,8 @@ body.voucher-modal-open::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin: 6px 0 2px;
+  padding: 0 16px;
+  margin: 8px 0 2px;
   font-size: 11.5px;
 }
 
@@ -595,14 +579,39 @@ body.voucher-modal-open::-webkit-scrollbar {
   line-height: 1.3;
 }
 
-/* Đường nét đứt chia cuống vé */
+/* Đường nét đứt chia cuống vé kèm 2 rãnh khoét bán nguyệt */
 .ticket-perforated-line {
   position: relative;
-  margin: 6px -16px;
+  margin: 8px -16px;
   border-top: 1.5px dashed #fed7aa;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.ticket-perforated-line::before,
+.ticket-perforated-line::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #071b37;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ticket-perforated-line::before {
+  left: -9px;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.25);
+  border-right: 2px solid #f97316;
+}
+
+.ticket-perforated-line::after {
+  right: -9px;
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.25);
+  border-left: 2px solid #f97316;
 }
 
 .ticket-cut-icon {
