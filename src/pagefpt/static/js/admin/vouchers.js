@@ -694,30 +694,33 @@
     if (termsEl) termsEl.textContent = $("v-terms")?.value.trim() || "Áp dụng cho khách hàng hoàn tất đăng ký lắp đặt mới.";
 
     const ctaText = $("p-cta-text");
-    if (ctaText) ctaText.textContent = $("v-popup-cta")?.value.trim() || "NHẬN QUÀ & SỬ DỤNG NGAY";
+    if (ctaText) ctaText.textContent = $("v-popup-cta")?.value.trim() || "NHẬN ƯU ĐÃI NGAY";
 
     const reassurance = $("p-reassurance");
-    if (reassurance) reassurance.textContent = $("v-popup-reassurance")?.value.trim() || "🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.";
+    if (reassurance) reassurance.textContent = $("v-popup-reassurance")?.value.trim() || "🔒 Tư vấn miễn phí, không cần thanh toán trước.";
 
     const later = $("p-later");
-    if (later) later.textContent = $("v-popup-dismiss")?.value.trim() || "Để sau, tôi muốn xem các gói trước";
+    if (later) later.textContent = $("v-popup-dismiss")?.value.trim() || "Bỏ qua ưu đãi";
 
     // Danh sách quyền lợi trên Smartphone Simulator
     const benefitsBox = $("p-benefits");
     if (benefitsBox) {
       benefitsBox.replaceChildren();
       if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
-        const item = el("p", "🎁 Quà hiện vật: " + giftName + (giftVal > 0 ? " (Trị giá " + money(giftVal) + ")" : ""));
-        item.style.cssText = "font-size:10.5px; padding:3px 6px; margin:0; border-left:3px solid #ea580c; background:#fff;";
+        const item = el("p", "🎁 Miễn phí " + giftName + (giftVal > 0 ? " (Trị giá " + money(giftVal) + ")" : ""));
+        item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #ea580c; background:#fff;";
         benefitsBox.append(item);
       }
       for (const r of rules.slice(0, 2)) {
         const benefit = r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
-        const text = "✨ " + (r.region_name || "Toàn quốc") + ": Giảm " + benefit + (r.basis === "monthly" ? " cước tháng" : "");
+        const text = "✨ Giảm " + benefit + (r.basis === "monthly" ? " (cước tháng)" : "") + (r.region_name && r.region_name !== "Toàn quốc" ? " · " + r.region_name : "");
         const item = el("p", text);
-        item.style.cssText = "font-size:10.5px; padding:3px 6px; margin:0; border-left:3px solid #f26f21; background:#fff;";
+        item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #f26f21; background:#fff;";
         benefitsBox.append(item);
       }
+      const note = el("p", "* Áp dụng theo khu vực & gói cước. Suất có hạn.");
+      note.className = "voucher-benefit-disclaimer";
+      benefitsBox.append(note);
     }
 
     updateReviewSummary(data);

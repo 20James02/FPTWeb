@@ -274,14 +274,14 @@
         if (!cfg.hero_prefix) heroPrefix.textContent = 'TẶNG HIỆN VẬT';
         heroAmount.textContent = physGift.name.toUpperCase();
         if (!cfg.hero_sub) {
-          heroSub.textContent = physGift.condition_note || (physGift.market_value_vnd ? `Trị giá ${money(physGift.market_value_vnd)} khi đăng ký mới` : 'Quà tặng đặc quyền kèm hợp đồng mới');
+          heroSub.textContent = physGift.condition_note || 'Kèm hợp đồng đăng ký mới';
         }
       } else {
         const b = (v.benefits || [])[0];
         if (!b) {
           if (!cfg.hero_prefix) heroPrefix.textContent = 'ƯU ĐÃI ĐẶC QUYỀN';
           heroAmount.textContent = v.label || 'VOUCHER VIP';
-          if (!cfg.hero_sub) heroSub.textContent = 'Áp dụng trực tiếp khi đăng ký lắp đặt FPT Telecom';
+          if (!cfg.hero_sub) heroSub.textContent = 'Áp dụng khi lắp đặt FPT';
         } else {
           const effective = b.discount_kind === 'percent'
             ? b.amount
@@ -290,19 +290,19 @@
           if (b.discount_kind === 'percent' && effective > 0) {
             if (!cfg.hero_prefix) heroPrefix.textContent = 'GIẢM NGAY';
             heroAmount.textContent = `${effective / 100}%`;
-            if (!cfg.hero_sub) heroSub.textContent = b.cap_vnd ? `Giảm tối đa ${money(b.cap_vnd)} trực tiếp vào gói cước` : 'Áp dụng trực tiếp khi đăng ký lắp đặt';
+            if (!cfg.hero_sub) heroSub.textContent = b.cap_vnd ? `Tối đa ${money(b.cap_vnd)}` : 'Trừ vào chi phí lắp đặt';
           } else if (effective > 0) {
             if (!cfg.hero_prefix) heroPrefix.textContent = 'GIẢM TRỰC TIẾP';
             heroAmount.textContent = money(effective);
-            if (!cfg.hero_sub) heroSub.textContent = 'Trừ thẳng vào chi phí đăng ký lắp đặt FPT Telecom';
+            if (!cfg.hero_sub) heroSub.textContent = 'Trừ vào chi phí lắp đặt';
           } else if (b.gift_name) {
             if (!cfg.hero_prefix) heroPrefix.textContent = 'TẶNG THIẾT BỊ';
             heroAmount.textContent = b.gift_name.toUpperCase();
-            if (!cfg.hero_sub) heroSub.textContent = 'Quà tặng đặc quyền kèm theo hợp đồng lắp đặt mới';
+            if (!cfg.hero_sub) heroSub.textContent = 'Kèm hợp đồng đăng ký mới';
           } else {
             if (!cfg.hero_prefix) heroPrefix.textContent = 'ƯU ĐÃI ĐẶC BIỆT';
             heroAmount.textContent = v.label || 'VOUCHER VIP';
-            if (!cfg.hero_sub) heroSub.textContent = 'Áp dụng cho khách hàng đăng ký qua link này';
+            if (!cfg.hero_sub) heroSub.textContent = 'Dành cho khách hàng đăng ký mới';
           }
         }
       }
@@ -315,7 +315,7 @@
 
     const eyebrow = get('voucher-acquisition-eyebrow');
     if (eyebrow) {
-      eyebrow.textContent = valid ? (cfg.eyebrow || '🎁 ĐẶC QUYỀN ƯU ĐÃI FPT') : '🎁 ƯU ĐÃI KHÁCH HÀNG';
+      eyebrow.textContent = valid ? (cfg.eyebrow || '🎁 ƯU ĐÃI ĐẶC QUYỀN') : '🎁 ƯU ĐÃI KHÁCH HÀNG';
     }
 
     get('voucher-acquisition-title').textContent = valid
@@ -348,42 +348,43 @@
     if (valid) {
       if (v.physical_gift?.name) {
         const giftItem = document.createElement('p');
-        giftItem.textContent = '🎁 Quà hiện vật: ' + v.physical_gift.name + (v.physical_gift.market_value_vnd ? ' (Trị giá ' + money(v.physical_gift.market_value_vnd) + ')' : '') + (v.physical_gift.delivery_type === 'installation' ? ' · KTV bàn giao tận nhà' : '');
+        giftItem.textContent = '🎁 Miễn phí ' + v.physical_gift.name + (v.physical_gift.delivery_type === 'installation' ? ' · Giao tận nhà' : '');
         benefits.append(giftItem);
       }
       for (const b of (v.benefits || []).slice(0, 2)) {
         const pieces = [];
         const effective = b.discount_kind === 'percent' ? b.amount : Math.min(b.amount || 0, b.cap_vnd ?? b.amount ?? 0);
-        if (effective > 0 && b.cap_vnd !== 0) pieces.push(b.discount_kind === 'percent' ? `Giảm ${b.amount / 100}%${b.cap_vnd != null ? ' (tối đa ' + money(b.cap_vnd) + ')' : ''}` : 'Giảm ' + money(effective));
-        if (b.gift_name) pieces.push('Quà tặng: ' + b.gift_name);
+        if (effective > 0 && b.cap_vnd !== 0) pieces.push(b.discount_kind === 'percent' ? `Giảm ${b.amount / 100}%` : 'Giảm ' + money(effective));
+        if (b.gift_name) pieces.push('Tặng: ' + b.gift_name);
         if (!pieces.length) continue;
-        const basis = {monthly:'cước theo tháng',initial:'thanh toán ban đầu',setup:'phí hòa mạng',equipment:'tiền thiết bị'}[b.basis];
-        const item = document.createElement('p'); item.textContent = '✨ ' + pieces.join(' · ') + (basis && b.amount > 0 ? ' cho ' + basis : '') + ' · ' + (b.region_name || 'Theo địa bàn') + (b.sold_out ? ' · Cần xác nhận lại suất' : '');
+        const basis = {monthly:'cước tháng',initial:'phí ban đầu',setup:'hòa mạng',equipment:'thiết bị'}[b.basis];
+        const item = document.createElement('p');
+        item.textContent = '✨ ' + pieces.join(' · ') + (basis && b.amount > 0 ? ' (' + basis + ')' : '') + (b.region_name && b.region_name !== 'Toàn quốc' ? ' · ' + b.region_name : '');
         benefits.append(item);
       }
       const note = document.createElement('p');
       note.className = 'voucher-benefit-disclaimer';
-      note.textContent = 'Ưu đãi được xác nhận theo gói, địa bàn và kỳ thanh toán. Mã chưa đồng nghĩa đã giữ suất.';
+      note.textContent = '* Áp dụng theo khu vực & gói cước. Suất có hạn.';
       benefits.append(note);
     }
 
     const useText = get('voucher-acquisition-use-text');
     if (useText) {
-      useText.textContent = valid ? (cfg.cta_text || 'NHẬN QUÀ & SỬ DỤNG NGAY') : 'Nhận tư vấn ngay';
+      useText.textContent = valid ? (cfg.cta_text || 'NHẬN ƯU ĐÃI NGAY') : 'Nhận tư vấn ngay';
     } else {
-      get('voucher-acquisition-use').textContent = valid ? (cfg.cta_text ? cfg.cta_text + ' →' : 'Nhận quà & Sử dụng ngay →') : 'Nhận tư vấn ngay →';
+      get('voucher-acquisition-use').textContent = valid ? (cfg.cta_text ? cfg.cta_text + ' →' : 'Nhận ưu đãi ngay →') : 'Nhận tư vấn ngay →';
     }
 
     const reassurance = get('voucher-acquisition-reassurance');
     if (reassurance) {
       reassurance.textContent = valid
-        ? (cfg.reassurance_text || '🔒 Nhân viên liên hệ xác nhận, chưa cần thanh toán ngay.')
-        : '🔒 Hoàn toàn miễn phí, nhân viên hỗ trợ tận tình.';
+        ? (cfg.reassurance_text || '🔒 Tư vấn miễn phí, không cần thanh toán trước.')
+        : '🔒 Miễn phí tư vấn lắp đặt.';
     }
 
     const laterBtn = get('voucher-acquisition-later');
-    if (laterBtn && cfg.dismiss_text) {
-      laterBtn.textContent = cfg.dismiss_text;
+    if (laterBtn) {
+      laterBtn.textContent = cfg.dismiss_text || 'Bỏ qua ưu đãi';
     }
 
     get('voucher-acquisition-reminder-label').textContent = valid ? 'Dùng mã ' + v.code : 'Nhận tư vấn ưu đãi';

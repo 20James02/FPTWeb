@@ -443,9 +443,9 @@ body.voucher-modal-open::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: clamp(95px, 14.5vh, 125px);
+  height: clamp(140px, 22vh, 185px);
   border-radius: 0;
-  background: #ffffff;
+  background: radial-gradient(circle, #ffffff 60%, #fff7ed 100%);
   border-top: 1.5px solid #fed7aa;
   border-bottom: 1.5px solid #fed7aa;
   border-left: none;
@@ -457,9 +457,9 @@ body.voucher-modal-open::-webkit-scrollbar {
 .voucher-hero-gift-img {
   width: 100%;
   height: 100%;
-  max-height: none;
-  max-width: none;
-  object-fit: cover;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
   display: block;
 }
 
@@ -916,7 +916,7 @@ body:has(dialog[open]) .voucher-acquisition-reminder,
     padding: 8px 12px 6px;
   }
   .gift-image-frame {
-    height: clamp(80px, 12vh, 100px);
+    height: clamp(110px, 17vh, 140px);
   }
   .voucher-hero-discount {
     padding: 2px 6px;
