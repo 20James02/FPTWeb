@@ -361,7 +361,10 @@
         const item = document.createElement('p'); item.textContent = '✨ ' + pieces.join(' · ') + (basis && b.amount > 0 ? ' cho ' + basis : '') + ' · ' + (b.region_name || 'Theo địa bàn') + (b.sold_out ? ' · Cần xác nhận lại suất' : '');
         benefits.append(item);
       }
-      const note = document.createElement('p'); note.textContent = 'Ưu đãi được xác nhận theo gói, địa bàn và kỳ thanh toán. Mã chưa đồng nghĩa đã giữ suất.'; benefits.append(note);
+      const note = document.createElement('p');
+      note.className = 'voucher-benefit-disclaimer';
+      note.textContent = 'Ưu đãi được xác nhận theo gói, địa bàn và kỳ thanh toán. Mã chưa đồng nghĩa đã giữ suất.';
+      benefits.append(note);
     }
 
     const useText = get('voucher-acquisition-use-text');
