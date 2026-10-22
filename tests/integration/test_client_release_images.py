@@ -1,7 +1,9 @@
+import io
 import re
 from uuid import uuid4
 
 import httpx
+from PIL import Image
 import psycopg
 import pytest
 from psycopg.types.json import Jsonb
@@ -223,3 +225,59 @@ async def test_uploaded_image_is_finalized_to_webp_before_linking_plan(admin):
     )
     assert plan.status_code == 201, plan.text
     assert plan.json()["payload"]["image_url"] == finalized.json()["url"]
+
+
+@pytest.mark.asyncio
+async def test_media_upload_server_fallback(admin):
+    stream = io.BytesIO()
+    Image.new("RGB", (300, 200), color=(10, 20, 30)).save(stream, format="PNG")
+    data = stream.getvalue()
+
+    objects = {}
+
+    class Storage:
+        def require(self):
+            return self
+
+        async def sign_put(self, key, content_type):
+            return "https://r2.invalid/" + key
+
+        async def write(self, key, content, content_type, public=False):
+            objects[key] = content
+
+        async def read(self, key):
+            return objects[key]
+
+        async def delete(self, key):
+            objects.pop(key, None)
+
+    app = admin._transport.app
+    app.state.storage = Storage()
+    app.state.settings.media_domain = "https://media.example.test"
+
+    # 1. Create upload intent
+    intent = await admin.post(
+        "/api/v1/admin/media/upload-intents",
+        json={
+            "filename": "fallback-test.png",
+            "content_type": "image/png",
+            "size_bytes": len(data),
+        },
+    )
+    assert intent.status_code == 201, intent.text
+    media_id = intent.json()["id"]
+
+    # 2. Upload via server fallback endpoint (simulating CORS block on presigned PUT)
+    fallback = await admin.put(
+        f"/api/v1/admin/media/{media_id}/upload-file",
+        content=data,
+        headers={"Content-Type": "image/png"},
+    )
+    assert fallback.status_code == 200, fallback.text
+    assert fallback.json()["state"] == "quarantine"
+
+    # 3. Finalize
+    finalized = await admin.post(f"/api/v1/admin/media/{media_id}/finalize")
+    assert finalized.status_code == 200, finalized.text
+    assert finalized.json()["state"] == "ready"
+    assert "https://media.example.test/images/" in finalized.json()["url"]

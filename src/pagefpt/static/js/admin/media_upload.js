@@ -7,34 +7,62 @@ window.adminUploadImage = async function (file) {
     file.size > 10 * 1024 * 1024
   )
     throw Error("Chọn ảnh JPEG, PNG hoặc WebP, tối đa 10 MB.");
+
   async function request(path, body) {
     const r = await adminFetch("/api/v1/admin/" + path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const data = await r.json();
-    if (!r.ok)
-      throw Error(
-        data.code === "PERMISSION_DENIED"
-          ? "Cần quyền chỉnh sửa nội dung để tải ảnh."
-          : "Chưa xử lý được ảnh; kiểm tra quyền/MFA và thử lại.",
-      );
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      if (data.code === "PERMISSION_DENIED")
+        throw Error("Cần quyền chỉnh sửa nội dung để tải ảnh.");
+      if (data.code === "STORAGE_UNCONFIGURED")
+        throw Error("Máy chủ chưa cấu hình kho lưu trữ ảnh R2.");
+      if (data.code === "MEDIA_DOMAIN_UNCONFIGURED")
+        throw Error("Máy chủ chưa cấu hình tên miền CDN cho ảnh.");
+      throw Error(data.message || data.code || "Chưa xử lý được ảnh; kiểm tra quyền/MFA và thử lại.");
+    }
     return data;
   }
+
   const intent = await request("media/upload-intents", {
     filename: file.name,
     content_type: file.type,
     size_bytes: file.size,
   });
-  const uploaded = await fetch(intent.upload_url, {
-    method: "PUT",
-    headers: intent.headers,
-    body: file,
-    credentials: "omit",
-    signal: AbortSignal.timeout(60000),
-  });
-  if (!uploaded.ok) throw Error("Tải ảnh chưa thành công. Hãy thử lại.");
+
+  // Try direct presigned PUT to R2 first
+  let directUploaded = false;
+  try {
+    const uploaded = await fetch(intent.upload_url, {
+      method: "PUT",
+      headers: intent.headers,
+      body: file,
+      credentials: "omit",
+      signal: AbortSignal.timeout(60000),
+    });
+    if (uploaded.ok) {
+      directUploaded = true;
+    }
+  } catch (_) {
+    // Direct PUT to R2 may fail due to CORS on localhost or preview domains
+  }
+
+  // If direct PUT failed (e.g. CORS on localhost or network block), fallback to server upload proxy
+  if (!directUploaded) {
+    const fallbackRes = await adminFetch("/api/v1/admin/media/" + intent.id + "/upload-file", {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    if (!fallbackRes.ok) {
+      const errData = await fallbackRes.json().catch(() => ({}));
+      throw Error(errData.message || errData.code || "Tải ảnh chưa thành công. Hãy thử lại.");
+    }
+  }
+
   const result = await request("media/" + intent.id + "/finalize", {});
   return {
     id: result.id,

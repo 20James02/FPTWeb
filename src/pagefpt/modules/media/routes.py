@@ -47,6 +47,22 @@ async def upload_intent(input: UploadInput, request: Request):
     }
 
 
+@router.put("/{id}/upload-file")
+async def upload_file_fallback(id: UUID, request: Request):
+    actor = await current_actor(request)
+    check(actor, "content.write")
+    asset = await dispatch(request, "resource_get", actor=actor.user_id, kind="media", id=str(id))
+    if asset["payload"].get("state") != "quarantine":
+        raise DomainError("INVALID_STATE", 400)
+    data = await request.body()
+    if len(data) > 10 * 1024 * 1024 or len(data) < 1:
+        raise DomainError("MEDIA_TOO_LARGE", 422)
+    storage = request.app.state.storage
+    content_type = request.headers.get("content-type") or asset["payload"].get("content_type", "image/jpeg")
+    await storage.write(asset["payload"]["object_key"], data, content_type)
+    return {"id": str(id), "state": "quarantine"}
+
+
 @router.post("/{id}/finalize")
 async def finalize(id: UUID, request: Request):
     actor = await current_actor(request)
