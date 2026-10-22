@@ -25,6 +25,26 @@
   <div id="voucher-kpis" class="voucher-kpis" aria-label="Kết quả voucher"></div>
   <p id="voucher-status" role="status" aria-live="polite" class="voucher-status-badge"></p>
 
+  <!-- Phân hệ Tab chính: Voucher vs Link chia sẻ -->
+  <nav class="voucher-main-tabs" aria-label="Chuyển đổi phân hệ Voucher và Link chia sẻ">
+    <button type="button" class="v-main-tab active" id="v-tab-btn-vouchers" data-tab="vouchers">
+      <span class="v-tab-icon">🎟️</span>
+      <span class="v-tab-text">
+        <strong>Chiến dịch &amp; Voucher</strong>
+        <small>Quy tắc giảm giá, gói cước, địa bàn &amp; quà tặng</small>
+      </span>
+    </button>
+    <button type="button" class="v-main-tab" id="v-tab-btn-links" data-tab="links">
+      <span class="v-tab-icon">🔗</span>
+      <span class="v-tab-text">
+        <strong>Quản lý Link chia sẻ &amp; Thumbnail</strong>
+        <small>Tạo link riêng, chọn voucher, tùy biến ảnh 1200×630 &amp; mã QR</small>
+      </span>
+      <span id="v-links-total-badge" class="v-tab-badge">0 link</span>
+    </button>
+  </nav>
+
+  <div id="v-pane-vouchers" class="v-main-pane active">
   <!-- 2. Voucher Table & Management Zone -->
   <section class="panel-card">
     <div class="voucher-toolbar">
@@ -705,6 +725,241 @@
       <div id="voucher-report"></div>
     </div>
   </details>
+  </div> <!-- end v-pane-vouchers -->
+
+  <!-- ===================================================================
+       TAB 2: QUẢN LÝ LINK CHIA SẺ & THUMBNAIL PREVIEW ĐỘC LẬP
+       =================================================================== -->
+  <div id="v-pane-links" class="v-main-pane" hidden>
+    <!-- Top Banner & Quick Actions -->
+    <div class="panel-card" style="margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span class="voucher-eyebrow">MARKETING &amp; KÊNH PHÂN PHỐI TIẾP THỊ</span>
+          <h2 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px;">Quản lý Link chia sẻ &amp; Tùy chỉnh Thumbnail</h2>
+          <p style="margin: 0; color: #475569; font-size: 13.5px;">Tạo link ngắn định danh (/s/...), chọn voucher ưu đãi áp dụng, tùy chỉnh ảnh xem trước (Open Graph 1200×630) trên Zalo/Facebook và mã QR.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" id="link-mgr-new-btn" class="btn-action-call">+ Soạn link mới</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Link Editor Card (Form + Live Preview 2 Columns) -->
+    <section id="link-mgr-editor-card" class="panel-card" style="margin-bottom: 22px;">
+      <div class="voucher-heading" style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color, #e2e8f0); padding-bottom: 12px;">
+        <div>
+          <h3 id="link-mgr-editor-title" style="margin: 0; font-size: 17px; font-weight: 800;">Thiết lập Link chia sẻ &amp; Tùy chỉnh Thumbnail</h3>
+          <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">Chọn voucher để liên kết, đặt mã link ngắn và tùy biến thẻ chia sẻ mạng xã hội.</p>
+        </div>
+        <span id="link-mgr-mode-badge" class="v-tab-badge" style="background: #e0f2fe; color: #0369a1;">Chế độ: Tạo mới</span>
+      </div>
+
+      <form id="link-mgr-form" novalidate>
+        <div class="voucher-link-mgr-grid">
+          <!-- Cột Trái: Cấu hình thông số link -->
+          <div class="voucher-fields" style="display: flex; flex-direction: column; gap: 14px;">
+            <label>
+              Voucher áp dụng cho link này <span class="v-req">*</span>
+              <select id="link-mgr-voucher-select" required>
+                <option value="">-- Chọn chiến dịch voucher áp dụng --</option>
+              </select>
+              <small class="v-help">Khách hàng mở link này sẽ được tự động ghi nhận ưu đãi từ voucher đã chọn.</small>
+            </label>
+
+            <label>
+              Mã đường dẫn rút gọn (Slug) <span class="v-req">*</span>
+              <div class="v-slug-input-wrapper">
+                <span id="link-mgr-slug-prefix" class="v-slug-prefix">https://.../s/</span>
+                <input id="link-mgr-slug" required pattern="[a-z0-9-]{3,50}" placeholder="vungtau-camera-zalo" autocomplete="off" spellcheck="false">
+              </div>
+              <small class="v-help">Chỉ gồm chữ thường không dấu a-z, số 0-9 và dấu gạch ngang (3-50 ký tự).</small>
+            </label>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <label>
+                Trang đích (Target URL) <span class="v-req">*</span>
+                <div style="display: flex; gap: 6px;">
+                  <input id="link-mgr-target" value="/" required placeholder="/ hoặc /ten-landing" list="link-mgr-targets-list" style="flex: 1;">
+                  <button type="button" id="link-mgr-verify-target" class="btn-action-detail" title="Kiểm tra xem trang đích có hợp lệ trên web không">Kiểm tra</button>
+                </div>
+                <datalist id="link-mgr-targets-list">
+                  <option value="/">
+                  <option value="/khuyen-mai">
+                  <option value="/do-toc-do">
+                  <option value="/san-pham/internet-gia-dinh">
+                  <option value="/san-pham/internet-doanh-nghiep">
+                  <option value="/san-pham/fpt-play">
+                  <option value="/san-pham/combo-fpt-play">
+                  <option value="/san-pham/camera-fpt">
+                </datalist>
+                <small id="link-mgr-target-status" class="v-help">Trang đích mở ra khi khách truy cập.</small>
+              </label>
+
+              <label>
+                Kênh phân phối (Channel) <span class="v-req">*</span>
+                <select id="link-mgr-channel">
+                  <option value="zalo">💬 Zalo (Tin nhắn / Nhóm)</option>
+                  <option value="facebook">🌐 Facebook (Post / Quảng cáo / Chat)</option>
+                  <option value="tiktok">📱 TikTok (Bio link / Bình luận)</option>
+                  <option value="google">🔍 Google Ads / Tìm kiếm</option>
+                  <option value="telegram">✈️ Telegram</option>
+                  <option value="direct">📄 Trực tiếp / Tờ rơi / Standee</option>
+                </select>
+                <small class="v-help">Phân loại nguồn để đo lường chuyển đổi.</small>
+              </label>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <label>
+                Nhân viên phụ trách giới thiệu
+                <select id="link-mgr-employee">
+                  <option value="">Không gắn nhân viên (Chiến dịch chung)</option>
+                </select>
+                <small class="v-help">Gắn nhân viên để theo dõi KPI kinh doanh.</small>
+              </label>
+
+              <label style="display: flex; flex-direction: column; justify-content: center;">
+                <span style="font-weight: 600; font-size: 13px; margin-bottom: 6px;">Trạng thái link</span>
+                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13.5px;">
+                  <input id="link-mgr-active" type="checkbox" checked style="width: 18px; height: 18px;">
+                  <span>Kích hoạt link ngay (Đang bật)</span>
+                </label>
+              </label>
+            </div>
+
+            <!-- Khối Tùy Biến Thumbnail & Xem Trước -->
+            <div class="v-thumb-config-box">
+              <h4>🖼️ Tùy chỉnh Thumbnail &amp; Thẻ xem trước (Open Graph 1200 × 630)</h4>
+              <p class="v-help" style="margin-bottom: 10px;">Ảnh và tiêu đề hiển thị khi dán link vào Zalo, Facebook, Messenger, Telegram. Tỉ lệ chuẩn 1.91:1.</p>
+
+              <label for="link-mgr-image">Đường dẫn ảnh Thumbnail</label>
+              <input id="link-mgr-image" type="url" placeholder="https://... hoặc tải ảnh bên dưới" aria-describedby="link-mgr-image-help">
+              
+              <div class="voucher-share-image-actions" style="margin-top: 6px;">
+                <label class="btn-action-detail voucher-share-upload" for="link-mgr-image-file">
+                  Tải ảnh lên<input id="link-mgr-image-file" type="file" accept="image/jpeg,image/png,image/webp">
+                </label>
+                <button id="link-mgr-image-clear" class="btn-action-detail" type="button">Ảnh mặc định</button>
+              </div>
+              <small id="link-mgr-image-help" class="v-help" role="status" aria-live="polite">Hỗ trợ JPG, PNG, WebP (Tối đa 10 MB). Tự động tải lên R2.</small>
+
+              <div class="v-thumb-presets">
+                <span style="font-size: 11px; color: #64748b; align-self: center;">Mẫu ảnh nhanh:</span>
+                <button type="button" class="btn-preset-thumb" data-thumb="/static/images/device-internet-3d.webp">🌐 Internet Wifi 6</button>
+                <button type="button" class="btn-preset-thumb" data-thumb="/static/images/device-tv-3d.webp">📺 Combo FPT Play</button>
+                <button type="button" class="btn-preset-thumb" data-thumb="/static/images/device-camera-3d.webp">📷 Camera FPT IQ3</button>
+              </div>
+
+              <div style="margin-top: 12px; display: grid; gap: 10px;">
+                <label>
+                  Tiêu đề hiển thị mạng xã hội (tùy chọn)
+                  <input id="link-mgr-custom-title" maxlength="160" placeholder="Để trống sẽ tự động lấy tên chiến dịch voucher">
+                </label>
+                <label>
+                  Mô tả ngắn gọn khi chia sẻ (tùy chọn)
+                  <textarea id="link-mgr-custom-desc" maxlength="300" rows="2" placeholder="Để trống sẽ tự lấy điều kiện tóm tắt của voucher"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <!-- Nút Lưu Link -->
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <button id="link-mgr-save-btn" class="btn-action-call" type="submit" style="padding: 12px 24px; font-weight: 700;">+ Lưu &amp; Cập nhật link</button>
+              <button id="link-mgr-cancel-btn" class="btn-action-detail" type="button">Đặt lại form</button>
+            </div>
+          </div>
+
+          <!-- Cột Phải: Khung Live Preview Tương Tác Thời Gian Thực -->
+          <div class="v-link-editor-preview">
+            <!-- 1. Mô phỏng Card chia sẻ (Zalo / Facebook) -->
+            <div class="v-card-simulator">
+              <div class="v-card-sim-header">
+                <span class="v-card-sim-platform zalo" id="link-mgr-sim-platform">💬 Xem trước hiển thị trên Zalo &amp; Facebook</span>
+                <span class="v-tab-badge" style="background: #f1f5f9; color: #475569;">1200 × 630 px</span>
+              </div>
+              <div class="v-card-sim-image-box">
+                <img id="link-mgr-sim-image" src="/static/images/device-internet-3d.webp" alt="Ảnh thumbnail link chia sẻ" loading="lazy">
+              </div>
+              <div class="v-card-sim-body">
+                <span id="link-mgr-sim-domain" class="v-card-sim-domain">pagefpt.vn</span>
+                <h4 id="link-mgr-sim-title" class="v-card-sim-title">Tư vấn lắp mạng FPT — Gói cước theo khu vực</h4>
+                <p id="link-mgr-sim-desc" class="v-card-sim-desc">Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng.</p>
+                <div id="link-mgr-sim-status" class="v-card-sim-status live">🟢 Đang sẵn sàng nhận ưu đãi</div>
+              </div>
+            </div>
+
+            <!-- 2. QR Code & Công Cụ Sao Chép Tiếp Thị Nhanh -->
+            <div class="v-qr-preview-card">
+              <div class="v-qr-preview-img-box">
+                <img id="link-mgr-qr-img" src="" alt="Mã QR link" style="display: none;">
+                <span id="link-mgr-qr-placeholder" style="font-size: 11px; color: #94a3b8; text-align: center;">Mã QR sẽ hiển thị sau khi lưu link</span>
+              </div>
+              <div class="v-qr-actions-box">
+                <strong>Công cụ tiếp thị nhanh:</strong>
+                <div class="v-qr-actions-buttons">
+                  <button type="button" id="link-mgr-copy-link-btn" class="btn-action-detail" title="Sao chép link rút gọn /s/..." disabled>🔗 Sao chép link</button>
+                  <button type="button" id="link-mgr-copy-msg-btn" class="btn-action-detail" title="Sao chép tin nhắn Zalo marketing soạn sẵn" disabled>📋 Copy tin nhắn Zalo</button>
+                  <a id="link-mgr-download-qr-btn" class="btn-action-detail" style="pointer-events: none; opacity: 0.5;" title="Tải file vector SVG để in ấn">📥 Tải mã QR</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Bảng Quản Lý Toàn Bộ Danh Sách Link -->
+    <section class="panel-card" style="margin-top: 20px;">
+      <div class="voucher-toolbar" style="margin-bottom: 14px;">
+        <div class="voucher-toolbar-left">
+          <label class="voucher-search-label">
+            <span class="sr-only">Tìm link</span>
+            <input type="search" id="link-list-search" placeholder="🔍 Tìm link, mã slug, voucher...">
+          </label>
+          <label class="voucher-filter-label">
+            <span class="sr-only">Lọc theo kênh</span>
+            <select id="link-list-filter-channel" aria-label="Lọc theo kênh">
+              <option value="all">Tất cả kênh</option>
+              <option value="zalo">Zalo</option>
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+              <option value="google">Google Ads</option>
+              <option value="direct">Trực tiếp / Tờ rơi</option>
+            </select>
+          </label>
+          <label class="voucher-filter-label">
+            <span class="sr-only">Lọc trạng thái</span>
+            <select id="link-list-filter-status" aria-label="Lọc trạng thái">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="active">Đang bật</option>
+              <option value="inactive">Đã tắt</option>
+            </select>
+          </label>
+          <span id="link-list-count" class="voucher-counter-badge">0 link</span>
+        </div>
+      </div>
+
+      <div class="voucher-table-scroll">
+        <table id="all-links-table" class="v-link-table" data-managed-list="true">
+          <thead>
+            <tr>
+              <th style="width: 50px;">Ảnh</th>
+              <th>Đường dẫn rút gọn</th>
+              <th>Voucher áp dụng</th>
+              <th>Kênh</th>
+              <th>Nhân viên</th>
+              <th>Trạng thái</th>
+              <th style="min-width: 220px;">Thao tác nhanh</th>
+            </tr>
+          </thead>
+          <tbody id="all-links-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 </section>
 
 <!-- Dialog Nhân Bản Voucher (Clone Voucher Modal) -->

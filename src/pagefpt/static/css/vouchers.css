@@ -2260,3 +2260,405 @@
 @media(prefers-reduced-motion:reduce){#voucher-table tbody tr,#voucher-table tbody td:last-child>div{transition:none!important}}
 .voucher-share-fieldset{min-width:0;max-width:100%;box-sizing:border-box}.voucher-share-fieldset legend{max-width:100%;white-space:normal;overflow-wrap:anywhere}.voucher-share-fieldset input,.voucher-share-fieldset select{min-width:0}.voucher-share-fieldset form,.voucher-share-fieldset .voucher-fields,.voucher-share-fieldset label{min-width:0}.voucher-link-item code{overflow-wrap:anywhere;word-break:break-word}
 .voucher-share-status-banner{display:block;overflow-wrap:anywhere}.voucher-code-badge{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+
+/* ===================================================================
+   Main Module Tabs: Vouchers vs Sharing Links
+   =================================================================== */
+.voucher-main-tabs {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0 22px;
+  border-bottom: 2px solid var(--border-color, #e2e8f0);
+  padding-bottom: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.v-main-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  color: var(--text-secondary, #475569);
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+  position: relative;
+  bottom: -2px;
+  white-space: nowrap;
+}
+
+.v-main-tab:hover {
+  background: #f8fafc;
+  color: var(--text-primary, #0f172a);
+}
+
+.v-main-tab.active {
+  background: #fff;
+  color: #ea580c;
+  border-color: #ea580c #cbd5e1 #fff #cbd5e1;
+  border-top: 3px solid #f97316;
+  font-weight: 700;
+  box-shadow: 0 -4px 10px rgba(234, 88, 12, 0.06);
+}
+
+.v-tab-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-tab-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.v-tab-text strong {
+  font-size: 14.5px;
+}
+
+.v-tab-text small {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+  font-weight: normal;
+  margin-top: 2px;
+}
+
+.v-main-tab.active .v-tab-text small {
+  color: #9a3412;
+}
+
+.v-tab-badge {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.v-main-tab.active .v-tab-badge {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.v-main-pane {
+  min-width: 0;
+}
+
+.v-main-pane[hidden] {
+  display: none !important;
+}
+
+/* ===================================================================
+   Dedicated Link Management & Live Preview Zone
+   =================================================================== */
+.voucher-link-mgr-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .voucher-link-mgr-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.v-slug-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.v-slug-input-wrapper:focus-within {
+  border-color: #ea580c;
+  outline: 2px solid rgba(234, 88, 12, 0.2);
+}
+
+.v-slug-prefix {
+  padding: 8px 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12.5px;
+  font-family: monospace;
+  font-weight: 600;
+  border-right: 1px solid #cbd5e1;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.v-slug-input-wrapper input {
+  border: none !important;
+  outline: none !important;
+  padding: 10px 12px !important;
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.v-thumb-config-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.v-thumb-config-box h4 {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.v-thumb-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.btn-preset-thumb {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-preset-thumb:hover {
+  background: #ffedd5;
+  border-color: #f97316;
+  color: #c2410c;
+}
+
+/* Social Card Simulator */
+.v-card-simulator {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.v-card-sim-header {
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.v-card-sim-platform {
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.v-card-sim-platform.zalo {
+  color: #0068ff;
+}
+
+.v-card-sim-platform.facebook {
+  color: #1877f2;
+}
+
+.v-card-sim-image-box {
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  background: #0f172a;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-card-sim-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.v-card-sim-body {
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.v-card-sim-domain {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.v-card-sim-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0 0 6px;
+}
+
+.v-card-sim-desc {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.v-card-sim-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.v-card-sim-status.live {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.v-card-sim-status.waiting {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* QR Code & Direct Share Box */
+.v-qr-preview-card {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.v-qr-preview-img-box {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-qr-preview-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.v-qr-actions-box {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.v-qr-actions-box strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.v-qr-actions-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Dedicated Links Table */
+.v-link-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.v-link-thumb-mini {
+  width: 48px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  vertical-align: middle;
+}
+
+.v-channel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.v-channel-badge.zalo {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.v-channel-badge.facebook {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.v-channel-badge.tiktok {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.v-channel-badge.google {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.v-channel-badge.direct {
+  background: #f1f5f9;
+  color: #475569;
+}
+

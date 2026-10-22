@@ -1173,7 +1173,12 @@
       cloneBtn.title = "Tạo bản nháp mới kế thừa cấu hình từ voucher này";
       cloneBtn.onclick = () => openCloneDialog(row);
 
-      btnGroup.append(button, cloneBtn);
+      const linkBtn = el("button", "🔗 Tạo link", "btn-action-detail");
+      linkBtn.type = "button";
+      linkBtn.title = "Chuyển sang phân hệ Link để tạo link chia sẻ cho voucher này";
+      linkBtn.onclick = () => openLinkTabWithVoucher(row.id);
+
+      btnGroup.append(button, cloneBtn, linkBtn);
       action.append(btnGroup);
       tr.append(action);
       tbody.append(tr);
@@ -1293,6 +1298,400 @@
     }
   }
 
+  function switchMainTab(tabName) {
+    const tabVouchersBtn = $("v-tab-btn-vouchers");
+    const tabLinksBtn = $("v-tab-btn-links");
+    const paneVouchers = $("v-pane-vouchers");
+    const paneLinks = $("v-pane-links");
+
+    if (tabName === "links") {
+      tabVouchersBtn?.classList.remove("active");
+      tabLinksBtn?.classList.add("active");
+      if (paneVouchers) paneVouchers.hidden = true;
+      if (paneLinks) paneLinks.hidden = false;
+      renderAllLinks();
+      updateLinkMgrVoucherOptions();
+      updateLinkMgrPreview();
+    } else {
+      tabLinksBtn?.classList.remove("active");
+      tabVouchersBtn?.classList.add("active");
+      if (paneLinks) paneLinks.hidden = true;
+      if (paneVouchers) paneVouchers.hidden = false;
+    }
+  }
+
+  function updateLinkMgrVoucherOptions(currentVoucherId = "") {
+    const select = $("link-mgr-voucher-select");
+    if (!select) return;
+    const prev = currentVoucherId || select.value;
+    select.replaceChildren();
+    const defaultOpt = el("option", "-- Chọn chiến dịch voucher áp dụng --");
+    defaultOpt.value = "";
+    select.append(defaultOpt);
+
+    for (const v of rows) {
+      const p = v.published_payload || v.payload || {};
+      const statusLabel = { draft: "Bản nháp", published: "Đang chạy", paused: "Tạm dừng" }[v.status] || v.status;
+      const opt = el("option", `[${v.code}] ${p.name || v.code} (${statusLabel})`);
+      opt.value = v.id;
+      if (v.id === prev) opt.selected = true;
+      select.append(opt);
+    }
+  }
+
+  function updateLinkMgrPreview() {
+    const rawImg = $("link-mgr-image")?.value.trim() || "";
+    let imageSrc = "/static/images/device-internet-3d.webp";
+    try {
+      const parsed = new URL(rawImg, location.origin);
+      if (rawImg && (parsed.protocol === "https:" || rawImg.startsWith("/static/")) && !parsed.username && !parsed.password) {
+        imageSrc = parsed.href;
+      }
+    } catch (_) {}
+
+    const img = $("link-mgr-sim-image");
+    if (img) img.src = imageSrc;
+
+    const voucherId = $("link-mgr-voucher-select")?.value;
+    const v = rows.find(r => r.id === voucherId);
+    const p = v?.published_payload || v?.payload;
+
+    // Title
+    const customTitle = $("link-mgr-custom-title")?.value.trim();
+    const title = customTitle || (p?.name ? p.name : "Tư vấn lắp mạng FPT — Gói cước theo khu vực");
+    if ($("link-mgr-sim-title")) $("link-mgr-sim-title").textContent = title;
+
+    // Description
+    const customDesc = $("link-mgr-custom-desc")?.value.trim();
+    const desc = customDesc || (p?.terms ? p.terms.slice(0, 300) : "Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng.");
+    if ($("link-mgr-sim-desc")) $("link-mgr-sim-desc").textContent = desc;
+
+    // Domain
+    if ($("link-mgr-sim-domain")) $("link-mgr-sim-domain").textContent = location.host;
+
+    // Channel label & style
+    const channel = $("link-mgr-channel")?.value || "zalo";
+    const simPlatform = $("link-mgr-sim-platform");
+    if (simPlatform) {
+      simPlatform.className = `v-card-sim-platform ${channel}`;
+      const channelNames = {
+        zalo: "💬 Xem trước trên Zalo",
+        facebook: "🌐 Xem trước trên Facebook",
+        tiktok: "📱 Xem trước trên TikTok",
+        google: "🔍 Xem trước trên Google Ads",
+        telegram: "✈️ Xem trước trên Telegram",
+        direct: "📄 Xem trước Link tờ rơi"
+      };
+      simPlatform.textContent = channelNames[channel] || "💬 Thẻ xem trước mạng xã hội";
+    }
+
+    // Status Readiness
+    const simStatus = $("link-mgr-sim-status");
+    if (simStatus) {
+      if (!v) {
+        simStatus.className = "v-card-sim-status waiting";
+        simStatus.textContent = "⚠️ Chưa chọn voucher áp dụng";
+      } else if (v.status !== "published") {
+        simStatus.className = "v-card-sim-status waiting";
+        simStatus.textContent = "⏸️ Voucher đang là bản nháp / tạm dừng (Khách xem nhưng chưa áp dụng)";
+      } else {
+        const start = Date.parse(v.published_payload?.start || "");
+        const end = Date.parse(v.published_payload?.end || "");
+        const now = Date.now();
+        if (start <= now && now < end) {
+          simStatus.className = "v-card-sim-status live";
+          simStatus.textContent = "🟢 Voucher đang chạy — Khách nhận ưu đãi tức thì";
+        } else {
+          simStatus.className = "v-card-sim-status waiting";
+          simStatus.textContent = "⌛ Voucher ngoài lịch hiệu lực";
+        }
+      }
+    }
+
+    // QR Preview
+    const slug = $("link-mgr-slug")?.value.trim().toLowerCase();
+    const qrImg = $("link-mgr-qr-img");
+    const qrPlaceholder = $("link-mgr-qr-placeholder");
+    const copyLinkBtn = $("link-mgr-copy-link-btn");
+    const copyMsgBtn = $("link-mgr-copy-msg-btn");
+    const downloadQrBtn = $("link-mgr-download-qr-btn");
+
+    if (slug && slug.length >= 3) {
+      if (qrImg) {
+        qrImg.src = "/api/v1/admin/vouchers/links/" + encodeURIComponent(slug) + "/qr";
+        qrImg.style.display = "block";
+      }
+      if (qrPlaceholder) qrPlaceholder.style.display = "none";
+      if (copyLinkBtn) {
+        copyLinkBtn.disabled = false;
+        copyLinkBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(location.origin + "/s/" + slug);
+            status("Đã sao chép link /s/" + slug);
+          } catch (_) {
+            status("Hãy chọn và sao chép: " + location.origin + "/s/" + slug);
+          }
+        };
+      }
+      if (copyMsgBtn) {
+        copyMsgBtn.disabled = false;
+        copyMsgBtn.onclick = async () => {
+          const url = location.origin + "/s/" + slug;
+          const vName = p?.name || "Ưu đãi đặc quyền FPT";
+          const vCode = v?.code || "";
+          const msg = `🎁 ƯU ĐÃI ĐẶC QUYỀN TỪ FPT TELECOM!\n` +
+            `Nhận ngay ưu đãi "${vName}"${vCode ? " (Mã: " + vCode + ")" : ""} khi đăng ký trực tuyến hôm nay.\n` +
+            `👉 Nhấp vào link để nhận ưu đãi và giữ suất:\n${url}\n` +
+            `(Số lượng suất ưu đãi có hạn, áp dụng theo địa bàn lắp đặt).`;
+          try {
+            await navigator.clipboard.writeText(msg);
+            status("Đã sao chép mẫu tin nhắn marketing!");
+          } catch (_) {
+            status("Chưa thể sao chép tự động, vui lòng chọn văn bản.");
+          }
+        };
+      }
+      if (downloadQrBtn) {
+        downloadQrBtn.style.pointerEvents = "auto";
+        downloadQrBtn.style.opacity = "1";
+        downloadQrBtn.href = "/api/v1/admin/vouchers/links/" + encodeURIComponent(slug) + "/qr";
+        downloadQrBtn.download = slug + ".svg";
+      }
+    } else {
+      if (qrImg) qrImg.style.display = "none";
+      if (qrPlaceholder) qrPlaceholder.style.display = "block";
+      if (copyLinkBtn) copyLinkBtn.disabled = true;
+      if (copyMsgBtn) copyMsgBtn.disabled = true;
+      if (downloadQrBtn) {
+        downloadQrBtn.style.pointerEvents = "none";
+        downloadQrBtn.style.opacity = "0.5";
+      }
+    }
+  }
+
+  function renderAllLinks() {
+    const tbody = $("all-links-tbody");
+    const totalBadge = $("v-links-total-badge");
+    const countBadge = $("link-list-count");
+    if (!tbody) return;
+    tbody.replaceChildren();
+
+    if (totalBadge) totalBadge.textContent = `${links.length} link`;
+
+    const search = $("link-list-search")?.value.trim().toLowerCase() || "";
+    const filterChannel = $("link-list-filter-channel")?.value || "all";
+    const filterStatus = $("link-list-filter-status")?.value || "all";
+
+    const filtered = links.filter((l) => {
+      if (filterChannel !== "all" && l.channel !== filterChannel) return false;
+      if (filterStatus === "active" && !l.active) return false;
+      if (filterStatus === "inactive" && l.active) return false;
+      if (search) {
+        const v = rows.find(r => r.id === l.voucher_id);
+        const text = `${l.slug} ${l.channel} ${v?.code || ""} ${v?.payload?.name || ""}`.toLowerCase();
+        if (!text.includes(search)) return false;
+      }
+      return true;
+    });
+
+    if (countBadge) countBadge.textContent = `Hiển thị ${filtered.length} / ${links.length} link`;
+
+    for (const link of filtered) {
+      const v = rows.find(r => r.id === link.voucher_id);
+      const tr = el("tr");
+
+      // 1. Thumbnail mini
+      const tdImg = el("td");
+      const miniImg = el("img", "", "v-link-thumb-mini");
+      miniImg.src = link.preview_image_url || "/static/images/device-internet-3d.webp";
+      miniImg.alt = "Thumb";
+      miniImg.loading = "lazy";
+      tdImg.append(miniImg);
+
+      // 2. Slug & Target
+      const tdSlug = el("td");
+      const codeLink = el("code", "/s/" + link.slug);
+      codeLink.style.fontWeight = "700";
+      codeLink.style.color = "#0369a1";
+      const targetSub = el("small", "→ " + (link.target || "/"), "v-help");
+      targetSub.style.display = "block";
+      tdSlug.append(codeLink, targetSub);
+
+      // 3. Voucher Info
+      const tdVoucher = el("td");
+      if (v) {
+        const vBadge = el("span", v.code, "voucher-code-badge");
+        const vName = el("small", (v.payload?.name || "").slice(0, 35) + "...", "v-help");
+        vName.style.display = "block";
+        tdVoucher.append(vBadge, vName);
+      } else {
+        tdVoucher.append(el("span", "(Chưa gán)", "v-help"));
+      }
+
+      // 4. Channel
+      const tdChannel = el("td");
+      const chBadge = el("span", link.channel, `v-channel-badge ${link.channel}`);
+      tdChannel.append(chBadge);
+
+      // 5. Employee
+      const tdEmp = el("td");
+      const empName = link.employee_id
+        ? (employees.find(e => e.id === link.employee_id)?.name || "Nhân viên")
+        : "—";
+      tdEmp.textContent = empName;
+
+      // 6. Active
+      const tdActive = el("td");
+      const statusBadge = el("span", link.active ? "Đang bật" : "Đã tắt", link.active ? "badge badge-success" : "badge badge-secondary");
+      statusBadge.style.fontSize = "11px";
+      statusBadge.style.padding = "2px 8px";
+      statusBadge.style.borderRadius = "10px";
+      statusBadge.style.background = link.active ? "#dcfce7" : "#f1f5f9";
+      statusBadge.style.color = link.active ? "#15803d" : "#64748b";
+      tdActive.append(statusBadge);
+
+      // 7. Actions
+      const tdActions = el("td");
+      const actGroup = el("div");
+      actGroup.style.display = "flex";
+      actGroup.style.gap = "6px";
+      actGroup.style.flexWrap = "wrap";
+
+      // Edit
+      const editBtn = el("button", "Sửa", "btn-action-detail");
+      editBtn.type = "button";
+      editBtn.onclick = () => editLinkInMgr(link);
+
+      // Toggle
+      const toggleBtn = el("button", link.active ? "Tắt" : "Bật", "btn-action-detail");
+      toggleBtn.type = "button";
+      toggleBtn.onclick = () => toggleLinkActive(link);
+
+      // Copy link
+      const copyBtn = el("button", "Copy link", "btn-action-detail");
+      copyBtn.type = "button";
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(location.origin + "/s/" + link.slug);
+          status("Đã sao chép link /s/" + link.slug);
+        } catch (_) {
+          status("Hãy chọn và sao chép: " + location.origin + "/s/" + link.slug);
+        }
+      };
+
+      // Copy Zalo Msg
+      const copyZaloBtn = el("button", "Copy Zalo", "btn-action-detail");
+      copyZaloBtn.type = "button";
+      copyZaloBtn.title = "Sao chép lời mời Zalo kèm link";
+      copyZaloBtn.onclick = async () => {
+        const url = location.origin + "/s/" + link.slug;
+        const vName = v?.payload?.name || "Ưu đãi đặc quyền FPT";
+        const vCode = v?.code || "";
+        const msg = `🎁 ƯU ĐÃI ĐẶC QUYỀN TỪ FPT TELECOM!\n` +
+          `Nhận ngay ưu đãi "${vName}"${vCode ? " (Mã: " + vCode + ")" : ""} khi đăng ký trực tuyến hôm nay.\n` +
+          `👉 Nhấp vào link để nhận ưu đãi và giữ suất:\n${url}\n` +
+          `(Số lượng suất ưu đãi có hạn, áp dụng theo địa bàn lắp đặt).`;
+        try {
+          await navigator.clipboard.writeText(msg);
+          status("Đã sao chép mẫu tin nhắn marketing!");
+        } catch (_) {
+          status("Chưa thể sao chép tự động, vui lòng chọn văn bản.");
+        }
+      };
+
+      // Download QR
+      const qrBtn = el("a", "Tải QR", "btn-action-detail");
+      qrBtn.href = "/api/v1/admin/vouchers/links/" + encodeURIComponent(link.slug) + "/qr";
+      qrBtn.download = link.slug + ".svg";
+
+      actGroup.append(editBtn, toggleBtn, copyBtn, copyZaloBtn, qrBtn);
+      tdActions.append(actGroup);
+
+      tr.append(tdImg, tdSlug, tdVoucher, tdChannel, tdEmp, tdActive, tdActions);
+      tbody.append(tr);
+    }
+
+    if (!filtered.length) {
+      const tr = el("tr");
+      const td = el("td", "Chưa có link chia sẻ nào phù hợp tiêu chí lọc.");
+      td.colSpan = 7;
+      td.style.textAlign = "center";
+      td.style.padding = "24px";
+      td.style.color = "#64748b";
+      tr.append(td);
+      tbody.append(tr);
+    }
+  }
+
+  function editLinkInMgr(link) {
+    switchMainTab("links");
+    if ($("link-mgr-voucher-select")) $("link-mgr-voucher-select").value = link.voucher_id || "";
+    if ($("link-mgr-slug")) $("link-mgr-slug").value = link.slug;
+    if ($("link-mgr-target")) $("link-mgr-target").value = link.target || "/";
+    if ($("link-mgr-channel")) $("link-mgr-channel").value = link.channel || "zalo";
+    if ($("link-mgr-employee")) $("link-mgr-employee").value = link.employee_id || "";
+    if ($("link-mgr-active")) $("link-mgr-active").checked = link.active ?? true;
+    if ($("link-mgr-image")) $("link-mgr-image").value = link.preview_image_url || "";
+    if ($("link-mgr-custom-title")) $("link-mgr-custom-title").value = link.title || "";
+    if ($("link-mgr-custom-desc")) $("link-mgr-custom-desc").value = "";
+
+    const modeBadge = $("link-mgr-mode-badge");
+    if (modeBadge) {
+      modeBadge.style.background = "#fef3c7";
+      modeBadge.style.color = "#b45309";
+      modeBadge.textContent = "Chế độ: Đang sửa /s/" + link.slug;
+    }
+    if ($("link-mgr-save-btn")) $("link-mgr-save-btn").textContent = "💾 Cập nhật link /s/" + link.slug;
+
+    updateLinkMgrPreview();
+    $("link-mgr-editor-card")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    $("link-mgr-image")?.focus({ preventScroll: true });
+  }
+
+  async function toggleLinkActive(link) {
+    job(async () => {
+      await api("/" + link.voucher_id + "/links", "POST", {
+        slug: link.slug,
+        target: link.target,
+        channel: link.channel,
+        employee_id: link.employee_id,
+        active: !link.active,
+        preview_image_url: link.preview_image_url || "",
+      });
+      await load();
+      renderAllLinks();
+      renderLinks();
+      status(`Đã ${!link.active ? "bật" : "tắt"} link /s/${link.slug}`);
+    });
+  }
+
+  function openLinkTabWithVoucher(voucherId) {
+    switchMainTab("links");
+    updateLinkMgrVoucherOptions(voucherId);
+    if ($("link-mgr-voucher-select")) $("link-mgr-voucher-select").value = voucherId;
+    updateLinkMgrPreview();
+    $("link-mgr-editor-card")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    $("link-mgr-slug")?.focus();
+  }
+
+  function resetLinkMgrForm() {
+    if ($("link-mgr-form")) $("link-mgr-form").reset();
+    if ($("link-mgr-target")) $("link-mgr-target").value = "/";
+    if ($("link-mgr-channel")) $("link-mgr-channel").value = "zalo";
+    if ($("link-mgr-active")) $("link-mgr-active").checked = true;
+    if ($("link-mgr-image")) $("link-mgr-image").value = "";
+    if ($("link-mgr-custom-title")) $("link-mgr-custom-title").value = "";
+    if ($("link-mgr-custom-desc")) $("link-mgr-custom-desc").value = "";
+    const modeBadge = $("link-mgr-mode-badge");
+    if (modeBadge) {
+      modeBadge.style.background = "#e0f2fe";
+      modeBadge.style.color = "#0369a1";
+      modeBadge.textContent = "Chế độ: Tạo mới";
+    }
+    if ($("link-mgr-save-btn")) $("link-mgr-save-btn").textContent = "+ Lưu & Cập nhật link";
+    updateLinkMgrPreview();
+  }
+
   async function load(more = false) {
     const data = await api(more && cursor ? "?before=" + cursor : "");
     rows = more ? [...rows, ...data.items] : data.items;
@@ -1301,6 +1700,9 @@
     const moreBtn = $("voucher-more");
     if (moreBtn) moreBtn.hidden = data.items.length < 50;
     table();
+    renderAllLinks();
+    updateLinkMgrVoucherOptions();
+    if ($("v-links-total-badge")) $("v-links-total-badge").textContent = `${links.length} link`;
   }
 
   async function report() {
@@ -1887,6 +2289,133 @@
     });
   }
 
+  // ===================================================================
+  // Dedicated Tab 2 Link Management Event Handlers
+  // ===================================================================
+  $("v-tab-btn-vouchers")?.addEventListener("click", () => switchMainTab("vouchers"));
+  $("v-tab-btn-links")?.addEventListener("click", () => switchMainTab("links"));
+  $("link-mgr-new-btn")?.addEventListener("click", () => resetLinkMgrForm());
+  $("link-mgr-cancel-btn")?.addEventListener("click", () => resetLinkMgrForm());
+
+  $("link-mgr-voucher-select")?.addEventListener("change", updateLinkMgrPreview);
+  $("link-mgr-image")?.addEventListener("input", updateLinkMgrPreview);
+  $("link-mgr-custom-title")?.addEventListener("input", updateLinkMgrPreview);
+  $("link-mgr-custom-desc")?.addEventListener("input", updateLinkMgrPreview);
+  $("link-mgr-channel")?.addEventListener("change", updateLinkMgrPreview);
+
+  $("link-mgr-slug")?.addEventListener("input", () => {
+    const input = $("link-mgr-slug");
+    if (input) {
+      input.value = input.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-");
+      updateLinkMgrPreview();
+    }
+  });
+
+  document.querySelectorAll(".btn-preset-thumb").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const thumb = btn.getAttribute("data-thumb");
+      if (thumb && $("link-mgr-image")) {
+        $("link-mgr-image").value = thumb;
+        updateLinkMgrPreview();
+        status("Đã áp dụng mẫu ảnh " + btn.textContent.trim());
+      }
+    });
+  });
+
+  $("link-mgr-image-file")?.addEventListener("change", (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    job(async () => {
+      $("link-mgr-image-help").textContent = "Đang tải và kiểm tra ảnh lên kho media…";
+      try {
+        const asset = await window.adminUploadImage(file);
+        $("link-mgr-image").value = asset.payload.url;
+        updateLinkMgrPreview();
+        $("link-mgr-image-help").textContent = "Đã tải ảnh lên thành công. Lưu link để áp dụng.";
+      } catch (error) {
+        $("link-mgr-image-help").textContent = error.message;
+        throw error;
+      } finally {
+        event.target.value = "";
+      }
+    });
+  });
+
+  $("link-mgr-image-clear")?.addEventListener("click", () => {
+    if ($("link-mgr-image")) $("link-mgr-image").value = "";
+    if ($("link-mgr-image-file")) $("link-mgr-image-file").value = "";
+    if ($("link-mgr-image-help")) $("link-mgr-image-help").textContent = "Đang dùng ảnh mặc định. Lưu link để áp dụng.";
+    updateLinkMgrPreview();
+  });
+
+  $("link-mgr-verify-target")?.addEventListener("click", async () => {
+    const target = $("link-mgr-target")?.value.trim() || "/";
+    const statusEl = $("link-mgr-target-status");
+    if (!statusEl) return;
+    statusEl.textContent = "Đang kiểm tra trang đích…";
+    try {
+      const res = await fetch(target, { method: "HEAD" });
+      if (res.ok) {
+        statusEl.textContent = "✅ Trang đích hợp lệ và sẵn sàng truy cập.";
+        statusEl.style.color = "#15803d";
+      } else {
+        statusEl.textContent = "⚠️ Trang đích phản hồi mã: " + res.status;
+        statusEl.style.color = "#b45309";
+      }
+    } catch (_) {
+      statusEl.textContent = "⚠️ Không thể kiểm tra trực tiếp trang đích.";
+      statusEl.style.color = "#b45309";
+    }
+  });
+
+  $("link-list-search")?.addEventListener("input", renderAllLinks);
+  $("link-list-filter-channel")?.addEventListener("change", renderAllLinks);
+  $("link-list-filter-status")?.addEventListener("change", renderAllLinks);
+
+  // Submit Link Manager Form
+  const linkMgrForm = $("link-mgr-form");
+  if (linkMgrForm) {
+    linkMgrForm.onsubmit = (e) => {
+      e.preventDefault();
+      job(async () => {
+        const voucherId = $("link-mgr-voucher-select")?.value;
+        if (!voucherId) {
+          showNotice("Vui lòng chọn voucher áp dụng cho link này.", "error");
+          $("link-mgr-voucher-select")?.focus();
+          return;
+        }
+
+        let slug = $("link-mgr-slug")?.value.trim().toLowerCase() || "";
+        slug = slug.replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        if (!slug || slug.length < 3 || slug.length > 50) {
+          showNotice(
+            "Mã đường dẫn rút gọn cần từ 3 đến 50 ký tự (chữ thường a-z, số 0-9 và dấu gạch ngang).",
+            "error"
+          );
+          $("link-mgr-slug")?.focus();
+          return;
+        }
+
+        const payload = {
+          slug,
+          target: $("link-mgr-target")?.value.trim() || "/",
+          channel: $("link-mgr-channel")?.value || "zalo",
+          employee_id: $("link-mgr-employee")?.value || null,
+          active: $("link-mgr-active")?.checked ?? true,
+          preview_image_url: $("link-mgr-image")?.value.trim() || "",
+          title: $("link-mgr-custom-title")?.value.trim() || "",
+        };
+
+        await api("/" + voucherId + "/links", "POST", payload);
+        await load();
+        renderAllLinks();
+        renderLinks();
+        updateLinkMgrPreview();
+        showNotice(`Đã lưu link /s/${slug} và cập nhật thẻ chia sẻ thành công!`, "success");
+      });
+    };
+  }
+
   // Submit Inventory Form
   const invForm = $("voucher-inventory-form");
   if (invForm) {
@@ -1997,6 +2526,18 @@
       $("v-link-employee"),
       [
         ["", "Không gắn nhân viên"],
+        ...employees.map((e) => [
+          e.id,
+          e.name || "Nhân viên " + e.id.slice(0, 8),
+        ]),
+      ],
+      "",
+    );
+
+    selectOptions(
+      $("link-mgr-employee"),
+      [
+        ["", "Không gắn nhân viên (Chiến dịch chung)"],
         ...employees.map((e) => [
           e.id,
           e.name || "Nhân viên " + e.id.slice(0, 8),
