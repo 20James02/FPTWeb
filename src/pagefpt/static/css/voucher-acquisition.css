@@ -901,6 +901,58 @@ body:has(dialog[open]) .voucher-acquisition-reminder,
   display: none !important;
 }
 
+/* ===================================================================
+   BỐ CỤC LINH HOẠT KHI BẬT/TẮT THÀNH PHẦN (ADAPTIVE TICKET LAYOUT)
+   Đảm bảo khi ẩn bất kỳ trường nào, popup vẫn giữ bố cục cân đối, đẹp mắt
+   =================================================================== */
+.voucher-acquisition [hidden],
+.voucher-ticket-inner [hidden],
+.voucher-hero-discount[hidden],
+.voucher-hero-gift-wrap[hidden],
+.ticket-perforated-line[hidden],
+.voucher-acquisition-benefits[hidden],
+.voucher-acquisition-ticket[hidden],
+.voucher-acquisition-conditions[hidden],
+.voucher-acquisition-later[hidden],
+.voucher-acquisition-eyebrow[hidden],
+.voucher-acquisition-label[hidden],
+.voucher-acquisition-reassurance[hidden],
+.voucher-urgency-badge[hidden] {
+  display: none !important;
+}
+
+.voucher-ticket-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.voucher-ticket-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.voucher-ticket-head h2:first-child,
+.voucher-acquisition-eyebrow[hidden] + h2 {
+  margin-top: 4px;
+}
+
+.voucher-ticket-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.voucher-ticket-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+}
+
 .reminder-gift-icon {
   font-size: 16px;
 }

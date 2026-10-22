@@ -316,15 +316,20 @@
     const eyebrow = get('voucher-acquisition-eyebrow');
     if (eyebrow) {
       eyebrow.textContent = valid ? (cfg.eyebrow || '🎁 ƯU ĐÃI ĐẶC QUYỀN') : '🎁 ƯU ĐÃI KHÁCH HÀNG';
+      eyebrow.hidden = (cfg.show_eyebrow === false);
     }
 
     get('voucher-acquisition-title').textContent = valid
       ? (cfg.title || 'Chúc mừng! Bạn nhận được ưu đãi')
       : 'Cùng tìm ưu đãi phù hợp';
 
-    get('voucher-acquisition-label').textContent = valid
-      ? (cfg.subtitle || v.name)
-      : 'Ưu đãi từ link này hiện chưa sẵn sàng. Bạn vẫn có thể nhận tư vấn gói phù hợp.';
+    const labelEl = get('voucher-acquisition-label');
+    if (labelEl) {
+      labelEl.textContent = valid
+        ? (cfg.subtitle || v.name)
+        : 'Ưu đãi từ link này hiện chưa sẵn sàng. Bạn vẫn có thể nhận tư vấn gói phù hợp.';
+      labelEl.hidden = (cfg.show_subtitle === false) || !labelEl.textContent.trim();
+    }
 
     get('voucher-acquisition-code').textContent = valid ? v.code : 'Chưa áp dụng';
     get('voucher-acquisition-end').textContent = valid ? day(v.end) : 'Nhân viên kiểm tra';
@@ -343,29 +348,60 @@
 
     // Cập nhật số tiền và quà tặng ưu đãi to nổi bật
     updateHeroDiscount(v, valid);
+    const heroBox = get('voucher-hero-discount');
+    const giftBox = get('voucher-hero-gift-wrap');
+    if (heroBox && cfg.show_hero === false) {
+      heroBox.hidden = true;
+    }
+    if (giftBox && cfg.show_hero === false) {
+      giftBox.hidden = true;
+    }
 
-    const benefits = get('voucher-acquisition-benefits'); benefits.replaceChildren();
-    if (valid) {
-      if (v.physical_gift?.name) {
-        const giftItem = document.createElement('p');
-        giftItem.textContent = '🎁 Miễn phí ' + v.physical_gift.name + (v.physical_gift.delivery_type === 'installation' ? ' · Giao tận nhà' : '');
-        benefits.append(giftItem);
+    // Perforated line: ẩn nếu không có nội dung nổi bật bên trên
+    const perfLine = get('voucher-ticket-perforated');
+    if (perfLine) {
+      const hasUpper = (heroBox && !heroBox.hidden) || (giftBox && !giftBox.hidden);
+      perfLine.hidden = !hasUpper;
+    }
+
+    const benefits = get('voucher-acquisition-benefits');
+    if (benefits) {
+      benefits.replaceChildren();
+      if (valid && cfg.show_benefits !== false) {
+        if (v.physical_gift?.name) {
+          const giftItem = document.createElement('p');
+          giftItem.textContent = '🎁 Miễn phí ' + v.physical_gift.name + (v.physical_gift.delivery_type === 'installation' ? ' · Giao tận nhà' : '');
+          benefits.append(giftItem);
+        }
+        for (const b of (v.benefits || []).slice(0, 2)) {
+          const pieces = [];
+          const effective = b.discount_kind === 'percent' ? b.amount : Math.min(b.amount || 0, b.cap_vnd ?? b.amount ?? 0);
+          if (effective > 0 && b.cap_vnd !== 0) pieces.push(b.discount_kind === 'percent' ? `Giảm ${b.amount / 100}%` : 'Giảm ' + money(effective));
+          if (b.gift_name) pieces.push('Tặng: ' + b.gift_name);
+          if (!pieces.length) continue;
+          const basis = {monthly:'cước tháng',initial:'phí ban đầu',setup:'hòa mạng',equipment:'thiết bị'}[b.basis];
+          const item = document.createElement('p');
+          item.textContent = '✨ ' + pieces.join(' · ') + (basis && b.amount > 0 ? ' (' + basis + ')' : '') + (b.region_name && b.region_name !== 'Toàn quốc' ? ' · ' + b.region_name : '');
+          benefits.append(item);
+        }
+        const note = document.createElement('p');
+        note.className = 'voucher-benefit-disclaimer';
+        note.textContent = '* Áp dụng theo khu vực & gói cước. Suất có hạn.';
+        benefits.append(note);
       }
-      for (const b of (v.benefits || []).slice(0, 2)) {
-        const pieces = [];
-        const effective = b.discount_kind === 'percent' ? b.amount : Math.min(b.amount || 0, b.cap_vnd ?? b.amount ?? 0);
-        if (effective > 0 && b.cap_vnd !== 0) pieces.push(b.discount_kind === 'percent' ? `Giảm ${b.amount / 100}%` : 'Giảm ' + money(effective));
-        if (b.gift_name) pieces.push('Tặng: ' + b.gift_name);
-        if (!pieces.length) continue;
-        const basis = {monthly:'cước tháng',initial:'phí ban đầu',setup:'hòa mạng',equipment:'thiết bị'}[b.basis];
-        const item = document.createElement('p');
-        item.textContent = '✨ ' + pieces.join(' · ') + (basis && b.amount > 0 ? ' (' + basis + ')' : '') + (b.region_name && b.region_name !== 'Toàn quốc' ? ' · ' + b.region_name : '');
-        benefits.append(item);
-      }
-      const note = document.createElement('p');
-      note.className = 'voucher-benefit-disclaimer';
-      note.textContent = '* Áp dụng theo khu vực & gói cước. Suất có hạn.';
-      benefits.append(note);
+      benefits.hidden = (cfg.show_benefits === false) || !benefits.children.length;
+    }
+
+    // Thẻ coupon mã code
+    const couponBox = get('voucher-acquisition-coupon-box');
+    if (couponBox) {
+      couponBox.hidden = (cfg.show_code_box === false);
+    }
+
+    // Điều kiện áp dụng
+    const conditionsBox = get('voucher-acquisition-conditions');
+    if (conditionsBox) {
+      conditionsBox.hidden = (cfg.show_terms === false);
     }
 
     const useText = get('voucher-acquisition-use-text');
@@ -380,12 +416,15 @@
       reassurance.textContent = valid
         ? (cfg.reassurance_text || '🔒 Tư vấn miễn phí, không cần thanh toán trước.')
         : '🔒 Miễn phí tư vấn lắp đặt.';
+      reassurance.hidden = (cfg.show_reassurance === false) || !reassurance.textContent.trim();
     }
 
     const laterBtn = get('voucher-acquisition-later');
     if (laterBtn) {
       laterBtn.textContent = cfg.dismiss_text || 'Bỏ qua ưu đãi';
+      laterBtn.hidden = (cfg.show_dismiss === false);
     }
+
 
     get('voucher-acquisition-reminder-label').textContent = valid ? 'Dùng mã ' + v.code : 'Nhận tư vấn ưu đãi';
     const summary = get('form-voucher-summary');

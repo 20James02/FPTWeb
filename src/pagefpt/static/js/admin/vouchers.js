@@ -458,6 +458,14 @@
         dismiss_text: value("v-popup-dismiss") || "Để sau, tôi muốn xem các gói trước",
         urgency_badge: value("v-popup-urgency") || null,
         theme: "fpt_orange",
+        show_eyebrow: $("v-toggle-eyebrow") ? $("v-toggle-eyebrow").checked : true,
+        show_subtitle: $("v-toggle-subtitle") ? $("v-toggle-subtitle").checked : true,
+        show_hero: $("v-toggle-hero") ? $("v-toggle-hero").checked : true,
+        show_benefits: $("v-toggle-benefits") ? $("v-toggle-benefits").checked : true,
+        show_code_box: $("v-toggle-code-box") ? $("v-toggle-code-box").checked : true,
+        show_terms: $("v-toggle-terms") ? $("v-toggle-terms").checked : true,
+        show_reassurance: $("v-toggle-reassurance") ? $("v-toggle-reassurance").checked : true,
+        show_dismiss: $("v-toggle-dismiss") ? $("v-toggle-dismiss").checked : true,
       },
       physical_gift: hasGift ? {
         name: giftName,
@@ -592,10 +600,21 @@
       giftSection.hidden = !(progType === "physical_gift" || progType === "combo_gift_cash");
     }
 
+    // Trạng thái bật/tắt các khối thông tin trên Popup
+    const showEyebrow = $("v-toggle-eyebrow") ? $("v-toggle-eyebrow").checked : true;
+    const showSubtitle = $("v-toggle-subtitle") ? $("v-toggle-subtitle").checked : true;
+    const showHero = $("v-toggle-hero") ? $("v-toggle-hero").checked : true;
+    const showBenefits = $("v-toggle-benefits") ? $("v-toggle-benefits").checked : true;
+    const showCodeBox = $("v-toggle-code-box") ? $("v-toggle-code-box").checked : true;
+    const showTerms = $("v-toggle-terms") ? $("v-toggle-terms").checked : true;
+    const showReassurance = $("v-toggle-reassurance") ? $("v-toggle-reassurance").checked : true;
+    const showDismiss = $("v-toggle-dismiss") ? $("v-toggle-dismiss").checked : true;
+
     // Cập nhật các trường trên Smartphone Simulator
     const eyebrow = $("p-eyebrow");
     if (eyebrow) {
       eyebrow.textContent = $("v-popup-eyebrow")?.value.trim() || "🎁 ĐẶC QUYỀN ƯU ĐÃI FPT";
+      eyebrow.hidden = !showEyebrow;
     }
 
     const title = $("p-title");
@@ -606,6 +625,7 @@
     const label = $("p-label");
     if (label) {
       label.textContent = $("v-popup-subtitle")?.value.trim() || $("v-label")?.value.trim() || "Ưu đãi khách hàng mới";
+      label.hidden = !showSubtitle;
     }
 
     const urgency = $("p-urgency");
@@ -629,7 +649,7 @@
     const giftImgUrl = $("v-gift-image-url")?.value.trim();
 
     if (giftWrap) {
-      if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
+      if (showHero && (progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
         giftWrap.hidden = false;
         if (giftImg) {
           if (giftImgUrl) {
@@ -654,12 +674,17 @@
     }
 
     // Hero Discount / Hero Gift Highlight Zone
+    const heroBox = $("p-hero-box");
     const heroPrefix = $("p-hero-prefix");
     const heroAmount = $("p-hero-amount");
     const heroSub = $("p-hero-sub");
     const customPrefix = $("v-popup-hero-prefix")?.value.trim();
     const customHighlight = $("v-popup-hero-highlight")?.value.trim();
     const customSub = $("v-popup-hero-sub")?.value.trim();
+
+    if (heroBox) {
+      heroBox.hidden = !showHero;
+    }
 
     const firstRule = rules[0];
     if (heroPrefix) {
@@ -680,6 +705,43 @@
       heroSub.textContent = customSub || (progType === "physical_gift" && giftVal > 0 ? "Trị giá " + money(giftVal) + " khi đăng ký mới" : "Áp dụng trực tiếp vào phí đăng ký lắp đặt FPT");
     }
 
+    // Perforated line: ẩn nếu không có hero/quà bên trên
+    const perfLine = $("p-perforated-line");
+    if (perfLine) {
+      const hasUpper = (heroBox && !heroBox.hidden) || (giftWrap && !giftWrap.hidden);
+      perfLine.hidden = !hasUpper;
+    }
+
+    // Danh sách quyền lợi trên Smartphone Simulator
+    const benefitsBox = $("p-benefits");
+    if (benefitsBox) {
+      benefitsBox.replaceChildren();
+      if (showBenefits) {
+        if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
+          const item = el("p", "🎁 Miễn phí " + giftName + (giftVal > 0 ? " (Trị giá " + money(giftVal) + ")" : ""));
+          item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #ea580c; background:#fff;";
+          benefitsBox.append(item);
+        }
+        for (const r of rules.slice(0, 2)) {
+          const benefit = r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
+          const text = "✨ Giảm " + benefit + (r.basis === "monthly" ? " (cước tháng)" : "") + (r.region_name && r.region_name !== "Toàn quốc" ? " · " + r.region_name : "");
+          const item = el("p", text);
+          item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #f26f21; background:#fff;";
+          benefitsBox.append(item);
+        }
+        const note = el("p", "* Áp dụng theo khu vực & gói cước. Suất có hạn.");
+        note.className = "voucher-benefit-disclaimer";
+        benefitsBox.append(note);
+      }
+      benefitsBox.hidden = !showBenefits;
+    }
+
+    // Khối mã coupon
+    const couponBox = $("p-coupon-box");
+    if (couponBox) {
+      couponBox.hidden = !showCodeBox;
+    }
+
     // Mã voucher & Hạn dùng
     const codeEl = $("p-code");
     if (codeEl) codeEl.textContent = $("v-code")?.value.trim().toUpperCase() || "VIP-KM";
@@ -690,37 +752,30 @@
       endEl.textContent = endVal ? new Date(endVal).toLocaleDateString("vi-VN") : "30 ngày";
     }
 
+    // Điều kiện áp dụng
+    const conditionsBox = $("p-conditions-box");
+    if (conditionsBox) {
+      conditionsBox.hidden = !showTerms;
+    }
     const termsEl = $("p-terms");
     if (termsEl) termsEl.textContent = $("v-terms")?.value.trim() || "Áp dụng cho khách hàng hoàn tất đăng ký lắp đặt mới.";
 
+    // Nút hành động
     const ctaText = $("p-cta-text");
     if (ctaText) ctaText.textContent = $("v-popup-cta")?.value.trim() || "NHẬN ƯU ĐÃI NGAY";
 
+    // Cam kết an tâm
     const reassurance = $("p-reassurance");
-    if (reassurance) reassurance.textContent = $("v-popup-reassurance")?.value.trim() || "🔒 Tư vấn miễn phí, không cần thanh toán trước.";
+    if (reassurance) {
+      reassurance.textContent = $("v-popup-reassurance")?.value.trim() || "🔒 Tư vấn miễn phí, không cần thanh toán trước.";
+      reassurance.hidden = !showReassurance;
+    }
 
+    // Nút từ chối / Bỏ qua
     const later = $("p-later");
-    if (later) later.textContent = $("v-popup-dismiss")?.value.trim() || "Bỏ qua ưu đãi";
-
-    // Danh sách quyền lợi trên Smartphone Simulator
-    const benefitsBox = $("p-benefits");
-    if (benefitsBox) {
-      benefitsBox.replaceChildren();
-      if ((progType === "physical_gift" || progType === "combo_gift_cash") && giftName) {
-        const item = el("p", "🎁 Miễn phí " + giftName + (giftVal > 0 ? " (Trị giá " + money(giftVal) + ")" : ""));
-        item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #ea580c; background:#fff;";
-        benefitsBox.append(item);
-      }
-      for (const r of rules.slice(0, 2)) {
-        const benefit = r.discount_kind === "percent" ? r.amount / 100 + "%" : money(r.amount);
-        const text = "✨ Giảm " + benefit + (r.basis === "monthly" ? " (cước tháng)" : "") + (r.region_name && r.region_name !== "Toàn quốc" ? " · " + r.region_name : "");
-        const item = el("p", text);
-        item.style.cssText = "font-size:10px; padding:2.5px 6px; margin:0; border-left:3px solid #f26f21; background:#fff;";
-        benefitsBox.append(item);
-      }
-      const note = el("p", "* Áp dụng theo khu vực & gói cước. Suất có hạn.");
-      note.className = "voucher-benefit-disclaimer";
-      benefitsBox.append(note);
+    if (later) {
+      later.textContent = $("v-popup-dismiss")?.value.trim() || "Bỏ qua ưu đãi";
+      later.hidden = !showDismiss;
     }
 
     updateReviewSummary(data);
@@ -1001,6 +1056,21 @@
     }
     const stackableEl = $("v-stackable");
     if (stackableEl) stackableEl.checked = p?.stackable || false;
+
+    const toggleMap = {
+      "v-toggle-eyebrow": p?.popup_config?.show_eyebrow ?? true,
+      "v-toggle-subtitle": p?.popup_config?.show_subtitle ?? true,
+      "v-toggle-hero": p?.popup_config?.show_hero ?? true,
+      "v-toggle-benefits": p?.popup_config?.show_benefits ?? true,
+      "v-toggle-code-box": p?.popup_config?.show_code_box ?? true,
+      "v-toggle-terms": p?.popup_config?.show_terms ?? true,
+      "v-toggle-reassurance": p?.popup_config?.show_reassurance ?? true,
+      "v-toggle-dismiss": p?.popup_config?.show_dismiss ?? true,
+    };
+    for (const [id, checked] of Object.entries(toggleMap)) {
+      const el = $(id);
+      if (el) el.checked = Boolean(checked);
+    }
 
     renderChecks($("v-plans"), plans, new Set(p?.plan_ids || []), () =>
       preview(),
@@ -1870,6 +1940,7 @@
   const vForm = $("voucher-form");
   if (vForm) {
     vForm.addEventListener("input", preview);
+    vForm.addEventListener("change", preview);
   }
 
   const progTypeSelect = $("v-program-type");

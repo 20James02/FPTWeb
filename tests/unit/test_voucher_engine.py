@@ -235,3 +235,32 @@ def test_voucher_input_schema_validation_with_physical_gift():
     assert validated.popup_config.title == "Tặng Camera FPT"
     assert validated.program_type == "physical_gift"
 
+
+def test_voucher_popup_config_field_toggles():
+    from pagefpt.modules.vouchers.schemas import PopupConfig
+
+    default_cfg = PopupConfig()
+    assert default_cfg.show_eyebrow is True
+    assert default_cfg.show_subtitle is True
+    assert default_cfg.show_hero is True
+    assert default_cfg.show_benefits is True
+    assert default_cfg.show_code_box is True
+    assert default_cfg.show_terms is True
+    assert default_cfg.show_reassurance is True
+    assert default_cfg.show_dismiss is True
+
+    custom_cfg = PopupConfig(
+        show_hero=False,
+        show_code_box=False,
+        show_dismiss=False,
+    )
+    assert custom_cfg.show_hero is False
+    assert custom_cfg.show_code_box is False
+    assert custom_cfg.show_dismiss is False
+    assert custom_cfg.show_eyebrow is True
+    dumped = custom_cfg.model_dump()
+    assert dumped["show_hero"] is False
+    assert dumped["show_code_box"] is False
+    assert dumped["show_dismiss"] is False
+
+

@@ -246,8 +246,54 @@
             <details class="voucher-popup-customization" style="margin-top: 14px;" open>
               <summary><strong>📱 Tùy biến toàn bộ nội dung Popup hiển thị trên điện thoại</strong></summary>
               <div style="padding-top: 10px;">
-                <p class="v-help">Toàn bộ văn bản trên popup khách hàng có thể tinh chỉnh linh hoạt tại đây. Màn hình điện thoại bên phải sẽ cập nhật tức thì.</p>
-                
+                <p class="v-help">Toàn bộ văn bản và thành phần trên popup khách hàng có thể tinh chỉnh linh hoạt tại đây. Màn hình điện thoại bên phải sẽ cập nhật tức thì.</p>
+
+                <div class="voucher-popup-toggles-section">
+                  <span class="voucher-group-title" style="margin-bottom: 8px; display: block;">👁️ Bật / tắt các khối thông tin hiển thị trên Popup:</span>
+                  <div class="voucher-popup-toggles-grid">
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-eyebrow" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Dòng trên cùng (Eyebrow)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-subtitle" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Mô tả phụ (Subtitle)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-hero" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Khối giảm giá / Quà (Hero)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-benefits" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Danh sách quyền lợi (Benefits)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-code-box" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Hộp mã ưu đãi &amp; hạn dùng</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-terms" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Điều kiện áp dụng (Terms)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-reassurance" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Cam kết an tâm (Reassurance)</span>
+                    </label>
+                    <label class="v-toggle-item">
+                      <input type="checkbox" id="v-toggle-dismiss" checked>
+                      <span class="v-toggle-slider"></span>
+                      <span class="v-toggle-text">Nút từ chối / Bỏ qua (Dismiss)</span>
+                    </label>
+                  </div>
+                </div>
+
                 <div class="voucher-fields">
                   <label>
                     Dòng trên cùng (Eyebrow)
@@ -548,13 +594,13 @@
                     <p class="hero-discount-sub" id="p-hero-sub" style="font-size: 9.5px;">Áp dụng trực tiếp khi lắp đặt FPT</p>
                   </div>
 
-                  <div class="ticket-perforated-line" style="margin: 4px -16px;">
+                  <div class="ticket-perforated-line" id="p-perforated-line" style="margin: 4px -16px;">
                     <span class="ticket-cut-icon">✂</span>
                   </div>
 
                   <div class="voucher-ticket-body">
                     <div id="p-benefits" class="voucher-acquisition-benefits" style="gap: 3px;"></div>
-                    <div class="voucher-acquisition-ticket" style="padding: 4px 8px; margin: 4px 0;">
+                    <div class="voucher-acquisition-ticket" id="p-coupon-box" style="padding: 4px 8px; margin: 4px 0;">
                       <div class="ticket-code-zone">
                         <span class="ticket-field-label" style="font-size: 8px;">MÃ ƯU ĐÃI</span>
                         <div class="ticket-code-row">
@@ -567,7 +613,7 @@
                         <strong id="p-end" style="font-size: 10px;">—</strong>
                       </div>
                     </div>
-                    <details class="voucher-acquisition-conditions" style="font-size: 9.5px; margin: 2px 0;">
+                    <details class="voucher-acquisition-conditions" id="p-conditions-box" style="font-size: 9.5px; margin: 2px 0;">
                       <summary style="font-size: 9.5px; min-height: 20px;">Điều kiện áp dụng ▾</summary>
                       <p id="p-terms" style="font-size: 9.5px;"></p>
                     </details>

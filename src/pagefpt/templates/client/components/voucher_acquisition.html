@@ -75,16 +75,16 @@
       </div>
 
       <!-- Đường nét đứt chia cuống vé dập lỗ -->
-      <div class="ticket-perforated-line" aria-hidden="true">
+      <div class="ticket-perforated-line" id="voucher-ticket-perforated" aria-hidden="true">
         <span class="ticket-cut-icon">✂</span>
       </div>
 
-      <div class="voucher-ticket-body">
+      <div class="voucher-ticket-body" id="voucher-ticket-body">
         <!-- Danh sách quyền lợi chi tiết -->
         <div id="voucher-acquisition-benefits" class="voucher-acquisition-benefits"></div>
 
         <!-- Khối thẻ Coupon Box VIP -->
-        <div class="voucher-acquisition-ticket">
+        <div class="voucher-acquisition-ticket" id="voucher-acquisition-coupon-box">
           <div class="ticket-code-zone">
             <span class="ticket-field-label">MÃ ƯU ĐÃI</span>
             <div class="ticket-code-row">
@@ -98,7 +98,7 @@
           </div>
         </div>
 
-        <details class="voucher-acquisition-conditions">
+        <details class="voucher-acquisition-conditions" id="voucher-acquisition-conditions">
           <summary>Điều kiện áp dụng ▾</summary>
           <p id="voucher-acquisition-terms"></p>
         </details>

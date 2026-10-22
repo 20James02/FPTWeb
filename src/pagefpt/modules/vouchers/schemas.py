@@ -38,6 +38,14 @@ class PopupConfig(Command):
     dismiss_text: str = Field(default="Để sau, tôi muốn xem các gói trước", max_length=100)
     urgency_badge: str | None = Field(default=None, max_length=120)
     theme: Literal["fpt_orange", "royal_gold", "festive_red", "modern_blue"] = "fpt_orange"
+    show_eyebrow: bool = True
+    show_subtitle: bool = True
+    show_hero: bool = True
+    show_benefits: bool = True
+    show_code_box: bool = True
+    show_terms: bool = True
+    show_reassurance: bool = True
+    show_dismiss: bool = True
 
 
 class PhysicalGift(Command):

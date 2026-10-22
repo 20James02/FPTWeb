@@ -2662,3 +2662,90 @@
   color: #475569;
 }
 
+/* ===================================================================
+   Popup Field Toggles & Customization Grid
+   =================================================================== */
+.voucher-popup-toggles-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.voucher-popup-toggles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px 12px;
+}
+
+.v-toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.v-toggle-item:hover {
+  border-color: #f97316;
+  background: #fffbf6;
+}
+
+.v-toggle-item input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.v-toggle-slider {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  background-color: #cbd5e1;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.v-toggle-slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.v-toggle-item input[type="checkbox"]:checked + .v-toggle-slider {
+  background-color: #ea580c;
+}
+
+.v-toggle-item input[type="checkbox"]:checked + .v-toggle-slider::after {
+  transform: translateX(16px);
+}
+
+.v-toggle-item input[type="checkbox"]:focus-visible + .v-toggle-slider {
+  outline: 2px solid #ea580c;
+  outline-offset: 2px;
+}
+
+.v-toggle-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.3;
+}
+
