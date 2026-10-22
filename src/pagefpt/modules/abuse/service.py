@@ -32,17 +32,22 @@ async def check_abuse_match(request, phone: str | None, session_id: str | None, 
     if not any((ip_hash, session_hash, phone_hash)):
         return {"matched": False}
 
-    return await request.app.state.db.rpc(
-        "dispatch",
-        {
-            "command": {
-                "op": "abuse_check",
-                "ip_hash": ip_hash,
-                "session_hash": session_hash,
-                "phone_hash": phone_hash,
-            }
-        },
-    )
+    try:
+        return await request.app.state.db.rpc(
+            "dispatch",
+            {
+                "command": {
+                    "op": "abuse_check",
+                    "ip_hash": ip_hash,
+                    "session_hash": session_hash,
+                    "phone_hash": phone_hash,
+                }
+            },
+        )
+    except Exception:
+        # Trong giai đoạn thử nghiệm hoặc khi DB chưa hoàn tất migration,
+        # lỗi RPC tuyệt đối không được phép làm gián đoạn hoặc chặn người dùng!
+        return {"matched": False}
 
 
 async def create_abuse_rule(
