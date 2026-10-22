@@ -77,6 +77,12 @@
             Phân Công Tự Động
           </button>
 
+          <!-- Nút Chặn Spam / IP / Thiết bị -->
+          <button type="button" class="btn-action-detail" id="btn-block-abuse" style="padding: 10px 14px; font-size: 0.88rem; color: #dc2626; border-color: #fca5a5; background: #fff1f2; font-weight: 700;" onclick="openAbuseBlockModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <span>Chặn Spam</span>
+          </button>
+
           <!-- Dropdown Chuyển Trạng Thái -->
           <div>
             <select aria-label="Chuyển trạng thái hồ sơ" class="filter-select" id="lead-status-select" onchange="handleStatusTransition(this.value)" style="font-weight: 700; color: var(--color-primary); padding: 9px 14px; border-radius: 8px;">
@@ -339,6 +345,89 @@
   <div class="admin-dialog-actions">
     <button type="button" class="btn-action-detail" onclick="handleRecomputeScores()">Cập nhật đánh giá</button>
     <button type="button" class="btn-action-call" onclick="document.getElementById('lead-intelligence-dialog').close()">Đóng</button>
+  </div>
+</dialog>
+
+<!-- Dialog 1: Chặn Spam (1-Click Abuse Block) -->
+<dialog id="abuse-block-dialog" class="admin-dialog" style="max-width: 520px; border-radius: 16px; border: 1px solid var(--border-color); padding: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+  <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.3rem;">🚨</span>
+      <h3 style="margin: 0; font-size: 1.15rem; color: #b91c1c; font-weight: 800;">Chặn Spam & Lead Rác (Thử nghiệm)</h3>
+    </div>
+    <button type="button" onclick="document.getElementById('abuse-block-dialog').close()" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+  </div>
+  <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+    <div>
+      <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary);">Đối tượng muốn chặn:</label>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+        <label style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
+          <input type="radio" name="abuse_target" value="ip" checked style="margin-bottom: 4px; display: block; margin-inline: auto;">
+          <span>🌐 Địa chỉ IP</span>
+        </label>
+        <label style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
+          <input type="radio" name="abuse_target" value="session" style="margin-bottom: 4px; display: block; margin-inline: auto;">
+          <span>📱 Thiết bị (Session)</span>
+        </label>
+        <label style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
+          <input type="radio" name="abuse_target" value="phone" style="margin-bottom: 4px; display: block; margin-inline: auto;">
+          <span>📞 Số điện thoại</span>
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary);">Chế độ xử lý rủi ro:</label>
+      <select id="abuse_action" class="filter-select" style="width: 100%; padding: 10px; border-radius: 8px; font-weight: 600;">
+        <option value="challenge" selected>🛡️ Yêu cầu giải Captcha (Khuyên dùng - Thử nghiệm an toàn, không lo chặn nhầm)</option>
+        <option value="block">⛔ Chặn hoàn toàn (Từ chối kết nối 403 Forbidden)</option>
+        <option value="shadow_ban">👻 Nuốt âm thầm (Khách tưởng thành công, hệ thống tự bỏ qua không báo)</option>
+      </select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary);">Thời hạn áp dụng:</label>
+        <select id="abuse_duration" class="filter-select" style="width: 100%; padding: 10px; border-radius: 8px;">
+          <option value="24" selected>24 Giờ (Thử nghiệm)</option>
+          <option value="72">3 Ngày</option>
+          <option value="168">7 Ngày</option>
+          <option value="0">Vĩnh viễn</option>
+        </select>
+      </div>
+      <div>
+        <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary);">Lý do chặn:</label>
+        <input type="text" id="abuse_reason" class="filter-select" value="Spam lead ảo / bot phá hoại" style="width: 100%; padding: 10px; border-radius: 8px; box-sizing: border-box;">
+      </div>
+    </div>
+    
+    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); background: var(--bg-surface-muted); padding: 10px 14px; border-radius: 8px; line-height: 1.4;">
+      ℹ️ <strong>Lưu ý an toàn:</strong> Khi áp dụng, lead hiện tại sẽ tự động chuyển sang trạng thái <em>Hủy (Rejected)</em>. Để bảo vệ khách hàng 4G dùng chung IP, hãy ưu tiên dùng chế độ <strong>Yêu cầu Captcha</strong>.
+    </p>
+  </div>
+  <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface-muted); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+    <button type="button" onclick="openAbuseRulesModal()" style="border: none; background: transparent; color: var(--color-primary); font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: underline;">Danh sách đang chặn</button>
+    <div style="display: flex; gap: 8px;">
+      <button type="button" class="btn-action-detail" onclick="document.getElementById('abuse-block-dialog').close()" style="padding: 8px 16px;">Đóng</button>
+      <button type="button" class="btn-action-call" style="background: #dc2626; border-color: #dc2626; color: white; padding: 8px 18px; font-weight: 700;" onclick="submitAbuseBlock()">Xác nhận Chặn</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Dialog 2: Danh sách các luật chặn đang hoạt động (Abuse Rules List) -->
+<dialog id="abuse-rules-dialog" class="admin-dialog" style="max-width: 640px; border-radius: 16px; border: 1px solid var(--border-color); padding: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+  <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.3rem;">🛡️</span>
+      <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800;">Danh Sách IP / Thiết Bị Đang Bị Chặn</h3>
+    </div>
+    <button type="button" onclick="document.getElementById('abuse-rules-dialog').close()" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+  </div>
+  <div style="padding: 20px 24px; max-height: 400px; overflow-y: auto;" id="abuse-rules-list-container">
+    <div style="text-align: center; color: var(--text-muted); padding: 24px;">Đang tải danh sách...</div>
+  </div>
+  <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; background: var(--bg-surface-muted); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+    <button type="button" class="btn-action-detail" onclick="document.getElementById('abuse-rules-dialog').close()" style="padding: 8px 20px;">Đóng</button>
   </div>
 </dialog>
 
@@ -874,6 +963,104 @@ function copyDetailPhone() {
     showToast('Đã sao chép số điện thoại: ' + val, 'success');
   } else {
     showToast('Bấm Hiển thị thông tin trước khi sao chép số điện thoại.', 'info');
+  }
+}
+
+/**
+ * Quản lý Chặn Abuse (Thử nghiệm)
+ */
+function openAbuseBlockModal() {
+  if (!currentLead) return;
+  const modal = document.getElementById('abuse-block-dialog');
+  if (modal) modal.showModal();
+}
+
+async function submitAbuseBlock() {
+  if (!currentLead) return;
+  const targetRadio = document.querySelector('input[name="abuse_target"]:checked');
+  const target = targetRadio ? targetRadio.value : 'ip';
+  const action = document.getElementById('abuse_action')?.value || 'challenge';
+  const duration = parseInt(document.getElementById('abuse_duration')?.value || '24', 10);
+  const reason = document.getElementById('abuse_reason')?.value?.trim() || 'Spam lead';
+
+  try {
+    const res = await fetch(`/api/v1/admin/leads/${currentLead.id}/block`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        block_target: target,
+        action: action,
+        reason: reason,
+        duration_hours: duration,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || data.code || 'Không thể tạo luật chặn');
+    }
+    showToast(`Đã thiết lập chặn ${target.toUpperCase()} thành công.`, 'success');
+    document.getElementById('abuse-block-dialog')?.close();
+    await initLeadDetail();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function openAbuseRulesModal() {
+  const modal = document.getElementById('abuse-rules-dialog');
+  if (!modal) return;
+  modal.showModal();
+  const container = document.getElementById('abuse-rules-list-container');
+  if (container) container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Đang tải danh sách...</div>';
+
+  try {
+    const res = await fetch('/api/v1/admin/abuse/rules?active_only=true');
+    const data = await res.json();
+    const items = data.items || [];
+    if (items.length === 0) {
+      container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Hiện chưa có IP hoặc thiết bị nào bị chặn.</div>';
+      return;
+    }
+    let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+    items.forEach(r => {
+      const actionBadge = r.action === 'block' ? '<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.75rem;">CHẶN (403)</span>'
+        : r.action === 'challenge' ? '<span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.75rem;">BẮT CAPTCHA</span>'
+        : '<span style="background:#e0e7ff; color:#4338ca; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.75rem;">SHADOW BAN</span>';
+
+      html += `
+        <div style="border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--bg-surface);">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem; font-family: monospace;">${r.target_masked}</strong>
+              <small style="text-transform: uppercase; color: var(--text-muted); font-size: 0.75rem;">[${r.target_type}]</small>
+              ${actionBadge}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+              Lý do: <em>${r.reason || 'Không ghi'}</em> • Đã chặn: <strong>${r.hit_count}</strong> lượt
+            </div>
+          </div>
+          <button type="button" class="btn-action-detail" style="font-size: 0.78rem; padding: 6px 12px; color: #b91c1c;" onclick="unblockAbuseRule('${r.id}')">Gỡ Chặn</button>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div style="color: #b91c1c; padding: 20px;">Lỗi tải danh sách: ${err.message}</div>`;
+  }
+}
+
+async function unblockAbuseRule(ruleId) {
+  if (!confirm('Bạn có chắc chắn muốn gỡ chặn mục này?')) return;
+  try {
+    const res = await fetch(`/api/v1/admin/abuse/rules/${ruleId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Gỡ chặn thất bại');
+    showToast('Đã gỡ chặn thành công.', 'success');
+    await openAbuseRulesModal();
+  } catch (err) {
+    showToast(err.message, 'error');
   }
 }
 

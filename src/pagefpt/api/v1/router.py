@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from pagefpt.api.v1.resources import router as resource_router
+from pagefpt.modules.abuse.admin_routes import router as abuse_admin_router
 from pagefpt.modules.abuse.challenges import router as challenge_router
 from pagefpt.modules.administration.routes import router as administration_router
 from pagefpt.modules.care.routes import router as care_router
@@ -51,6 +52,7 @@ router.include_router(care_router)
 router.include_router(media_router)
 router.include_router(governance_router)
 router.include_router(challenge_router)
+router.include_router(abuse_admin_router)
 router.include_router(reporting_router)
 router.include_router(imports_router)
 router.include_router(scheduling_router)

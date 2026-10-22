@@ -187,11 +187,18 @@
                 </label>
 
                 <div class="voucher-wide">
-                  <label>
-                    Đường dẫn ảnh sản phẩm quà tặng (URL)
-                    <input id="v-gift-image-url" type="url" placeholder="https://... hoặc chọn mẫu bên dưới">
+                  <label for="v-gift-image-url">
+                    Ảnh sản phẩm quà tặng (URL hoặc tải từ máy)
                   </label>
-                  <div class="voucher-gift-presets" style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                  <input id="v-gift-image-url" type="url" placeholder="https://... hoặc tải ảnh bên dưới / chọn mẫu" aria-describedby="v-gift-image-help">
+                  <div class="voucher-share-image-actions" style="margin-top: 6px;">
+                    <label class="btn-action-detail voucher-share-upload" for="v-gift-image-file">
+                      Tải ảnh lên<input id="v-gift-image-file" type="file" accept="image/jpeg,image/png,image/webp">
+                    </label>
+                    <button id="v-gift-image-clear" class="btn-action-detail" type="button">Xóa ảnh</button>
+                  </div>
+                  <small id="v-gift-image-help" class="v-help" role="status" aria-live="polite">JPEG, PNG hoặc WebP · tối đa 10 MB. Hệ thống sẽ lưu vào kho media và tự điền URL.</small>
+                  <div class="voucher-gift-presets" style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
                     <span style="font-size: 11px; color: #64748b; align-self: center;">Mẫu nhanh:</span>
                     <button type="button" class="btn-preset-gift" data-gift-name="Camera FPT Outdoor IQ3" data-gift-val="1200000" data-gift-img="https://fpt.vn/storage/upload/images/products/camera/iq3-thumb.png">📷 Camera Outdoor IQ3 (1.200k)</button>
                     <button type="button" class="btn-preset-gift" data-gift-name="Bộ phát Wifi 6 Mesh AX1800AZ" data-gift-val="890000" data-gift-img="https://fpt.vn/storage/upload/images/products/internet/wifi6-mesh.png">📶 Wifi 6 Mesh (890k)</button>

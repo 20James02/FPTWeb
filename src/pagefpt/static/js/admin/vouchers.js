@@ -945,6 +945,10 @@
     if ($("v-link-image")) $("v-link-image").value = "";
     if ($("v-link-image-file")) $("v-link-image-file").value = "";
     if ($("v-link-slug")) $("v-link-slug").value = "";
+    if ($("v-gift-image-file")) $("v-gift-image-file").value = "";
+    if ($("v-gift-image-help"))
+      $("v-gift-image-help").textContent =
+        "JPEG, PNG hoặc WebP · tối đa 10 MB. Hệ thống sẽ lưu vào kho media và tự điền URL.";
     if ($("voucher-link-save")) $("voucher-link-save").textContent = "+ Tạo link chia sẻ";
     const p = row?.payload;
     rules = p ? structuredClone(p.rules) : [baseRule()];
@@ -1482,8 +1486,41 @@
       if ($("v-gift-name")) $("v-gift-name").value = btn.dataset.giftName || "";
       if ($("v-gift-market-val")) $("v-gift-market-val").value = btn.dataset.giftVal || "";
       if ($("v-gift-image-url")) $("v-gift-image-url").value = btn.dataset.giftImg || "";
+      if ($("v-gift-image-file")) $("v-gift-image-file").value = "";
+      if ($("v-gift-image-help")) $("v-gift-image-help").textContent = "Đã chọn ảnh theo mẫu nhanh.";
       preview();
     };
+  });
+
+  $("v-gift-image-url")?.addEventListener("input", () => {
+    if ($("v-gift-image-file")) $("v-gift-image-file").value = "";
+    preview();
+  });
+
+  $("v-gift-image-clear")?.addEventListener("click", () => {
+    if ($("v-gift-image-url")) $("v-gift-image-url").value = "";
+    if ($("v-gift-image-file")) $("v-gift-image-file").value = "";
+    if ($("v-gift-image-help")) $("v-gift-image-help").textContent = "Đã xóa ảnh quà tặng.";
+    preview();
+  });
+
+  $("v-gift-image-file")?.addEventListener("change", (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    job(async () => {
+      if ($("v-gift-image-help")) $("v-gift-image-help").textContent = "Đang tải và xử lý ảnh quà tặng…";
+      try {
+        const asset = await window.adminUploadImage(file);
+        if ($("v-gift-image-url")) $("v-gift-image-url").value = asset.payload.url;
+        preview();
+        if ($("v-gift-image-help")) $("v-gift-image-help").textContent = "Đã tải ảnh lên thành công.";
+      } catch (error) {
+        if ($("v-gift-image-help")) $("v-gift-image-help").textContent = error.message;
+        throw error;
+      } finally {
+        event.target.value = "";
+      }
+    });
   });
 
   // Replay animation on smartphone simulator

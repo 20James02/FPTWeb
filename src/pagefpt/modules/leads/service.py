@@ -57,6 +57,20 @@ async def submit_lead(request, input, key, crypt, durable=False):
                 challenge_id = challenge["id"]
         except DomainError:
             pass
+    from pagefpt.modules.abuse.service import check_abuse_match
+
+    abuse_match = await check_abuse_match(request, phone, session_id, crypt)
+    shadow_banned = False
+    if abuse_match.get("matched"):
+        action = abuse_match.get("action")
+        if action == "block":
+            raise DomainError("CLIENT_BLOCKED", 403, fields={"reason": abuse_match.get("reason", "")})
+        elif action == "challenge":
+            if not challenge_id:
+                raise DomainError("CHALLENGE_REQUIRED", 403)
+        elif action == "shadow_ban":
+            shadow_banned = True
+
     buckets = [
         {
             "key": crypt.match(phone, "rate-phone"),
@@ -107,7 +121,10 @@ async def submit_lead(request, input, key, crypt, durable=False):
         if previous.get("replayed"):
             return previous
         raise
-    semantic["risk_evidence"] = {"honeypot": bool(input.website)}
+    semantic["risk_evidence"] = {
+        "honeypot": bool(input.website) or shadow_banned,
+        "shadow_banned": shadow_banned,
+    }
     semantic["risk_source"] = "intake-v1"
     semantic["session_id"] = session_id
     semantic["measurement_environment"] = request.app.state.settings.environment
@@ -153,7 +170,7 @@ async def submit_lead(request, input, key, crypt, durable=False):
                 )
                 if input.analytics_opt_in and input.marketing_opt_in and session_id
                 else None,
-                "notify_admin": request.app.state.settings.telegram_enabled,
+                "notify_admin": request.app.state.settings.telegram_enabled and not shadow_banned,
             }
         },
     )
