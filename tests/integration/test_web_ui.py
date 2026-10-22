@@ -133,6 +133,15 @@ async def test_admin_reports_renders(admin):
 
 
 @pytest.mark.asyncio
+async def test_admin_abuse_renders(admin):
+    client = admin
+    response = await client.get("/admin/abuse")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Chặn Spam" in response.text
+
+
+@pytest.mark.asyncio
 async def test_static_assets_served(client):
     res_vars = await client.get("/static/css/variables.css")
     assert res_vars.status_code == 200

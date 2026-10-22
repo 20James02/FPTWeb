@@ -1,0 +1,262 @@
+{% extends 'layouts/admin_base.html' %}
+{% block title %}Quản Lý Chặn Spam & Bảo Vệ Lead — Admin{% endblock %}
+{% block breadcrumbs %}Bán Hàng / Chặn Spam & Bảo Vệ Lead{% endblock %}
+
+{% block extra_head %}
+<style>
+.abuse-grid { display: grid; gap: 20px; }
+.abuse-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.abuse-stat-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.abuse-stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.abuse-stat-val { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin-top: 6px; }
+.abuse-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.abuse-card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; }
+.abuse-card-title { font-size: 1.15rem; font-weight: 800; margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+.abuse-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+.abuse-table th { background: var(--bg-surface-muted); color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--border-color); }
+.abuse-table td { padding: 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+.abuse-table tr:hover { background: var(--bg-surface-muted); }
+.badge-action { display: inline-block; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+.badge-block { background: #fee2e2; color: #b91c1c; }
+.badge-challenge { background: #fef3c7; color: #b45309; }
+.badge-shadow { background: #e0e7ff; color: #4338ca; }
+.btn-unblock { border: 1px solid #fca5a5; background: #fff1f2; color: #dc2626; border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.btn-unblock:hover { background: #dc2626; color: #fff; }
+.manual-add-form { display: grid; grid-template-columns: 140px 1.5fr 1fr 140px auto; gap: 10px; align-items: end; margin-bottom: 20px; background: var(--bg-surface-muted); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); }
+@media (max-width: 900px) {
+  .manual-add-form { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="abuse-grid">
+  <!-- Header -->
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <span style="font-size: 0.82rem; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.08em;">BẢO VỆ LEAD & CHỐNG SPAM</span>
+      <h1 style="font-size: 1.6rem; font-weight: 800; margin: 4px 0 6px; color: var(--text-primary);">Quản Lý Chặn Spam (IP & Thiết Bị)</h1>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">Kiểm soát các đối tượng spam lead rác, theo dõi số lượt cản phá và gỡ chặn nhanh chóng.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="/admin/leads" class="btn-action-detail" style="padding: 10px 16px; font-weight: 700;">Về Danh Sách Lead</a>
+      <button type="button" class="btn-action-call" onclick="loadAbuseRules()" style="padding: 10px 18px; font-weight: 700;">Làm mới danh sách</button>
+    </div>
+  </header>
+
+  <!-- Stats Grid -->
+  <div class="abuse-stats">
+    <div class="abuse-stat-card">
+      <div class="abuse-stat-title">Đang Chặn Hoạt Động</div>
+      <div class="abuse-stat-val" id="stat-active-count" style="color: #dc2626;">0</div>
+    </div>
+    <div class="abuse-stat-card">
+      <div class="abuse-stat-title">Số Lượt Cản Phá (Hits)</div>
+      <div class="abuse-stat-val" id="stat-hit-count" style="color: var(--color-primary);">0</div>
+    </div>
+    <div class="abuse-stat-card">
+      <div class="abuse-stat-title">Chế Độ Bắt Captcha</div>
+      <div class="abuse-stat-val" id="stat-challenge-count" style="color: #b45309;">0</div>
+    </div>
+    <div class="abuse-stat-card">
+      <div class="abuse-stat-title">Chế Độ Chặn Cứng (403)</div>
+      <div class="abuse-stat-val" id="stat-block-count" style="color: #7f1d1d;">0</div>
+    </div>
+  </div>
+
+  <!-- Main Card -->
+  <div class="abuse-card">
+    <div class="abuse-card-header">
+      <h2 class="abuse-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg>
+        <span>Danh Sách Luật Chặn Hiện Tại</span>
+      </h2>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <label class="admin-check" style="font-size: 0.85rem; font-weight: 600;">
+          <input type="checkbox" id="filter-active-only" checked onchange="loadAbuseRules()"> Chỉ xem luật đang có hiệu lực
+        </label>
+      </div>
+    </div>
+
+    <!-- Manual Add Form -->
+    <details style="margin-bottom: 20px;">
+      <summary style="cursor: pointer; font-weight: 700; color: var(--color-primary); font-size: 0.9rem; padding: 6px 0;">+ Thêm đối tượng chặn thủ công (IP / SĐT / Thiết bị)</summary>
+      <form id="manual-abuse-form" onsubmit="handleManualAdd(event)" class="manual-add-form" style="margin-top: 10px;">
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">Loại đối tượng</label>
+          <select id="manual_target_type" class="filter-select" style="width: 100%; padding: 8px;">
+            <option value="ip">Địa chỉ IP</option>
+            <option value="phone">Số điện thoại</option>
+            <option value="session">Session ID</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">Giá trị (IP hoặc SĐT)</label>
+          <input type="text" id="manual_target_value" required placeholder="VD: 118.69.12.34 hoặc 0912345678" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">Chế độ xử lý</label>
+          <select id="manual_action" class="filter-select" style="width: 100%; padding: 8px;">
+            <option value="challenge">🛡️ Bắt giải Captcha</option>
+            <option value="block">⛔ Chặn hoàn toàn (403)</option>
+            <option value="shadow_ban">👻 Nuốt âm thầm</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">Thời hạn</label>
+          <select id="manual_duration" class="filter-select" style="width: 100%; padding: 8px;">
+            <option value="24" selected>24 Giờ</option>
+            <option value="72">3 Ngày</option>
+            <option value="168">7 Ngày</option>
+            <option value="0">Vĩnh viễn</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" class="btn-action-call" style="background: #dc2626; border-color: #dc2626; color: white; padding: 9px 18px; font-weight: 700; white-space: nowrap;">Thêm Chặn</button>
+        </div>
+      </form>
+    </details>
+
+    <!-- Table Container -->
+    <div style="overflow-x: auto;">
+      <table class="abuse-table">
+        <thead>
+          <tr>
+            <th>Đối tượng</th>
+            <th>Loại</th>
+            <th>Chế độ</th>
+            <th>Lý do</th>
+            <th>Lượt cản (Hits)</th>
+            <th>Thời gian hết hạn</th>
+            <th style="text-align: right;">Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="abuse-table-body">
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Đang tải danh sách kiểm soát...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentAbuseRules = [];
+
+async function loadAbuseRules() {
+  const tbody = document.getElementById('abuse-table-body');
+  const activeOnly = document.getElementById('filter-active-only')?.checked ?? true;
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Đang tải danh sách kiểm soát...</td></tr>';
+
+  try {
+    const res = await adminFetch(`/api/v1/admin/abuse/rules?active_only=${activeOnly}&limit=100`);
+    const data = await res.json();
+    currentAbuseRules = data.items || [];
+    renderAbuseTable(currentAbuseRules);
+    updateStats(currentAbuseRules);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #b91c1c; padding: 24px;">Lỗi tải dữ liệu: ${err.message}</td></tr>`;
+  }
+}
+
+function updateStats(items) {
+  const now = new Date();
+  const activeItems = items.filter(r => r.active && new Date(r.expires_at) > now);
+  document.getElementById('stat-active-count').textContent = activeItems.length;
+  
+  const totalHits = items.reduce((acc, r) => acc + (r.hit_count || 0), 0);
+  document.getElementById('stat-hit-count').textContent = totalHits.toLocaleString();
+
+  const challengeCount = activeItems.filter(r => r.action === 'challenge').length;
+  document.getElementById('stat-challenge-count').textContent = challengeCount;
+
+  const blockCount = activeItems.filter(r => r.action === 'block').length;
+  document.getElementById('stat-block-count').textContent = blockCount;
+}
+
+function renderAbuseTable(items) {
+  const tbody = document.getElementById('abuse-table-body');
+  if (!items || items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 36px;">Hiện chưa có IP hoặc thiết bị nào trong danh sách chặn.</td></tr>';
+    return;
+  }
+
+  const now = new Date();
+  let html = '';
+  items.forEach(r => {
+    const isExpired = new Date(r.expires_at) <= now || !r.active;
+    const badge = r.action === 'block' ? '<span class="badge-action badge-block">Chặn (403)</span>'
+      : r.action === 'challenge' ? '<span class="badge-action badge-challenge">Bắt Captcha</span>'
+      : '<span class="badge-action badge-shadow">Nuốt âm thầm</span>';
+
+    const typeLabel = r.target_type === 'ip' ? '🌐 IP' : r.target_type === 'phone' ? '📞 SĐT' : '📱 Thiết bị';
+    const expiresText = r.expires_at.includes('infinity') ? 'Vĩnh viễn' : new Date(r.expires_at).toLocaleString('vi-VN');
+
+    html += `
+      <tr style="${isExpired ? 'opacity: 0.55;' : ''}">
+        <td><strong style="font-family: monospace; font-size: 0.95rem;">${r.target_masked}</strong></td>
+        <td><span style="font-weight: 600; color: var(--text-secondary);">${typeLabel}</span></td>
+        <td>${badge}</td>
+        <td><span style="color: var(--text-secondary);">${r.reason || 'Spam lead'}</span></td>
+        <td><strong style="color: #b91c1c;">${r.hit_count || 0}</strong> lượt</td>
+        <td><span style="font-size: 0.82rem; color: var(--text-muted);">${isExpired ? '<em style="color:#991b1b;">(Đã hết hạn/gỡ)</em> ' : ''}${expiresText}</span></td>
+        <td style="text-align: right;">
+          ${!isExpired ? `<button type="button" class="btn-unblock" onclick="handleUnblock('${r.id}', '${r.target_masked}')">Gỡ Chặn</button>` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Đã mở</span>'}
+        </td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+async function handleUnblock(ruleId, masked) {
+  if (!confirm(`Bạn có chắc chắn muốn gỡ chặn cho [${masked}]?`)) return;
+  try {
+    const res = await adminFetch(`/api/v1/admin/abuse/rules/${ruleId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Không thể gỡ chặn');
+    showToast(`Đã gỡ chặn thành công cho ${masked}.`, 'success');
+    await loadAbuseRules();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function handleManualAdd(event) {
+  event.preventDefault();
+  const target_type = document.getElementById('manual_target_type').value;
+  const target_value = document.getElementById('manual_target_value').value.trim();
+  const action = document.getElementById('manual_action').value;
+  const duration_hours = parseInt(document.getElementById('manual_duration').value, 10);
+
+  if (!target_value) return;
+
+  try {
+    const res = await adminFetch('/api/v1/admin/abuse/rules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target_type,
+        target_value,
+        action,
+        reason: 'Admin thêm thủ công',
+        duration_hours,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Không thể tạo luật chặn');
+    }
+    showToast(`Đã thêm luật chặn cho ${target_value} thành công.`, 'success');
+    document.getElementById('manual_target_value').value = '';
+    await loadAbuseRules();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadAbuseRules);
+</script>
+{% endblock %}

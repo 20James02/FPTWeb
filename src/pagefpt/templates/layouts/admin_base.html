@@ -53,7 +53,7 @@
 
       <!-- 2. Nhóm Bán Hàng & Lead CRM -->
       {% if admin_actor.permits("lead.read") %}
-      {% set is_sales_active = active_page in ['workbench', 'leads'] %}
+      {% set is_sales_active = active_page in ['workbench', 'leads', 'abuse'] %}
       <details class="nav-group" {{ 'open' if is_sales_active }}>
         <summary class="nav-group-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -69,6 +69,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             <span>Quản Lý Lead CRM</span>
             <span class="nav-counter" id="sidebar-new-leads-count">—</span>
+          </a>
+          <a href="/admin/abuse" class="nav-link nav-sublink {{ 'active' if active_page == 'abuse' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg>
+            <span>Chặn spam &amp; Bảo vệ</span>
           </a>
         </div>
       </details>

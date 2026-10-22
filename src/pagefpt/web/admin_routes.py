@@ -205,3 +205,11 @@ async def measurement_admin(request: Request):
     return await render_admin(
         request, "admin/measurement.html", "measurement", ("measurement.read",)
     )
+
+
+@router.get("/abuse", response_class=HTMLResponse)
+async def abuse_admin(request: Request):
+    return await render_admin(
+        request, "admin/abuse.html", "abuse", ("lead.read", "lead.write", "workflow.manage")
+    )
+
