@@ -984,7 +984,7 @@ async function submitAbuseBlock() {
   const reason = document.getElementById('abuse_reason')?.value?.trim() || 'Spam lead';
 
   try {
-    const res = await fetch(`/api/v1/admin/leads/${currentLead.id}/block`, {
+    const res = await adminFetch(`/api/v1/admin/leads/${currentLead.id}/block`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1016,7 +1016,7 @@ async function openAbuseRulesModal() {
   if (container) container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Đang tải danh sách...</div>';
 
   try {
-    const res = await fetch('/api/v1/admin/abuse/rules?active_only=true');
+    const res = await adminFetch('/api/v1/admin/abuse/rules?active_only=true');
     const data = await res.json();
     const items = data.items || [];
     if (items.length === 0) {
@@ -1055,7 +1055,7 @@ async function openAbuseRulesModal() {
 async function unblockAbuseRule(ruleId) {
   if (!confirm('Bạn có chắc chắn muốn gỡ chặn mục này?')) return;
   try {
-    const res = await fetch(`/api/v1/admin/abuse/rules/${ruleId}`, { method: 'DELETE' });
+    const res = await adminFetch(`/api/v1/admin/abuse/rules/${ruleId}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Gỡ chặn thất bại');
     showToast('Đã gỡ chặn thành công.', 'success');
     await openAbuseRulesModal();
