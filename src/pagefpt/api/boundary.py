@@ -17,7 +17,10 @@ def install_boundary(app: FastAPI) -> None:
         request.state.request_id = str(uuid4())
         if request.method in {"POST", "PUT", "PATCH"}:
             limit = (
-                1024 * 1024
+                10 * 1024 * 1024
+                if request.url.path.startswith("/api/v1/admin/media/")
+                and request.url.path.endswith("/upload-file")
+                else 1024 * 1024
                 if "/imports" in request.url.path
                 else 128 * 1024
                 if request.url.path.startswith("/api/v1/admin/vouchers")

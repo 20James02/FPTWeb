@@ -229,9 +229,12 @@ async def test_uploaded_image_is_finalized_to_webp_before_linking_plan(admin):
 
 @pytest.mark.asyncio
 async def test_media_upload_server_fallback(admin):
+    import os
     stream = io.BytesIO()
-    Image.new("RGB", (300, 200), color=(10, 20, 30)).save(stream, format="PNG")
+    # Create image larger than default 16 KB boundary to test boundary middleware limit (~197 KB)
+    Image.frombytes("RGB", (256, 256), os.urandom(256 * 256 * 3)).save(stream, format="PNG")
     data = stream.getvalue()
+    assert len(data) > 16 * 1024, "Image must be larger than 16 KB to test boundary limit"
 
     objects = {}
 

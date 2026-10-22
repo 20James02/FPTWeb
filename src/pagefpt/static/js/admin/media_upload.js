@@ -59,6 +59,9 @@ window.adminUploadImage = async function (file) {
     });
     if (!fallbackRes.ok) {
       const errData = await fallbackRes.json().catch(() => ({}));
+      if (errData.code === "BODY_TOO_LARGE" || errData.code === "MEDIA_TOO_LARGE") {
+        throw Error("Tệp ảnh quá lớn. Vui lòng chọn ảnh dưới 10 MB.");
+      }
       throw Error(errData.message || errData.code || "Tải ảnh chưa thành công. Hãy thử lại.");
     }
   }
