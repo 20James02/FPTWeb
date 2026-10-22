@@ -1437,7 +1437,34 @@
     if ($("link-mgr-sim-desc")) $("link-mgr-sim-desc").textContent = desc;
 
     // Domain
-    if ($("link-mgr-sim-domain")) $("link-mgr-sim-domain").textContent = location.host;
+    const customDomain = $("link-mgr-custom-domain")?.value.trim();
+    const domainText = (customDomain || location.host).toUpperCase();
+    const domainEl = $("link-mgr-sim-domain");
+    if (domainEl) domainEl.textContent = domainText;
+
+    // Toggles for Hide / Photo-post mode
+    const hideDomain = $("link-mgr-hide-domain")?.checked || false;
+    const hideTitle = $("link-mgr-hide-title")?.checked || false;
+    const photoMode = $("link-mgr-photo-mode")?.checked || (hideDomain && hideTitle);
+
+    const simBody = $("link-mgr-sim-body");
+    const photoBadge = $("link-mgr-sim-photo-badge");
+
+    if (photoMode) {
+      if (simBody) simBody.style.display = "none";
+      if (photoBadge) photoBadge.style.display = "block";
+    } else {
+      if (simBody) simBody.style.display = "block";
+      if (photoBadge) photoBadge.style.display = "none";
+
+      if (domainEl) domainEl.style.display = hideDomain ? "none" : "block";
+
+      const titleEl = $("link-mgr-sim-title");
+      if (titleEl) titleEl.style.display = hideTitle ? "none" : "block";
+
+      const descEl = $("link-mgr-sim-desc");
+      if (descEl) descEl.style.display = hideTitle ? "none" : "block";
+    }
 
     // Channel label & style
     const channel = $("link-mgr-channel")?.value || "zalo";
@@ -1583,9 +1610,20 @@
       const codeLink = el("code", "/s/" + link.slug);
       codeLink.style.fontWeight = "700";
       codeLink.style.color = "#0369a1";
+      if (link.hide_title && link.hide_domain) {
+        const photoTag = el("span", "📸 Ảnh thật FB", "badge");
+        photoTag.style.cssText = "font-size:10px; padding:1px 5px; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; border-radius:4px; margin-left:6px;";
+        tdSlug.append(codeLink, photoTag);
+      } else if (link.hide_title || link.hide_domain) {
+        const hideTag = el("span", "Ẩn tag/chữ", "badge");
+        hideTag.style.cssText = "font-size:10px; padding:1px 5px; background:#fef3c7; color:#b45309; border-radius:4px; margin-left:6px;";
+        tdSlug.append(codeLink, hideTag);
+      } else {
+        tdSlug.append(codeLink);
+      }
       const targetSub = el("small", "→ " + (link.target || "/"), "v-help");
       targetSub.style.display = "block";
-      tdSlug.append(codeLink, targetSub);
+      tdSlug.append(targetSub);
 
       // 3. Voucher Info
       const tdVoucher = el("td");
@@ -1703,7 +1741,11 @@
     if ($("link-mgr-active")) $("link-mgr-active").checked = link.active ?? true;
     if ($("link-mgr-image")) $("link-mgr-image").value = link.preview_image_url || "";
     if ($("link-mgr-custom-title")) $("link-mgr-custom-title").value = link.title || "";
-    if ($("link-mgr-custom-desc")) $("link-mgr-custom-desc").value = "";
+    if ($("link-mgr-custom-desc")) $("link-mgr-custom-desc").value = link.content_note || "";
+    if ($("link-mgr-custom-domain")) $("link-mgr-custom-domain").value = link.custom_domain || "";
+    if ($("link-mgr-hide-domain")) $("link-mgr-hide-domain").checked = Boolean(link.hide_domain);
+    if ($("link-mgr-hide-title")) $("link-mgr-hide-title").checked = Boolean(link.hide_title);
+    if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = Boolean(link.hide_domain && link.hide_title);
 
     const modeBadge = $("link-mgr-mode-badge");
     if (modeBadge) {
@@ -1727,6 +1769,11 @@
         employee_id: link.employee_id,
         active: !link.active,
         preview_image_url: link.preview_image_url || "",
+        title: link.title || "",
+        content_note: link.content_note || "",
+        custom_domain: link.custom_domain || "",
+        hide_domain: Boolean(link.hide_domain),
+        hide_title: Boolean(link.hide_title),
       });
       await load();
       renderAllLinks();
@@ -1752,6 +1799,10 @@
     if ($("link-mgr-image")) $("link-mgr-image").value = "";
     if ($("link-mgr-custom-title")) $("link-mgr-custom-title").value = "";
     if ($("link-mgr-custom-desc")) $("link-mgr-custom-desc").value = "";
+    if ($("link-mgr-custom-domain")) $("link-mgr-custom-domain").value = "";
+    if ($("link-mgr-hide-domain")) $("link-mgr-hide-domain").checked = false;
+    if ($("link-mgr-hide-title")) $("link-mgr-hide-title").checked = false;
+    if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = false;
     const modeBadge = $("link-mgr-mode-badge");
     if (modeBadge) {
       modeBadge.style.background = "#e0f2fe";
@@ -2372,7 +2423,33 @@
   $("link-mgr-image")?.addEventListener("input", updateLinkMgrPreview);
   $("link-mgr-custom-title")?.addEventListener("input", updateLinkMgrPreview);
   $("link-mgr-custom-desc")?.addEventListener("input", updateLinkMgrPreview);
+  $("link-mgr-custom-domain")?.addEventListener("input", updateLinkMgrPreview);
   $("link-mgr-channel")?.addEventListener("change", updateLinkMgrPreview);
+
+  $("link-mgr-hide-domain")?.addEventListener("change", () => {
+    if (!$("link-mgr-hide-domain")?.checked) {
+      if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = false;
+    } else if ($("link-mgr-hide-title")?.checked) {
+      if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = true;
+    }
+    updateLinkMgrPreview();
+  });
+
+  $("link-mgr-hide-title")?.addEventListener("change", () => {
+    if (!$("link-mgr-hide-title")?.checked) {
+      if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = false;
+    } else if ($("link-mgr-hide-domain")?.checked) {
+      if ($("link-mgr-photo-mode")) $("link-mgr-photo-mode").checked = true;
+    }
+    updateLinkMgrPreview();
+  });
+
+  $("link-mgr-photo-mode")?.addEventListener("change", () => {
+    const isPhoto = $("link-mgr-photo-mode")?.checked || false;
+    if ($("link-mgr-hide-domain")) $("link-mgr-hide-domain").checked = isPhoto;
+    if ($("link-mgr-hide-title")) $("link-mgr-hide-title").checked = isPhoto;
+    updateLinkMgrPreview();
+  });
 
   $("link-mgr-slug")?.addEventListener("input", () => {
     const input = $("link-mgr-slug");
@@ -2475,6 +2552,10 @@
           active: $("link-mgr-active")?.checked ?? true,
           preview_image_url: $("link-mgr-image")?.value.trim() || "",
           title: $("link-mgr-custom-title")?.value.trim() || "",
+          content_note: $("link-mgr-custom-desc")?.value.trim() || "",
+          custom_domain: $("link-mgr-custom-domain")?.value.trim() || "",
+          hide_domain: $("link-mgr-hide-domain")?.checked || false,
+          hide_title: $("link-mgr-hide-title")?.checked || false,
         };
 
         await api("/" + voucherId + "/links", "POST", payload);

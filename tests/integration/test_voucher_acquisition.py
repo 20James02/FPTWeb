@@ -1,6 +1,19 @@
+from html.parser import HTMLParser
 from urllib.parse import parse_qs, urlparse
 
 from tests.integration.test_vouchers import campaign_body, create
+
+
+class Tags(HTMLParser):
+    def __init__(self, body):
+        super().__init__()
+        self.tags = {}
+        self.feed(body)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "meta":
+            values = dict(attrs)
+            self.tags[values.get("property") or values.get("name")] = values.get("content")
 
 
 async def test_live_link_redirects_with_intent_and_safe_benefit_context(admin):
@@ -126,6 +139,54 @@ async def test_preview_does_not_expose_unpublished_voucher_content(admin):
     assert response.status_code == 200
     assert "DRAFT SECRET" not in response.text
     assert "http://test/static/images/device-camera-3d.webp" in response.text
+
+
+async def test_voucher_link_social_meta_and_photo_mode(admin):
+    voucher = await create(admin, name="Khuyến mại FPT 500k")
+    endpoint = f"/api/v1/admin/vouchers/{voucher['id']}/links"
+    image = "/static/images/device-camera-3d.webp"
+
+    # 1. Custom title and domain
+    r = await admin.post(
+        endpoint,
+        json={
+            "slug": "custom-meta",
+            "preview_image_url": image,
+            "title": "TIÊU ĐỀ TÙY CHỈNH",
+            "custom_domain": "fpt.vn",
+            "hide_domain": False,
+            "hide_title": False,
+        },
+    )
+    assert r.status_code == 201, r.text
+    assert r.json()["title"] == "TIÊU ĐỀ TÙY CHỈNH"
+    assert r.json()["custom_domain"] == "fpt.vn"
+
+    resp = await admin.get("/s/custom-meta", headers={"User-Agent": "facebookexternalhit/1.1"})
+    assert resp.status_code == 200
+    tags = Tags(resp.text).tags
+    assert tags["og:title"] == "TIÊU ĐỀ TÙY CHỈNH"
+    assert tags["og:site_name"] == "fpt.vn"
+
+    # 2. Photo mode (hide_title = True, hide_domain = True)
+    r2 = await admin.post(
+        endpoint,
+        json={
+            "slug": "photo-mode",
+            "preview_image_url": image,
+            "hide_title": True,
+            "hide_domain": True,
+        },
+    )
+    assert r2.status_code == 201, r2.text
+    assert r2.json()["hide_title"] is True
+    assert r2.json()["hide_domain"] is True
+
+    resp2 = await admin.get("/s/photo-mode", headers={"User-Agent": "facebookexternalhit/1.1"})
+    assert resp2.status_code == 200
+    tags2 = Tags(resp2.text).tags
+    assert tags2["og:title"] in ("", " ", "&#8203;", "\u200b")
+
 
 
 async def test_preview_metadata_survives_redirect_without_a_recognized_crawler(admin, gateway):

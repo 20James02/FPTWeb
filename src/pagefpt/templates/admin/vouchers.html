@@ -897,15 +897,44 @@
                 <button type="button" class="btn-preset-thumb" data-thumb="/static/images/device-camera-3d.webp">📷 Camera FPT IQ3</button>
               </div>
 
-              <div style="margin-top: 12px; display: grid; gap: 10px;">
-                <label>
-                  Tiêu đề hiển thị mạng xã hội (tùy chọn)
-                  <input id="link-mgr-custom-title" maxlength="160" placeholder="Để trống sẽ tự động lấy tên chiến dịch voucher">
-                </label>
-                <label>
-                  Mô tả ngắn gọn khi chia sẻ (tùy chọn)
-                  <textarea id="link-mgr-custom-desc" maxlength="300" rows="2" placeholder="Để trống sẽ tự lấy điều kiện tóm tắt của voucher"></textarea>
-                </label>
+              <div class="voucher-share-meta-box">
+                <span class="voucher-group-title" style="margin-bottom: 8px; display: block;">🏷️ Cấu hình tag tên miền &amp; tiêu đề bên dưới ảnh:</span>
+
+                <div style="display: grid; gap: 10px;">
+                  <label>
+                    Tùy biến tag tên miền hiển thị (Domain Tag)
+                    <input id="link-mgr-custom-domain" maxlength="100" placeholder="Để trống tự lấy domain website (vd: pagefpt.vn, fpt.vn...)">
+                    <small class="v-help">Thương hiệu / domain xuất hiện trên thẻ xem trước hoặc og:site_name.</small>
+                  </label>
+                  <label>
+                    Tiêu đề hiển thị mạng xã hội (Title)
+                    <input id="link-mgr-custom-title" maxlength="160" placeholder="Để trống sẽ tự động lấy tên chiến dịch voucher">
+                    <small class="v-help">Dòng chữ in đậm hiển thị ngay dưới ảnh thumbnail.</small>
+                  </label>
+                  <label>
+                    Mô tả ngắn gọn khi chia sẻ (Description)
+                    <textarea id="link-mgr-custom-desc" maxlength="300" rows="2" placeholder="Để trống sẽ tự lấy điều kiện tóm tắt của voucher"></textarea>
+                    <small class="v-help">Dòng chú thích ngắn hiển thị bên dưới tiêu đề.</small>
+                  </label>
+                </div>
+
+                <div class="voucher-popup-toggles-grid" style="margin-top: 12px;">
+                  <label class="v-toggle-item" style="grid-column: 1 / -1; border-color: #f97316; background: #fffbf6;">
+                    <input type="checkbox" id="link-mgr-photo-mode">
+                    <span class="v-toggle-slider"></span>
+                    <span class="v-toggle-text">📸 <strong>Chế độ ảnh thật Facebook:</strong> Ẩn toàn bộ chữ bên dưới để bài đăng trông như một bức ảnh thật</span>
+                  </label>
+                  <label class="v-toggle-item">
+                    <input type="checkbox" id="link-mgr-hide-domain">
+                    <span class="v-toggle-slider"></span>
+                    <span class="v-toggle-text">Ẩn tag tên miền</span>
+                  </label>
+                  <label class="v-toggle-item">
+                    <input type="checkbox" id="link-mgr-hide-title">
+                    <span class="v-toggle-slider"></span>
+                    <span class="v-toggle-text">Ẩn tiêu đề &amp; mô tả</span>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -927,11 +956,14 @@
               <div class="v-card-sim-image-box">
                 <img id="link-mgr-sim-image" src="/static/images/device-internet-3d.webp" alt="Ảnh thumbnail link chia sẻ" loading="lazy">
               </div>
-              <div class="v-card-sim-body">
+              <div class="v-card-sim-body" id="link-mgr-sim-body">
                 <span id="link-mgr-sim-domain" class="v-card-sim-domain">pagefpt.vn</span>
                 <h4 id="link-mgr-sim-title" class="v-card-sim-title">Tư vấn lắp mạng FPT — Gói cước theo khu vực</h4>
                 <p id="link-mgr-sim-desc" class="v-card-sim-desc">Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng.</p>
                 <div id="link-mgr-sim-status" class="v-card-sim-status live">🟢 Đang sẵn sàng nhận ưu đãi</div>
+              </div>
+              <div id="link-mgr-sim-photo-badge" class="v-card-sim-photo-badge" style="display: none;">
+                📸 <strong>Chế độ ảnh thật Facebook:</strong> Khung hiển thị không chứa tiêu đề hay link chữ bên dưới.
               </div>
             </div>
 

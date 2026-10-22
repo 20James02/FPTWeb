@@ -143,6 +143,9 @@ class LinkInput(Command):
     channel: str = Field(default="direct", min_length=1, max_length=40, pattern=r"^[a-zA-Z0-9_-]+$")
     employee_id: UUID | None = None
     active: bool = True
+    custom_domain: str | None = Field(default=None, max_length=100)
+    hide_domain: bool = False
+    hide_title: bool = False
 
     @model_validator(mode="after")
     def local_target(self):
