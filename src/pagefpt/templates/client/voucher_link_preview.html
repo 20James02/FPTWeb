@@ -13,8 +13,6 @@
 <meta property="og:description" content="{{ description if description else '&#8203;' }}">
 <meta property="og:url" content="{{ url }}">
 <meta property="og:image" content="{{ image }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="{{ title if title else '' }}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ title if title else '&#8203;' }}">
@@ -27,5 +25,5 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
 </head>
-<body><main>{% if title %}<h1>{{ title }}</h1>{% endif %}{% if description %}<p>{{ description }}</p>{% endif %}<img src="{{ image }}" alt="{{ title }}" width="600"><p><a href="{{ target }}">Xem gói cước và nhận tư vấn</a></p></main></body>
+<body><main>{% if title %}<h1>{{ title }}</h1>{% endif %}{% if description %}<p>{{ description }}</p>{% endif %}<img src="{{ image }}" alt="{{ title }}" style="max-width: 100%; height: auto;"><p><a href="{{ target }}">Xem gói cước và nhận tư vấn</a></p></main></body>
 </html>

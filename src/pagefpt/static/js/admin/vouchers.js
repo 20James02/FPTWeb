@@ -1420,7 +1420,15 @@
     } catch (_) {}
 
     const img = $("link-mgr-sim-image");
-    if (img) img.src = imageSrc;
+    if (img) {
+      img.onload = () => {
+        const ratioBadge = $("link-mgr-sim-ratio");
+        if (ratioBadge && img.naturalWidth && img.naturalHeight) {
+          ratioBadge.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+        }
+      };
+      img.src = imageSrc;
+    }
 
     const voucherId = $("link-mgr-voucher-select")?.value;
     const v = rows.find(r => r.id === voucherId);

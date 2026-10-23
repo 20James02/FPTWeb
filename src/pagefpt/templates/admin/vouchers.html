@@ -38,7 +38,7 @@
       <span class="v-tab-icon">🔗</span>
       <span class="v-tab-text">
         <strong>Quản lý Link chia sẻ &amp; Thumbnail</strong>
-        <small>Tạo link riêng, chọn voucher, tùy biến ảnh 1200×630 &amp; mã QR</small>
+        <small>Tạo link riêng, chọn voucher, tự động theo kích thước ảnh &amp; mã QR</small>
       </span>
       <span id="v-links-total-badge" class="v-tab-badge">0 link</span>
     </button>
@@ -699,7 +699,7 @@
         <section class="voucher-share-preview-editor" aria-labelledby="v-share-preview-heading">
           <div class="voucher-share-preview-fields">
             <h3 id="v-share-preview-heading">Ảnh xem trước khi chia sẻ</h3>
-            <p class="v-help">Ảnh riêng cho link này trên Zalo, Facebook và các ứng dụng hỗ trợ xem trước link. Nên dùng ảnh ngang 1200 × 630 px, chữ ngắn và rõ.</p>
+            <p class="v-help">Ảnh riêng cho link này trên Zalo, Facebook và các ứng dụng hỗ trợ xem trước link. Tự động hiển thị theo kích thước ảnh thật (ngang, vuông 1:1, dọc...).</p>
             <label for="v-link-image">Đường dẫn ảnh công khai</label>
             <input id="v-link-image" type="text" inputmode="url" maxlength="1500" placeholder="https://… hoặc tải ảnh bên dưới" aria-describedby="v-link-image-help">
             <div class="voucher-share-image-actions">
@@ -783,7 +783,7 @@
         <div>
           <span class="voucher-eyebrow">MARKETING &amp; KÊNH PHÂN PHỐI TIẾP THỊ</span>
           <h2 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px;">Quản lý Link chia sẻ &amp; Tùy chỉnh Thumbnail</h2>
-          <p style="margin: 0; color: #475569; font-size: 13.5px;">Tạo link ngắn định danh (/s/...), chọn voucher ưu đãi áp dụng, tùy chỉnh ảnh xem trước (Open Graph 1200×630) trên Zalo/Facebook và mã QR.</p>
+          <p style="margin: 0; color: #475569; font-size: 13.5px;">Tạo link ngắn định danh (/s/...), chọn voucher ưu đãi áp dụng, tùy chỉnh ảnh xem trước (tự động theo kích thước ảnh thật) trên Zalo/Facebook và mã QR.</p>
         </div>
         <div style="display: flex; gap: 10px;">
           <button type="button" id="link-mgr-new-btn" class="btn-action-call">+ Soạn link mới</button>
@@ -876,8 +876,8 @@
 
             <!-- Khối Tùy Biến Thumbnail & Xem Trước -->
             <div class="v-thumb-config-box">
-              <h4>🖼️ Tùy chỉnh Thumbnail &amp; Thẻ xem trước (Open Graph 1200 × 630)</h4>
-              <p class="v-help" style="margin-bottom: 10px;">Ảnh và tiêu đề hiển thị khi dán link vào Zalo, Facebook, Messenger, Telegram. Tỉ lệ chuẩn 1.91:1.</p>
+              <h4>🖼️ Tùy chỉnh Thumbnail &amp; Thẻ xem trước (Tự động theo kích thước ảnh thật)</h4>
+              <p class="v-help" style="margin-bottom: 10px;">Ảnh và tiêu đề hiển thị khi dán link vào Zalo, Facebook, Messenger, Telegram. Tự động tương thích ảnh ngang, ảnh vuông 1:1 hoặc ảnh dọc.</p>
 
               <label for="link-mgr-image">Đường dẫn ảnh Thumbnail</label>
               <input id="link-mgr-image" type="url" placeholder="https://... hoặc tải ảnh bên dưới" aria-describedby="link-mgr-image-help">
@@ -951,7 +951,7 @@
             <div class="v-card-simulator">
               <div class="v-card-sim-header">
                 <span class="v-card-sim-platform zalo" id="link-mgr-sim-platform">💬 Xem trước hiển thị trên Zalo &amp; Facebook</span>
-                <span class="v-tab-badge" style="background: #f1f5f9; color: #475569;">1200 × 630 px</span>
+                <span class="v-tab-badge" id="link-mgr-sim-ratio" style="background: #f1f5f9; color: #475569;">Tự động theo ảnh</span>
               </div>
               <div class="v-card-sim-image-box">
                 <img id="link-mgr-sim-image" src="/static/images/device-internet-3d.webp" alt="Ảnh thumbnail link chia sẻ" loading="lazy">
