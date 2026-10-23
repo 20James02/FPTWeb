@@ -1434,6 +1434,11 @@
     const v = rows.find(r => r.id === voucherId);
     const p = v?.published_payload || v?.payload;
 
+    // Toggles for Hide / Photo-post mode
+    const hideDomain = $("link-mgr-hide-domain")?.checked || false;
+    const hideTitle = $("link-mgr-hide-title")?.checked || false;
+    const photoMode = $("link-mgr-photo-mode")?.checked || (hideDomain && hideTitle);
+
     // Title
     const customTitle = $("link-mgr-custom-title")?.value.trim() || "";
     const title = customTitle;
@@ -1460,11 +1465,6 @@
       domainEl.textContent = domainText;
       domainEl.style.display = hideDomain ? "none" : "block";
     }
-
-    // Toggles for Hide / Photo-post mode
-    const hideDomain = $("link-mgr-hide-domain")?.checked || false;
-    const hideTitle = $("link-mgr-hide-title")?.checked || false;
-    const photoMode = $("link-mgr-photo-mode")?.checked || (hideDomain && hideTitle);
 
     const simBody = $("link-mgr-sim-body");
     const photoBadge = $("link-mgr-sim-photo-badge");
