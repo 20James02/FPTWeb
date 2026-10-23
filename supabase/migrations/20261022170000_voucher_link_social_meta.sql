@@ -24,8 +24,8 @@ BEGIN
   RETURN jsonb_build_object(
    'target',link.target,
    'preview_image_url',link.preview_image_url,
-   'title',CASE WHEN link.hide_title THEN '' ELSE coalesce(nullif(link.title,''),voucher.published_payload->>'name','') END,
-   'description',CASE WHEN link.hide_title THEN '' ELSE coalesce(nullif(link.content_note,''),left(voucher.published_payload->>'terms',300),'') END,
+   'title',CASE WHEN link.hide_title THEN '' ELSE coalesce(link.title,'') END,
+   'description',CASE WHEN link.hide_title THEN '' ELSE coalesce(link.content_note,'') END,
    'custom_domain',link.custom_domain,
    'hide_domain',link.hide_domain,
    'hide_title',link.hide_title
@@ -41,8 +41,8 @@ BEGIN
   RETURN jsonb_build_object(
    'target',link.target,
    'preview_image_url',link.preview_image_url,
-   'title',CASE WHEN link.hide_title THEN '' ELSE coalesce(nullif(link.title,''),voucher.published_payload->>'name','') END,
-   'description',CASE WHEN link.hide_title THEN '' ELSE coalesce(nullif(link.content_note,''),left(voucher.published_payload->>'terms',300),'') END,
+   'title',CASE WHEN link.hide_title THEN '' ELSE coalesce(link.title,'') END,
+   'description',CASE WHEN link.hide_title THEN '' ELSE coalesce(link.content_note,'') END,
    'custom_domain',link.custom_domain,
    'hide_domain',link.hide_domain,
    'hide_title',link.hide_title

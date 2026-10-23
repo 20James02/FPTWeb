@@ -44,15 +44,18 @@ def share_context(request, slug, data):
         title = ""
         description = ""
     else:
-        title = data.get("title") or "Tư vấn lắp mạng FPT — Gói cước theo khu vực"
-        description = data.get("description") or "Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng."
+        title = (data.get("title") or "").strip()
+        description = (data.get("description") or "").strip()
+
+    preview_img = (data.get("preview_image_url") or "").strip()
+    image = urljoin(
+        origin + "/", preview_img or "/static/images/device-internet-3d.webp"
+    )
 
     return {
         "title": title,
         "description": description,
-        "image": urljoin(
-            origin + "/", data.get("preview_image_url") or "/static/images/device-internet-3d.webp"
-        ),
+        "image": image,
         "url": origin + "/s/" + slug,
         "target": data["target"],
         "custom_domain": custom_domain,

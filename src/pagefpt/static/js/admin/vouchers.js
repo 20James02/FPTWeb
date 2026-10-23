@@ -1427,20 +1427,31 @@
     const p = v?.published_payload || v?.payload;
 
     // Title
-    const customTitle = $("link-mgr-custom-title")?.value.trim();
-    const title = customTitle || (p?.name ? p.name : "Tư vấn lắp mạng FPT — Gói cước theo khu vực");
-    if ($("link-mgr-sim-title")) $("link-mgr-sim-title").textContent = title;
+    const customTitle = $("link-mgr-custom-title")?.value.trim() || "";
+    const title = customTitle;
+    const titleEl = $("link-mgr-sim-title");
+    if (titleEl) {
+      titleEl.textContent = title;
+      titleEl.style.display = (hideTitle || !title) ? "none" : "block";
+    }
 
     // Description
-    const customDesc = $("link-mgr-custom-desc")?.value.trim();
-    const desc = customDesc || (p?.terms ? p.terms.slice(0, 300) : "Chọn gói Internet, truyền hình và camera theo nhu cầu. Liên hệ để được tư vấn giá và điều kiện áp dụng.");
-    if ($("link-mgr-sim-desc")) $("link-mgr-sim-desc").textContent = desc;
+    const customDesc = $("link-mgr-custom-desc")?.value.trim() || "";
+    const desc = customDesc;
+    const descEl = $("link-mgr-sim-desc");
+    if (descEl) {
+      descEl.textContent = desc;
+      descEl.style.display = (hideTitle || !desc) ? "none" : "block";
+    }
 
     // Domain
     const customDomain = $("link-mgr-custom-domain")?.value.trim();
     const domainText = (customDomain || location.host).toUpperCase();
     const domainEl = $("link-mgr-sim-domain");
-    if (domainEl) domainEl.textContent = domainText;
+    if (domainEl) {
+      domainEl.textContent = domainText;
+      domainEl.style.display = hideDomain ? "none" : "block";
+    }
 
     // Toggles for Hide / Photo-post mode
     const hideDomain = $("link-mgr-hide-domain")?.checked || false;
@@ -1450,20 +1461,12 @@
     const simBody = $("link-mgr-sim-body");
     const photoBadge = $("link-mgr-sim-photo-badge");
 
-    if (photoMode) {
+    if (photoMode || (hideDomain && (!title || hideTitle))) {
       if (simBody) simBody.style.display = "none";
       if (photoBadge) photoBadge.style.display = "block";
     } else {
       if (simBody) simBody.style.display = "block";
       if (photoBadge) photoBadge.style.display = "none";
-
-      if (domainEl) domainEl.style.display = hideDomain ? "none" : "block";
-
-      const titleEl = $("link-mgr-sim-title");
-      if (titleEl) titleEl.style.display = hideTitle ? "none" : "block";
-
-      const descEl = $("link-mgr-sim-desc");
-      if (descEl) descEl.style.display = hideTitle ? "none" : "block";
     }
 
     // Channel label & style

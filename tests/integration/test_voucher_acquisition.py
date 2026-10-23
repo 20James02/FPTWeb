@@ -81,7 +81,7 @@ async def test_link_preview_image_is_independent_editable_and_safe(admin, gatewa
         assert response.status_code == 200, response.text
         tags = Tags(response.text).tags
         assert tags["og:image"] == tags["twitter:image"] == image
-        assert tags["og:title"] == voucher["payload"]["name"]
+        assert tags["og:title"] in ("", " ", "&#8203;", "\u200b")
         assert tags["og:url"].endswith("/s/preview-image")
         assert "Set-Cookie" not in response.headers
         assert "user-agent" in response.headers["vary"].lower()
