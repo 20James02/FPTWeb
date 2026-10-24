@@ -626,7 +626,346 @@ ease;
     }
 }
 
+/* Ẩn giỏ hàng không cần thiết cho dịch vụ viễn thông */
+.cart-item, .off-canvas-cart, #cart-popup {
+    display: none !important;
+}
 
+/* Header Action Buttons */
+.vt-header-btn-desk {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+    color: #ffffff !important;
+    border-radius: 24px !important;
+    padding: 7px 18px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    border: none !important;
+}
+.vt-header-btn-desk:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(234, 88, 12, 0.45) !important;
+}
+.vt-header-btn-mob {
+    background: #f37021 !important;
+    color: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 6px 12px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    border: none !important;
+}
+
+/* Hero Header & Quick Lead Form */
+.vt-hero-header {
+    padding: 24px 15px 10px;
+    background: #ffffff;
+    text-align: center;
+}
+.vt-hero-header h1.seo-home-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+.vt-hero-header p {
+    font-size: 15px;
+    color: #475569;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+.vt-quick-lead-section {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 2px solid #fdba74;
+    border-radius: 18px;
+    padding: 24px 20px 20px;
+    margin: 15px 15px 25px;
+    box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.15);
+}
+@media (min-width: 860px) {
+    .vt-quick-lead-section {
+        margin: 20px auto 30px;
+        max-width: 880px;
+    }
+}
+.vt-quick-lead-section .vt-badge {
+    background: #ea580c;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 20px;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.vt-quick-lead-section h2, .vt-quick-lead-section h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #9a3412;
+    margin: 10px 0 6px;
+}
+.vt-quick-lead-section p.vt-sub {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 16px;
+}
+.vt-quick-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+.vt-quick-form input, .vt-quick-form select {
+    padding: 13px 16px;
+    border: 2px solid #fdba74;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.vt-quick-form input:focus, .vt-quick-form select:focus {
+    border-color: #ea580c;
+}
+.vt-quick-btn {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.vt-quick-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+}
+.vt-trust-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #fdba74;
+    font-size: 13px;
+    color: #7c2d12;
+    font-weight: 600;
+}
+@media (max-width: 600px) {
+    .vt-hero-header h1.seo-home-title {
+        font-size: 18px;
+    }
+    .vt-quick-lead-section h2, .vt-quick-lead-section h3 {
+        font-size: 17px;
+    }
+    .vt-quick-form {
+        flex-direction: column;
+        width: 100%;
+    }
+    .vt-quick-form input, .vt-quick-form select, .vt-quick-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .vt-trust-row {
+        gap: 8px 14px;
+        font-size: 12px;
+    }
+}
+
+/* Social Proof & Process */
+.vt-social-proof {
+    background: #ffffff;
+    padding: 45px 15px 35px;
+    text-align: center;
+}
+.vt-social-proof h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+.vt-social-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1140px;
+    margin: 25px auto 0;
+    text-align: left;
+}
+.vt-social-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.vt-stars {
+    color: #f59e0b;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+.vt-social-card p.review-text {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    font-style: italic;
+}
+.vt-customer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+}
+.vt-customer-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.vt-customer-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+}
+.vt-customer-loc {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Quy trình 4 bước */
+.vt-process-section {
+    background: #f8fafc;
+    padding: 45px 15px 35px;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+}
+.vt-process-section h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+.vt-process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1140px;
+    margin: 30px auto 0;
+}
+.vt-process-step {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+.vt-step-num {
+    width: 36px;
+    height: 36px;
+    background: #f37021;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    margin: 0 auto 12px;
+}
+.vt-step-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+.vt-step-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Local Branch & Map */
+.vt-local-branch-section {
+    background: #ffffff;
+    padding: 45px 15px 40px;
+    border-top: 1px solid #e2e8f0;
+}
+.vt-local-branch-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+}
+@media (min-width: 860px) {
+    .vt-local-branch-inner {
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: start;
+    }
+}
+.vt-branch-info h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+.vt-branch-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+}
+.vt-branch-info li {
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+.vt-coverage-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    margin: 3px 4px 3px 0;
+}
 
 .custom-acf-box1 {
     display: flex;
@@ -2769,88 +3108,22 @@ span.product-name {
           <!-- Right Elements -->
           <div class="flex-col hide-for-medium flex-right">
             <ul class="header-nav header-nav-main nav nav-right  nav-size-large nav-spacing-xlarge nav-uppercase">
-              <li class="cart-item has-icon has-dropdown">
-
-<a href="https://fptvungtau.com/gio-hang/" class="header-cart-link nav-top-link is-small" title="Giỏ hàng" aria-label="Xem giỏ hàng" aria-expanded="false" aria-haspopup="true" role="button" data-flatsome-role-button>
-
-
-    <span class="cart-icon image-icon">
-    <strong>0</strong>
-  </span>
-  </a>
-
- <ul class="nav-dropdown nav-dropdown-simple">
-    <li class="html widget_shopping_cart">
-      <div class="widget_shopping_cart_content">
-        
-
-	<div class="ux-mini-cart-empty flex flex-row-col text-center pt pb">
-				<div class="ux-mini-cart-empty-icon">
-			<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 19" style="opacity:.1;height:80px;">
-				<path d="M8.5 0C6.7 0 5.3 1.2 5.3 2.7v2H2.1c-.3 0-.6.3-.7.7L0 18.2c0 .4.2.8.6.8h15.7c.4 0 .7-.3.7-.7v-.1L15.6 5.4c0-.3-.3-.6-.7-.6h-3.2v-2c0-1.6-1.4-2.8-3.2-2.8zM6.7 2.7c0-.8.8-1.4 1.8-1.4s1.8.6 1.8 1.4v2H6.7v-2zm7.5 3.4 1.3 11.5h-14L2.8 6.1h2.5v1.4c0 .4.3.7.7.7.4 0 .7-.3.7-.7V6.1h3.5v1.4c0 .4.3.7.7.7s.7-.3.7-.7V6.1h2.6z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"></path>
-			</svg>
-		</div>
-				<p class="woocommerce-mini-cart__empty-message empty">Chưa có sản phẩm trong giỏ hàng.</p>
-					<p class="return-to-shop">
-				<a class="button primary wc-backward" href="https://fptvungtau.com/cua-hang/">
-					Quay trở lại cửa hàng				</a>
-			</p>
-				</div>
-
-
-      </div>
-    </li>
-     </ul>
-
-</li>
+              <li class="header-button">
+                <a href="#dang-ky" onclick="if(window.openVungTauLeadModal){openVungTauLeadModal();return false;}" class="button vt-header-btn-desk">
+                  <span>⚡ ĐĂNG KÝ TƯ VẤN</span>
+                </a>
+              </li>
             </ul>
           </div>
 
           <!-- Mobile Right Elements -->
           <div class="flex-col show-for-medium flex-right">
             <ul class="mobile-nav nav nav-right ">
-              <li class="cart-item has-icon">
-
-
-		<a href="https://fptvungtau.com/gio-hang/" class="header-cart-link nav-top-link is-small off-canvas-toggle" title="Giỏ hàng" aria-label="Xem giỏ hàng" aria-expanded="false" aria-haspopup="dialog" role="button" data-open="#cart-popup" data-class="off-canvas-cart" data-pos="right" aria-controls="cart-popup" data-flatsome-role-button>
-
-    <span class="cart-icon image-icon">
-    <strong>0</strong>
-  </span>
-  </a>
-
-
-  <!-- Cart Sidebar Popup -->
-  <div id="cart-popup" class="mfp-hide">
-  <div class="cart-popup-inner inner-padding cart-popup-inner--sticky">
-      <div class="cart-popup-title text-center">
-          <span class="heading-font uppercase">Giỏ hàng</span>
-          <div class="is-divider"></div>
-      </div>
-	  <div class="widget_shopping_cart">
-		  <div class="widget_shopping_cart_content">
-			  
-
-	<div class="ux-mini-cart-empty flex flex-row-col text-center pt pb">
-				<div class="ux-mini-cart-empty-icon">
-			<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 19" style="opacity:.1;height:80px;">
-				<path d="M8.5 0C6.7 0 5.3 1.2 5.3 2.7v2H2.1c-.3 0-.6.3-.7.7L0 18.2c0 .4.2.8.6.8h15.7c.4 0 .7-.3.7-.7v-.1L15.6 5.4c0-.3-.3-.6-.7-.6h-3.2v-2c0-1.6-1.4-2.8-3.2-2.8zM6.7 2.7c0-.8.8-1.4 1.8-1.4s1.8.6 1.8 1.4v2H6.7v-2zm7.5 3.4 1.3 11.5h-14L2.8 6.1h2.5v1.4c0 .4.3.7.7.7.4 0 .7-.3.7-.7V6.1h3.5v1.4c0 .4.3.7.7.7s.7-.3.7-.7V6.1h2.6z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"></path>
-			</svg>
-		</div>
-				<p class="woocommerce-mini-cart__empty-message empty">Chưa có sản phẩm trong giỏ hàng.</p>
-					<p class="return-to-shop">
-				<a class="button primary wc-backward" href="https://fptvungtau.com/cua-hang/">
-					Quay trở lại cửa hàng				</a>
-			</p>
-				</div>
-
-
-		  </div>
-	  </div>
-               </div>
-  </div>
-
-</li>
+              <li class="header-button">
+                <a href="{{ config.hotline_tel }}" class="button vt-header-btn-mob">
+                  <span>📞 {{ config.hotline }}</span>
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -2938,6 +3211,41 @@ span.product-name {
 </div>
 {% endif %}
 
+<div class="vt-hero-header">
+  <h1 class="seo-home-title">LẮP MẠNG FPT VŨNG TÀU – CÁP QUANG WIFI 6 TỐC ĐỘ CAO</h1>
+  <p>Đăng ký trực tuyến nhận ngay ưu đãi: Miễn phí trang bị modem 2 băng tần Wi-Fi 6, khảo sát hạ tầng tận nơi miễn phí, lắp đặt siêu tốc trong 24h tại TP. Vũng Tàu, TP. Bà Rịa &amp; TX. Phú Mỹ.</p>
+</div>
+
+<div class="vt-quick-lead-section">
+  <div style="text-align: center;">
+    <span class="vt-badge">TƯ VẤN &amp; KHẢO SÁT MIỄN PHÍ</span>
+    <h2>ĐĂNG KÝ LẮP ĐẶT NHANH TẠI BÀ RỊA – VŨNG TÀU</h2>
+    <p class="vt-sub">Chuyên viên FPT liên hệ lại tư vấn sau 5 phút • Khảo sát hạ tầng tận nhà hoàn toàn miễn phí</p>
+  </div>
+  <form id="vt-quick-hero-form" class="vt-quick-form">
+    <input type="tel" id="vt-quick-phone" name="phone" placeholder="Nhập số điện thoại của bạn..." required pattern="^0[35789]\d{8}$" style="flex: 1 1 240px; min-width: 200px; max-width: 320px;" />
+    <select id="vt-quick-plan" name="plan" style="flex: 1 1 220px; min-width: 180px; max-width: 280px;">
+      <option value="Tư vấn gói cước phù hợp">-- Chọn gói cước quan tâm --</option>
+      <option value="Gói Giga 150 Mbps (180k/tháng)">Gói Giga 150 Mbps (180k/tháng)</option>
+      <option value="Gói Sky 1000 Mbps (225k/tháng)">Gói Sky 1000 Mbps (225k/tháng)</option>
+      <option value="Gói Meta 1000 Mbps Đối xứng (325k/tháng)">Gói Meta 1000 Mbps (325k/tháng)</option>
+      <option value="Combo Internet + Truyền hình FPT Play (239k/tháng)">Combo Internet + FPT Play (239k)</option>
+      <option value="FPT Camera an ninh AI xoay 360">FPT Camera an ninh AI</option>
+      <option value="Gói Doanh nghiệp / Quán Cafe">Internet Doanh nghiệp / Cafe</option>
+    </select>
+    <button type="submit" id="vt-quick-btn" class="vt-quick-btn">
+      GỬI YÊU CẦU NGAY
+    </button>
+  </form>
+  <div id="vt-quick-feedback" style="display: none; margin-top: 12px; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: 600;"></div>
+  <div class="vt-trust-row">
+    <span>⚡ Lắp đặt trong 24h</span>
+    <span>🎁 Tặng Modem WiFi 6 thế hệ mới</span>
+    <span>🛡️ Hỗ trợ kỹ thuật 24/7 tận nhà</span>
+    <span>💰 Đóng 6T/12T tặng thêm tháng cước</span>
+  </div>
+</div>
+
 	<section class="section" id="section_1328196052">
 		<div class="section-bg fill" >
 									
@@ -3006,14 +3314,14 @@ span.product-name {
 	<div class="box has-hover   has-hover box-text-bottom" >
 
 		<div class="box-image" style="width:27%;">
-			<a href="#chi-nhanh" onclick="alert('Chi nhánh {{ config.brand_name }}:\n{{ config.address }}\nHotline: {{ config.hotline }}');return false;" >			<div class="" >
+			<a href="#chi-nhanh" onclick="var el = document.getElementById('chi-nhanh'); if(el){ el.scrollIntoView({behavior: 'smooth'}); return false; }" >			<div class="" >
 				<img loading="lazy" decoding="async" width="106" height="106" src="https://fptvungtau.com/wp-content/uploads/2023/12/dia-diem-giao-dich-fpt.png" class="attachment-original size-original" alt="" srcset="https://fptvungtau.com/wp-content/uploads/2023/12/dia-diem-giao-dich-fpt.png 106w, https://fptvungtau.com/wp-content/uploads/2023/12/dia-diem-giao-dich-fpt-100x100.png 100w" sizes="auto, (max-width: 106px) 100vw, 106px" />											</div>
 			</a>		</div>
 
 		<div class="box-text text-center" >
 			<div class="box-text-inner">
 				
-<h3><a href="#chi-nhanh" onclick="alert('Chi nhánh {{ config.brand_name }}:\n{{ config.address }}\nHotline: {{ config.hotline }}');return false;" style="color: #62b046;"><strong>ĐIỂM GIAO DỊCH</strong></a></h3>
+<h3><a href="#chi-nhanh" onclick="var el = document.getElementById('chi-nhanh'); if(el){ el.scrollIntoView({behavior: 'smooth'}); return false; }" style="color: #62b046;"><strong>ĐIỂM GIAO DỊCH</strong></a></h3>
 <p style="font-size: 12px; margin-top: 4px; color: #64748b; line-height: 1.3;">{{ config.address }}</p>
 			</div>
 		</div>
@@ -3056,8 +3364,9 @@ span.product-name {
 			
 	<div id="text-764635485" class="text title-home-main">
 		
-<h1 class="seo-home-title" style="text-align: center;"><span style="font-size: 95%; color: #000000;">FPT Vũng Tàu | Lắp Mạng WiFi FPT Chính Hãng, Hỗ Trợ Nhanh</span></h1>
-<h2 class="package-title" style="text-align: center;"><span style="color: #ed1c24;"><strong><span style="font-size: 80%;">Khám phá sản phẩm nổi bật tại <span style="text-decoration: underline; color: #0000ff;">FPT Vũng Tàu</span></span></strong></span></h2>
+<h2 class="package-title" style="text-align: center; font-size: 21px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Bảng Giá Gói Cước Internet Cáp Quang WiFi 6 Nổi Bật</h2>
+<p style="text-align: center; color: #64748b; font-size: 14px; margin-bottom: 12px;">Ưu đãi đặc quyền áp dụng cho khách hàng đăng ký lắp đặt tại tỉnh Bà Rịa – Vũng Tàu</p>
+<h3 class="package-title" style="text-align: center;"><span style="color: #ed1c24;"><strong><span style="font-size: 80%;">Khám phá sản phẩm nổi bật tại <span style="text-decoration: underline; color: #0000ff;">FPT Vũng Tàu</span></span></strong></span></h3>
 			</div>
 	
 	<div id="gap-307640156" class="gap-element clearfix" style="display:block; height:auto;">
@@ -5335,9 +5644,145 @@ span.product-name {
 
 			
 		
-</div>
+<!-- Khối Đánh Giá Khách Hàng (Social Proof) -->
+<section class="vt-social-proof">
+  <div style="max-width: 1140px; margin: 0 auto;">
+    <span style="background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 800; padding: 4px 14px; border-radius: 20px; text-transform: uppercase;">Ý KIẾN KHÁCH HÀNG</span>
+    <h2 style="margin-top: 10px;">Khách Hàng Tại Bà Rịa – Vũng Tàu Nói Gì Về Chúng Tôi?</h2>
+    <p style="color: #64748b; font-size: 15px; margin: 0 auto; max-width: 680px;">Hơn 50.000 hộ gia đình và doanh nghiệp trên toàn tỉnh đã tin dùng dịch vụ viễn thông FPT Telecom</p>
+    
+    <div class="vt-social-cards">
+      <!-- Card 1 -->
+      <div class="vt-social-card">
+        <div>
+          <div class="vt-stars">★★★★★</div>
+          <p class="review-text">"Nhà mình ở KDC Chí Linh, 3 tầng dùng nhiều thiết bị. Kỹ thuật viên qua khảo sát rất chu đáo, kéo dây cáp ngầm thẩm mỹ gọn gàng. Tốc độ modem Wi-Fi 6 rất mạnh, phòng nào cũng bắt căng sóng, xem tivi bóng đá mượt mà."</p>
+        </div>
+        <div class="vt-customer-info">
+          <div class="vt-customer-avatar">T</div>
+          <div>
+            <div class="vt-customer-name">Anh Nguyễn Minh Tuấn</div>
+            <div class="vt-customer-loc">P. 10, TP. Vũng Tàu • Gói Sky 1000 Mbps</div>
+          </div>
+        </div>
+      </div>
 
+      <!-- Card 2 -->
+      <div class="vt-social-card">
+        <div>
+          <div class="vt-stars">★★★★★</div>
+          <p class="review-text">"Đăng ký gói Combo có kèm đầu thu FPT Play, ba mẹ mình rất thích vì có điều khiển giọng nói tiếng Việt dễ tìm kênh. Sáng bấm đăng ký trên web thì đầu giờ chiều kỹ thuật đã tới lắp xong, hỗ trợ rất nhiệt tình."</p>
+        </div>
+        <div class="vt-customer-info">
+          <div class="vt-customer-avatar" style="background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);">H</div>
+          <div>
+            <div class="vt-customer-name">Chị Trần Thu Hà</div>
+            <div class="vt-customer-loc">Đường Lê Duẩn, TP. Bà Rịa • Combo FPT Play</div>
+          </div>
+        </div>
+      </div>
 
+      <!-- Card 3 -->
+      <div class="vt-social-card">
+        <div>
+          <div class="vt-stars">★★★★★</div>
+          <p class="review-text">"Quán cafe của mình ở Phú Mỹ lượng khách ra vào liên tục, trước đây dùng mạng khác hay bị nghẽn mạng giờ cao điểm. Từ ngày chuyển sang FPT có thiết bị cân bằng tải chuyên dụng, khách ngồi đông vẫn lướt web vù vù."</p>
+        </div>
+        <div class="vt-customer-info">
+          <div class="vt-customer-avatar" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">L</div>
+          <div>
+            <div class="vt-customer-name">Anh Lê Hoàng Long (Chủ Quán Cafe)</div>
+            <div class="vt-customer-loc">TX. Phú Mỹ • Gói Doanh Nghiệp Super</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Khối Quy Trình Lắp Đặt 4 Bước -->
+<section class="vt-process-section">
+  <div style="max-width: 1140px; margin: 0 auto;">
+    <span style="background: #fef3c7; color: #b45309; font-size: 12px; font-weight: 800; padding: 4px 14px; border-radius: 20px; text-transform: uppercase;">QUY TRÌNH TINH GỌN</span>
+    <h2 style="margin-top: 10px;">Quy Trình 4 Bước Đăng Ký &amp; Lắp Đặt Siêu Tốc</h2>
+    <p style="color: #64748b; font-size: 15px; margin: 0 auto; max-width: 600px;">Thủ tục đơn giản – Chỉ cần CMND/CCCD – Triển khai nhanh trong ngày</p>
+    
+    <div class="vt-process-grid">
+      <div class="vt-process-step">
+        <div class="vt-step-num">1</div>
+        <div class="vt-step-title">Gửi Yêu Cầu</div>
+        <p class="vt-step-desc">Nhập số điện thoại trên web hoặc gọi trực tiếp Hotline {{ config.hotline }}.</p>
+      </div>
+      <div class="vt-process-step">
+        <div class="vt-step-num">2</div>
+        <div class="vt-step-title">Tư Vấn &amp; Kiểm Tra</div>
+        <p class="vt-step-desc">Chuyên viên liên hệ sau 5 phút kiểm tra hạ tầng cổng cáp và tư vấn gói tối ưu nhất.</p>
+      </div>
+      <div class="vt-process-step">
+        <div class="vt-step-num">3</div>
+        <div class="vt-step-title">Lắp Đặt Tận Nơi</div>
+        <p class="vt-step-desc">Kỹ thuật viên FPT đến khảo sát thực tế và kéo cáp hoàn thiện trong vòng 24 giờ.</p>
+      </div>
+      <div class="vt-process-step">
+        <div class="vt-step-num">4</div>
+        <div class="vt-step-title">Nghiệm Thu &amp; Bàn Giao</div>
+        <p class="vt-step-desc">Kiểm tra đo tốc độ mạng Speedtest, bàn giao thiết bị Wi-Fi 6 và ký hợp đồng điện tử.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Khối Văn Phòng Giao Dịch & Bản Đồ Local SEO -->
+<section id="chi-nhanh" class="vt-local-branch-section">
+  <div class="vt-local-branch-inner">
+    <div class="vt-branch-info">
+      <span style="background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 800; padding: 4px 14px; border-radius: 20px; text-transform: uppercase;">ĐIỂM GIAO DỊCH CHÍNH HÃNG</span>
+      <h2 style="margin-top: 10px;">Văn Phòng Giao Dịch FPT Telecom Tại Bà Rịa – Vũng Tàu</h2>
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Quý khách có thể ghé trực tiếp quầy giao dịch hoặc yêu cầu nhân viên hỗ trợ đăng ký tận nhà:</p>
+      
+      <ul>
+        <li>
+          <span style="font-size: 18px;">📍</span>
+          <div><strong>Địa chỉ văn phòng:</strong> {{ config.address }}</div>
+        </li>
+        <li>
+          <span style="font-size: 18px;">📞</span>
+          <div><strong>Hotline tư vấn &amp; Đăng ký 24/7:</strong> <a href="{{ config.hotline_tel }}" style="color: #ea580c; font-weight: 800; font-size: 16px;">{{ config.hotline }}</a></div>
+        </li>
+        <li>
+          <span style="font-size: 18px;">⏰</span>
+          <div><strong>Giờ làm việc:</strong> 07:30 – 18:00 (Từ Thứ 2 đến Chủ nhật, kể cả ngày lễ)</div>
+        </li>
+        <li>
+          <span style="font-size: 18px;">🛡️</span>
+          <div><strong>Hỗ trợ kỹ thuật / Báo hỏng:</strong> Tổng đài 1900 6600 (phím 2)</div>
+        </li>
+      </ul>
+
+      <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+        <div style="font-weight: 700; color: #0f172a; margin-bottom: 8px; font-size: 14px;">Khu vực hạ tầng hỗ trợ lắp đặt tận nơi:</div>
+        <div style="display: flex; flex-wrap: wrap;">
+          <span class="vt-coverage-tag">TP. Vũng Tàu (P. 1 - P. 12)</span>
+          <span class="vt-coverage-tag">P. Thắng Nhất</span>
+          <span class="vt-coverage-tag">P. Thắng Nhì</span>
+          <span class="vt-coverage-tag">P. Rạch Dừa</span>
+          <span class="vt-coverage-tag">P. Nguyễn An Ninh</span>
+          <span class="vt-coverage-tag">Xã Long Sơn</span>
+          <span class="vt-coverage-tag">TP. Bà Rịa</span>
+          <span class="vt-coverage-tag">TX. Phú Mỹ</span>
+          <span class="vt-coverage-tag">H. Long Điền</span>
+          <span class="vt-coverage-tag">H. Đất Đỏ</span>
+          <span class="vt-coverage-tag">H. Xuyên Mộc</span>
+          <span class="vt-coverage-tag">H. Châu Đức</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="vt-branch-map" style="box-shadow: 0 8px 24px rgba(0,0,0,0.06); border-radius: 16px; overflow: hidden; border: 1px solid #cbd5e1;">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d125555.22557551528!2d107.03689436449195!3d10.453303866295325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31756fd0a1c1d8ad%3A0xb30aa5bb2a4a3504!2zVMOgbmggcGjhu5EgVsWpbmcgVMOgdSwgQsOgIFLhu4thIC0gVsWpbmcgVMOgdQ!5e0!3m2!1svi!2svn!4v1710000000000!5m2!1svi!2svn" width="100%" height="360" style="border:0; display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
 
 </main>
 

@@ -437,11 +437,133 @@
     }
   }
 
+  // 8. Hero Quick Lead Form Controller (1-step lead generation)
+  function initQuickHeroForm() {
+    var quickForm = document.getElementById('vt-quick-hero-form');
+    if (!quickForm) return;
+
+    quickForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var phoneInput = document.getElementById('vt-quick-phone');
+      var planSelect = document.getElementById('vt-quick-plan');
+      var submitBtn = document.getElementById('vt-quick-btn');
+      var feedback = document.getElementById('vt-quick-feedback');
+
+      var phone = normalizePhone(phoneInput ? phoneInput.value : '');
+      if (!isValidPhone(phone)) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.background = '#fee2e2';
+          feedback.style.color = '#b91c1c';
+          feedback.textContent = 'Vui lòng nhập số điện thoại Việt Nam hợp lệ (10 chữ số).';
+        }
+        if (phoneInput) phoneInput.focus();
+        return;
+      }
+
+      var selectedPlan = planSelect ? planSelect.value : 'Tư vấn gói cước phù hợp';
+      var utm = getStoredUtm();
+      var utmList = [];
+      for (var k in utm) {
+        if (utm[k]) utmList.push(k + '=' + utm[k]);
+      }
+
+      var noteSegments = [
+        'Gói quan tâm: ' + selectedPlan,
+        'Form: Đăng ký nhanh đầu trang (Hero Quick Form)',
+        'Nguồn: ' + window.location.hostname,
+        'Thiết bị: ' + detectDevice()
+      ];
+      if (utmList.length > 0) noteSegments.push('UTM: ' + utmList.join('&'));
+
+      var payload = {
+        phone: phone,
+        name: 'Khách hàng đăng ký nhanh',
+        installation_address: 'Bà Rịa - Vũng Tàu',
+        notes: noteSegments.join(' | '),
+        measurement_path: '/vungtau',
+        consent_version: '2026.1'
+      };
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi thông tin...';
+      }
+
+      try {
+        var response = await fetch('/api/v1/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': generateUUID()
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          var errData = await response.json().catch(function() { return {}; });
+          throw new Error(errData.detail || 'Không thể gửi đăng ký lúc này.');
+        }
+
+        // Show inline feedback
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.background = '#dcfce7';
+          feedback.style.color = '#15803d';
+          feedback.innerHTML = '🎉 <strong>Đăng ký thành công!</strong> Chuyên viên FPT Vũng Tàu sẽ liên hệ lại hỗ trợ quý khách trong ít phút.';
+        }
+        quickForm.reset();
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'ĐÃ GỬI THÀNH CÔNG ✓';
+          setTimeout(function() { submitBtn.textContent = 'GỬI YÊU CẦU NGAY'; }, 5000);
+        }
+
+        // Fire Google Ads & Meta Pixel conversion tracking
+        try {
+          var vtCfg = window.VT_CONFIG || {};
+          if (typeof window.gtag === 'function') {
+            if (vtCfg.google_ads_conversion) {
+              var sendTo = vtCfg.google_ads_conversion.indexOf('/') !== -1
+                ? vtCfg.google_ads_conversion
+                : (vtCfg.google_ads_id ? vtCfg.google_ads_id + '/' + vtCfg.google_ads_conversion : vtCfg.google_ads_conversion);
+              window.gtag('event', 'conversion', { 'send_to': sendTo });
+            }
+            window.gtag('event', 'generate_lead', {
+              event_category: 'hero_quick_form',
+              event_label: 'Hero Quick Form - ' + selectedPlan
+            });
+          }
+          if (typeof window.fbq === 'function') {
+            window.fbq('track', 'Lead', {
+              content_name: 'Hero Quick Form - ' + selectedPlan
+            });
+          }
+        } catch (trackErr) {
+          console.warn('Tracking dispatch error:', trackErr);
+        }
+
+      } catch (err) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.background = '#fee2e2';
+          feedback.style.color = '#b91c1c';
+          feedback.textContent = err.message || 'Lỗi gửi tin. Quý khách vui lòng gọi Hotline để được hỗ trợ nhanh nhất!';
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'THỬ LẠI';
+        }
+      }
+    });
+  }
+
   // Initialize on DOM ready
   initAttribution();
   function initAll() {
     initLeadModal();
     initChatWidget();
+    initQuickHeroForm();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAll);
@@ -449,4 +571,5 @@
     initAll();
   }
 })();
+
 
