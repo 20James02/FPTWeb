@@ -1,0 +1,261 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Cấu hình FPT Vũng Tàu — Admin{% endblock %}
+{% block breadcrumbs %}Giao diện website / Cấu hình FPT Vũng Tàu{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/admin-pricing.css">
+<link rel="stylesheet" href="/static/css/admin-appearance.css">
+<style>
+.vt-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.vt-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: #eef2ff;
+  color: #4338ca;
+  margin-bottom: 8px;
+}
+.vt-admin-badge.active {
+  background: #ecfdf5;
+  color: #047857;
+}
+.vt-admin-help {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  display: block;
+}
+.vt-admin-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.vt-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.vt-status-msg {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+  margin-bottom: 16px;
+}
+.vt-status-msg.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  display: block;
+}
+.vt-status-msg.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  display: block;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="pricing-heading">
+  <div>
+    <span class="pricing-eyebrow">QUẢN TRỊ TÊN MIỀN RIÊNG</span>
+    <h1>Cấu hình FPT Vũng Tàu</h1>
+    <p>Tùy chỉnh thông tin hotline, Zalo, địa chỉ chi nhánh, mã tracking quảng cáo và bảng gói cước cho tên miền <strong>fpt-vungtau.com</strong>.</p>
+  </div>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <a class="pricing-btn" href="https://fpt-vungtau.com" target="_blank" rel="noopener">Mở fpt-vungtau.com</a>
+    <a class="pricing-btn" href="/vungtau" target="_blank" rel="noopener">Xem trước nội bộ</a>
+  </div>
+</header>
+
+<div id="vt-status-box" class="vt-status-msg"></div>
+
+<form id="vungtau-settings-form">
+  <!-- 1. Thông tin liên hệ & Chi nhánh -->
+  <section class="vt-card">
+    <div class="vt-admin-badge active">● Đang hoạt động trên fpt-vungtau.com</div>
+    <h2 class="vt-admin-section-title">1. Thông tin liên hệ &amp; Chi nhánh</h2>
+    <div class="vt-admin-grid">
+      <label>
+        Số Hotline tư vấn
+        <input id="vt-hotline" type="text" value="{{ vungtau_config.hotline }}" required>
+        <span class="vt-admin-help">Hiển thị trên topbar, header và nút gọi nhanh (VD: 0947 803 111)</span>
+      </label>
+      <label>
+        Link hoặc số Zalo tư vấn
+        <input id="vt-zalo" type="url" value="{{ vungtau_config.zalo_link }}" required>
+        <span class="vt-admin-help">Link kết nối Zalo (VD: https://zalo.me/0947803111)</span>
+      </label>
+      <label>
+        Tổng đài CSKH / Kỹ thuật
+        <input id="vt-hotline-cs" type="text" value="{{ vungtau_config.hotline_cs }}">
+        <span class="vt-admin-help">Mặc định: 1900 6600</span>
+      </label>
+      <label>
+        Địa chỉ chi nhánh hiển thị
+        <input id="vt-address" type="text" value="{{ vungtau_config.address }}">
+        <span class="vt-admin-help">Hiển thị ở chân trang website</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- 2. Thương hiệu & SEO -->
+  <section class="vt-card">
+    <h2 class="vt-admin-section-title">2. Nhận diện thương hiệu &amp; SEO Google</h2>
+    <div class="vt-admin-grid">
+      <label>
+        Tên thương hiệu chi nhánh
+        <input id="vt-brand-name" type="text" value="{{ vungtau_config.brand_name }}">
+        <span class="vt-admin-help">Mặc định: FPT Vũng Tàu</span>
+      </label>
+      <label>
+        Tiêu đề trang (SEO Title)
+        <input id="vt-brand-title" type="text" value="{{ vungtau_config.brand_title }}">
+        <span class="vt-admin-help">Hiển thị trên tab trình duyệt và kết quả tìm kiếm Google</span>
+      </label>
+    </div>
+    <label style="margin-top: 12px; display: block;">
+      Mô tả trang (SEO Meta Description)
+      <textarea id="vt-meta-desc" rows="2">{{ vungtau_config.meta_desc }}</textarea>
+      <span class="vt-admin-help">Mô tả ngắn gọn xuất hiện khi tìm kiếm hoặc chia sẻ mạng xã hội</span>
+    </label>
+  </section>
+
+  <!-- 3. Mã đo lường & Quảng cáo -->
+  <section class="vt-card">
+    <h2 class="vt-admin-section-title">3. Mã đo lường &amp; Theo dõi Quảng cáo</h2>
+    <p class="pricing-hint" style="margin-bottom: 16px;">Điền ID chiến dịch để hệ thống tự động gắn mã theo dõi và gửi chuyển đổi khi có lead mới.</p>
+    <div class="vt-admin-grid">
+      <label>
+        Google Ads Tag ID
+        <input id="vt-google-ads-id" type="text" placeholder="VD: AW-17132185348" value="{{ vungtau_config.google_ads_id }}">
+        <span class="vt-admin-help">Mã theo dõi tài khoản Google Ads</span>
+      </label>
+      <label>
+        Google Ads Conversion Label
+        <input id="vt-google-ads-conversion" type="text" placeholder="VD: ViJUCMzjuNEaEITOoek_" value="{{ vungtau_config.google_ads_conversion }}">
+        <span class="vt-admin-help">Nhãn chuyển đổi khi khách gửi đơn thành công</span>
+      </label>
+      <label>
+        Google Analytics 4 (GA4) ID
+        <input id="vt-ga4-id" type="text" placeholder="VD: G-XXXXXXXXXX" value="{{ vungtau_config.ga4_id }}">
+        <span class="vt-admin-help">Mã đo lường GA4 riêng cho web này</span>
+      </label>
+      <label>
+        Facebook Pixel ID
+        <input id="vt-facebook-pixel-id" type="text" placeholder="VD: 123456789012345" value="{{ vungtau_config.facebook_pixel_id }}">
+        <span class="vt-admin-help">Mã theo dõi Facebook Ads</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- 4. Gói cước & Ưu đãi nổi bật -->
+  <section class="vt-card">
+    <h2 class="vt-admin-section-title">4. Gói cước tư vấn &amp; Thông báo ưu đãi</h2>
+    <label style="margin-bottom: 16px; display: block;">
+      Dòng thông báo ưu đãi
+      <input id="vt-promo-notice" type="text" value="{{ vungtau_config.promo_notice }}">
+      <span class="vt-admin-help">Thông báo hiển thị trên banner hoặc popup khuyến mãi</span>
+    </label>
+    <label style="display: block;">
+      Danh sách gói cước trong Popup Đăng Ký (Mỗi dòng một gói)
+      <textarea id="vt-quick-plans" rows="8">{{ vungtau_config.quick_plans | join('\n') }}</textarea>
+      <span class="vt-admin-help">Khách hàng sẽ chọn từ danh sách này trong form đăng ký tư vấn</span>
+    </label>
+  </section>
+
+  <div style="display: flex; gap: 12px; align-items: center; margin-top: 24px;">
+    <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 200px;">Lưu Cấu Hình Web Mới</button>
+    <a class="btn-action-detail" href="/admin/appearance">Sang cấu hình trang chủ chính</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let adminDisplayVersion = {{ display_settings.version }};
+
+document.getElementById('vungtau-settings-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-save-vungtau');
+  const statusBox = document.getElementById('vt-status-box');
+
+  const rawPlans = document.getElementById('vt-quick-plans').value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  const vungtauData = {
+    hotline: document.getElementById('vt-hotline').value.trim(),
+    zalo_link: document.getElementById('vt-zalo').value.trim(),
+    hotline_cs: document.getElementById('vt-hotline-cs').value.trim(),
+    address: document.getElementById('vt-address').value.trim(),
+    brand_name: document.getElementById('vt-brand-name').value.trim(),
+    brand_title: document.getElementById('vt-brand-title').value.trim(),
+    meta_desc: document.getElementById('vt-meta-desc').value.trim(),
+    google_ads_id: document.getElementById('vt-google-ads-id').value.trim(),
+    google_ads_conversion: document.getElementById('vt-google-ads-conversion').value.trim(),
+    ga4_id: document.getElementById('vt-ga4-id').value.trim(),
+    facebook_pixel_id: document.getElementById('vt-facebook-pixel-id').value.trim(),
+    promo_notice: document.getElementById('vt-promo-notice').value.trim(),
+    quick_plans: rawPlans
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Đang lưu cấu hình...';
+  statusBox.className = 'vt-status-msg';
+  statusBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/v1/system/display-settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        expected_version: adminDisplayVersion,
+        vungtau: vungtauData
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || data.message || 'Lỗi khi lưu cấu hình.');
+    }
+
+    if (data.settings && data.settings.version) {
+      adminDisplayVersion = data.settings.version;
+    }
+
+    statusBox.textContent = '✓ Đã lưu thành công cấu hình cho FPT Vũng Tàu (fpt-vungtau.com)! Thay đổi đã có hiệu lực ngay lập tức.';
+    statusBox.className = 'vt-status-msg success';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    statusBox.textContent = '✕ Không thể lưu: ' + (err.message || 'Vui lòng thử lại sau.');
+    statusBox.className = 'vt-status-msg error';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Lưu Cấu Hình Web Mới';
+  }
+});
+</script>
+{% endblock %}

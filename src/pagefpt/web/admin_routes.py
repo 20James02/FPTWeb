@@ -26,7 +26,7 @@ async def render_admin(
             '<html lang="vi"><meta charset="utf-8"><h1>Bạn chưa có quyền xem trang này.</h1><a href="/admin">Mở khu vực được cấp quyền</a> <a href="/admin/login">Đăng nhập tài khoản khác</a></html>',
             status_code=403,
         )
-    if page in {"settings", "appearance", "navigation"}:
+    if page in {"settings", "appearance", "navigation", "vungtau"}:
         context["display_settings"] = await get_display_settings(request)
     return templates.TemplateResponse(
         request, template, {"active_page": page, "admin_actor": actor, **context}
@@ -175,6 +175,21 @@ async def admin_navigation(request: Request):
     return await render_admin(request, "admin/navigation.html", "navigation", ("content.publish",))
 
 
+@router.get("/vungtau", response_class=HTMLResponse)
+async def admin_vungtau(request: Request):
+    from pagefpt.modules.content.vungtau_config import get_vungtau_config
+
+    display = await get_display_settings(request)
+    vt_config = get_vungtau_config(request, display)
+    return await render_admin(
+        request,
+        "admin/vungtau.html",
+        "vungtau",
+        ("content.publish", "content.write"),
+        vungtau_config=vt_config,
+    )
+
+
 @router.get("/landing-pages", response_class=HTMLResponse)
 async def admin_landing_pages(request: Request):
     from pagefpt.modules.content.landing_settings import LandingSettings
@@ -212,4 +227,3 @@ async def abuse_admin(request: Request):
     return await render_admin(
         request, "admin/abuse.html", "abuse", ("lead.read", "lead.write", "workflow.manage")
     )
-

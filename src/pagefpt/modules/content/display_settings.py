@@ -2,7 +2,7 @@
 
 import re
 from datetime import UTC, datetime
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import urlparse
 from uuid import UUID
 
@@ -140,6 +140,7 @@ class DisplaySettings(Command):
     plan_categories: list[PlanCategory] = Field(
         default_factory=default_categories, min_length=3, max_length=3
     )
+    vungtau: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("plan_categories")
     @classmethod
@@ -173,6 +174,7 @@ class DisplayPatch(Command):
     hero_experiment_id: UUID | None = None
     promo_slides: list[PromoSlideInput] | None = Field(default=None, max_length=12)
     plan_categories: list[PlanCategory] | None = Field(default=None, min_length=3, max_length=3)
+    vungtau: dict[str, Any] | None = None
 
     @field_validator("plan_categories")
     @classmethod

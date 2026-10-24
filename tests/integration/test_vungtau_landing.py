@@ -67,3 +67,13 @@ async def test_vungtau_lead_submission(client):
     data = response.json()
     assert data["event_id"]
     assert data["receipt"]
+
+
+@pytest.mark.asyncio
+async def test_admin_vungtau_page_renders(admin):
+    """Admin page /admin/vungtau renders the dedicated configuration interface."""
+    response = await admin.get("/admin/vungtau")
+    assert response.status_code == 200
+    assert "Cấu hình FPT Vũng Tàu" in response.text
+    assert "fpt-vungtau.com" in response.text
+    assert "vt-hotline" in response.text

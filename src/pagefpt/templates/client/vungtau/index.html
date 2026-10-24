@@ -8,7 +8,7 @@
 	<script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Tối ưu hóa công cụ tìm kiếm bởi Rank Math PRO - https://rankmath.com/ -->
-<title>FPT Vũng Tàu | Lắp Mạng, WiFi, Internet Chính Hãng</title>
+<title>{{ config.brand_title }}</title>
 <meta name="description" content="FPT Vũng Tàu chuyên lắp mạng, lắp WiFi FPT chính hãng tại TP Vũng Tàu, Bà Rịa, Phú Mỹ và toàn tỉnh BR-VT. Gọi ngay {{ config.hotline }} để đăng ký nhanh."/>
 <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"/>
 <link rel="canonical" href="{{ config.canonical_url }}" />
@@ -5948,14 +5948,9 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
         <label class="vt-label" for="vt-plan-select">Gói cước quan tâm:</label>
         <select id="vt-plan-select" class="vt-select">
           <option value="">-- Chọn gói cước hoặc tư vấn chung --</option>
-          <option value="Gói GIGA (150 Mbps)">Gói GIGA (150 Mbps) - Siêu tiết kiệm</option>
-          <option value="Gói SKY (1 Gbps)">Gói SKY (1 Gbps) - Tốc độ cao phổ biến</option>
-          <option value="Gói META (1 Gbps đối xứng)">Gói META (1 Gbps đối xứng) - Livestream, Gamer</option>
-          <option value="Gói F-GAME (Game thủ)">Gói F-GAME - Tối ưu Ultra Fast giảm ping</option>
-          <option value="Combo Ngoại Hạng Anh (Internet + FPT Play)">Combo Ngoại Hạng Anh (Internet + FPT Play)</option>
-          <option value="SpeedX Wi-Fi 7 (XGS-PON)">SpeedX Wi-Fi 7 - Công nghệ mới nhất</option>
-          <option value="Camera FPT an ninh Cloud">Camera FPT an ninh Cloud</option>
-          <option value="Chưa rõ, cần tư vấn gói phù hợp">Chưa rõ, cần tư vấn gói phù hợp nhất</option>
+          {% for plan in config.quick_plans %}
+          <option value="{{ plan }}">{{ plan }}</option>
+          {% endfor %}
         </select>
       </div>
       <div class="vt-form-group">
