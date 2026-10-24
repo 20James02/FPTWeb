@@ -51,24 +51,25 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .vt-status-msg {
-  padding: 10px 14px;
+  padding: 14px 18px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
   display: none;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .vt-status-msg.success {
   background: #ecfdf5;
   color: #065f46;
-  border: 1px solid #a7f3d0;
-  display: block;
+  border: 1.5px solid #a7f3d0;
+  display: block !important;
 }
 .vt-status-msg.error {
   background: #fef2f2;
   color: #991b1b;
-  border: 1px solid #fecaca;
-  display: block;
+  border: 1.5px solid #fecaca;
+  display: block !important;
 }
 
 /* Slide Manager Styles */
@@ -161,7 +162,7 @@
 
 <div id="vt-status-box" class="vt-status-msg"></div>
 
-<form id="vungtau-settings-form">
+<form id="vungtau-settings-form" novalidate>
   <!-- 1. Slide Banner Trang Chủ (Hero Slider) -->
   <section class="vt-card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
@@ -183,13 +184,13 @@
     <div class="vt-admin-grid">
       <label>
         Số Hotline tư vấn
-        <input id="vt-hotline" type="text" value="{{ vungtau_config.hotline }}" required>
-        <span class="vt-admin-help">Hiển thị trên topbar, header và nút gọi nhanh (VD: 0947 803 111)</span>
+        <input id="vt-hotline" type="text" value="{{ vungtau_config.hotline }}" placeholder="VD: 0947 803 111">
+        <span class="vt-admin-help">Hiển thị trên topbar, header và nút gọi nhanh</span>
       </label>
       <label>
         Link hoặc số Zalo tư vấn
-        <input id="vt-zalo" type="url" value="{{ vungtau_config.zalo_link }}" required>
-        <span class="vt-admin-help">Link kết nối Zalo (VD: https://zalo.me/0947803111)</span>
+        <input id="vt-zalo" type="text" value="{{ vungtau_config.zalo_link }}" placeholder="https://zalo.me/... hoặc 0947803111">
+        <span class="vt-admin-help">Nhập link hoặc số điện thoại Zalo</span>
       </label>
       <label>
         Tổng đài CSKH / Kỹ thuật
@@ -269,9 +270,10 @@
     </label>
   </section>
 
-  <div style="display: flex; gap: 12px; align-items: center; margin-top: 24px;">
-    <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 220px;">Lưu Cấu Hình Web Mới</button>
+  <div style="display: flex; gap: 14px; align-items: center; margin-top: 24px; flex-wrap: wrap;">
+    <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 220px; font-size: 15px; padding: 12px 24px;">Lưu Cấu Hình Web Mới</button>
     <a class="btn-action-detail" href="/admin/appearance">Sang cấu hình trang chủ chính</a>
+    <span id="vt-bottom-status" style="font-weight: 600; font-size: 14px;"></span>
   </div>
 </form>
 {% endblock %}
@@ -281,6 +283,35 @@
 <script>
 let adminDisplayVersion = {{ display_settings.version }};
 let initialSlides = {{ vungtau_config.hero_slides | tojson | safe }};
+
+// Helper: Compress image file via canvas before Base64 fallback to prevent huge payload
+function compressImageFile(file, maxWidth = 1440, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Không thể đọc tệp ảnh'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Định dạng ảnh không được hỗ trợ'));
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        resolve(canvas.toDataURL(mime, quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 // Render Slides
 const slidesContainer = document.getElementById('vt-slides-container');
@@ -303,7 +334,7 @@ function createSlideElement(slide, index) {
       <div class="vt-slide-fields-full">
         <label>
           Đường dẫn ảnh (URL hoặc Base64)
-          <input type="text" class="vt-slide-img-url" value="${slide.image_url || ''}" placeholder="https://..." required>
+          <input type="text" class="vt-slide-img-url" value="${slide.image_url || ''}" placeholder="https://...">
         </label>
       </div>
       <div>
@@ -352,24 +383,16 @@ function createSlideElement(slide, index) {
             return;
           }
         } catch (r2Err) {
-          // If R2 unconfigured, fallback to local FileReader Base64
-          console.warn('R2 direct upload unavailable, falling back to local Data URL:', r2Err.message);
+          console.warn('R2 direct upload unavailable, falling back to local compressed Data URL:', r2Err.message);
         }
       }
 
-      // 2. Fallback to reading file directly as Data URL
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        urlInput.value = evt.target.result;
-        thumb.src = evt.target.result;
-        uploadStatus.textContent = '✓ Đã nạp ảnh từ máy tính!';
-        uploadStatus.style.color = '#16a34a';
-      };
-      reader.onerror = function() {
-        uploadStatus.textContent = '✕ Không thể đọc tệp ảnh';
-        uploadStatus.style.color = '#dc2626';
-      };
-      reader.readAsDataURL(file);
+      // 2. Fallback: Compress and read as local Data URL
+      const compressedDataUrl = await compressImageFile(file, 1440, 0.85);
+      urlInput.value = compressedDataUrl;
+      thumb.src = compressedDataUrl;
+      uploadStatus.textContent = '✓ Đã nạp ảnh từ máy tính!';
+      uploadStatus.style.color = '#16a34a';
 
     } catch (err) {
       uploadStatus.textContent = '✕ Lỗi: ' + (err.message || 'Thử lại');
@@ -413,6 +436,7 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
   e.preventDefault();
   const btn = document.getElementById('btn-save-vungtau');
   const statusBox = document.getElementById('vt-status-box');
+  const bottomStatus = document.getElementById('vt-bottom-status');
 
   // Collect slide data
   const slideItems = slidesContainer.querySelectorAll('.vt-slide-item');
@@ -452,9 +476,15 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
   btn.textContent = 'Đang lưu cấu hình...';
   statusBox.className = 'vt-status-msg';
   statusBox.style.display = 'none';
+  if (bottomStatus) {
+    bottomStatus.textContent = 'Đang gửi dữ liệu lên máy chủ...';
+    bottomStatus.style.color = '#2563eb';
+  }
 
   try {
-    const res = await fetch('/api/v1/system/display-settings', {
+    // Must use adminFetch to include Session Cookie & CSRF Token header
+    const fetchFunc = (typeof adminFetch === 'function') ? adminFetch : fetch;
+    const res = await fetchFunc('/api/v1/system/display-settings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -465,21 +495,54 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
       })
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(data.detail || data.message || 'Lỗi khi lưu cấu hình.');
+      let errMsg = data.detail || data.message;
+      if (data.code === 'VERSION_CONFLICT') {
+        errMsg = 'Cấu hình vừa bị thay đổi ở phiên khác (Version conflict). Vui lòng tải lại trang rồi thử lại.';
+      } else if (res.status === 403) {
+        errMsg = data.message || 'Phiên làm việc hết hạn hoặc chưa đủ quyền (content.publish). Vui lòng tải lại trang và đăng nhập lại.';
+      } else if (!errMsg) {
+        errMsg = 'Lỗi máy chủ (' + res.status + ') khi lưu cấu hình.';
+      }
+      throw new Error(errMsg);
     }
 
-    if (data.settings && data.settings.version) {
+    if (data.settings && typeof data.settings.version === 'number') {
       adminDisplayVersion = data.settings.version;
     }
 
-    statusBox.textContent = '✓ Đã lưu thành công cấu hình và danh sách Slide cho FPT Vũng Tàu! Trang web fpt-vungtau.com đã cập nhật ngay lập tức.';
+    const successMsg = '✓ Đã lưu thành công cấu hình và danh sách Slide cho FPT Vũng Tàu! Trang web fpt-vungtau.com đã cập nhật ngay lập tức.';
+    statusBox.textContent = successMsg;
     statusBox.className = 'vt-status-msg success';
+    statusBox.style.display = 'block';
+
+    if (bottomStatus) {
+      bottomStatus.textContent = '✓ Đã lưu thành công cấu hình!';
+      bottomStatus.style.color = '#16a34a';
+    }
+
+    if (typeof showToast === 'function') {
+      showToast('Đã lưu thành công cấu hình FPT Vũng Tàu!', 'success');
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
-    statusBox.textContent = '✕ Không thể lưu: ' + (err.message || 'Vui lòng kiểm tra quyền và thử lại.');
+    console.error('Lỗi khi lưu cấu hình Vũng Tàu:', err);
+    const errMsg = '✕ Không thể lưu: ' + (err.message || 'Vui lòng kiểm tra quyền và thử lại.');
+    statusBox.textContent = errMsg;
     statusBox.className = 'vt-status-msg error';
+    statusBox.style.display = 'block';
+
+    if (bottomStatus) {
+      bottomStatus.textContent = '✕ Lỗi: ' + (err.message || 'Chưa thể lưu');
+      bottomStatus.style.color = '#dc2626';
+    }
+
+    if (typeof showToast === 'function') {
+      showToast(err.message || 'Lỗi khi lưu cấu hình.', 'error');
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } finally {
     btn.disabled = false;
