@@ -462,15 +462,20 @@ ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.row-sp-noibat .col {
-    padding-left: 10px;
-}
 .row-sp-noibat {
     display: grid;
     grid-template-columns: 320px 1fr;
+    gap: 15px;
+    align-items: start;
+}
+.row-sp-noibat .col {
+    padding-left: 10px;
+    padding-right: 0;
 }
 .hinh-sp-noibat img {
     height: 405px;
+    width: 100%;
+    object-fit: cover;
     border-radius: 12px;
 }
 
@@ -478,26 +483,149 @@ ease;
     display: none;
 }
 
-
-.product-homee.pro-home-2 p.name.product-title.woocommerce-loop-product__title a{
-	height:22px;
-	overflow:hidden;
+.product-homee.pro-home-2 p.name.product-title.woocommerce-loop-product__title a {
+    min-height: 40px;
+    height: auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+    font-weight: 700;
 }
-.product-homee.pro-home-2 .product-small.box img{
-	height:200px;
+.product-homee.pro-home-2 .product-small.box img {
+    height: 190px;
+    object-fit: contain;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
 }
 
 .product-homee.pro-home-2 .btn-dang-ky {
-    padding: 8px;
+    padding: 9px 12px;
     font-size: 14px;
+    text-align: center;
+    display: block;
+    border-radius: 6px;
+    margin-top: 10px;
 }
 .product-homee.pro-home-2 .custom-meta1 {
-	font-size: 12px;
-	font-weight:600;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 4px;
 }
 .product-homee.pro-home-2 .custom-acf-box2 {
-    height: 70px !important;
+    min-height: 75px;
+    height: auto !important;
 }
+
+/* Tablet & Mobile layout for .row-sp-noibat ("Tiện ích công nghệ nổi bật" & "Thiết bị công nghệ bán chạy") */
+@media (max-width: 991px) {
+    .row-sp-noibat {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 16px !important;
+    }
+    .row-sp-noibat > .col {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .hinh-sp-noibat {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto 10px !important;
+        width: 100%;
+    }
+    .hinh-sp-noibat img {
+        width: 100% !important;
+        max-width: 320px !important;
+        height: auto !important;
+        max-height: 420px !important;
+        object-fit: contain !important;
+        border-radius: 12px !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 991px) {
+    .product-homee.pro-home-2 {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+    .product-homee.pro-home-2 .product-small.col {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-home-2-sp > .col-inner {
+        padding: 18px 10px !important;
+    }
+    .product-homee.pro-home-2 {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 14px !important;
+        padding: 6px 10px 18px !important;
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        scrollbar-width: thin;
+    }
+    .product-homee.pro-home-2::-webkit-scrollbar {
+        height: 5px;
+    }
+    .product-homee.pro-home-2::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .product-homee.pro-home-2::-webkit-scrollbar-thumb {
+        background: #f37021;
+        border-radius: 10px;
+    }
+    .product-homee.pro-home-2 .product-small.col {
+        flex: 0 0 270px !important;
+        width: 270px !important;
+        max-width: 82vw !important;
+        min-width: 250px !important;
+        scroll-snap-align: start !important;
+        padding: 0 !important;
+    }
+    .product-homee.pro-home-2 .col-inner {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .icon-loc-3lop {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        padding: 0 8px !important;
+    }
+    #stack-3339178653 {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 12px !important;
+        gap: 12px !important;
+    }
+    #stack-3339178653 > .img {
+        flex: 0 0 160px !important;
+        min-width: 160px !important;
+    }
+}
+
 
 
 .custom-acf-box1 {
