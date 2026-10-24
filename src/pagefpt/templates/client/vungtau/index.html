@@ -6179,7 +6179,7 @@ html {
         </li>
         <li>
           <span style="font-size: 18px;">🛡️</span>
-          <div><strong>Hỗ trợ kỹ thuật / Báo hỏng:</strong> Tổng đài 1900 6600 (phím 2)</div>
+          <div><strong>Hỗ trợ kỹ thuật / Báo hỏng:</strong> Tổng đài <a href="{{ config.hotline_cs_tel }}" style="color: #2563eb; font-weight: 700;">{{ config.hotline_cs }}</a> (phím 2)</div>
         </li>
       </ul>
 
@@ -6255,7 +6255,17 @@ html {
         <span class="vt-faq-icon" aria-hidden="true">▼</span>
       </button>
       <div class="vt-faq-answer">
-        FPT Telecom hỗ trợ <strong>chuyển địa điểm hoàn toàn miễn phí</strong> trên toàn tỉnh Bà Rịa – Vũng Tàu. Khi cần hỗ trợ kỹ thuật hoặc bảo trì, quý khách chỉ cần liên hệ Hotline <strong>{{ config.hotline }}</strong> hoặc thao tác 1 chạm trên ứng dụng Hi FPT để kỹ thuật viên có mặt xử lý trong 2 giờ.
+        FPT Telecom hỗ trợ <strong>chuyển địa điểm hoàn toàn miễn phí</strong> trên toàn tỉnh Bà Rịa – Vũng Tàu. Khi cần hỗ trợ kỹ thuật hoặc bảo trì, quý khách chỉ cần liên hệ Hotline <strong><a href="{{ config.hotline_tel }}" style="color: #ea580c;">{{ config.hotline }}</a></strong> hoặc Tổng đài CSKH <strong><a href="{{ config.hotline_cs_tel }}" style="color: #2563eb;">{{ config.hotline_cs }}</a></strong> để kỹ thuật viên có mặt xử lý trong 2 giờ.
+      </div>
+    </div>
+
+    <div class="vt-faq-item">
+      <button type="button" class="vt-faq-question" onclick="this.parentElement.classList.toggle('is-open')" aria-expanded="false">
+        <span>5. Muốn tư vấn lắp đặt qua Zalo hoặc trực tuyến thì liên hệ đâu?</span>
+        <span class="vt-faq-icon" aria-hidden="true">▼</span>
+      </button>
+      <div class="vt-faq-answer">
+        Quý khách có thể gửi yêu cầu nhanh qua form đăng ký trên website, kết nối Zalo tư vấn <strong><a href="{{ config.zalo_link }}" target="_blank" rel="noopener" style="color: #0284c7;">{{ config.hotline }}</a></strong> hoặc gọi trực tiếp Hotline <strong><a href="{{ config.hotline_tel }}" style="color: #ea580c;">{{ config.hotline }}</a></strong>. Chuyên viên {{ config.brand_name }} sẽ tiếp nhận và phản hồi ngay trong 5 phút.
       </div>
     </div>
   </div>
@@ -6830,7 +6840,7 @@ html {
 					<ul class="nav nav-sidebar nav-vertical nav-uppercase" data-tab="1">
 				<li class="header-search-form search-form html relative has-icon">
 	<div class="header-search-form-wrapper">
-		<div class="searchform-wrapper ux-search-box relative form-flat is-normal"><form role="search" method="get" class="searchform" action="https://fptvungtau.com/">
+		<div class="searchform-wrapper ux-search-box relative form-flat is-normal"><form role="search" method="get" class="searchform" action="/#tin-tuc">
 	<div class="flex-row relative">
 						<div class="flex-col flex-grow">
 			<label class="screen-reader-text" for="woocommerce-product-search-field-0">Tìm kiếm:</label>
@@ -6895,7 +6905,7 @@ html {
 	<li id="menu-item-6539" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6539"><a href="#dang-ky" onclick="if(window.openVungTauLeadModal){openVungTauLeadModal();return false;}">Đăng ký online</a>
 	<ul class="sub-menu nav-sidebar-ul">
 		<li id="menu-item-6535" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6535"><a href="#dang-ky" onclick="if(window.openVungTauLeadModal){openVungTauLeadModal();return false;}">Gửi yêu cầu tư vấn nhanh</a></li>
-		<li id="menu-item-6536" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6536"><a href="{{ config.hotline_tel }}">Hỗ trợ trực tuyến 24/7</a></li>
+		<li id="menu-item-6536" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6536"><a href="{{ config.hotline_tel }}">Hỗ trợ 24/7: {{ config.hotline }}</a></li>
 	</ul>
 </li>
 </ul>

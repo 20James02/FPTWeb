@@ -251,3 +251,57 @@ async def test_vungtau_zero_external_links_and_faq_present(client):
     assert external_nav == [], f"Found lingering external links: {external_nav}"
 
 
+@pytest.mark.asyncio
+async def test_vungtau_contact_information_dynamic_updates(admin, client):
+    """Ensure all contact information and display text update dynamically across pages."""
+    current_settings = (await admin.get("/api/v1/system/display-settings")).json()
+    version = current_settings.get("version", 0)
+
+    new_hotline = "0988 777 888"
+    new_address = "999 Đường Ba Mươi Tháng Tư, Phường 11, TP. Vũng Tàu"
+    new_cs = "1900 8888"
+    new_brand = "FPT Telecom Vũng Tàu Pro"
+    new_advisor = "Lan Anh FPT"
+
+    save_resp = await admin.post(
+        "/api/v1/system/display-settings",
+        json={
+            "expected_version": version,
+            "vungtau": {
+                "hotline": new_hotline,
+                "address": new_address,
+                "hotline_cs": new_cs,
+                "brand_name": new_brand,
+                "advisor_name": new_advisor,
+            },
+        },
+    )
+    assert save_resp.status_code == 200
+
+    # 1. Main landing & sub-routes
+    for path in ["/vungtau", "/diem-giao-dich", "/cau-hoi-thuong-gap"]:
+        resp = await client.get(path)
+        assert resp.status_code == 200
+        text = resp.text
+
+        # Visible contact text
+        assert new_hotline in text, f"Hotline {new_hotline} missing from {path}"
+        assert new_address in text, f"Address {new_address} missing from {path}"
+        assert new_cs in text, f"CS Hotline {new_cs} missing from {path}"
+        assert new_advisor in text, f"Advisor {new_advisor} missing from {path}"
+
+    # 2. Privacy Policy under Vũng Tàu custom domain
+    privacy_resp = await client.get(
+        "/chinh-sach-bao-mat", headers={"host": "fpt-vungtau.com"}
+    )
+    assert privacy_resp.status_code == 200
+    assert new_hotline in privacy_resp.text
+    assert new_brand in privacy_resp.text
+
+    # 3. Speedtest under Vũng Tàu custom domain
+    speed_resp = await client.get("/do-toc-do", headers={"host": "fpt-vungtau.com"})
+    assert speed_resp.status_code == 200
+    assert new_hotline in speed_resp.text
+
+
+

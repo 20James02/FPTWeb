@@ -92,6 +92,17 @@ async def vungtau_landing(request: Request):
 
 @router.get("/san-pham/{slug}", response_class=HTMLResponse)
 async def product_detail(request: Request, slug: str):
+    display = await get_display_settings(request)
+    if is_vungtau_request(request):
+        vt_config = get_vungtau_config(request, display)
+        return templates.TemplateResponse(
+            request,
+            "client/vungtau/index.html",
+            {
+                "config": vt_config,
+                "display_settings": display,
+            },
+        )
     product = SERVICE_PAGES.get(slug)
     if product is None:
         raise HTTPException(status_code=404, detail="Không tìm thấy dịch vụ.")
@@ -104,7 +115,7 @@ async def product_detail(request: Request, slug: str):
             "product": product,
             "plans": catalog,
             "service_plans": service_plans,
-            "display_settings": await get_display_settings(request),
+            "display_settings": display,
             "accessories": await published_catalog(request, "product"),
         },
     )
@@ -145,13 +156,25 @@ async def landing_page(request: Request):
 
 @router.get("/chinh-sach-bao-mat", response_class=HTMLResponse)
 async def privacy_policy(request: Request):
+    display = await get_display_settings(request)
+    if is_vungtau_request(request):
+        vt_config = get_vungtau_config(request, display)
+        contact_phone = vt_config["hotline_tel"].replace("tel:", "")
+        contact_phone_display = vt_config["hotline"]
+        brand_name = vt_config["brand_name"]
+    else:
+        contact_phone = display.get("contact_phone", "0868247625")
+        contact_phone_display = display.get("contact_phone_display", "0868.247.625")
+        brand_name = "PageFPT"
     return templates.TemplateResponse(
         request,
         "client/privacy_policy.html",
         {
-            "title": "Chính Sách Bảo Mật Dữ Liệu Khách Hàng — PageFPT",
+            "title": f"Chính Sách Bảo Mật Dữ Liệu Khách Hàng — {brand_name}",
+            "contact_phone": contact_phone,
+            "contact_phone_display": contact_phone_display,
             "plans": await published_catalog(request),
-            "display_settings": await get_display_settings(request),
+            "display_settings": display,
             "accessories": await published_catalog(request, "product"),
         },
     )
@@ -159,17 +182,27 @@ async def privacy_policy(request: Request):
 
 @router.get("/do-toc-do", response_class=HTMLResponse)
 async def speedtest(request: Request):
+    display = await get_display_settings(request)
     catalog = await published_catalog(request)
+    if is_vungtau_request(request):
+        vt_config = get_vungtau_config(request, display)
+        contact_phone = vt_config["hotline_tel"].replace("tel:", "")
+        contact_phone_display = vt_config["hotline"]
+    else:
+        contact_phone = display.get("contact_phone", "0868247625")
+        contact_phone_display = display.get("contact_phone_display", "0868.247.625")
     return templates.TemplateResponse(
         request,
         "client/speedtest.html",
         {
+            "contact_phone": contact_phone,
+            "contact_phone_display": contact_phone_display,
             "plans": catalog,
             "speed_plans": sorted(
                 [p for p in catalog if p.get("service") in {"internet", "combo", "business"}],
                 key=lambda p: (p.get("speed_mbps") or float("inf"), p.get("name", "")),
             ),
-            "display_settings": await get_display_settings(request),
+            "display_settings": display,
             "accessories": await published_catalog(request, "product"),
         },
     )

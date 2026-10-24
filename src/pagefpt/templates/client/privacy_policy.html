@@ -1,5 +1,5 @@
 {% extends "layouts/client_base.html" %}
-{% block title %}Thông tin dữ liệu khách hàng — PageFPT{% endblock %}
+{% block title %}{{ title | default('Thông tin dữ liệu khách hàng — PageFPT') }}{% endblock %}
 {% block meta_desc %}Dữ liệu được tiếp nhận khi bạn gửi yêu cầu tư vấn và cách liên hệ để điều chỉnh thông tin.{% endblock %}
 {% block content %}
 <article class="container-narrow data-notice">
