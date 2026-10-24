@@ -98,6 +98,25 @@ def get_vungtau_config(
         "Chưa rõ, cần tư vấn gói phù hợp",
     ]
 
+    default_hero_slides = [
+        {
+            "image_url": "https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg",
+            "href": "https://fpt-vungtau.com",
+            "alt": "Lắp mạng FPT Vũng Tàu",
+        },
+        {
+            "image_url": "https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-1024x382.jpg",
+            "href": "https://fpt-vungtau.com",
+            "alt": "FPT Telecom Vũng Tàu",
+        },
+        {
+            "image_url": "https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-1024x382.jpg",
+            "href": "https://fpt-vungtau.com",
+            "alt": "Truyền hình FPT Play Vũng Tàu",
+        },
+    ]
+    hero_slides = vt_custom.get("hero_slides") or default_hero_slides
+
     return {
         "site_id": "vungtau",
         "brand_name": brand_name,
@@ -119,4 +138,5 @@ def get_vungtau_config(
         "facebook_pixel_id": facebook_pixel_id,
         "promo_notice": promo_notice,
         "quick_plans": quick_plans,
+        "hero_slides": hero_slides,
     }

@@ -2460,43 +2460,15 @@ span.product-name {
             "parallax" : 0,
             "friction": 0.6        }'
         >
-        
-	<div class="img has-hover FPT Vũng Tàu x md-x lg-x y md-y lg-y" id="image_17416817">
-		<a class="" href="https://fptvungtau.com" >						<div class="img-inner dark" >
-			<img fetchpriority="high" decoding="async" width="1020" height="574" src="https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg" class="attachment-large size-large" alt="lắp mạng fpt vũng tàu" srcset="https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg 1024w, https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-300x169.jpg 300w, https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-768x432.jpg 768w, https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1536x864.jpg 1536w, https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1028x579.jpg 1028w, https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau.jpg 1672w" sizes="(max-width: 1020px) 100vw, 1020px" />						
-					</div>
-						</a>		
-<style>
-#image_17416817 {
-  width: 100%;
-}
-</style>
+        {% for slide in config.hero_slides %}
+	<div class="img has-hover x md-x lg-x y md-y lg-y" style="width: 100%;">
+		<a class="" href="{{ slide.href or 'https://fpt-vungtau.com' }}" {% if slide.href == '#dang-ky' or slide.href == '/dang-ky-thong-tin/' %}onclick="if(window.openVungTauLeadModal){openVungTauLeadModal();return false;}"{% endif %}>
+			<div class="img-inner dark" >
+				<img fetchpriority="high" decoding="async" width="1020" height="574" src="{{ slide.image_url }}" class="attachment-large size-large" alt="{{ slide.alt or 'lắp mạng fpt vũng tàu' }}" style="width:100%;height:auto;object-fit:cover;display:block;" />						
+			</div>
+		</a>
 	</div>
-	
-	<div class="img has-hover x md-x lg-x y md-y lg-y" id="image_948292992">
-		<a class="" href="https://fptvungtau.com" >						<div class="img-inner dark" >
-			<img decoding="async" width="1020" height="381" src="https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-1024x382.jpg" class="attachment-large size-large" alt="" srcset="https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-1024x382.jpg 1024w, https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-300x112.jpg 300w, https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-768x287.jpg 768w, https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-1536x574.jpg 1536w, https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau-1028x384.jpg 1028w, https://fptvungtau.com/wp-content/uploads/2026/10/FPT-Vung-Tau.jpg 1920w" sizes="(max-width: 1020px) 100vw, 1020px" />						
-					</div>
-						</a>		
-<style>
-#image_948292992 {
-  width: 100%;
-}
-</style>
-	</div>
-	
-	<div class="img has-hover x md-x lg-x y md-y lg-y" id="image_606898207">
-		<a class="" href="https://fptvungtau.com" >						<div class="img-inner dark" >
-			<img decoding="async" width="1020" height="381" src="https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-1024x382.jpg" class="attachment-large size-large" alt="" srcset="https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-1024x382.jpg 1024w, https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-300x112.jpg 300w, https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-768x287.jpg 768w, https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-1536x574.jpg 1536w, https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri-1028x384.jpg 1028w, https://fptvungtau.com/wp-content/uploads/2026/04/FPT-Giai-Tri.jpg 1920w" sizes="(max-width: 1020px) 100vw, 1020px" />						
-					</div>
-						</a>		
-<style>
-#image_606898207 {
-  width: 100%;
-}
-</style>
-	</div>
-	
+        {% endfor %}
      </div>
 
      <div class="loading-spin dark large centered"></div>

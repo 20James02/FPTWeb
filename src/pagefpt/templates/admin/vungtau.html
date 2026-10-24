@@ -70,6 +70,79 @@
   border: 1px solid #fecaca;
   display: block;
 }
+
+/* Slide Manager Styles */
+.vt-slide-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.vt-slide-item:hover {
+  border-color: #cbd5e1;
+}
+.vt-slide-thumb-container {
+  width: 160px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.vt-slide-thumb {
+  width: 160px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #e2e8f0;
+  display: block;
+  margin-bottom: 8px;
+}
+.vt-upload-local-label {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+.vt-upload-local-label:hover {
+  background: #bfdbfe;
+}
+.vt-slide-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.vt-slide-fields-full {
+  grid-column: span 2;
+}
+.vt-btn-delete-slide {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  height: fit-content;
+  align-self: center;
+  transition: background 0.2s;
+}
+.vt-btn-delete-slide:hover {
+  background: #fecaca;
+}
 </style>
 {% endblock %}
 
@@ -78,7 +151,7 @@
   <div>
     <span class="pricing-eyebrow">QUẢN TRỊ TÊN MIỀN RIÊNG</span>
     <h1>Cấu hình FPT Vũng Tàu</h1>
-    <p>Tùy chỉnh thông tin hotline, Zalo, địa chỉ chi nhánh, mã tracking quảng cáo và bảng gói cước cho tên miền <strong>fpt-vungtau.com</strong>.</p>
+    <p>Tùy chỉnh số điện thoại, Zalo, địa chỉ chi nhánh, banner slide tải từ máy tính, mã tracking quảng cáo cho tên miền <strong>fpt-vungtau.com</strong>.</p>
   </div>
   <div style="display: flex; gap: 8px; align-items: center;">
     <a class="pricing-btn" href="https://fpt-vungtau.com" target="_blank" rel="noopener">Mở fpt-vungtau.com</a>
@@ -89,10 +162,24 @@
 <div id="vt-status-box" class="vt-status-msg"></div>
 
 <form id="vungtau-settings-form">
-  <!-- 1. Thông tin liên hệ & Chi nhánh -->
+  <!-- 1. Slide Banner Trang Chủ (Hero Slider) -->
+  <section class="vt-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+      <h2 class="vt-admin-section-title" style="border: none; margin: 0; padding: 0;">1. Quản lý Slide Banner Đầu Trang (Hero Slider)</h2>
+      <button type="button" id="btn-add-slide" class="btn-action-detail">+ Thêm slide mới</button>
+    </div>
+    <p class="pricing-hint" style="margin-bottom: 16px;">
+      Bạn có thể <strong>tải ảnh trực tiếp từ máy tính (Local)</strong> hoặc dán link ảnh. Các slide sẽ tự động chuyển động trên đầu trang <code>fpt-vungtau.com</code>.
+    </p>
+    <div id="vt-slides-container">
+      <!-- Rendered dynamically via JavaScript -->
+    </div>
+  </section>
+
+  <!-- 2. Thông tin liên hệ & Chi nhánh -->
   <section class="vt-card">
     <div class="vt-admin-badge active">● Đang hoạt động trên fpt-vungtau.com</div>
-    <h2 class="vt-admin-section-title">1. Thông tin liên hệ &amp; Chi nhánh</h2>
+    <h2 class="vt-admin-section-title">2. Thông tin liên hệ &amp; Chi nhánh</h2>
     <div class="vt-admin-grid">
       <label>
         Số Hotline tư vấn
@@ -117,9 +204,9 @@
     </div>
   </section>
 
-  <!-- 2. Thương hiệu & SEO -->
+  <!-- 3. Thương hiệu & SEO -->
   <section class="vt-card">
-    <h2 class="vt-admin-section-title">2. Nhận diện thương hiệu &amp; SEO Google</h2>
+    <h2 class="vt-admin-section-title">3. Nhận diện thương hiệu &amp; SEO Google</h2>
     <div class="vt-admin-grid">
       <label>
         Tên thương hiệu chi nhánh
@@ -139,9 +226,9 @@
     </label>
   </section>
 
-  <!-- 3. Mã đo lường & Quảng cáo -->
+  <!-- 4. Mã đo lường & Quảng cáo -->
   <section class="vt-card">
-    <h2 class="vt-admin-section-title">3. Mã đo lường &amp; Theo dõi Quảng cáo</h2>
+    <h2 class="vt-admin-section-title">4. Mã đo lường &amp; Theo dõi Quảng cáo</h2>
     <p class="pricing-hint" style="margin-bottom: 16px;">Điền ID chiến dịch để hệ thống tự động gắn mã theo dõi và gửi chuyển đổi khi có lead mới.</p>
     <div class="vt-admin-grid">
       <label>
@@ -167,9 +254,9 @@
     </div>
   </section>
 
-  <!-- 4. Gói cước & Ưu đãi nổi bật -->
+  <!-- 5. Gói cước & Ưu đãi nổi bật -->
   <section class="vt-card">
-    <h2 class="vt-admin-section-title">4. Gói cước tư vấn &amp; Thông báo ưu đãi</h2>
+    <h2 class="vt-admin-section-title">5. Gói cước tư vấn &amp; Thông báo ưu đãi</h2>
     <label style="margin-bottom: 16px; display: block;">
       Dòng thông báo ưu đãi
       <input id="vt-promo-notice" type="text" value="{{ vungtau_config.promo_notice }}">
@@ -183,20 +270,161 @@
   </section>
 
   <div style="display: flex; gap: 12px; align-items: center; margin-top: 24px;">
-    <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 200px;">Lưu Cấu Hình Web Mới</button>
+    <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 220px;">Lưu Cấu Hình Web Mới</button>
     <a class="btn-action-detail" href="/admin/appearance">Sang cấu hình trang chủ chính</a>
   </div>
 </form>
 {% endblock %}
 
 {% block extra_scripts %}
+<script src="/static/js/admin/media_upload.js?v=20261022b"></script>
 <script>
 let adminDisplayVersion = {{ display_settings.version }};
+let initialSlides = {{ vungtau_config.hero_slides | tojson | safe }};
 
+// Render Slides
+const slidesContainer = document.getElementById('vt-slides-container');
+
+function createSlideElement(slide, index) {
+  const item = document.createElement('div');
+  item.className = 'vt-slide-item';
+  item.dataset.index = index;
+
+  item.innerHTML = `
+    <div class="vt-slide-thumb-container">
+      <img class="vt-slide-thumb" src="${slide.image_url || '/static/images/empty.png'}" alt="Preview" onerror="this.src='https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg';">
+      <label class="vt-upload-local-label">
+        📁 Đổi ảnh từ máy tính
+        <input type="file" class="vt-file-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+      </label>
+      <span class="vt-upload-status" style="display: block; font-size: 11px; margin-top: 4px; color: #64748b;"></span>
+    </div>
+    <div class="vt-slide-fields">
+      <div class="vt-slide-fields-full">
+        <label>
+          Đường dẫn ảnh (URL hoặc Base64)
+          <input type="text" class="vt-slide-img-url" value="${slide.image_url || ''}" placeholder="https://..." required>
+        </label>
+      </div>
+      <div>
+        <label>
+          Liên kết khi bấm vào slide (Href)
+          <input type="text" class="vt-slide-href" value="${slide.href || 'https://fpt-vungtau.com'}" placeholder="https://... hoặc #dang-ky">
+        </label>
+      </div>
+      <div>
+        <label>
+          Tiêu đề mô tả (Alt text)
+          <input type="text" class="vt-slide-alt" value="${slide.alt || 'Lắp mạng FPT Vũng Tàu'}" placeholder="VD: Ưu đãi lắp mạng FPT">
+        </label>
+      </div>
+    </div>
+    <button type="button" class="vt-btn-delete-slide" title="Xóa slide này">Xóa</button>
+  `;
+
+  // Handle URL change -> update thumbnail
+  const urlInput = item.querySelector('.vt-slide-img-url');
+  const thumb = item.querySelector('.vt-slide-thumb');
+  urlInput.addEventListener('input', () => {
+    thumb.src = urlInput.value.trim() || 'https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg';
+  });
+
+  // Handle Local File Upload
+  const fileInput = item.querySelector('.vt-file-input');
+  const uploadStatus = item.querySelector('.vt-upload-status');
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    uploadStatus.textContent = 'Đang xử lý ảnh...';
+    uploadStatus.style.color = '#2563eb';
+
+    try {
+      // 1. Try uploading to R2 storage if available
+      if (typeof window.adminUploadImage === 'function') {
+        try {
+          const res = await window.adminUploadImage(file);
+          if (res && res.payload && res.payload.image_url) {
+            urlInput.value = res.payload.image_url;
+            thumb.src = res.payload.image_url;
+            uploadStatus.textContent = '✓ Đã tải lên CDN R2!';
+            uploadStatus.style.color = '#16a34a';
+            return;
+          }
+        } catch (r2Err) {
+          // If R2 unconfigured, fallback to local FileReader Base64
+          console.warn('R2 direct upload unavailable, falling back to local Data URL:', r2Err.message);
+        }
+      }
+
+      // 2. Fallback to reading file directly as Data URL
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        urlInput.value = evt.target.result;
+        thumb.src = evt.target.result;
+        uploadStatus.textContent = '✓ Đã nạp ảnh từ máy tính!';
+        uploadStatus.style.color = '#16a34a';
+      };
+      reader.onerror = function() {
+        uploadStatus.textContent = '✕ Không thể đọc tệp ảnh';
+        uploadStatus.style.color = '#dc2626';
+      };
+      reader.readAsDataURL(file);
+
+    } catch (err) {
+      uploadStatus.textContent = '✕ Lỗi: ' + (err.message || 'Thử lại');
+      uploadStatus.style.color = '#dc2626';
+    }
+  });
+
+  // Handle Delete
+  const delBtn = item.querySelector('.vt-btn-delete-slide');
+  delBtn.addEventListener('click', () => {
+    if (confirm('Bạn có chắc muốn xóa slide này?')) {
+      item.remove();
+    }
+  });
+
+  return item;
+}
+
+function renderAllSlides(slides) {
+  slidesContainer.innerHTML = '';
+  slides.forEach((slide, idx) => {
+    slidesContainer.appendChild(createSlideElement(slide, idx));
+  });
+}
+
+// Initial render
+renderAllSlides(initialSlides);
+
+// Add new slide button
+document.getElementById('btn-add-slide').addEventListener('click', () => {
+  const newSlide = {
+    image_url: 'https://fptvungtau.com/wp-content/uploads/2026/06/lap-mang-fpt-vung-tau-1024x576.jpg',
+    href: 'https://fpt-vungtau.com',
+    alt: 'FPT Vũng Tàu'
+  };
+  slidesContainer.appendChild(createSlideElement(newSlide, slidesContainer.children.length));
+});
+
+// Handle Form Submission
 document.getElementById('vungtau-settings-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const btn = document.getElementById('btn-save-vungtau');
   const statusBox = document.getElementById('vt-status-box');
+
+  // Collect slide data
+  const slideItems = slidesContainer.querySelectorAll('.vt-slide-item');
+  const collectedSlides = [];
+  slideItems.forEach(item => {
+    const imgUrl = (item.querySelector('.vt-slide-img-url').value || '').trim();
+    const href = (item.querySelector('.vt-slide-href').value || '').trim();
+    const alt = (item.querySelector('.vt-slide-alt').value || '').trim();
+    if (imgUrl) {
+      collectedSlides.push({ image_url: imgUrl, href: href, alt: alt });
+    }
+  });
 
   const rawPlans = document.getElementById('vt-quick-plans').value
     .split('\n')
@@ -216,7 +444,8 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
     ga4_id: document.getElementById('vt-ga4-id').value.trim(),
     facebook_pixel_id: document.getElementById('vt-facebook-pixel-id').value.trim(),
     promo_notice: document.getElementById('vt-promo-notice').value.trim(),
-    quick_plans: rawPlans
+    quick_plans: rawPlans,
+    hero_slides: collectedSlides
   };
 
   btn.disabled = true;
@@ -245,11 +474,11 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
       adminDisplayVersion = data.settings.version;
     }
 
-    statusBox.textContent = '✓ Đã lưu thành công cấu hình cho FPT Vũng Tàu (fpt-vungtau.com)! Thay đổi đã có hiệu lực ngay lập tức.';
+    statusBox.textContent = '✓ Đã lưu thành công cấu hình và danh sách Slide cho FPT Vũng Tàu! Trang web fpt-vungtau.com đã cập nhật ngay lập tức.';
     statusBox.className = 'vt-status-msg success';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
-    statusBox.textContent = '✕ Không thể lưu: ' + (err.message || 'Vui lòng thử lại sau.');
+    statusBox.textContent = '✕ Không thể lưu: ' + (err.message || 'Vui lòng kiểm tra quyền và thử lại.');
     statusBox.className = 'vt-status-msg error';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } finally {

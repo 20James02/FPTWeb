@@ -77,3 +77,35 @@ async def test_admin_vungtau_page_renders(admin):
     assert "Cấu hình FPT Vũng Tàu" in response.text
     assert "fpt-vungtau.com" in response.text
     assert "vt-hotline" in response.text
+    assert "Quản lý Slide Banner Đầu Trang" in response.text
+
+
+@pytest.mark.asyncio
+async def test_vungtau_slide_configuration_save_and_render(admin, client):
+    """Admin can save custom slides and contact info, which immediately updates the Vũng Tàu landing page."""
+    current_settings = (await admin.get("/api/v1/system/display-settings")).json()
+    version = current_settings.get("version", 0)
+
+    custom_slide_url = "https://custom-cdn.example/banner-khuyen-mai-moi.jpg"
+    save_resp = await admin.post(
+        "/api/v1/system/display-settings",
+        json={
+            "expected_version": version,
+            "vungtau": {
+                "hotline": "0988 123 456",
+                "hero_slides": [
+                    {
+                        "image_url": custom_slide_url,
+                        "href": "#dang-ky",
+                        "alt": "Banner Khuyến Mãi Mới",
+                    }
+                ],
+            },
+        },
+    )
+    assert save_resp.status_code == 200
+
+    page_resp = await client.get("/vungtau")
+    assert page_resp.status_code == 200
+    assert custom_slide_url in page_resp.text
+    assert "0988 123 456" in page_resp.text
