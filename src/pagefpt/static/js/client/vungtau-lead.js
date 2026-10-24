@@ -243,6 +243,30 @@
           form.style.display = 'none';
           if (successView) successView.style.display = 'block';
           form.reset();
+
+          // Fire Google Ads & Meta Pixel conversion tracking if configured
+          try {
+            var vtCfg = window.VT_CONFIG || {};
+            if (typeof window.gtag === 'function') {
+              if (vtCfg.google_ads_conversion) {
+                var sendTo = vtCfg.google_ads_conversion.indexOf('/') !== -1
+                  ? vtCfg.google_ads_conversion
+                  : (vtCfg.google_ads_id ? vtCfg.google_ads_id + '/' + vtCfg.google_ads_conversion : vtCfg.google_ads_conversion);
+                window.gtag('event', 'conversion', { 'send_to': sendTo });
+              }
+              window.gtag('event', 'generate_lead', {
+                event_category: 'form',
+                event_label: selectedPlan || 'General Lead'
+              });
+            }
+            if (typeof window.fbq === 'function') {
+              window.fbq('track', 'Lead', {
+                content_name: selectedPlan || 'General Lead'
+              });
+            }
+          } catch (trackErr) {
+            console.warn('Tracking event dispatch warning:', trackErr);
+          }
         } catch (err) {
           if (errorView) {
             errorView.textContent = err.message || 'Đã có lỗi xảy ra. Quý khách vui lòng gọi Hotline để được hỗ trợ nhanh nhất!';

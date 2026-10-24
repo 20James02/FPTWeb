@@ -67,9 +67,26 @@ def get_vungtau_config(
     if not raw_phone.startswith("tel:"):
         raw_phone = f"tel:{raw_phone}"
 
-    zalo_link = vt_custom.get("zalo_link") or "https://zalo.me/0947803111"
+    zalo_link_raw = (vt_custom.get("zalo_link") or "").strip()
+    if zalo_link_raw:
+        if zalo_link_raw.startswith("http://") or zalo_link_raw.startswith("https://"):
+            zalo_link = zalo_link_raw
+        elif zalo_link_raw.startswith("zalo.me/"):
+            zalo_link = f"https://{zalo_link_raw}"
+        else:
+            zalo_digits = "".join(c for c in zalo_link_raw if c.isdigit())
+            zalo_link = f"https://zalo.me/{zalo_digits}" if zalo_digits else zalo_link_raw
+    else:
+        zalo_link = f"https://zalo.me/{raw_digits}" if raw_digits else "https://zalo.me/0947803111"
+
     hotline_cs = vt_custom.get("hotline_cs") or "1900 6600"
-    hotline_cs_tel = vt_custom.get("hotline_cs_tel") or "tel:19006600"
+    raw_cs_digits = "".join(c for c in hotline_cs if c.isdigit())
+    hotline_cs_tel = vt_custom.get("hotline_cs_tel") or (
+        f"tel:{raw_cs_digits}" if raw_cs_digits else "tel:19006600"
+    )
+    if not hotline_cs_tel.startswith("tel:"):
+        hotline_cs_tel = f"tel:{hotline_cs_tel}"
+
     address = vt_custom.get("address") or "186 Trương Công Định, Phường 3, TP. Vũng Tàu"
     brand_name = vt_custom.get("brand_name") or "FPT Vũng Tàu"
     brand_title = (

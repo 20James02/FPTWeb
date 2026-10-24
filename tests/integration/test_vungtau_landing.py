@@ -109,3 +109,50 @@ async def test_vungtau_slide_configuration_save_and_render(admin, client):
     assert page_resp.status_code == 200
     assert custom_slide_url in page_resp.text
     assert "0988 123 456" in page_resp.text
+
+
+@pytest.mark.asyncio
+async def test_vungtau_full_configuration_render(admin, client):
+    """All custom configuration parameters (SEO, tracking, promo, contact) render accurately."""
+    current_settings = (await admin.get("/api/v1/system/display-settings")).json()
+    version = current_settings.get("version", 0)
+
+    save_resp = await admin.post(
+        "/api/v1/system/display-settings",
+        json={
+            "expected_version": version,
+            "vungtau": {
+                "brand_name": "FPT Vũng Tàu Chi Nhánh Mới",
+                "brand_title": "FPT Vũng Tàu - Đăng Ký Siêu Tốc 2026",
+                "meta_desc": "Mô tả SEO FPT Vũng Tàu ưu đãi đặc biệt hôm nay.",
+                "hotline": "0999 888 777",
+                "hotline_cs": "1900 8888",
+                "zalo_link": "https://zalo.me/0999888777",
+                "address": "999 Đường 3 Tháng 2, Phường 8, TP. Vũng Tàu",
+                "promo_notice": "Tặng 3 tháng cước + Modem WiFi 7 độc quyền",
+                "google_ads_id": "AW-999999999",
+                "google_ads_conversion": "ConvTestLabel123",
+                "ga4_id": "G-VTTEST999",
+                "facebook_pixel_id": "987654321098765",
+                "quick_plans": ["Gói VIP Doanh Nghiệp (500M)", "Gói Gia Đình Ultra"],
+            },
+        },
+    )
+    assert save_resp.status_code == 200
+
+    page_resp = await client.get("/vungtau")
+    assert page_resp.status_code == 200
+    text = page_resp.text
+    assert "FPT Vũng Tàu Chi Nhánh Mới" in text
+    assert "FPT Vũng Tàu - Đăng Ký Siêu Tốc 2026" in text
+    assert "Mô tả SEO FPT Vũng Tàu ưu đãi đặc biệt hôm nay." in text
+    assert "0999 888 777" in text
+    assert "1900 8888" in text
+    assert "https://zalo.me/0999888777" in text
+    assert "999 Đường 3 Tháng 2, Phường 8, TP. Vũng Tàu" in text
+    assert "Tặng 3 tháng cước + Modem WiFi 7 độc quyền" in text
+    assert "AW-999999999" in text
+    assert "G-VTTEST999" in text
+    assert "987654321098765" in text
+    assert "Gói VIP Doanh Nghiệp (500M)" in text
+
