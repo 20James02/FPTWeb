@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from pagefpt.api.dependencies import dispatch
 from pagefpt.core.errors import DomainError
 from pagefpt.modules.content.display_settings import active_slides, get_display_settings
+from pagefpt.modules.content.vungtau_config import get_vungtau_config, is_vungtau_request
 from pagefpt.web.service_pages import SERVICE_PAGES
 
 router = APIRouter()
@@ -35,6 +36,16 @@ async def published_catalog(request, kind="plan"):
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     display = await get_display_settings(request)
+    if is_vungtau_request(request):
+        vt_config = get_vungtau_config(request, display)
+        return templates.TemplateResponse(
+            request,
+            "client/vungtau/index.html",
+            {
+                "config": vt_config,
+                "display_settings": display,
+            },
+        )
     return templates.TemplateResponse(
         request,
         "client/home.html",
@@ -44,6 +55,21 @@ async def home(request: Request):
             "accessories": await published_catalog(request, "product"),
             "promo_slides": active_slides(display),
             "plans": await published_catalog(request),
+        },
+    )
+
+
+@router.get("/vungtau", response_class=HTMLResponse)
+@router.get("/dang-ky-thong-tin", response_class=HTMLResponse)
+async def vungtau_landing(request: Request):
+    display = await get_display_settings(request)
+    vt_config = get_vungtau_config(request, display)
+    return templates.TemplateResponse(
+        request,
+        "client/vungtau/index.html",
+        {
+            "config": vt_config,
+            "display_settings": display,
         },
     )
 
