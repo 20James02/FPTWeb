@@ -723,34 +723,65 @@ ease;
 .vt-quick-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
     justify-content: center;
     align-items: center;
 }
 .vt-quick-form input, .vt-quick-form select {
-    padding: 13px 16px;
-    border: 2px solid #fdba74;
-    border-radius: 10px;
-    font-size: 15px;
-    background: #ffffff;
-    outline: none;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    line-height: normal !important;
+    padding: 0 16px !important;
+    border: 2px solid #fdba74 !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    background: #ffffff !important;
+    outline: none !important;
     transition: border-color 0.2s;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
+    flex: none !important;
+    margin: 0 !important;
 }
 .vt-quick-form input:focus, .vt-quick-form select:focus {
-    border-color: #ea580c;
+    border-color: #ea580c !important;
+}
+.vt-quick-form select {
+    cursor: pointer;
+    color: #374151;
+}
+@media (min-width: 601px) {
+    .vt-quick-form input {
+        width: 270px !important;
+    }
+    .vt-quick-form select {
+        width: 260px !important;
+    }
+    .vt-quick-btn {
+        width: auto !important;
+    }
 }
 .vt-quick-btn {
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    line-height: 48px !important;
+    padding: 0 26px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
     color: #ffffff !important;
-    border: none;
-    padding: 13px 26px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
-    transition: transform 0.15s, box-shadow 0.15s;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35) !important;
+    transition: transform 0.15s, box-shadow 0.15s !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    margin: 0 !important;
 }
 .vt-quick-btn:hover {
     transform: translateY(-1px);
@@ -772,22 +803,34 @@ ease;
     .vt-hero-header h1.seo-home-title {
         font-size: 18px;
     }
+    .vt-quick-lead-section {
+        padding: 18px 14px 16px !important;
+        margin: 12px 10px 20px !important;
+    }
     .vt-quick-lead-section h2, .vt-quick-lead-section h3 {
         font-size: 17px;
     }
     .vt-quick-form {
-        flex-direction: column;
-        width: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
     }
     .vt-quick-form input, .vt-quick-form select, .vt-quick-btn {
         width: 100% !important;
         max-width: 100% !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
+        flex: none !important;
+        box-sizing: border-box !important;
     }
     .vt-trust-row {
-        gap: 8px 14px;
+        gap: 8px 12px;
         font-size: 12px;
     }
 }
+
 
 /* Social Proof & Process */
 .vt-social-proof {
@@ -3223,8 +3266,8 @@ span.product-name {
     <p class="vt-sub">Chuyên viên FPT liên hệ lại tư vấn sau 5 phút • Khảo sát hạ tầng tận nhà hoàn toàn miễn phí</p>
   </div>
   <form id="vt-quick-hero-form" class="vt-quick-form">
-    <input type="tel" id="vt-quick-phone" name="phone" placeholder="Nhập số điện thoại của bạn..." required pattern="^0[35789]\d{8}$" style="flex: 1 1 240px; min-width: 200px; max-width: 320px;" />
-    <select id="vt-quick-plan" name="plan" style="flex: 1 1 220px; min-width: 180px; max-width: 280px;">
+    <input type="tel" id="vt-quick-phone" name="phone" placeholder="Nhập số điện thoại của bạn..." required pattern="^0[35789]\d{8}$" />
+    <select id="vt-quick-plan" name="plan">
       <option value="Tư vấn gói cước phù hợp">-- Chọn gói cước quan tâm --</option>
       <option value="Gói Giga 150 Mbps (180k/tháng)">Gói Giga 150 Mbps (180k/tháng)</option>
       <option value="Gói Sky 1000 Mbps (225k/tháng)">Gói Sky 1000 Mbps (225k/tháng)</option>
