@@ -61,6 +61,22 @@ async def home(request: Request):
 
 @router.get("/vungtau", response_class=HTMLResponse)
 @router.get("/dang-ky-thong-tin", response_class=HTMLResponse)
+@router.get("/cap-quang-ca-nhan", response_class=HTMLResponse)
+@router.get("/cap-quang-doanh-nghiep", response_class=HTMLResponse)
+@router.get("/combo-internet-va-truyen-hinh", response_class=HTMLResponse)
+@router.get("/ngoai-hang-anh", response_class=HTMLResponse)
+@router.get("/fpt-play", response_class=HTMLResponse)
+@router.get("/fpt-camera", response_class=HTMLResponse)
+@router.get("/diem-giao-dich", response_class=HTMLResponse)
+@router.get("/cau-hoi-thuong-gap", response_class=HTMLResponse)
+@router.get("/huong-dan-thu-tuc", response_class=HTMLResponse)
+@router.get("/huong-dan-su-dung", response_class=HTMLResponse)
+@router.get("/huong-dan-cai-dat", response_class=HTMLResponse)
+@router.get("/xu-ly-su-co", response_class=HTMLResponse)
+@router.get("/dieu-khoan-bao-mat", response_class=HTMLResponse)
+@router.get("/lap-mang", response_class=HTMLResponse)
+@router.get("/tin-tuc", response_class=HTMLResponse)
+@router.get("/gioi-thieu", response_class=HTMLResponse)
 async def vungtau_landing(request: Request):
     display = await get_display_settings(request)
     vt_config = get_vungtau_config(request, display)
@@ -96,6 +112,17 @@ async def product_detail(request: Request, slug: str):
 
 @router.get("/khuyen-mai", response_class=HTMLResponse)
 async def landing_page(request: Request):
+    display = await get_display_settings(request)
+    if is_vungtau_request(request):
+        vt_config = get_vungtau_config(request, display)
+        return templates.TemplateResponse(
+            request,
+            "client/vungtau/index.html",
+            {
+                "config": vt_config,
+                "display_settings": display,
+            },
+        )
     campaign = {
         "title": "Tư Vấn Gói Cước Và Ưu Đãi Theo Khu Vực",
         "badge": "TƯ VẤN THEO ĐỊA BÀN",
@@ -110,7 +137,7 @@ async def landing_page(request: Request):
             "campaign": campaign,
             "regions": await published_catalog(request, "region"),
             "plans": await published_catalog(request),
-            "display_settings": await get_display_settings(request),
+            "display_settings": display,
             "accessories": await published_catalog(request, "product"),
         },
     )

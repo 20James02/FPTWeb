@@ -206,3 +206,48 @@ async def test_vungtau_chat_widget_and_advisor_config(admin, client):
     assert lead_resp.status_code == 201
     assert lead_resp.json()["receipt"]
 
+
+@pytest.mark.asyncio
+async def test_vungtau_sub_routes_render_internal_page(client):
+    """All secondary sub-routes render within the internal page and don't 404 or redirect outside."""
+    sub_paths = [
+        "/cap-quang-ca-nhan",
+        "/cap-quang-doanh-nghiep",
+        "/combo-internet-va-truyen-hinh",
+        "/ngoai-hang-anh",
+        "/fpt-play",
+        "/fpt-camera",
+        "/diem-giao-dich",
+        "/cau-hoi-thuong-gap",
+        "/huong-dan-thu-tuc",
+        "/tin-tuc",
+        "/lap-mang",
+        "/gioi-thieu",
+    ]
+    for path in sub_paths:
+        resp = await client.get(path)
+        assert resp.status_code == 200
+        assert "text/html" in resp.headers["content-type"]
+        assert "vt-lead-modal" in resp.text
+        assert "FPT Vũng Tàu" in resp.text
+
+
+@pytest.mark.asyncio
+async def test_vungtau_zero_external_links_and_faq_present(client):
+    """Ensure no interactive <a> tags point to fptvungtau.com and FAQ section exists."""
+    import re
+
+    resp = await client.get("/vungtau")
+    assert resp.status_code == 200
+    html = resp.text
+
+    # Verify FAQ section is present
+    assert 'id="cau-hoi-thuong-gap"' in html
+    assert "Câu Hỏi Thường Gặp" in html
+
+    # Verify zero <a> tags point to old external site fptvungtau.com
+    a_hrefs = re.findall(r'<a\s+[^>]*href=[\"\']([^\"\']*)[\"\']', html, re.IGNORECASE)
+    external_nav = [h for h in a_hrefs if "fptvungtau.com" in h]
+    assert external_nav == [], f"Found lingering external links: {external_nav}"
+
+

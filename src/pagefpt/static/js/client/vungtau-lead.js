@@ -149,11 +149,13 @@
       if (!target) return;
 
       var href = (target.getAttribute('href') || '').toLowerCase();
-      var text = (target.textContent || '').trim().toLowerCase();
       var isRegAction = href.includes('dang-ky-thong-tin') ||
                         href.includes('#dang-ky') ||
                         target.classList.contains('btn-dang-ky') ||
                         target.classList.contains('button-nha') ||
+                        Boolean(target.closest('.xem-chi-tiet')) ||
+                        text.includes('đăng ký & tư vấn') ||
+                        text.includes('xem chi tiết') ||
                         text.includes('đăng ký online') ||
                         text === 'đăng ký' ||
                         text === 'chọn gói' ||
@@ -589,12 +591,57 @@
     });
   }
 
+  // Deep-linking & smooth scroll algorithm for direct sub-paths & anchors
+  function initDeepLinking() {
+    var pathMap = {
+      '/cap-quang-ca-nhan': '#goi-ca-nhan',
+      '/cap-quang-doanh-nghiep': '#goi-doanh-nghiep',
+      '/combo-internet-va-truyen-hinh': '#goi-combo',
+      '/ngoai-hang-anh': '#goi-combo',
+      '/fpt-play': '#goi-combo',
+      '/fpt-camera': '#fpt-camera',
+      '/diem-giao-dich': '#chi-nhanh',
+      '/cau-hoi-thuong-gap': '#cau-hoi-thuong-gap',
+      '/huong-dan-thu-tuc': '#quy-trinh-lap-dat',
+      '/huong-dan-su-dung': '#quy-trinh-lap-dat',
+      '/huong-dan-cai-dat': '#cau-hoi-thuong-gap',
+      '/xu-ly-su-co': '#cau-hoi-thuong-gap',
+      '/tin-tuc': '#tin-tuc',
+      '/khuyen-mai': '#khuyen-mai',
+      '/gioi-thieu': '#goi-ca-nhan',
+      '/lap-mang': '#goi-ca-nhan'
+    };
+
+    var pathname = (window.location.pathname || '').replace(/\/+$/, '');
+    var hash = window.location.hash;
+
+    if (pathname === '/dang-ky-thong-tin' || hash === '#dang-ky') {
+      setTimeout(function() {
+        if (typeof window.openVungTauLeadModal === 'function') {
+          window.openVungTauLeadModal();
+        }
+      }, 300);
+      return;
+    }
+
+    var targetAnchor = pathMap[pathname] || (hash ? hash : null);
+    if (targetAnchor && targetAnchor.startsWith('#')) {
+      var el = document.querySelector(targetAnchor);
+      if (el) {
+        setTimeout(function() {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+      }
+    }
+  }
+
   // Initialize on DOM ready
   initAttribution();
   function initAll() {
     initLeadModal();
     initChatWidget();
     initQuickHeroForm();
+    initDeepLinking();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAll);
