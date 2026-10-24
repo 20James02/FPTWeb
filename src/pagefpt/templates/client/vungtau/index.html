@@ -2213,6 +2213,272 @@ span.product-name {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* FPT Vũng Tàu - Floating Chat Widget & Form Popup */
+#vt-chat-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 99998;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+#vt-chat-toggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f47a0e;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(244, 122, 14, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  outline: none;
+}
+#vt-chat-toggle:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(244, 122, 14, 0.6);
+}
+#vt-chat-toggle .vt-icon-chat,
+#vt-chat-toggle .vt-icon-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#vt-chat-toggle .vt-icon-close {
+  display: none;
+}
+#vt-chat-widget.is-open #vt-chat-toggle .vt-icon-chat {
+  display: none;
+}
+#vt-chat-widget.is-open #vt-chat-toggle .vt-icon-close {
+  display: flex;
+}
+#vt-chat-box {
+  display: none;
+  position: absolute;
+  bottom: 74px;
+  right: 0;
+  width: 350px;
+  max-width: calc(100vw - 32px);
+  background: #f1f5f9;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: vtChatPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 99999;
+}
+#vt-chat-widget.is-open #vt-chat-box {
+  display: block;
+}
+@keyframes vtChatPop {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.vt-chat-header {
+  background: #f47a0e;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+.vt-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vt-chat-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: #e2e8f0;
+  display: block;
+  flex-shrink: 0;
+}
+.vt-chat-name {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.2;
+}
+.vt-chat-online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 1.5px solid #ffffff;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.vt-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vt-chat-action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: background 0.15s, transform 0.1s;
+  padding: 0;
+}
+.vt-chat-action-btn:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+.vt-chat-body {
+  padding: 14px;
+}
+.vt-chat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+.vt-chat-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  color: #0f172a;
+  margin: 0 0 16px;
+  letter-spacing: -0.2px;
+}
+.vt-chat-field {
+  margin-bottom: 12px;
+}
+.vt-chat-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+.vt-chat-label .vt-req {
+  color: #ef4444;
+  margin-right: 2px;
+}
+.vt-chat-input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 9px 12px !important;
+  font-size: 13.5px !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 7px !important;
+  outline: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit !important;
+}
+.vt-chat-input:focus {
+  border-color: #f47a0e !important;
+  box-shadow: 0 0 0 2.5px rgba(244, 122, 14, 0.18) !important;
+}
+.vt-chat-submit-wrap {
+  text-align: center;
+  margin-top: 18px;
+}
+.vt-chat-btn-submit {
+  background: #f47a0e !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 10px 32px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  box-shadow: 0 4px 12px rgba(244, 122, 14, 0.35) !important;
+  transition: background-color 0.15s, transform 0.15s !important;
+}
+.vt-chat-btn-submit:hover {
+  background: #e06900 !important;
+  transform: translateY(-1px);
+}
+.vt-chat-btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+.vt-chat-alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.vt-chat-success-card {
+  display: none;
+  text-align: center;
+  padding: 20px 10px;
+}
+.vt-chat-success-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-weight: bold;
+}
+.vt-chat-success-card h4 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #15803d;
+  margin: 0 0 6px;
+}
+.vt-chat-success-card p {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.4;
+  margin: 0 0 16px;
+}
+.vt-chat-btn-close-success {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  #vt-chat-widget {
+    right: 14px;
+    bottom: 14px;
+  }
+  #vt-chat-toggle {
+    width: 54px;
+    height: 54px;
+  }
+  #vt-chat-box {
+    bottom: 66px;
+    right: 0;
+    width: calc(100vw - 28px);
+  }
+}
 </style>
 
 </head>
@@ -5751,25 +6017,7 @@ span.product-name {
         
         
         
-                      <script>
-      !(function () {
-        const livechatUrl = 'https://portal-sop.fpt.vn/livechat-service/widget.css';
-        document
-          .getElementsByTagName("head")[0]
-          .insertAdjacentHTML(
-            "beforeend",
-            `<link rel='stylesheet' href=${livechatUrl} />`
-          );
-        const e = document.createElement("div");
-        e.setAttribute("id", "livechat-sop"), document.body.appendChild(e);
-        localStorage.setItem('sop_id', '3465');
-        const t = document.createElement("script");
-        t.setAttribute("type", "module"),
-          t.setAttribute("crossorigin", ""),
-          (t.src = "https://portal-sop.fpt.vn/livechat-service/Widget.js"),
-          document.body.appendChild(t);
-      })();
-    </script>
+    <!-- Replaced third-party portal-sop with native configurable widget -->
     
 <script>
 function setEqualHeight() {
@@ -5995,6 +6243,84 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
       <button type="button" class="vt-btn-close-success" onclick="document.getElementById('vt-lead-modal').classList.remove('is-open');">Đóng</button>
     </div>
   </div>
+</div>
+
+<!-- Native FPT Floating Chat & Registration Widget -->
+<div id="vt-chat-widget">
+  <div id="vt-chat-box">
+    <div class="vt-chat-header">
+      <div class="vt-chat-header-left">
+        <img class="vt-chat-avatar" src="{{ config.advisor_avatar }}" alt="{{ config.advisor_name }}" onerror="this.src='https://fptvungtau.com/wp-content/uploads/2023/12/cropped-fpt-vung-tau-1.png';">
+        <div class="vt-chat-name">
+          <span>{{ config.advisor_name }}</span>
+          <span class="vt-chat-online-dot" title="Đang trực tuyến"></span>
+        </div>
+      </div>
+      <div class="vt-chat-header-actions">
+        <button type="button" class="vt-chat-action-btn" aria-label="Tùy chọn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="8" cy="3" r="1.5"/>
+            <circle cx="8" cy="8" r="1.5"/>
+            <circle cx="8" cy="13" r="1.5"/>
+          </svg>
+        </button>
+        <button type="button" id="vt-chat-minimize" class="vt-chat-action-btn" aria-label="Thu nhỏ chat">
+          <svg width="14" height="2" viewBox="0 0 14 2" fill="currentColor">
+            <rect width="14" height="2" rx="1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="vt-chat-body">
+      <div class="vt-chat-card">
+        <div id="vt-chat-form-container">
+          <h4 class="vt-chat-card-title">Thông tin đăng ký</h4>
+          <div id="vt-chat-error" class="vt-chat-alert-error" style="display: none;"></div>
+          <form id="vt-chat-form">
+            <div class="vt-chat-field">
+              <label class="vt-chat-label" for="vt-chat-name"><span class="vt-req">*</span> Họ và tên</label>
+              <input type="text" id="vt-chat-name" class="vt-chat-input" placeholder="Họ và tên" required autocomplete="name">
+            </div>
+            <div class="vt-chat-field">
+              <label class="vt-chat-label" for="vt-chat-phone"><span class="vt-req">*</span> Số điện thoại</label>
+              <input type="tel" id="vt-chat-phone" class="vt-chat-input" placeholder="Số điện thoại" required autocomplete="tel">
+            </div>
+            <div class="vt-chat-field">
+              <label class="vt-chat-label" for="vt-chat-address"><span class="vt-req">*</span> Địa Chỉ</label>
+              <input type="text" id="vt-chat-address" class="vt-chat-input" placeholder="Địa Chỉ" required autocomplete="street-address">
+            </div>
+            <div class="vt-chat-field">
+              <label class="vt-chat-label" for="vt-chat-message"><span class="vt-req">*</span> Nội Dung</label>
+              <input type="text" id="vt-chat-message" class="vt-chat-input" placeholder="" required>
+            </div>
+            <div class="vt-chat-submit-wrap">
+              <button type="submit" id="vt-chat-submit" class="vt-chat-btn-submit">Bắt đầu</button>
+            </div>
+          </form>
+        </div>
+        <div id="vt-chat-success" class="vt-chat-success-card">
+          <div class="vt-chat-success-icon">✓</div>
+          <h4>ĐĂNG KÝ THÀNH CÔNG!</h4>
+          <p>Cảm ơn Quý khách! Chuyên viên {{ config.advisor_name }} sẽ liên hệ theo số điện thoại đã cung cấp để tư vấn và hỗ trợ ngay.</p>
+          <button type="button" class="vt-chat-btn-close-success" id="vt-chat-close-success">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="button" id="vt-chat-toggle" aria-label="Mở cửa sổ chat hỗ trợ">
+    <div class="vt-icon-chat">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 6C8.48 6 4 9.8 4 14.5c0 2.5 1.25 4.75 3.25 6.3-.3 1.6-1.15 3.2-1.25 3.4 0 .15.05.3.2.4.15.05.25.05.35 0 2.15-.9 4.2-2.15 4.5-2.35.95.25 1.95.35 2.95.35 5.52 0 10-3.8 10-8.5S19.52 6 14 6z" fill="#ffffff"/>
+        <path d="M22 13c-.2 0-.4 0-.6.05 1.6 1.45 2.6 3.35 2.6 5.45 0 .9-.2 1.8-.6 2.6.45.2 2.25 1.3 4.1 2.05.1.05.2.05.35 0 .15-.1.2-.25.2-.4-.1-.2-.85-1.6-1.1-3 1.8-1.4 2.95-3.4 2.95-5.65C29.9 10.3 26.35 13 22 13z" fill="#ffffff" opacity="0.95"/>
+      </svg>
+    </div>
+    <div class="vt-icon-close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+  </button>
 </div>
 
 <script>

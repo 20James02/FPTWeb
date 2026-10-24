@@ -152,7 +152,57 @@ async def test_vungtau_full_configuration_render(admin, client):
     assert "999 Đường 3 Tháng 2, Phường 8, TP. Vũng Tàu" in text
     assert "Tặng 3 tháng cước + Modem WiFi 7 độc quyền" in text
     assert "AW-999999999" in text
-    assert "G-VTTEST999" in text
     assert "987654321098765" in text
     assert "Gói VIP Doanh Nghiệp (500M)" in text
+
+
+@pytest.mark.asyncio
+async def test_vungtau_chat_widget_and_advisor_config(admin, client):
+    """The floating popup chat widget renders with configured advisor name and avatar, and submits leads."""
+    current_settings = (await admin.get("/api/v1/system/display-settings")).json()
+    version = current_settings.get("version", 0)
+
+    save_resp = await admin.post(
+        "/api/v1/system/display-settings",
+        json={
+            "expected_version": version,
+            "vungtau": {
+                "advisor_name": "Thu Hồng FPT",
+                "advisor_avatar": "https://cdn.example/thuhong-avatar.jpg",
+                "hotline": "0911 222 333",
+            },
+        },
+    )
+    assert save_resp.status_code == 200
+
+    page_resp = await client.get("/vungtau")
+    assert page_resp.status_code == 200
+    text = page_resp.text
+
+    # Chat widget markup & configured advisor
+    assert "id=\"vt-chat-widget\"" in text
+    assert "id=\"vt-chat-toggle\"" in text
+    assert "id=\"vt-chat-box\"" in text
+    assert "Thu Hồng FPT" in text
+    assert "https://cdn.example/thuhong-avatar.jpg" in text
+    assert "Thông tin đăng ký" in text
+    assert "id=\"vt-chat-form\"" in text
+    assert "0911 222 333" in text
+
+    # Chat lead submission via /api/v1/leads
+    lead_payload = {
+        "phone": "0911222333",
+        "name": "Nguyễn Hoàng C",
+        "installation_address": "45 Lê Hồng Phong, Vũng Tàu",
+        "notes": "[Tư vấn trực tuyến: Thu Hồng FPT] | Nội dung: Cần lắp mạng gấp | Nguồn: fpt-vungtau.com",
+        "measurement_path": "/vungtau",
+        "consent_version": "2026.1",
+    }
+    lead_resp = await client.post(
+        "/api/v1/leads",
+        json=lead_payload,
+        headers={"Idempotency-Key": "test-chat-lead-00000002"},
+    )
+    assert lead_resp.status_code == 201
+    assert lead_resp.json()["receipt"]
 

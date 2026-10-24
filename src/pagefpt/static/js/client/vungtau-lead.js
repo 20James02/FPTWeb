@@ -284,11 +284,169 @@
     }
   }
 
+  // 7. Floating Chat Popup Widget Controller
+  function initChatWidget() {
+    var widget = document.getElementById('vt-chat-widget');
+    if (!widget) return;
+
+    var toggleBtn = document.getElementById('vt-chat-toggle');
+    var minimizeBtn = document.getElementById('vt-chat-minimize');
+    var closeSuccessBtn = document.getElementById('vt-chat-close-success');
+    var form = document.getElementById('vt-chat-form');
+    var formContainer = document.getElementById('vt-chat-form-container');
+    var successCard = document.getElementById('vt-chat-success');
+    var errorBox = document.getElementById('vt-chat-error');
+    var submitBtn = document.getElementById('vt-chat-submit');
+
+    function toggleChat(open) {
+      if (typeof open === 'boolean') {
+        if (open) widget.classList.add('is-open');
+        else widget.classList.remove('is-open');
+      } else {
+        widget.classList.toggle('is-open');
+      }
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleChat();
+      });
+    }
+
+    if (minimizeBtn) {
+      minimizeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleChat(false);
+      });
+    }
+
+    if (closeSuccessBtn) {
+      closeSuccessBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleChat(false);
+      });
+    }
+
+    if (form) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var nameInput = document.getElementById('vt-chat-name');
+        var phoneInput = document.getElementById('vt-chat-phone');
+        var addressInput = document.getElementById('vt-chat-address');
+        var messageInput = document.getElementById('vt-chat-message');
+
+        var phone = normalizePhone(phoneInput ? phoneInput.value : '');
+        if (!isValidPhone(phone)) {
+          if (errorBox) {
+            errorBox.textContent = 'Vui lòng nhập số điện thoại Việt Nam hợp lệ (10 chữ số).';
+            errorBox.style.display = 'block';
+          }
+          if (phoneInput) phoneInput.focus();
+          return;
+        }
+
+        var rawName = (nameInput ? nameInput.value : '').trim();
+        var address = (addressInput ? addressInput.value : '').trim();
+        var message = (messageInput ? messageInput.value : '').trim();
+        var vtCfg = window.VT_CONFIG || {};
+        var advisorName = vtCfg.advisor_name || 'Hồng FPT';
+
+        var utm = getStoredUtm();
+        var utmList = [];
+        for (var k in utm) {
+          if (utm[k]) utmList.push(k + '=' + utm[k]);
+        }
+
+        var noteSegments = [];
+        noteSegments.push('[Tư vấn trực tuyến: ' + advisorName + ']');
+        if (message) noteSegments.push('Nội dung: ' + message);
+        noteSegments.push('Nguồn: ' + window.location.hostname);
+        noteSegments.push('Thiết bị: ' + detectDevice());
+        if (utmList.length > 0) noteSegments.push('UTM: ' + utmList.join('&'));
+
+        var payload = {
+          phone: phone,
+          name: rawName,
+          installation_address: address,
+          notes: noteSegments.join(' | '),
+          measurement_path: '/vungtau',
+          consent_version: '2026.1'
+        };
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Đang gửi...';
+        }
+        if (errorBox) errorBox.style.display = 'none';
+
+        try {
+          var response = await fetch('/api/v1/leads', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Idempotency-Key': generateUUID()
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            var errData = await response.json().catch(function() { return {}; });
+            throw new Error(errData.detail || 'Không thể gửi đăng ký lúc này.');
+          }
+
+          // Show success
+          if (formContainer) formContainer.style.display = 'none';
+          if (successCard) successCard.style.display = 'block';
+          form.reset();
+
+          // Fire Google Ads & Meta Pixel conversion tracking if configured
+          try {
+            if (typeof window.gtag === 'function') {
+              if (vtCfg.google_ads_conversion) {
+                var sendTo = vtCfg.google_ads_conversion.indexOf('/') !== -1
+                  ? vtCfg.google_ads_conversion
+                  : (vtCfg.google_ads_id ? vtCfg.google_ads_id + '/' + vtCfg.google_ads_conversion : vtCfg.google_ads_conversion);
+                window.gtag('event', 'conversion', { 'send_to': sendTo });
+              }
+              window.gtag('event', 'generate_lead', {
+                event_category: 'chat_form',
+                event_label: 'Chat Lead - ' + advisorName
+              });
+            }
+            if (typeof window.fbq === 'function') {
+              window.fbq('track', 'Lead', {
+                content_name: 'Chat Lead - ' + advisorName
+              });
+            }
+          } catch (trackErr) {
+            console.warn('Tracking dispatch error:', trackErr);
+          }
+        } catch (err) {
+          if (errorBox) {
+            errorBox.textContent = err.message || 'Lỗi gửi tin. Quý khách vui lòng gọi Hotline để được tư vấn nhanh nhất!';
+            errorBox.style.display = 'block';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Bắt đầu';
+          }
+        }
+      });
+    }
+  }
+
   // Initialize on DOM ready
   initAttribution();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLeadModal);
-  } else {
+  function initAll() {
     initLeadModal();
+    initChatWidget();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
   }
 })();
+

@@ -133,6 +133,11 @@ def get_vungtau_config(
         },
     ]
     hero_slides = vt_custom.get("hero_slides") or default_hero_slides
+    advisor_name = vt_custom.get("advisor_name") or "Hồng FPT"
+    advisor_avatar = (
+        vt_custom.get("advisor_avatar")
+        or "https://fptvungtau.com/wp-content/uploads/2023/12/cropped-fpt-vung-tau-1.png"
+    )
 
     return {
         "site_id": "vungtau",
@@ -154,6 +159,8 @@ def get_vungtau_config(
         "ga4_id": ga4_id,
         "facebook_pixel_id": facebook_pixel_id,
         "promo_notice": promo_notice,
+        "advisor_name": advisor_name,
+        "advisor_avatar": advisor_avatar,
         "quick_plans": quick_plans,
         "hero_slides": hero_slides,
     }

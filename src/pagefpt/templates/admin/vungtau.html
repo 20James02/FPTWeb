@@ -270,6 +270,34 @@
     </label>
   </section>
 
+  <!-- 6. Chuyên viên tư vấn & Form Popup Chat (Góc phải) -->
+  <section class="vt-card">
+    <h2 class="vt-admin-section-title">6. Chuyên viên tư vấn &amp; Form Popup Chat (Góc phải)</h2>
+    <p class="pricing-hint" style="margin-bottom: 16px;">Tùy chỉnh tên và ảnh đại diện (avatar) của chuyên viên xuất hiện trên khung chatbox ở góc phải màn hình.</p>
+    <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+      <div style="text-align: center; width: 140px; flex-shrink: 0;">
+        <img id="vt-avatar-preview" src="{{ vungtau_config.advisor_avatar }}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #f47a0e; display: block; margin: 0 auto 10px; background: #e2e8f0;" onerror="this.src='https://fptvungtau.com/wp-content/uploads/2023/12/cropped-fpt-vung-tau-1.png';">
+        <label class="vt-upload-local-label" style="font-size: 11px; padding: 6px 8px;">
+          📁 Đổi ảnh từ máy tính
+          <input type="file" id="vt-avatar-file-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+        </label>
+        <span id="vt-avatar-upload-status" style="display: block; font-size: 11px; margin-top: 4px; color: #64748b;"></span>
+      </div>
+      <div style="flex: 1; min-width: 260px;" class="vt-admin-grid">
+        <label>
+          Tên chuyên viên hiển thị
+          <input id="vt-advisor-name" type="text" value="{{ vungtau_config.advisor_name }}" placeholder="VD: Hồng FPT">
+          <span class="vt-admin-help">Hiển thị trên đầu khung chat và tiêu đề tư vấn</span>
+        </label>
+        <label>
+          Đường dẫn ảnh đại diện (URL hoặc Base64)
+          <input id="vt-advisor-avatar" type="text" value="{{ vungtau_config.advisor_avatar }}" placeholder="https://...">
+          <span class="vt-admin-help">Link ảnh avatar hoặc tải trực tiếp từ máy tính</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
   <div style="display: flex; gap: 14px; align-items: center; margin-top: 24px; flex-wrap: wrap;">
     <button type="submit" id="btn-save-vungtau" class="btn-action-call" style="min-width: 220px; font-size: 15px; padding: 12px 24px;">Lưu Cấu Hình Web Mới</button>
     <a class="btn-action-detail" href="/admin/appearance">Sang cấu hình trang chủ chính</a>
@@ -421,6 +449,54 @@ function renderAllSlides(slides) {
 // Initial render
 renderAllSlides(initialSlides);
 
+// Handle Avatar Preview & Upload
+const avatarInput = document.getElementById('vt-advisor-avatar');
+const avatarPreview = document.getElementById('vt-avatar-preview');
+const avatarFileInput = document.getElementById('vt-avatar-file-input');
+const avatarUploadStatus = document.getElementById('vt-avatar-upload-status');
+
+if (avatarInput && avatarPreview) {
+  avatarInput.addEventListener('input', () => {
+    avatarPreview.src = avatarInput.value.trim() || 'https://fptvungtau.com/wp-content/uploads/2023/12/cropped-fpt-vung-tau-1.png';
+  });
+}
+
+if (avatarFileInput) {
+  avatarFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    avatarUploadStatus.textContent = 'Đang xử lý ảnh...';
+    avatarUploadStatus.style.color = '#2563eb';
+
+    try {
+      if (typeof window.adminUploadImage === 'function') {
+        try {
+          const res = await window.adminUploadImage(file);
+          if (res && res.payload && res.payload.image_url) {
+            avatarInput.value = res.payload.image_url;
+            avatarPreview.src = res.payload.image_url;
+            avatarUploadStatus.textContent = '✓ Đã tải lên CDN R2!';
+            avatarUploadStatus.style.color = '#16a34a';
+            return;
+          }
+        } catch (r2Err) {
+          console.warn('R2 upload unavailable, falling back to canvas:', r2Err.message);
+        }
+      }
+
+      const compressed = await compressImageFile(file, 400, 0.85);
+      avatarInput.value = compressed;
+      avatarPreview.src = compressed;
+      avatarUploadStatus.textContent = '✓ Đã nạp ảnh từ máy tính!';
+      avatarUploadStatus.style.color = '#16a34a';
+    } catch (err) {
+      avatarUploadStatus.textContent = '✕ Lỗi: ' + (err.message || 'Thử lại');
+      avatarUploadStatus.style.color = '#dc2626';
+    }
+  });
+}
+
 // Add new slide button
 document.getElementById('btn-add-slide').addEventListener('click', () => {
   const newSlide = {
@@ -468,6 +544,8 @@ document.getElementById('vungtau-settings-form').addEventListener('submit', asyn
     ga4_id: document.getElementById('vt-ga4-id').value.trim(),
     facebook_pixel_id: document.getElementById('vt-facebook-pixel-id').value.trim(),
     promo_notice: document.getElementById('vt-promo-notice').value.trim(),
+    advisor_name: (document.getElementById('vt-advisor-name').value || '').trim() || 'Hồng FPT',
+    advisor_avatar: (document.getElementById('vt-advisor-avatar').value || '').trim(),
     quick_plans: rawPlans,
     hero_slides: collectedSlides
   };
