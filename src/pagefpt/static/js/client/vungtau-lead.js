@@ -292,11 +292,20 @@
     var toggleBtn = document.getElementById('vt-chat-toggle');
     var minimizeBtn = document.getElementById('vt-chat-minimize');
     var closeSuccessBtn = document.getElementById('vt-chat-close-success');
+    var nudgeBubble = document.getElementById('vt-chat-nudge');
+    var nudgeCloseBtn = document.getElementById('vt-chat-nudge-close');
     var form = document.getElementById('vt-chat-form');
     var formContainer = document.getElementById('vt-chat-form-container');
     var successCard = document.getElementById('vt-chat-success');
     var errorBox = document.getElementById('vt-chat-error');
     var submitBtn = document.getElementById('vt-chat-submit');
+
+    // Check if user previously dismissed nudge bubble
+    try {
+      if (sessionStorage.getItem('vt_nudge_closed') === '1' && nudgeBubble) {
+        nudgeBubble.classList.add('is-closed');
+      }
+    } catch (e) {}
 
     function toggleChat(open) {
       if (typeof open === 'boolean') {
@@ -311,6 +320,28 @@
       toggleBtn.addEventListener('click', function(e) {
         e.preventDefault();
         toggleChat();
+      });
+    }
+
+    if (nudgeBubble) {
+      nudgeBubble.addEventListener('click', function(e) {
+        // If clicked on close button, let close handler manage it
+        if (e.target && (e.target.id === 'vt-chat-nudge-close' || e.target.closest('#vt-chat-nudge-close'))) {
+          return;
+        }
+        e.preventDefault();
+        toggleChat(true);
+      });
+    }
+
+    if (nudgeCloseBtn) {
+      nudgeCloseBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (nudgeBubble) nudgeBubble.classList.add('is-closed');
+        try {
+          sessionStorage.setItem('vt_nudge_closed', '1');
+        } catch (err) {}
       });
     }
 

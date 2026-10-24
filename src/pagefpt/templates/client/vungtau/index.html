@@ -2733,24 +2733,225 @@ span.product-name {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 #vt-chat-toggle {
+  position: relative;
   width: 60px;
   height: 60px;
   border-radius: 50%;
   background: #f47a0e;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(244, 122, 14, 0.45);
+  box-shadow: 0 4px 18px rgba(244, 122, 14, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
   padding: 0;
   outline: none;
+  animation: vtPeriodicWiggle 6.5s ease-in-out infinite;
 }
 #vt-chat-toggle:hover {
-  transform: scale(1.06);
-  box-shadow: 0 6px 20px rgba(244, 122, 14, 0.6);
+  transform: scale(1.08) !important;
+  box-shadow: 0 8px 24px rgba(244, 122, 14, 0.65);
 }
+
+/* Radar pulse ripple waves behind toggle */
+#vt-chat-toggle::before,
+#vt-chat-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2.5px solid #f47a0e;
+  animation: vtPulseRing 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  pointer-events: none;
+  opacity: 0;
+}
+#vt-chat-toggle::after {
+  animation-delay: 1.2s;
+}
+@keyframes vtPulseRing {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.95;
+  }
+  65%, 100% {
+    transform: scale(1.68);
+    opacity: 0;
+  }
+}
+@keyframes vtPeriodicWiggle {
+  0%, 78%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  80% {
+    transform: rotate(-14deg) scale(1.1);
+  }
+  83% {
+    transform: rotate(12deg) scale(1.1);
+  }
+  86% {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  89% {
+    transform: rotate(6deg) scale(1.03);
+  }
+  92% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+#vt-chat-widget.is-open #vt-chat-toggle {
+  animation: none !important;
+}
+#vt-chat-widget.is-open #vt-chat-toggle::before,
+#vt-chat-widget.is-open #vt-chat-toggle::after {
+  display: none !important;
+}
+
+/* Red Heartbeat Notification Badge ("1") */
+.vt-chat-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  width: 21px;
+  height: 21px;
+  line-height: 19px;
+  text-align: center;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.55);
+  z-index: 3;
+  animation: vtBadgeHeartbeat 2.8s infinite;
+  pointer-events: none;
+}
+@keyframes vtBadgeHeartbeat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.24); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.16); }
+  50% { transform: scale(1); }
+}
+#vt-chat-widget.is-open .vt-chat-badge {
+  display: none !important;
+}
+
+/* Enticing Floating Nudge Speech Bubble */
+.vt-chat-nudge {
+  position: absolute;
+  right: 74px;
+  bottom: 6px;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 8px 12px 8px 10px;
+  border-radius: 20px 20px 4px 20px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16), 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s;
+  animation: vtFloatNudge 3.6s ease-in-out infinite;
+  border: 1px solid rgba(244, 122, 14, 0.25);
+  z-index: 10;
+  user-select: none;
+}
+.vt-chat-nudge:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(244, 122, 14, 0.28), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #f47a0e;
+}
+@keyframes vtFloatNudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+#vt-chat-widget.is-open .vt-chat-nudge,
+.vt-chat-nudge.is-closed {
+  display: none !important;
+}
+.vt-chat-nudge-avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.vt-chat-nudge-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #f47a0e;
+  display: block;
+}
+.vt-chat-nudge-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 9.5px;
+  height: 9.5px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  animation: vtOnlinePulse 1.8s infinite;
+}
+@keyframes vtOnlinePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.25); }
+}
+.vt-chat-nudge-text {
+  line-height: 1.25;
+  text-align: left;
+}
+.vt-chat-nudge-sender {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vt-chat-nudge-status {
+  font-size: 10px;
+  color: #16a34a;
+  font-weight: 700;
+  background: #dcfce7;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+.vt-chat-nudge-msg {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ea580c;
+  margin-top: 2px;
+}
+.vt-chat-nudge-close {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #64748b;
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s, background 0.15s;
+  padding: 0;
+}
+.vt-chat-nudge-close:hover {
+  opacity: 1;
+  background: #ef4444;
+}
+
 #vt-chat-toggle .vt-icon-chat,
 #vt-chat-toggle .vt-icon-close {
   display: flex;
@@ -2775,16 +2976,16 @@ span.product-name {
   max-width: calc(100vw - 32px);
   background: #f1f5f9;
   border-radius: 16px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  animation: vtChatPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: vtChatPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 99999;
 }
 #vt-chat-widget.is-open #vt-chat-box {
   display: block;
 }
 @keyframes vtChatPop {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  from { opacity: 0; transform: translateY(20px) scale(0.92); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .vt-chat-header {
@@ -3008,6 +3209,77 @@ span.product-name {
   .vt-form-col {
     margin-bottom: 12px !important;
   }
+  .vt-chat-nudge {
+    right: 66px;
+    bottom: 4px;
+    padding: 6px 10px 6px 8px;
+    max-width: calc(100vw - 92px);
+    gap: 8px;
+  }
+  .vt-chat-nudge-avatar-wrap,
+  .vt-chat-nudge-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .vt-chat-nudge-sender {
+    font-size: 11px;
+  }
+  .vt-chat-nudge-msg {
+    font-size: 11.5px;
+    max-width: 175px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Light sweep shimmer on primary CTA buttons to entice clicks */
+@keyframes vtShimmerSweep {
+  0% {
+    left: -110%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.55;
+  }
+  45% {
+    left: 140%;
+    opacity: 0;
+  }
+  100% {
+    left: 140%;
+    opacity: 0;
+  }
+}
+.btn-dang-ky,
+.vt-quick-btn,
+.vt-chat-btn-submit {
+  position: relative;
+  overflow: hidden;
+}
+.btn-dang-ky::before,
+.vt-quick-btn::before,
+.vt-chat-btn-submit::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -110%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(22deg);
+  animation: vtShimmerSweep 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.btn-dang-ky:hover,
+.vt-quick-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(45, 91, 229, 0.35);
 }
 </style>
 
@@ -6851,6 +7123,19 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
 
 <!-- Native FPT Floating Chat & Registration Widget -->
 <div id="vt-chat-widget">
+  <!-- Interactive Nudge Speech Bubble (Khơi gợi bấm popup) -->
+  <div id="vt-chat-nudge" class="vt-chat-nudge" role="button" tabindex="0" aria-label="Bấm để nhận tư vấn nhanh và ưu đãi">
+    <button type="button" id="vt-chat-nudge-close" class="vt-chat-nudge-close" aria-label="Đóng gợi ý">&times;</button>
+    <div class="vt-chat-nudge-avatar-wrap">
+      <img class="vt-chat-nudge-avatar" src="{{ config.advisor_avatar }}" alt="{{ config.advisor_name }}" onerror="this.src='https://fptvungtau.com/wp-content/uploads/2023/12/cropped-fpt-vung-tau-1.png';">
+      <span class="vt-chat-nudge-dot"></span>
+    </div>
+    <div class="vt-chat-nudge-text">
+      <div class="vt-chat-nudge-sender">{{ config.advisor_name }} <span class="vt-chat-nudge-status">Online</span></div>
+      <div class="vt-chat-nudge-msg">Nhận ưu đãi WiFi 6 &amp; quà tặng ngay! 🎁</div>
+    </div>
+  </div>
+
   <div id="vt-chat-box">
     <div class="vt-chat-header">
       <div class="vt-chat-header-left">
@@ -6912,6 +7197,7 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
     </div>
   </div>
   <button type="button" id="vt-chat-toggle" aria-label="Mở cửa sổ chat hỗ trợ">
+    <span class="vt-chat-badge" aria-hidden="true">1</span>
     <div class="vt-icon-chat">
       <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 6C8.48 6 4 9.8 4 14.5c0 2.5 1.25 4.75 3.25 6.3-.3 1.6-1.15 3.2-1.25 3.4 0 .15.05.3.2.4.15.05.25.05.35 0 2.15-.9 4.2-2.15 4.5-2.35.95.25 1.95.35 2.95.35 5.52 0 10-3.8 10-8.5S19.52 6 14 6z" fill="#ffffff"/>
